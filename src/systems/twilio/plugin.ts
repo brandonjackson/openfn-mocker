@@ -39,7 +39,6 @@ function nextStatus(current: string): string | undefined {
 
 const plugin: MockSystemPlugin = {
   name: 'twilio',
-  defaultPort: 4019,
   specFile: 'twilio.openapi.json',
 
   async overrides(app: FastifyInstance, store: DataStore, config: SystemConfig) {

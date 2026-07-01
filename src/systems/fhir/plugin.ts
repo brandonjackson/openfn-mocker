@@ -65,12 +65,19 @@ function matchesSearch(resource: any, params: Record<string, any>): boolean {
 
 const plugin: MockSystemPlugin = {
   name: 'fhir',
-  defaultPort: 4013,
   specFile: 'fhir-r4.openapi.json',
 
   async overrides(app: FastifyInstance, store: DataStore, config: SystemConfig) {
-    const apiPath = String(config.apiPath || DEFAULT_API_PATH).replace(/^\/+|\/+$/g, '');
-    const baseUrl = `http://localhost:${config.port}/${apiPath}`;
+    // apiPath may be explicitly empty (""), in which case the FHIR API lives at
+    // the instance root — useful when the server is mounted at a /fhir prefix so
+    // resources are served at /fhir/Patient rather than /fhir/fhir/Patient. An
+    // omitted (null/undefined) apiPath falls back to the default.
+    const apiPath = (config.apiPath != null ? String(config.apiPath) : DEFAULT_API_PATH).replace(
+      /^\/+|\/+$/g,
+      ''
+    );
+    const apiSeg = apiPath ? `/${apiPath}` : '';
+    const baseUrl = `http://localhost:${config.port}${apiSeg}`;
 
     // FHIR clients often send application/fhir+json; parse it like JSON.
     try {
@@ -195,23 +202,23 @@ const plugin: MockSystemPlugin = {
     };
 
     // POST /fhir and POST /fhir/  (transaction/batch Bundle).
-    app.post(`/${apiPath}`, async (req, reply) => handleBundle(req, reply));
+    app.post(apiSeg || '/', async (req, reply) => handleBundle(req, reply));
 
     // --- Search ----------------------------------------------------------
     // POST /fhir/:resourceType/_search  (static segment wins over :id).
-    app.post(`/${apiPath}/:resourceType/_search`, async (req) => {
+    app.post(`${apiSeg}/:resourceType/_search`, async (req) => {
       const { resourceType } = req.params as Record<string, any>;
       return doSearch(req, resourceType);
     });
 
     // GET /fhir/:resourceType  -> searchset Bundle.
-    app.get(`/${apiPath}/:resourceType`, async (req) => {
+    app.get(`${apiSeg}/:resourceType`, async (req) => {
       const { resourceType } = req.params as Record<string, any>;
       return doSearch(req, resourceType);
     });
 
     // --- Read ------------------------------------------------------------
-    app.get(`/${apiPath}/:resourceType/:id`, async (req, reply) => {
+    app.get(`${apiSeg}/:resourceType/:id`, async (req, reply) => {
       const { resourceType, id } = req.params as Record<string, any>;
       const found = store.get(resourceType, id);
       if (found === undefined) {
@@ -222,7 +229,7 @@ const plugin: MockSystemPlugin = {
     });
 
     // --- Create ----------------------------------------------------------
-    app.post(`/${apiPath}/:resourceType`, async (req, reply) => {
+    app.post(`${apiSeg}/:resourceType`, async (req, reply) => {
       const { resourceType } = req.params as Record<string, any>;
       const body = (req.body ?? {}) as Record<string, any>;
       const id = genId();
@@ -236,7 +243,7 @@ const plugin: MockSystemPlugin = {
     });
 
     // --- Update / upsert -------------------------------------------------
-    app.put(`/${apiPath}/:resourceType/:id`, async (req, reply) => {
+    app.put(`${apiSeg}/:resourceType/:id`, async (req, reply) => {
       const { resourceType, id } = req.params as Record<string, any>;
       const body = (req.body ?? {}) as Record<string, any>;
       const existing = store.get(resourceType, id);
@@ -253,7 +260,7 @@ const plugin: MockSystemPlugin = {
     });
 
     // --- Delete (idempotent, HAPI-style 200 + OperationOutcome) ----------
-    app.delete(`/${apiPath}/:resourceType/:id`, async (req, reply) => {
+    app.delete(`${apiSeg}/:resourceType/:id`, async (req, reply) => {
       const { resourceType, id } = req.params as Record<string, any>;
       store.destroy(resourceType, id);
       reply.code(200);

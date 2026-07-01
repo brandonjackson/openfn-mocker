@@ -4,11 +4,11 @@ services:
     image: openfn-mocker
     container_name: openfn-mocker
     ports:
-      - "4000-4020:4000-4020"
+      - "4000:4000"
     environment:
       - MOCKER_LOG_LEVEL=info
+      # Change the single listen port (all systems are mounted beneath it):
+      # - MOCKER_PORT=8080
       # Run only a subset of systems (comma-separated):
       # - MOCKER_SYSTEMS=dhis2,mailgun,http-generic
-      # Override a single system's port:
-      # - MOCKER_DHIS2_PORT=4010
     restart: unless-stopped

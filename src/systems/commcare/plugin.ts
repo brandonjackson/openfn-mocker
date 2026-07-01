@@ -63,7 +63,6 @@ function tastypie(
 
 const plugin: MockSystemPlugin = {
   name: 'commcare',
-  defaultPort: 4011,
   specFile: 'commcare.schema.json',
 
   async overrides(app: FastifyInstance, store: DataStore, config: SystemConfig) {

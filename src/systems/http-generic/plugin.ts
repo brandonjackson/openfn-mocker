@@ -45,7 +45,6 @@ function toRecord(body: any, req: FastifyRequest, path: string): Record<string, 
 
 const plugin: MockSystemPlugin = {
   name: 'http-generic',
-  defaultPort: 4014,
 
   async overrides(app: FastifyInstance, store: DataStore, _config: SystemConfig) {
     const wildPath = (req: FastifyRequest): string =>

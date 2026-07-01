@@ -3,10 +3,11 @@ import type { DataStore } from './store.js';
 import type { RequestLog } from './logger.js';
 
 /**
- * Mount the per-system admin API under /_admin. Registered by
- * createSystemServer on every system server.
+ * Mount the per-system admin API under /_admin. Registered by registerSystem on
+ * every system instance, so when a system is mounted at a prefix the routes are
+ * served at /<prefix>/_admin/*.
  *
- *   GET  /_admin/status    -> { system, port, uptime, recordCounts }
+ *   GET  /_admin/status    -> { system, mountPath, uptime, recordCounts }
  *   GET  /_admin/requests  -> LoggedRequest[]   (oldest first)
  *   GET  /_admin/store     -> { collection: [records...] }
  *   POST /_admin/reset     -> clear store + reseed -> { ok:true }
@@ -17,7 +18,8 @@ export function registerAdminRoutes(
   ctx: {
     store: DataStore;
     systemName: string;
-    port: number;
+    /** Path the system is mounted at (e.g. '/dhis2'); '' when standalone. */
+    mountPath: string;
     requestLog: RequestLog;
     startedAt: number;
     reseed: () => void;
@@ -30,7 +32,7 @@ export function registerAdminRoutes(
     }
     return {
       system: ctx.systemName,
-      port: ctx.port,
+      mountPath: ctx.mountPath,
       uptime: Math.round((Date.now() - ctx.startedAt) / 1000),
       recordCounts,
     };

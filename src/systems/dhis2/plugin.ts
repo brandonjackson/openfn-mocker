@@ -107,7 +107,6 @@ const NOT_FOUND = {
 
 const plugin: MockSystemPlugin = {
   name: 'dhis2',
-  defaultPort: 4010,
   specFile: 'dhis2.openapi.json',
 
   async overrides(app: FastifyInstance, store: DataStore, config: SystemConfig) {

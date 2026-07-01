@@ -61,7 +61,6 @@ function compareValues(a: any, b: any): number {
 
 const plugin: MockSystemPlugin = {
   name: 'airtable',
-  defaultPort: 4020,
   specFile: 'airtable.schema.json',
 
   async overrides(app: FastifyInstance, store: DataStore, config: SystemConfig) {

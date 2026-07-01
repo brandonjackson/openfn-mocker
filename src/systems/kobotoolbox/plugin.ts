@@ -36,7 +36,6 @@ function intParam(value: unknown, fallback: number): number {
 
 const plugin: MockSystemPlugin = {
   name: 'kobotoolbox',
-  defaultPort: 4016,
   specFile: 'kobotoolbox.schema.json',
 
   async overrides(app: FastifyInstance, store: DataStore, config: SystemConfig) {

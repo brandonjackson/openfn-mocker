@@ -5,19 +5,24 @@ import type { SystemConfig } from './systems/types.js';
 
 export interface MockerConfig {
   log_level: string;
-  admin_port: number;
+  /** Single port the whole mock listens on; every system is path-prefixed under it. */
+  port: number;
   systems: Record<string, SystemConfig & { enabled: boolean }>;
 }
+
+const DEFAULT_PORT = 4000;
 
 /**
  * Load mock.config.yaml (from `path`, then $MOCKER_CONFIG, then ./mock.config.yaml),
  * then apply environment overrides:
- *   - MOCKER_SYSTEMS=csv           -> only those systems enabled
- *   - MOCKER_<SYS>_PORT            -> override a system's port (SYS uppercased,
- *                                     dashes->underscores; http-generic -> HTTP_GENERIC)
- *   - MOCKER_LOG_LEVEL             -> override log level
- *   - MOCKER_ADMIN_PORT            -> override admin port
- *   - PORT (Railway convention)    -> if exactly one system is enabled, use it for that system
+ *   - MOCKER_SYSTEMS=csv   -> only those systems enabled
+ *   - MOCKER_LOG_LEVEL     -> override log level
+ *   - MOCKER_PORT / PORT   -> override the single listen port (PORT is the
+ *                             Railway / PaaS convention)
+ *
+ * Every enabled system is mounted at `/<name>` on this one shared port, so there
+ * are no per-system ports. The resolved port is copied onto each system's config
+ * so plugins that build self-referential URLs keep working.
  */
 export function loadConfig(path?: string): MockerConfig {
   const configPath = resolve(path ?? process.env.MOCKER_CONFIG ?? 'mock.config.yaml');
@@ -26,7 +31,8 @@ export function loadConfig(path?: string): MockerConfig {
 
   const config: MockerConfig = {
     log_level: typeof raw.log_level === 'string' ? raw.log_level : 'info',
-    admin_port: Number(raw.admin_port ?? 4000),
+    // `admin_port` is accepted as a legacy alias for `port`.
+    port: Number(raw.port ?? raw.admin_port ?? DEFAULT_PORT),
     systems: {},
   };
 
@@ -35,26 +41,33 @@ export function loadConfig(path?: string): MockerConfig {
     const sys = (sysRaw ?? {}) as Record<string, any>;
     config.systems[name] = {
       ...sys,
-      port: Number(sys.port),
+      // The shared listen port; re-synced after env overrides below.
+      port: config.port,
       // Enabled unless explicitly `enabled: false`.
       enabled: sys.enabled !== false,
     };
   }
 
   applyEnvOverrides(config);
-  return config;
-}
 
-/** MOCKER env-var suffix for a system key: 'http-generic' -> 'HTTP_GENERIC'. */
-export function envKeyForSystem(name: string): string {
-  return name.toUpperCase().replace(/-/g, '_');
+  // All systems share the single listen port; copy it onto each system config so
+  // plugins that build absolute self-URLs (fhir, openmrs, kobotoolbox, mailgun,
+  // dhis2) reference the right port.
+  for (const sys of Object.values(config.systems)) {
+    sys.port = config.port;
+  }
+
+  return config;
 }
 
 function applyEnvOverrides(config: MockerConfig): void {
   const env = process.env;
 
   if (env.MOCKER_LOG_LEVEL) config.log_level = env.MOCKER_LOG_LEVEL;
-  if (env.MOCKER_ADMIN_PORT) config.admin_port = Number(env.MOCKER_ADMIN_PORT);
+
+  // PORT is the Railway / PaaS convention; MOCKER_PORT is an explicit override.
+  if (env.MOCKER_PORT) config.port = Number(env.MOCKER_PORT);
+  else if (env.PORT) config.port = Number(env.PORT);
 
   if (env.MOCKER_SYSTEMS) {
     const only = new Set(
@@ -65,17 +78,5 @@ function applyEnvOverrides(config: MockerConfig): void {
     for (const [name, sys] of Object.entries(config.systems)) {
       sys.enabled = only.has(name);
     }
-  }
-
-  for (const name of Object.keys(config.systems)) {
-    const key = `MOCKER_${envKeyForSystem(name)}_PORT`;
-    const val = env[key];
-    if (val) config.systems[name].port = Number(val);
-  }
-
-  // Railway / PaaS single-port convention.
-  if (env.PORT) {
-    const enabled = Object.values(config.systems).filter((s) => s.enabled);
-    if (enabled.length === 1) enabled[0].port = Number(env.PORT);
   }
 }
