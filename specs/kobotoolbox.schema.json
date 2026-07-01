@@ -1,0 +1,8 @@
+{
+  "title": "kobotoolbox (stub)",
+  "description": "Placeholder schema for kobotoolbox; overwritten by the system agent.",
+  "components": {
+    "schemas": {}
+  },
+  "paths": {}
+}

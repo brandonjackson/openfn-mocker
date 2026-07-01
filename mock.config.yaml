@@ -1,0 +1,59 @@
+# openfn-mocker configuration
+# Each system runs a mock API server on its own port. Point an OpenFn
+# credential's base-URL field at http://localhost:<port> to test against it.
+log_level: info
+admin_port: 4000
+
+systems:
+  dhis2:
+    enabled: true
+    port: 4010
+    version: "2.39"
+
+  commcare:
+    enabled: true
+    port: 4011
+    domain: test-project
+    app_id: abc123
+
+  openmrs:
+    enabled: true
+    port: 4012
+
+  fhir:
+    enabled: true
+    port: 4013
+    variant: r4
+    apiPath: fhir
+
+  http-generic:
+    enabled: true
+    port: 4014
+
+  # Salesforce is a disabled placeholder (no plugin in v1).
+  salesforce:
+    enabled: false
+    port: 4015
+
+  kobotoolbox:
+    enabled: true
+    port: 4016
+
+  primero:
+    enabled: true
+    port: 4017
+
+  mailgun:
+    enabled: true
+    port: 4018
+    domain: sandbox-test.mailgun.org
+
+  twilio:
+    enabled: true
+    port: 4019
+    account_sid: ACtest123456
+
+  airtable:
+    enabled: true
+    port: 4020
+    base_id: appABC123

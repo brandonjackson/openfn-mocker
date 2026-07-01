@@ -1,0 +1,8 @@
+{
+  "title": "airtable (stub)",
+  "description": "Placeholder schema for airtable; overwritten by the system agent.",
+  "components": {
+    "schemas": {}
+  },
+  "paths": {}
+}

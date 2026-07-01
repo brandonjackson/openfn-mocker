@@ -1,0 +1,28 @@
+{
+  "name": "openfn-mocker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Configurable mock API server impersonating external systems for OpenFn workflow testing",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.js",
+    "dev": "tsx watch src/index.ts",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@fastify/formbody": "^7",
+    "fastify": "^4",
+    "yaml": "^2"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "tsx": "^4",
+    "typescript": "^5",
+    "vitest": "^2"
+  }
+}

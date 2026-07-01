@@ -1,0 +1,8 @@
+{
+  "title": "openmrs (stub)",
+  "description": "Placeholder schema for openmrs; overwritten by the system agent.",
+  "components": {
+    "schemas": {}
+  },
+  "paths": {}
+}
