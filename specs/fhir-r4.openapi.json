@@ -1,11 +1,309 @@
 {
-  "openapi": "3.0.0",
+  "openapi": "3.0.3",
   "info": {
-    "title": "fhir (stub)",
-    "version": "0.0.0"
+    "title": "FHIR R4 (HAPI) — mock subset",
+    "version": "4.0.1",
+    "description": "Focused subset of the HL7 FHIR R4 REST API as served by a HAPI FHIR server: type-level search returning a searchset Bundle, instance read/create/update/delete, POST _search, and system-level transaction/batch Bundles. Routes live under a configurable apiPath (default 'fhir')."
   },
-  "paths": {},
+  "servers": [{ "url": "http://localhost:4013/fhir" }],
+  "paths": {
+    "/": {
+      "post": {
+        "operationId": "processBundle",
+        "summary": "Submit a transaction or batch Bundle",
+        "requestBody": {
+          "required": true,
+          "content": { "application/fhir+json": { "schema": { "$ref": "#/components/schemas/Bundle" } } }
+        },
+        "responses": {
+          "200": {
+            "description": "transaction-response / batch-response Bundle",
+            "content": { "application/fhir+json": { "schema": { "$ref": "#/components/schemas/Bundle" } } }
+          }
+        }
+      }
+    },
+    "/{resourceType}": {
+      "parameters": [{ "name": "resourceType", "in": "path", "required": true, "schema": { "type": "string" } }],
+      "get": {
+        "operationId": "searchType",
+        "summary": "Search resources of a type",
+        "parameters": [
+          { "name": "_id", "in": "query", "schema": { "type": "string" } },
+          { "name": "name", "in": "query", "schema": { "type": "string" } },
+          { "name": "_count", "in": "query", "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "searchset Bundle",
+            "content": { "application/fhir+json": { "schema": { "$ref": "#/components/schemas/Bundle" } } }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createResource",
+        "summary": "Create a resource (server assigns id)",
+        "requestBody": {
+          "required": true,
+          "content": { "application/fhir+json": { "schema": { "$ref": "#/components/schemas/Resource" } } }
+        },
+        "responses": {
+          "201": {
+            "description": "Created resource with server-assigned id + meta",
+            "headers": { "Location": { "schema": { "type": "string" } } },
+            "content": { "application/fhir+json": { "schema": { "$ref": "#/components/schemas/Resource" } } }
+          }
+        }
+      }
+    },
+    "/{resourceType}/_search": {
+      "parameters": [{ "name": "resourceType", "in": "path", "required": true, "schema": { "type": "string" } }],
+      "post": {
+        "operationId": "searchTypePost",
+        "summary": "Search via POST (params in form/query/body)",
+        "responses": {
+          "200": {
+            "description": "searchset Bundle",
+            "content": { "application/fhir+json": { "schema": { "$ref": "#/components/schemas/Bundle" } } }
+          }
+        }
+      }
+    },
+    "/{resourceType}/{id}": {
+      "parameters": [
+        { "name": "resourceType", "in": "path", "required": true, "schema": { "type": "string" } },
+        { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+      ],
+      "get": {
+        "operationId": "readResource",
+        "summary": "Read a resource instance",
+        "responses": {
+          "200": {
+            "description": "The resource",
+            "content": { "application/fhir+json": { "schema": { "$ref": "#/components/schemas/Resource" } } }
+          },
+          "404": {
+            "description": "Not found",
+            "content": { "application/fhir+json": { "schema": { "$ref": "#/components/schemas/OperationOutcome" } } }
+          }
+        }
+      },
+      "put": {
+        "operationId": "updateResource",
+        "summary": "Update or create a resource at a known id (upsert)",
+        "requestBody": {
+          "required": true,
+          "content": { "application/fhir+json": { "schema": { "$ref": "#/components/schemas/Resource" } } }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated",
+            "content": { "application/fhir+json": { "schema": { "$ref": "#/components/schemas/Resource" } } }
+          },
+          "201": {
+            "description": "Created",
+            "content": { "application/fhir+json": { "schema": { "$ref": "#/components/schemas/Resource" } } }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteResource",
+        "summary": "Delete a resource instance",
+        "responses": {
+          "200": {
+            "description": "Deleted",
+            "content": { "application/fhir+json": { "schema": { "$ref": "#/components/schemas/OperationOutcome" } } }
+          }
+        }
+      }
+    }
+  },
   "components": {
-    "schemas": {}
+    "schemas": {
+      "Meta": {
+        "type": "object",
+        "properties": {
+          "versionId": { "type": "string", "example": "1" },
+          "lastUpdated": { "type": "string", "format": "date-time" }
+        }
+      },
+      "Reference": {
+        "type": "object",
+        "properties": {
+          "reference": { "type": "string", "example": "Patient/pat-1" },
+          "display": { "type": "string" }
+        }
+      },
+      "Coding": {
+        "type": "object",
+        "properties": {
+          "system": { "type": "string" },
+          "code": { "type": "string" },
+          "display": { "type": "string" }
+        }
+      },
+      "CodeableConcept": {
+        "type": "object",
+        "properties": {
+          "coding": { "type": "array", "items": { "$ref": "#/components/schemas/Coding" } },
+          "text": { "type": "string" }
+        }
+      },
+      "HumanName": {
+        "type": "object",
+        "properties": {
+          "use": { "type": "string", "example": "official" },
+          "family": { "type": "string", "example": "Doe" },
+          "given": { "type": "array", "items": { "type": "string" } }
+        }
+      },
+      "Identifier": {
+        "type": "object",
+        "properties": {
+          "system": { "type": "string" },
+          "value": { "type": "string" }
+        }
+      },
+      "Resource": {
+        "type": "object",
+        "required": ["resourceType"],
+        "properties": {
+          "resourceType": { "type": "string" },
+          "id": { "type": "string" },
+          "meta": { "$ref": "#/components/schemas/Meta" }
+        },
+        "additionalProperties": true
+      },
+      "Patient": {
+        "type": "object",
+        "required": ["resourceType"],
+        "properties": {
+          "resourceType": { "type": "string", "enum": ["Patient"], "example": "Patient" },
+          "id": { "type": "string", "example": "pat-1" },
+          "meta": { "$ref": "#/components/schemas/Meta" },
+          "identifier": { "type": "array", "items": { "$ref": "#/components/schemas/Identifier" } },
+          "active": { "type": "boolean", "example": true },
+          "name": { "type": "array", "items": { "$ref": "#/components/schemas/HumanName" } },
+          "gender": { "type": "string", "enum": ["male", "female", "other", "unknown"], "example": "female" },
+          "birthDate": { "type": "string", "format": "date", "example": "1996-03-15" }
+        }
+      },
+      "Encounter": {
+        "type": "object",
+        "required": ["resourceType", "status", "class"],
+        "properties": {
+          "resourceType": { "type": "string", "enum": ["Encounter"], "example": "Encounter" },
+          "id": { "type": "string", "example": "enc-1" },
+          "meta": { "$ref": "#/components/schemas/Meta" },
+          "status": { "type": "string", "example": "finished" },
+          "class": { "$ref": "#/components/schemas/Coding" },
+          "subject": { "$ref": "#/components/schemas/Reference" }
+        }
+      },
+      "Observation": {
+        "type": "object",
+        "required": ["resourceType", "status", "code"],
+        "properties": {
+          "resourceType": { "type": "string", "enum": ["Observation"], "example": "Observation" },
+          "id": { "type": "string", "example": "obs-1" },
+          "meta": { "$ref": "#/components/schemas/Meta" },
+          "status": { "type": "string", "example": "final" },
+          "code": { "$ref": "#/components/schemas/CodeableConcept" },
+          "subject": { "$ref": "#/components/schemas/Reference" },
+          "effectiveDateTime": { "type": "string", "format": "date-time" },
+          "valueQuantity": {
+            "type": "object",
+            "properties": {
+              "value": { "type": "number" },
+              "unit": { "type": "string" },
+              "system": { "type": "string" },
+              "code": { "type": "string" }
+            }
+          }
+        }
+      },
+      "Condition": {
+        "type": "object",
+        "required": ["resourceType", "subject"],
+        "properties": {
+          "resourceType": { "type": "string", "enum": ["Condition"], "example": "Condition" },
+          "id": { "type": "string", "example": "cond-1" },
+          "meta": { "$ref": "#/components/schemas/Meta" },
+          "clinicalStatus": { "$ref": "#/components/schemas/CodeableConcept" },
+          "verificationStatus": { "$ref": "#/components/schemas/CodeableConcept" },
+          "code": { "$ref": "#/components/schemas/CodeableConcept" },
+          "subject": { "$ref": "#/components/schemas/Reference" }
+        }
+      },
+      "BundleEntry": {
+        "type": "object",
+        "properties": {
+          "fullUrl": { "type": "string" },
+          "resource": { "$ref": "#/components/schemas/Resource" },
+          "search": {
+            "type": "object",
+            "properties": { "mode": { "type": "string", "example": "match" } }
+          },
+          "request": {
+            "type": "object",
+            "properties": {
+              "method": { "type": "string", "example": "POST" },
+              "url": { "type": "string", "example": "Patient" }
+            }
+          },
+          "response": {
+            "type": "object",
+            "properties": {
+              "status": { "type": "string", "example": "201 Created" },
+              "location": { "type": "string" },
+              "etag": { "type": "string" },
+              "lastModified": { "type": "string", "format": "date-time" }
+            }
+          }
+        }
+      },
+      "Bundle": {
+        "type": "object",
+        "required": ["resourceType", "type"],
+        "properties": {
+          "resourceType": { "type": "string", "enum": ["Bundle"], "example": "Bundle" },
+          "type": {
+            "type": "string",
+            "enum": ["searchset", "transaction", "batch", "transaction-response", "batch-response"],
+            "example": "searchset"
+          },
+          "total": { "type": "integer", "example": 3 },
+          "link": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "relation": { "type": "string", "example": "self" },
+                "url": { "type": "string" }
+              }
+            }
+          },
+          "entry": { "type": "array", "items": { "$ref": "#/components/schemas/BundleEntry" } }
+        }
+      },
+      "OperationOutcome": {
+        "type": "object",
+        "required": ["resourceType", "issue"],
+        "properties": {
+          "resourceType": { "type": "string", "enum": ["OperationOutcome"], "example": "OperationOutcome" },
+          "issue": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "severity": { "type": "string", "example": "error" },
+                "code": { "type": "string", "example": "not-found" },
+                "diagnostics": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    }
   }
 }

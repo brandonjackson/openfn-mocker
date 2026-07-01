@@ -1,11 +1,179 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "twilio (stub)",
-    "version": "0.0.0"
+    "title": "Twilio API (mock subset)",
+    "version": "2010-04-01",
+    "description": "Focused subset of the Twilio REST API covering the Message and Call resources used by the OpenFn twilio adaptor. Requests are form-urlencoded with PascalCase parameters; responses are snake_case JSON. Basic auth (accountSid:authToken) is accept-all."
   },
-  "paths": {},
+  "servers": [{ "url": "http://localhost:4019" }],
+  "paths": {
+    "/2010-04-01/Accounts/{sid}/Messages.json": {
+      "get": {
+        "operationId": "listMessages",
+        "summary": "List messages for an account",
+        "parameters": [
+          { "name": "sid", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paged list of messages",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/MessageList" }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createMessage",
+        "summary": "Send an SMS message",
+        "parameters": [
+          { "name": "sid", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "To": { "type": "string" },
+                  "From": { "type": "string" },
+                  "Body": { "type": "string" },
+                  "MediaUrl": { "type": "string" }
+                },
+                "required": ["To", "From"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The created message resource",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Message" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/2010-04-01/Accounts/{sid}/Messages/{msgSid}.json": {
+      "get": {
+        "operationId": "fetchMessage",
+        "summary": "Fetch a single message (status auto-advances on each read)",
+        "parameters": [
+          { "name": "sid", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "msgSid", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "A message resource",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Message" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/2010-04-01/Accounts/{sid}/Calls.json": {
+      "get": {
+        "operationId": "listCalls",
+        "summary": "List calls for an account",
+        "parameters": [
+          { "name": "sid", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paged list of calls",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/CallList" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
   "components": {
-    "schemas": {}
+    "schemas": {
+      "Message": {
+        "type": "object",
+        "properties": {
+          "sid": { "type": "string", "example": "SM00000000000000000000000000000000" },
+          "account_sid": { "type": "string", "example": "ACtest123456" },
+          "from": { "type": "string", "example": "+15005550006" },
+          "to": { "type": "string", "example": "+15558675310" },
+          "body": { "type": "string", "example": "Hello from OpenFn" },
+          "status": { "type": "string", "enum": ["queued", "sent", "delivered", "failed", "received"], "example": "queued" },
+          "direction": { "type": "string", "example": "outbound-api" },
+          "num_segments": { "type": "string", "example": "1" },
+          "num_media": { "type": "string", "example": "0" },
+          "price": { "type": ["string", "null"], "example": null },
+          "price_unit": { "type": "string", "example": "USD" },
+          "error_code": { "type": ["integer", "null"], "example": null },
+          "error_message": { "type": ["string", "null"], "example": null },
+          "date_created": { "type": "string", "example": "Tue, 01 Jul 2026 12:00:00 +0000" },
+          "date_updated": { "type": "string", "example": "Tue, 01 Jul 2026 12:00:00 +0000" },
+          "date_sent": { "type": ["string", "null"], "example": null },
+          "messaging_service_sid": { "type": ["string", "null"], "example": null },
+          "uri": { "type": "string", "example": "/2010-04-01/Accounts/ACtest123456/Messages/SM00000000000000000000000000000000.json" },
+          "api_version": { "type": "string", "example": "2010-04-01" }
+        }
+      },
+      "MessageList": {
+        "type": "object",
+        "properties": {
+          "messages": { "type": "array", "items": { "$ref": "#/components/schemas/Message" } },
+          "page": { "type": "integer", "example": 0 },
+          "page_size": { "type": "integer", "example": 50 },
+          "start": { "type": "integer", "example": 0 },
+          "end": { "type": "integer", "example": 0 },
+          "uri": { "type": "string" },
+          "first_page_uri": { "type": "string" },
+          "next_page_uri": { "type": ["string", "null"], "example": null },
+          "previous_page_uri": { "type": ["string", "null"], "example": null }
+        }
+      },
+      "Call": {
+        "type": "object",
+        "properties": {
+          "sid": { "type": "string", "example": "CA00000000000000000000000000000000" },
+          "account_sid": { "type": "string", "example": "ACtest123456" },
+          "from": { "type": "string", "example": "+15005550006" },
+          "to": { "type": "string", "example": "+15558675310" },
+          "status": { "type": "string", "example": "completed" },
+          "start_time": { "type": ["string", "null"], "example": "Tue, 01 Jul 2026 12:00:00 +0000" },
+          "end_time": { "type": ["string", "null"], "example": "Tue, 01 Jul 2026 12:00:45 +0000" },
+          "duration": { "type": "string", "example": "45" },
+          "price": { "type": ["string", "null"], "example": "-0.013" },
+          "price_unit": { "type": "string", "example": "USD" },
+          "direction": { "type": "string", "example": "outbound-api" },
+          "date_created": { "type": "string", "example": "Tue, 01 Jul 2026 12:00:00 +0000" },
+          "date_updated": { "type": "string", "example": "Tue, 01 Jul 2026 12:00:45 +0000" },
+          "uri": { "type": "string", "example": "/2010-04-01/Accounts/ACtest123456/Calls/CA00000000000000000000000000000000.json" },
+          "api_version": { "type": "string", "example": "2010-04-01" }
+        }
+      },
+      "CallList": {
+        "type": "object",
+        "properties": {
+          "calls": { "type": "array", "items": { "$ref": "#/components/schemas/Call" } },
+          "page": { "type": "integer", "example": 0 },
+          "page_size": { "type": "integer", "example": 50 },
+          "start": { "type": "integer", "example": 0 },
+          "end": { "type": "integer", "example": 0 },
+          "uri": { "type": "string" },
+          "first_page_uri": { "type": "string" },
+          "next_page_uri": { "type": ["string", "null"], "example": null },
+          "previous_page_uri": { "type": ["string", "null"], "example": null }
+        }
+      }
+    }
   }
 }
