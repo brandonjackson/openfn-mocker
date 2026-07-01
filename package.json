@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "description": "Configurable mock API server impersonating external systems for OpenFn workflow testing",
+  "packageManager": "pnpm@9.15.9",
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "start": "node dist/index.js",
