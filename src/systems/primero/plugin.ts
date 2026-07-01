@@ -63,7 +63,6 @@ function listCollection(
 
 const plugin: MockSystemPlugin = {
   name: 'primero',
-  defaultPort: 4017,
   specFile: 'primero.schema.json',
 
   async overrides(app: FastifyInstance, store: DataStore, _config: SystemConfig) {

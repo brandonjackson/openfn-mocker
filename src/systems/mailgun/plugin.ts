@@ -22,7 +22,6 @@ function firstRecipient(to: any): string | undefined {
 
 const plugin: MockSystemPlugin = {
   name: 'mailgun',
-  defaultPort: 4018,
   specFile: 'mailgun.openapi.json',
 
   async overrides(app: FastifyInstance, store: DataStore, config: SystemConfig) {

@@ -98,7 +98,6 @@ function fhirBundle(items: any[], type: string, port: number, req: FastifyReques
 
 const plugin: MockSystemPlugin = {
   name: 'openmrs',
-  defaultPort: 4012,
   specFile: 'openmrs.schema.json',
 
   overrides(app: FastifyInstance, store: DataStore, config: SystemConfig) {

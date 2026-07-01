@@ -61,10 +61,10 @@ export function parseAuth(headers: Record<string, any>): AuthInfo {
 
 /**
  * Fastify "plugin" (plain async function) that attaches `request.mockAuth` on
- * every request and never rejects. Apply it DIRECTLY to the root instance
- * (`await authPlugin(app)`) rather than via `app.register(...)`, so the hook is
- * not encapsulated and applies to all routes. createSystemServer does this for
- * you — per-system plugins do not need to call it.
+ * every request and never rejects. Apply it DIRECTLY to the instance
+ * (`await authPlugin(app)`) rather than via `app.register(...)`, so the hook
+ * applies to all routes on that instance. registerSystem does this for you —
+ * per-system plugins do not need to call it.
  */
 export const authPlugin = async (app: FastifyInstance): Promise<void> => {
   app.addHook('onRequest', async (request: FastifyRequest) => {

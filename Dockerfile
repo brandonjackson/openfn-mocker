@@ -19,5 +19,7 @@ COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/mock.config.yaml ./mock.config.yaml
 # The server reads spec JSON from specs/ at runtime.
 COPY --from=builder /app/specs ./specs
-EXPOSE 4000-4020
+# One shared port; every system is mounted at /<name> beneath it. Railway/PaaS
+# platforms inject $PORT, which the server honors over the config default (4000).
+EXPOSE 4000
 CMD ["node", "dist/index.js"]

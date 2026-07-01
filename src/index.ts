@@ -1,6 +1,6 @@
-import Fastify, { type FastifyInstance } from 'fastify';
+import Fastify from 'fastify';
 import { loadConfig } from './config.js';
-import { createSystemServer } from './server.js';
+import { registerSystem, fastifyServerOptions } from './server.js';
 import { plugins } from './systems/index.js';
 import { makeLogLevel } from './logger.js';
 import type { DataStore } from './store.js';
@@ -8,8 +8,7 @@ import type { MockSystemPlugin, SystemConfig } from './systems/types.js';
 
 interface RunningSystem {
   name: string;
-  port: number;
-  app: FastifyInstance;
+  mountPath: string;
   store: DataStore;
   plugin: MockSystemPlugin;
   config: SystemConfig;
@@ -19,61 +18,73 @@ async function main(): Promise<void> {
   const config = loadConfig();
   const running: RunningSystem[] = [];
 
+  const app = Fastify({
+    logger: { level: makeLogLevel(config.log_level) },
+    ...fastifyServerOptions,
+  });
+
+  // Mount every enabled system as an encapsulated plugin at /<name>. Each
+  // system keeps its real internal routes (e.g. dhis2's /api/...), so they
+  // become /dhis2/api/... on the one shared port — no cross-system collisions.
   for (const [name, sysConfig] of Object.entries(config.systems)) {
     if (!sysConfig.enabled) continue;
     const plugin = plugins[name];
     if (!plugin) continue; // e.g. salesforce placeholder — enabled but unimplemented
-    if (!Number.isFinite(sysConfig.port)) {
-      // eslint-disable-next-line no-console
-      console.warn(`Skipping "${name}": no valid port configured.`);
-      continue;
-    }
+    const mountPath = `/${name}`;
 
-    const { app, store } = await createSystemServer(plugin, sysConfig, {
-      logLevel: config.log_level,
-    });
-    await app.listen({ port: sysConfig.port, host: '0.0.0.0' });
-    running.push({ name, port: sysConfig.port, app, store, plugin, config: sysConfig });
+    await app.register(
+      async (instance) => {
+        const { store } = await registerSystem(instance, plugin, sysConfig, { mountPath });
+        running.push({ name, mountPath, store, plugin, config: sysConfig });
+      },
+      { prefix: mountPath }
+    );
   }
 
-  // Root admin server.
-  const admin = Fastify({
-    logger: { level: makeLogLevel(config.log_level) },
-    disableRequestLogging: true,
-  });
-  admin.get('/_admin/systems', async () =>
-    running.map((r) => ({ name: r.name, port: r.port, status: 'running' }))
+  // Friendly index at the root so hitting the bare domain lists what's mounted.
+  app.get('/', async () => ({
+    name: 'openfn-mocker',
+    systems: running
+      .map((r) => ({ name: r.name, path: r.mountPath }))
+      .sort((a, b) => a.name.localeCompare(b.name)),
+  }));
+
+  // Root admin API, aggregated across systems.
+  app.get('/_admin/systems', async () =>
+    running.map((r) => ({ name: r.name, path: r.mountPath, status: 'running' }))
   );
-  admin.post('/_admin/reset-all', async () => {
+  app.post('/_admin/reset-all', async () => {
     for (const r of running) {
       r.store.reset();
       r.plugin.seed(r.store, r.config);
     }
     return { ok: true, reset: running.map((r) => r.name) };
   });
-  await admin.listen({ port: config.admin_port, host: '0.0.0.0' });
 
-  printStartupTable(running, config.admin_port);
+  await app.listen({ port: config.port, host: '0.0.0.0' });
+
+  printStartupTable(running, config.port);
 
   let closing = false;
   const shutdown = async () => {
     if (closing) return;
     closing = true;
-    await Promise.allSettled([admin.close(), ...running.map((r) => r.app.close())]);
+    await app.close();
     process.exit(0);
   };
   process.on('SIGINT', shutdown);
   process.on('SIGTERM', shutdown);
 }
 
-function printStartupTable(running: RunningSystem[], adminPort: number): void {
+function printStartupTable(running: RunningSystem[], port: number): void {
+  const base = `http://localhost:${port}`;
   const lines = [
     '',
-    '  openfn-mocker running',
-    '  ' + '─'.repeat(34),
-    `  ${'admin'.padEnd(18)} http://localhost:${adminPort}`,
-    ...running.map((r) => `  ${r.name.padEnd(18)} http://localhost:${r.port}`),
-    '  ' + '─'.repeat(34),
+    `  openfn-mocker running on ${base}`,
+    '  ' + '─'.repeat(44),
+    ...running.map((r) => `  ${r.name.padEnd(16)} ${base}${r.mountPath}`),
+    `  ${'admin'.padEnd(16)} ${base}/_admin/systems`,
+    '  ' + '─'.repeat(44),
     '',
   ];
   // eslint-disable-next-line no-console
