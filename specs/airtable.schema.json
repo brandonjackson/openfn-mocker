@@ -1,0 +1,201 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Airtable Web API (focused mock subset)",
+    "version": "0.1.0",
+    "description": "Focused subset of the Airtable Web API used by the OpenFn airtable adaptor. Records wrap user fields under a `fields` object. Record ids are `rec` + 14 alphanumeric chars. List responses use a `{ records: [...], offset? }` envelope. Batch create/update/delete are limited to 10 records per request (422 otherwise)."
+  },
+  "servers": [{ "url": "http://localhost:4020" }],
+  "components": {
+    "schemas": {
+      "Record": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Airtable record id: 'rec' + 14 alphanumeric chars.",
+            "example": "recABC123DEF4567"
+          },
+          "createdTime": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2024-01-15T10:00:00.000Z"
+          },
+          "fields": {
+            "type": "object",
+            "description": "Arbitrary user-defined column values, keyed by field name.",
+            "additionalProperties": true,
+            "example": { "Name": "Jane Doe", "Status": "Active" }
+          }
+        },
+        "required": ["id", "createdTime", "fields"]
+      },
+      "RecordList": {
+        "type": "object",
+        "properties": {
+          "records": { "type": "array", "items": { "$ref": "#/components/schemas/Record" } },
+          "offset": {
+            "type": "string",
+            "description": "Opaque pagination cursor. Present only when more records exist.",
+            "example": "itrABC/recXYZ"
+          }
+        },
+        "required": ["records"]
+      },
+      "CreateSingle": {
+        "type": "object",
+        "properties": {
+          "fields": { "type": "object", "additionalProperties": true },
+          "typecast": { "type": "boolean" }
+        },
+        "required": ["fields"]
+      },
+      "CreateBatch": {
+        "type": "object",
+        "properties": {
+          "records": {
+            "type": "array",
+            "maxItems": 10,
+            "items": {
+              "type": "object",
+              "properties": { "fields": { "type": "object", "additionalProperties": true } }
+            }
+          },
+          "typecast": { "type": "boolean" }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "type": { "type": "string", "example": "INVALID_REQUEST_UNKNOWN" },
+              "message": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/v0/{baseId}/{tableName}": {
+      "get": {
+        "operationId": "listRecords",
+        "summary": "List records in a table",
+        "parameters": [
+          { "name": "baseId", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "tableName", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "pageSize", "in": "query", "schema": { "type": "integer", "maximum": 100 } },
+          { "name": "offset", "in": "query", "schema": { "type": "string" } },
+          { "name": "maxRecords", "in": "query", "schema": { "type": "integer" } },
+          { "name": "filterByFormula", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "A page of records",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/RecordList" } }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createRecords",
+        "summary": "Create a single record ({fields}) or up to 10 records ({records:[...]})",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  { "$ref": "#/components/schemas/CreateSingle" },
+                  { "$ref": "#/components/schemas/CreateBatch" }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The created record, or { records:[...] } for a batch",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Record" } }
+            }
+          },
+          "422": {
+            "description": "Invalid request (e.g. more than 10 records)",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Error" } }
+            }
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updateRecordsBatch",
+        "summary": "Update up to 10 records (merge fields)",
+        "responses": {
+          "200": {
+            "description": "Updated records",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/RecordList" } }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteRecordsBatch",
+        "summary": "Delete records by ?records[]=..",
+        "responses": { "200": { "description": "Deleted records" } }
+      }
+    },
+    "/v0/{baseId}/{tableName}/{recordId}": {
+      "get": {
+        "operationId": "getRecord",
+        "summary": "Retrieve a single record",
+        "responses": {
+          "200": {
+            "description": "The record",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Record" } }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Error" } }
+            }
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updateRecord",
+        "summary": "Update (merge fields of) a single record",
+        "responses": {
+          "200": {
+            "description": "The updated record",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Record" } }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "replaceRecord",
+        "summary": "Replace fields of a single record",
+        "responses": {
+          "200": {
+            "description": "The replaced record",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Record" } }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteRecord",
+        "summary": "Delete a single record",
+        "responses": { "200": { "description": "{ deleted: true, id }" } }
+      }
+    }
+  }
+}

@@ -1,0 +1,187 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Mailgun (mock subset)",
+    "version": "3.0.0",
+    "description": "Focused subset of the Mailgun v3 API used by the OpenFn mailgun adaptor."
+  },
+  "servers": [{ "url": "http://localhost:4018" }],
+  "paths": {
+    "/v3/{domain}/messages": {
+      "post": {
+        "operationId": "sendMessage",
+        "summary": "Send an email message",
+        "parameters": [
+          { "name": "domain", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": { "$ref": "#/components/schemas/SendMessageRequest" }
+            },
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/SendMessageRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Message queued",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SendMessageResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v3/{domain}/events": {
+      "get": {
+        "operationId": "listEvents",
+        "summary": "Retrieve events",
+        "parameters": [
+          { "name": "domain", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Event list",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/EventsResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v3/{domain}/stats/total": {
+      "get": {
+        "operationId": "getStatsTotal",
+        "summary": "Aggregate account statistics",
+        "parameters": [
+          { "name": "domain", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Statistics",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/StatsResponse" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SendMessageRequest": {
+        "type": "object",
+        "required": ["from", "to"],
+        "properties": {
+          "from": {
+            "type": "string",
+            "example": "Excited User <mailgun@sandbox-test.mailgun.org>"
+          },
+          "to": { "type": "string", "example": "recipient@example.org" },
+          "subject": { "type": "string", "example": "Hello" },
+          "text": { "type": "string", "example": "Testing some Mailgun awesomeness!" },
+          "html": { "type": "string", "example": "<h1>Testing</h1>" }
+        }
+      },
+      "SendMessageResponse": {
+        "type": "object",
+        "required": ["id", "message"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "<20240101000000.1.ABCDEF@sandbox-test.mailgun.org>"
+          },
+          "message": { "type": "string", "example": "Queued. Thank you." }
+        }
+      },
+      "Event": {
+        "type": "object",
+        "properties": {
+          "event": {
+            "type": "string",
+            "enum": [
+              "accepted",
+              "delivered",
+              "opened",
+              "clicked",
+              "bounced",
+              "failed",
+              "complained",
+              "unsubscribed"
+            ],
+            "example": "delivered"
+          },
+          "id": { "type": "string" },
+          "timestamp": { "type": "number", "example": 1704067200.0 },
+          "recipient": { "type": "string", "example": "recipient@example.org" },
+          "message": {
+            "type": "object",
+            "properties": {
+              "headers": {
+                "type": "object",
+                "properties": {
+                  "message-id": { "type": "string" },
+                  "from": { "type": "string" },
+                  "to": { "type": "string" },
+                  "subject": { "type": "string" }
+                }
+              }
+            }
+          },
+          "delivery-status": {
+            "type": "object",
+            "properties": {
+              "code": { "type": "integer", "example": 250 },
+              "message": { "type": "string" },
+              "description": { "type": "string" }
+            }
+          }
+        }
+      },
+      "EventsResponse": {
+        "type": "object",
+        "properties": {
+          "items": { "type": "array", "items": { "$ref": "#/components/schemas/Event" } },
+          "paging": {
+            "type": "object",
+            "properties": {
+              "first": { "type": "string" },
+              "last": { "type": "string" },
+              "next": { "type": "string" },
+              "previous": { "type": "string" }
+            }
+          }
+        }
+      },
+      "StatsResponse": {
+        "type": "object",
+        "properties": {
+          "start": { "type": "string" },
+          "end": { "type": "string" },
+          "resolution": { "type": "string", "example": "day" },
+          "stats": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "time": { "type": "string" },
+                "accepted": { "type": "object" },
+                "delivered": { "type": "object" },
+                "failed": { "type": "object" },
+                "opened": { "type": "object" }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

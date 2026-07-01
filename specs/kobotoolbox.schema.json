@@ -1,0 +1,185 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "KoboToolbox API v2 (mock subset)",
+    "version": "2.0.0",
+    "description": "Focused subset of the KoboToolbox v2 REST API (DRF-style) used by the OpenFn kobotoolbox adaptor. Assets are deployed survey forms; each asset has submissions (collected data)."
+  },
+  "servers": [{ "url": "http://localhost:4016" }],
+  "paths": {
+    "/api/v2/assets/": {
+      "get": {
+        "operationId": "listAssets",
+        "summary": "List assets (surveys)",
+        "parameters": [
+          { "name": "format", "in": "query", "required": false, "schema": { "type": "string", "enum": ["json"] } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of assets",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AssetList" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/assets/{uid}/": {
+      "get": {
+        "operationId": "getAsset",
+        "summary": "Retrieve a single asset",
+        "parameters": [
+          { "name": "uid", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "A single asset",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Asset" }
+              }
+            }
+          },
+          "404": { "description": "Not found" }
+        }
+      }
+    },
+    "/api/v2/assets/{uid}/data/": {
+      "get": {
+        "operationId": "listSubmissions",
+        "summary": "List submissions (collected data) for an asset",
+        "parameters": [
+          { "name": "uid", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "start", "in": "query", "required": false, "schema": { "type": "integer" } },
+          { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer" } },
+          { "name": "format", "in": "query", "required": false, "schema": { "type": "string", "enum": ["json"] } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of submissions",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SubmissionList" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/assets/{uid}/data/{id}/": {
+      "get": {
+        "operationId": "getSubmission",
+        "summary": "Retrieve a single submission",
+        "parameters": [
+          { "name": "uid", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "A single submission",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Submission" }
+              }
+            }
+          },
+          "404": { "description": "Not found" }
+        }
+      }
+    },
+    "/api/v2/assets/{uid}/submissions/": {
+      "post": {
+        "operationId": "createSubmission",
+        "summary": "Submit data for an asset",
+        "parameters": [
+          { "name": "uid", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/SubmissionRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Submission stored",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/CreateSubmissionResponse" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Asset": {
+        "type": "object",
+        "properties": {
+          "uid": { "type": "string", "example": "aKEj3xKFrZ5pDn" },
+          "name": { "type": "string", "example": "Household Survey Q1" },
+          "asset_type": { "type": "string", "enum": ["survey"], "example": "survey" },
+          "deployment__active": { "type": "boolean", "example": true },
+          "deployment__submission_count": { "type": "integer", "example": 142 },
+          "has_deployment": { "type": "boolean", "example": true },
+          "date_created": { "type": "string", "format": "date-time" },
+          "date_modified": { "type": "string", "format": "date-time" },
+          "owner__username": { "type": "string", "example": "fieldteam" },
+          "url": { "type": "string", "example": "http://localhost:4016/api/v2/assets/aKEj3xKFrZ5pDn/" }
+        }
+      },
+      "AssetList": {
+        "type": "object",
+        "properties": {
+          "count": { "type": "integer", "example": 3 },
+          "next": { "type": "string", "nullable": true },
+          "previous": { "type": "string", "nullable": true },
+          "results": { "type": "array", "items": { "$ref": "#/components/schemas/Asset" } }
+        }
+      },
+      "Submission": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "integer", "example": 12345 },
+          "_uuid": { "type": "string", "example": "aabbccdd-1122-3344-5566-778899aabbcc" },
+          "_submission_time": { "type": "string", "format": "date-time" },
+          "_submitted_by": { "type": "string", "example": "fieldworker1" },
+          "_xform_id_string": { "type": "string", "example": "aKEj3xKFrZ5pDn" }
+        },
+        "additionalProperties": true
+      },
+      "SubmissionList": {
+        "type": "object",
+        "properties": {
+          "count": { "type": "integer", "example": 5 },
+          "next": { "type": "string", "nullable": true },
+          "previous": { "type": "string", "nullable": true },
+          "results": { "type": "array", "items": { "$ref": "#/components/schemas/Submission" } }
+        }
+      },
+      "SubmissionRequest": {
+        "type": "object",
+        "description": "Either a bare survey object, or wrapped as { id, submission }.",
+        "properties": {
+          "id": { "type": "string", "example": "aKEj3xKFrZ5pDn" },
+          "submission": { "type": "object", "additionalProperties": true }
+        },
+        "additionalProperties": true
+      },
+      "CreateSubmissionResponse": {
+        "type": "object",
+        "properties": {
+          "message": { "type": "string", "example": "Successful submission." },
+          "_id": { "type": "integer", "example": 12346 },
+          "_uuid": { "type": "string" }
+        },
+        "additionalProperties": true
+      }
+    }
+  }
+}
