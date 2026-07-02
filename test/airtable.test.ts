@@ -172,4 +172,53 @@ describe('airtable', () => {
     const sorted = [...names].sort((x, y) => String(x).localeCompare(String(y)));
     expect(names).toEqual(sorted);
   });
+
+  it('POST /listRecords lists with params in the body (filter + sort)', async () => {
+    const { app } = await boot();
+    const res = await app.inject({
+      method: 'POST',
+      url: `${CONTACTS}/listRecords`,
+      payload: {
+        filterByFormula: "{Status} = 'Active'",
+        sort: [{ field: 'Name', direction: 'asc' }],
+      },
+    });
+    expect(res.statusCode).toBe(200);
+    const body = res.json();
+    expect(Array.isArray(body.records)).toBe(true);
+    expect(body.records.every((r: any) => r.fields.Status === 'Active')).toBe(true);
+    const names = body.records.map((r: any) => r.fields.Name);
+    expect(names).toEqual([...names].sort((x, y) => String(x).localeCompare(String(y))));
+  });
+
+  it('PATCH performUpsert updates a match and creates a miss', async () => {
+    const { app } = await boot();
+    const list = await app.inject({ method: 'GET', url: CONTACTS });
+    const existingName = list.json().records[0].fields.Name;
+
+    const res = await app.inject({
+      method: 'PATCH',
+      url: CONTACTS,
+      payload: {
+        performUpsert: { fieldsToMergeOn: ['Name'] },
+        records: [
+          { fields: { Name: existingName, Status: 'Upserted' } },
+          { fields: { Name: 'Brand New Upsert', Status: 'Lead' } },
+        ],
+      },
+    });
+    expect(res.statusCode).toBe(200);
+    const body = res.json();
+    expect(body.records.length).toBe(2);
+    expect(Array.isArray(body.updatedRecords)).toBe(true);
+    expect(Array.isArray(body.createdRecords)).toBe(true);
+    expect(body.updatedRecords.length).toBe(1);
+    expect(body.createdRecords.length).toBe(1);
+
+    // The matched record was updated in place (merged), the miss created new.
+    const updated = body.records.find((r: any) => r.fields.Name === existingName);
+    expect(updated.fields.Status).toBe('Upserted');
+    const created = body.records.find((r: any) => r.fields.Name === 'Brand New Upsert');
+    expect(body.createdRecords).toContain(created.id);
+  });
 });

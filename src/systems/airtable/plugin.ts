@@ -80,24 +80,27 @@ const plugin: MockSystemPlugin = {
 
     const err = (type: string, message: string) => ({ error: { type, message } });
 
-    // GET /v0/:baseId/:tableName — list with pagination / sort / filter.
-    app.get('/v0/:baseId/:tableName', async (req) => {
-      const query = (req.query ?? {}) as Record<string, any>;
-      let items = store.list(tableOf(req));
+    /**
+     * Airtable "select": filter / sort / paginate a table. Shared by
+     * GET /v0/:baseId/:tableName and POST /v0/:baseId/:tableName/listRecords
+     * (the latter takes the same params in the request body).
+     */
+    const selectRecords = (table: string, params: Record<string, any>): Record<string, any> => {
+      let items = store.list(table);
 
       // filterByFormula: best-effort equality, otherwise accepted + ignored.
-      const formula = query.filterByFormula;
+      const formula = params.filterByFormula;
       if (typeof formula === 'string' && formula.length > 0) {
         const parsed = parseSimpleFormula(formula);
         if (parsed) {
-          items = items.filter(
-            (r) => String(r?.fields?.[parsed.field] ?? '') === parsed.value
-          );
+          items = items.filter((r) => String(r?.fields?.[parsed.field] ?? '') === parsed.value);
         }
       }
 
-      // sort[0][field]=&sort[0][direction]=
-      const sorts = parseSorts(query);
+      // sort[0][field]=&sort[0][direction]= (or a sort:[{field,direction}] array in a POST body).
+      const sorts = Array.isArray(params.sort)
+        ? params.sort.map((s: any) => ({ field: String(s.field), dir: String(s.direction ?? 'asc').toLowerCase() }))
+        : parseSorts(params);
       if (sorts.length) {
         items = [...items].sort((ra, rb) => {
           for (const s of sorts) {
@@ -109,13 +112,13 @@ const plugin: MockSystemPlugin = {
       }
 
       // maxRecords caps the total set considered.
-      const maxRecords = query.maxRecords != null ? parseInt(String(query.maxRecords), 10) : undefined;
+      const maxRecords = params.maxRecords != null ? parseInt(String(params.maxRecords), 10) : undefined;
       if (maxRecords != null && !Number.isNaN(maxRecords)) items = items.slice(0, maxRecords);
 
       // Pagination: offset is a numeric cursor (start index) encoded as string.
-      const rawSize = query.pageSize != null ? parseInt(String(query.pageSize), 10) : 100;
+      const rawSize = params.pageSize != null ? parseInt(String(params.pageSize), 10) : 100;
       const pageSize = Number.isNaN(rawSize) ? 100 : Math.min(Math.max(rawSize, 1), 100);
-      const start = query.offset != null ? parseInt(String(query.offset), 10) : 0;
+      const start = params.offset != null ? parseInt(String(params.offset), 10) : 0;
       const safeStart = Number.isNaN(start) ? 0 : Math.max(start, 0);
 
       const page = items.slice(safeStart, safeStart + pageSize);
@@ -123,7 +126,18 @@ const plugin: MockSystemPlugin = {
       const result: Record<string, any> = { records: page };
       if (nextStart < items.length) result.offset = String(nextStart);
       return result;
-    });
+    };
+
+    // GET /v0/:baseId/:tableName — list with pagination / sort / filter.
+    app.get('/v0/:baseId/:tableName', async (req) =>
+      selectRecords(tableOf(req), (req.query ?? {}) as Record<string, any>)
+    );
+
+    // POST /v0/:baseId/:tableName/listRecords — same as GET list, params in body
+    // (used when the query string would be too long, e.g. a big filterByFormula).
+    app.post('/v0/:baseId/:tableName/listRecords', async (req) =>
+      selectRecords(tableOf(req), (req.body ?? {}) as Record<string, any>)
+    );
 
     // GET /v0/:baseId/:tableName/:recordId — single record.
     app.get('/v0/:baseId/:tableName/:recordId', async (req, reply) => {
@@ -166,6 +180,9 @@ const plugin: MockSystemPlugin = {
 
     // PATCH /v0/:baseId/:tableName — batch update (merge fields).
     // PUT /v0/:baseId/:tableName — batch replace (overwrite fields).
+    // With { performUpsert: { fieldsToMergeOn } } this becomes an upsert:
+    // records are matched by those fields (or by id), updated if found, else
+    // created; the response then also carries createdRecords / updatedRecords.
     const batchUpdate = (merge: boolean) => async (req: FastifyRequest, reply: any) => {
       const table = tableOf(req);
       const body = (req.body ?? {}) as Record<string, any>;
@@ -177,20 +194,51 @@ const plugin: MockSystemPlugin = {
           `Invalid request: cannot update more than ${MAX_BATCH} records at once`
         );
       }
+      const mergeOn: string[] | null = Array.isArray(body.performUpsert?.fieldsToMergeOn)
+        ? body.performUpsert.fieldsToMergeOn.map(String)
+        : null;
+
       const out: any[] = [];
+      const createdRecords: string[] = [];
+      const updatedRecords: string[] = [];
       for (const r of records) {
-        const id = r?.id != null ? String(r.id) : '';
-        const existing = store.get(table, id);
-        if (existing === undefined) continue;
-        const newFields = merge
-          ? { ...existing.fields, ...(r.fields ?? {}) }
-          : { ...(r.fields ?? {}) };
-        const updated = { ...existing, fields: newFields };
-        store.replace(table, id, updated);
-        out.push(updated);
+        let id = r?.id != null ? String(r.id) : '';
+        let existing = id ? store.get(table, id) : undefined;
+        if (existing === undefined && mergeOn) {
+          const match = store
+            .list(table)
+            .find((rec) =>
+              mergeOn.every((f) => String(rec.fields?.[f] ?? '') === String(r.fields?.[f] ?? ''))
+            );
+          if (match) {
+            existing = match;
+            id = match.id;
+          }
+        }
+        if (existing !== undefined) {
+          const newFields = merge
+            ? { ...existing.fields, ...(r.fields ?? {}) }
+            : { ...(r.fields ?? {}) };
+          const updated = { ...existing, fields: newFields };
+          store.replace(table, id, updated);
+          out.push(updated);
+          if (mergeOn) updatedRecords.push(id);
+        } else if (mergeOn) {
+          const rec = makeRecord((r && r.fields) ?? {});
+          store.create(table, rec.id, rec);
+          out.push(rec);
+          createdRecords.push(rec.id);
+        }
+        // No id match and no upsert requested: skip (matches Airtable, which
+        // errors on unknown ids; here we simply omit it from the response).
       }
       reply.code(200);
-      return { records: out };
+      const result: Record<string, any> = { records: out };
+      if (mergeOn) {
+        result.createdRecords = createdRecords;
+        result.updatedRecords = updatedRecords;
+      }
+      return result;
     };
     app.patch('/v0/:baseId/:tableName', batchUpdate(true));
     app.put('/v0/:baseId/:tableName', batchUpdate(false));

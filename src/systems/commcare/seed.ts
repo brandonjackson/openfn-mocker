@@ -138,4 +138,44 @@ export function seed(store: DataStore, config: SystemConfig): void {
     });
     store.create('forms', form.id, form);
   });
+
+  // Mobile workers (GET /a/{domain}/api/v0.5/user/).
+  const users = [
+    { id: 'user-fieldworker-01', username: `fieldworker01@${domain}.commcarehq.org`, first_name: 'Field', last_name: 'Worker' },
+    { id: 'user-clinic-02', username: `clinic02@${domain}.commcarehq.org`, first_name: 'Clinic', last_name: 'Nurse' },
+  ];
+  for (const u of users) {
+    store.create('user', u.id, {
+      id: u.id,
+      username: u.username,
+      first_name: u.first_name,
+      last_name: u.last_name,
+      email: u.username,
+      groups: [],
+      phone_numbers: [],
+      user_data: {},
+      resource_uri: `/a/${domain}/api/v0.5/user/${u.id}/`,
+    });
+  }
+
+  // Applications (GET /a/{domain}/api/v0.5/application/).
+  store.create('application', appId, {
+    id: appId,
+    name: 'Patient Registration App',
+    version: 12,
+    modules: [{ case_type: 'patient', forms: [{ name: { en: 'Patient Registration' }, xmlns: PATIENT_XMLNS }] }],
+    resource_uri: `/a/${domain}/api/v0.5/application/${appId}/`,
+  });
+
+  // Locations (GET /a/{domain}/api/v0.5/location/).
+  const locations = [
+    { location_id: 'loc-001', name: 'Ngelehun CHC', site_code: 'ngelehun', location_type: 'facility' },
+    { location_id: 'loc-002', name: 'Bo District', site_code: 'bo', location_type: 'district' },
+  ];
+  for (const loc of locations) {
+    store.create('location', loc.location_id, {
+      ...loc,
+      resource_uri: `/a/${domain}/api/v0.5/location/${loc.location_id}/`,
+    });
+  }
 }

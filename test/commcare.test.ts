@@ -105,4 +105,68 @@ describe('commcare (v0.5 Data API, Tastypie envelope)', () => {
     const list = await app.inject({ method: 'GET', url: FORM_LIST });
     expect(list.json().meta.total_count).toBe(4);
   });
+
+  it('generic get(): user / application / location resources use the Tastypie envelope', async () => {
+    const { app } = await boot();
+    const users = await app.inject({ method: 'GET', url: '/a/test-project/api/v0.5/user/' });
+    expect(users.statusCode).toBe(200);
+    expect(users.json().objects.length).toBe(2);
+    expect(users.json().meta.total_count).toBe(2);
+
+    const apps = await app.inject({ method: 'GET', url: '/a/test-project/api/v0.5/application/' });
+    expect(apps.json().objects[0].name).toBe('Patient Registration App');
+
+    const locs = await app.inject({ method: 'GET', url: '/a/test-project/api/v0.5/location/' });
+    expect(locs.json().objects.length).toBe(2);
+
+    const one = await app.inject({ method: 'GET', url: '/a/test-project/api/v0.5/location/loc-002/' });
+    expect(one.statusCode).toBe(200);
+    expect(one.json().name).toBe('Bo District');
+  });
+
+  it('generic post(): creates a record readable back via the same resource', async () => {
+    const { app } = await boot();
+    const create = await app.inject({
+      method: 'POST',
+      url: '/a/test-project/api/v0.5/user/',
+      payload: { id: 'user-new-99', username: 'new@test-project.commcarehq.org', first_name: 'New' },
+    });
+    expect(create.statusCode).toBe(201);
+    const list = await app.inject({ method: 'GET', url: '/a/test-project/api/v0.5/user/' });
+    expect(list.json().objects.some((u: any) => u.id === 'user-new-99')).toBe(true);
+  });
+
+  it('fetchReportData: GET configurablereportdata/:reportId/ returns report data', async () => {
+    const { app } = await boot();
+    const res = await app.inject({
+      method: 'GET',
+      url: '/a/test-project/api/v0.5/configurablereportdata/report-abc/?limit=10',
+    });
+    expect(res.statusCode).toBe(200);
+    const body = res.json();
+    expect(Array.isArray(body.data)).toBe(true);
+    expect(Array.isArray(body.columns)).toBe(true);
+    expect(body.total_records).toBe(3);
+  });
+
+  it('bulk upload endpoints accept multipart and ack with { code, message }', async () => {
+    const { app } = await boot();
+    const xls = await app.inject({
+      method: 'POST',
+      url: '/a/test-project/importer/excel/bulk_upload_api/',
+      headers: { 'content-type': 'multipart/form-data; boundary=xyz' },
+      payload: '--xyz\r\nContent-Disposition: form-data; name="file"\r\n\r\ndata\r\n--xyz--',
+    });
+    expect(xls.statusCode).toBe(200);
+    expect(xls.json().code).toBe(200);
+
+    const fixapi = await app.inject({
+      method: 'POST',
+      url: '/a/test-project/fixtures/fixapi/',
+      headers: { 'content-type': 'multipart/form-data; boundary=xyz' },
+      payload: '--xyz--',
+    });
+    expect(fixapi.statusCode).toBe(200);
+    expect(fixapi.json().message).toBeTruthy();
+  });
 });

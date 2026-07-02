@@ -47,9 +47,14 @@ const plugin: MockSystemPlugin = {
         id: messageId,
         from: body.from,
         to: body.to,
+        cc: body.cc,
+        bcc: body.bcc,
         subject: body.subject,
         text: body.text,
         html: body.html,
+        // The adaptor supports { attachment: { filename, data|url } }; record
+        // whether one was present without persisting the (possibly large) bytes.
+        hasAttachment: body.attachment != null,
         _createdAt: new Date().toISOString(),
       });
 
