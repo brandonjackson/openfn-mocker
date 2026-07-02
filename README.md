@@ -47,6 +47,19 @@ On boot you will see each enabled system and the path it is mounted at:
   ────────────────────────────────────────────
 ```
 
+## Browser sandbox
+
+Open the base URL (`http://localhost:4000`) in a browser and you get an
+interactive **API sandbox** instead of raw JSON: one card per enabled system
+with its OpenFn credential, a set of ready-to-run example requests (edit the
+path or body, hit **Run**, see the live response inline), and a free-form
+request console for anything else. It is a single self-contained page served
+from the mock itself, so every request runs against the real in-memory data.
+
+The root path content-negotiates: browsers (`Accept: text/html`) get the
+sandbox; API clients (`curl`, the OpenFn adaptors) still get the documented
+JSON index, so nothing about programmatic use changes.
+
 ## Deploying (Railway / single public domain)
 
 Because everything listens on one port, a PaaS that exposes a single port per
@@ -117,7 +130,7 @@ Every system is mounted at `/<name>` on the shared port. The credential URL fiel
 | twilio | `/twilio` | `baseUrl` | Basic (`sid:token`) | stable |
 | airtable | `/airtable` | `baseUrl` | Bearer | stable |
 
-Root admin routes (`/_admin/systems`, `/_admin/reset-all`) and a `GET /` index live on the shared port.
+Root admin routes (`/_admin/systems`, `/_admin/reset-all`) and a `GET /` index live on the shared port. Hitting `GET /` from a browser serves an interactive [API sandbox](#browser-sandbox); API clients get JSON.
 
 ### Auth is accept-all
 
@@ -177,7 +190,7 @@ Root routes on the shared port aggregate across systems:
 
 | Method | Path | Description |
 |--------|------|-------------|
-| GET | `/` | `{ name, systems: [{ name, path }] }`. |
+| GET | `/` | Browser (`Accept: text/html`): interactive API sandbox. API clients: `{ name, systems: [{ name, path }] }`. |
 | GET | `/_admin/systems` | `[{ name, path, status }]` for every mounted system. |
 | POST | `/_admin/reset-all` | Reset every enabled system's store. |
 
