@@ -62,9 +62,29 @@ const plugin: MockSystemPlugin = {
         sentAt: null,
       });
       if (body.MediaUrl != null) rec.num_media = '1';
+      // Optional Twilio send params the API accepts (adaptor sends To/From/Body,
+      // but the SDK/REST API also honor these).
+      if (body.MessagingServiceSid != null) rec.messaging_service_sid = String(body.MessagingServiceSid);
+      if (body.StatusCallback != null) rec.status_callback = String(body.StatusCallback);
       store.create('messages', rec.sid, rec);
       reply.code(201);
       return rec;
+    });
+
+    // GET single call — the account's Call resource by sid.
+    app.get('/2010-04-01/Accounts/:sid/Calls/:callSid.json', async (req, reply) => {
+      const callSid = String((req.params as Record<string, any>).callSid);
+      const call = store.get('calls', callSid);
+      if (call === undefined) {
+        reply.code(404);
+        return {
+          code: 20404,
+          message: 'The requested resource was not found',
+          more_info: 'https://www.twilio.com/docs/errors/20404',
+          status: 404,
+        };
+      }
+      return call;
     });
 
     // GET list — all messages for the account.

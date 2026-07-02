@@ -65,7 +65,31 @@ export function makeIncident(opts: {
   };
 }
 
-/** Seed 4 cases and 2 incidents. */
+/** Build a referral record (nested `data`, links to a case via record_id). */
+export function makeReferral(opts: {
+  caseRecordId: string;
+  transitioned_to: string;
+  transitioned_by?: string;
+  status?: string;
+  notes?: string;
+}): Record<string, any> {
+  const now = new Date();
+  return {
+    id: randomUUID(),
+    record_id: opts.caseRecordId,
+    record_type: 'case',
+    status: opts.status ?? 'in_progress',
+    created_at: now.toISOString(),
+    data: {
+      transitioned_to: opts.transitioned_to,
+      transitioned_by: opts.transitioned_by ?? 'caseworker1',
+      notes: opts.notes ?? '',
+      service_record_id: null,
+    },
+  };
+}
+
+/** Seed 4 cases, 2 incidents, referrals, and reference data (forms/lookups/locations). */
 export function seed(store: DataStore, _config: SystemConfig): void {
   const cases = [
     makeCase({
@@ -148,4 +172,52 @@ export function seed(store: DataStore, _config: SystemConfig): void {
   ];
 
   for (const inc of incidents) store.create('incidents', inc.id, inc);
+
+  // Referrals linked to seeded cases (getReferrals / withReferrals).
+  const referrals = [
+    makeReferral({ caseRecordId: cases[0].id, transitioned_to: 'social_worker2', notes: 'Home visit needed.' }),
+    makeReferral({ caseRecordId: cases[2].id, transitioned_to: 'health_worker1', notes: 'Medical assessment.' }),
+  ];
+  for (const ref of referrals) store.create('referrals', ref.id, ref);
+
+  // Forms (getForms).
+  const forms = [
+    { id: 1, unique_id: 'basic_identity', name: { en: 'Basic Identity' }, module_ids: ['primeromodule-cp'], parent_form: 'case' },
+    { id: 2, unique_id: 'family_details', name: { en: 'Family Details' }, module_ids: ['primeromodule-cp'], parent_form: 'case' },
+    { id: 3, unique_id: 'protection_concerns', name: { en: 'Protection Concerns' }, module_ids: ['primeromodule-cp'], parent_form: 'case' },
+  ];
+  for (const f of forms) store.create('forms', String(f.id), f);
+
+  // Lookups (getLookups).
+  const lookups = [
+    {
+      id: 1,
+      unique_id: 'lookup-risk-level',
+      name: { en: 'Risk Level' },
+      values: [
+        { id: 'high', display_text: { en: 'High' } },
+        { id: 'medium', display_text: { en: 'Medium' } },
+        { id: 'low', display_text: { en: 'Low' } },
+      ],
+    },
+    {
+      id: 2,
+      unique_id: 'lookup-protection-concerns',
+      name: { en: 'Protection Concerns' },
+      values: [
+        { id: 'neglect', display_text: { en: 'Neglect' } },
+        { id: 'abandonment', display_text: { en: 'Abandonment' } },
+        { id: 'sexual_abuse', display_text: { en: 'Sexual Abuse' } },
+      ],
+    },
+  ];
+  for (const l of lookups) store.create('lookups', String(l.id), l);
+
+  // Locations (getLocations).
+  const locations = [
+    { id: 1, code: 'SL', type: 'country', name: { en: 'Sierra Leone' }, admin_level: 0, hierarchy_path: 'SL' },
+    { id: 2, code: 'SL01', type: 'province', name: { en: 'Southern Province' }, admin_level: 1, hierarchy_path: 'SL.SL01' },
+    { id: 3, code: 'SL0101', type: 'district', name: { en: 'Bo' }, admin_level: 2, hierarchy_path: 'SL.SL01.SL0101' },
+  ];
+  for (const loc of locations) store.create('locations', String(loc.id), loc);
 }

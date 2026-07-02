@@ -172,7 +172,17 @@ Create (or edit) the credential for each adaptor and point its URL field at the 
 { "baseUrl": "http://localhost:4000/airtable", "apiKey": "mock-airtable-token", "baseId": "appABC123" }
 ```
 
-Each system implements the API slice OpenFn adaptors actually call (list, get, create, update, upsert, destroy) with the real envelope shapes, status codes, and ID formats, so responses are structurally indistinguishable from the live system.
+Each system implements the API surface its OpenFn adaptor actually calls (see [`openfn/adaptors`](https://github.com/OpenFn/adaptors)) with the real envelope shapes, status codes, and ID formats, so responses are structurally indistinguishable from the live system. Because several adaptors are *generic* clients (they build arbitrary paths rather than exposing one function per endpoint), those mocks cover a correspondingly broad surface:
+
+- **dhis2** — the new Tracker API (`POST/GET /api/tracker`), `/api/analytics`, `/api/schemas`, `/api/resourceTypes`, an optional `/api/{version}/` segment, and CRUD (list/get/create/PUT/PATCH/DELETE) for any resource type, alongside the classic tracker/metadata/dataValueSets endpoints.
+- **fhir** — searchset Bundles, reads, transaction/batch Bundles, plus the `/metadata` CapabilityStatement, resource `_history`, and a `Claim` for `getClaim()`.
+- **openmrs** — a generic REST API (any resource name, subresources like `patient/{uuid}/identifier`, POST-to-uuid updates, `?purge` delete, `startIndex`/`limit` paging), `/ws/rest/v1/session`, and a FHIR R4 module (Patient/Encounter/Observation/Condition).
+- **commcare** — the Tastypie `{ meta, objects }` Data API for any v0.5 resource (case/form/user/application/location), the configurable-report endpoint, the OpenRosa receiver, and the Excel/lookup-table bulk-upload endpoints.
+- **kobotoolbox** — `getForms` (`?asset_type=`), `getSubmissions` (`?query=`/`?sort=`), `getDeploymentInfo`, and generic `http.*` asset/data operations (create/update/delete, deploy, bulk data PATCH).
+- **primero** — token exchange, cases, case referrals (`GET/POST/PATCH .../referrals`), and the forms/lookups/locations reference data.
+- **airtable** — Airtable's Web API (used in OpenFn via the generic `http` adaptor): list (GET or `POST .../listRecords`), single/batch create, update, upsert (`performUpsert`), and delete.
+- **twilio / mailgun** — the single send operation each adaptor exposes (`POST .../Messages.json`, `POST /v3/{domain}/messages`), plus extra read endpoints (Twilio messages/calls, Mailgun events/stats) for convenience.
+- **http-generic** — a spec-less catch-all that answers any method/path, matching the generic `http` (`common`) adaptor.
 
 ## Admin API
 

@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 import type { FastifyInstance, FastifyRequest } from 'fastify';
 import type { MockSystemPlugin, SystemConfig } from '../types.js';
 import type { DataStore } from '../../store.js';
-import { seed, makeDisplayId } from './seed.js';
+import { seed, makeDisplayId, makeReferral } from './seed.js';
 
 /**
  * Primero (port 4017) — child protection case management.
@@ -43,6 +43,33 @@ function matchesQuery(record: any, query: string): boolean {
   return haystack.includes(query.toLowerCase());
 }
 
+/** Control params consumed by paging/search rather than used as field filters. */
+const CONTROL_PARAMS = new Set([
+  'query',
+  'per',
+  'page',
+  'fields',
+  'remote',
+  'scope',
+  'order',
+  'order_by',
+  'total',
+  'hierarchy',
+]);
+
+/** Match a record against a field=value filter (top-level or nested under data). */
+function matchesField(record: any, key: string, value: any): boolean {
+  const wanted = String(Array.isArray(value) ? value[0] : value);
+  const top = record?.[key];
+  if (top !== undefined && String(top) === wanted) return true;
+  const nested = record?.data?.[key];
+  if (nested !== undefined) {
+    if (Array.isArray(nested)) return nested.map(String).includes(wanted);
+    return String(nested) === wanted;
+  }
+  return false;
+}
+
 function listCollection(
   store: DataStore,
   collection: string,
@@ -55,6 +82,14 @@ function listCollection(
 
   let items = store.list(collection);
   if (query) items = items.filter((it) => matchesQuery(it, query));
+
+  // Any non-control query param acts as an exact field filter (case_id, sex,
+  // externalId fields for upsertCase, etc.).
+  for (const [key, value] of Object.entries(q)) {
+    if (CONTROL_PARAMS.has(key) || value === undefined || value === '') continue;
+    items = items.filter((it) => matchesField(it, key, value));
+  }
+
   const total = items.length;
   const start = (page - 1) * per;
   const pageItems = items.slice(start, start + per);
@@ -157,7 +192,50 @@ const plugin: MockSystemPlugin = {
       return { data: record };
     });
 
-    // --- Referrals ---
+    // --- Case referrals ---
+    // GET /api/v2/cases/:id/referrals — referrals for a case (getReferrals,
+    // withReferrals). Static 'referrals' after :id, so no clash with GET :id.
+    app.get('/api/v2/cases/:id/referrals', async (req) => {
+      const id = String((req.params as Record<string, any>).id);
+      const data = store.list('referrals', (r) => r.record_id === id);
+      return { data };
+    });
+
+    // POST /api/v2/cases/referrals — bulk referral (createReferrals). Body:
+    // { data: { ids: [caseId,...], transitioned_to, notes } }. Static
+    // 'referrals' wins over the :id param for this 4-segment path.
+    app.post('/api/v2/cases/referrals', async (req, reply) => {
+      const data = extractData(req.body);
+      const ids: any[] = Array.isArray(data.ids) ? data.ids : [];
+      const created = ids.map((caseId) => {
+        const ref = makeReferral({
+          caseRecordId: String(caseId),
+          transitioned_to: typeof data.transitioned_to === 'string' ? data.transitioned_to : 'unknown',
+          transitioned_by: (req.mockAuth as any)?.username,
+          notes: typeof data.notes === 'string' ? data.notes : '',
+        });
+        store.create('referrals', ref.id, ref);
+        return ref;
+      });
+      reply.code(200);
+      return { data: created };
+    });
+
+    // PATCH /api/v2/cases/:caseId/referrals/:id — update a single referral.
+    app.patch('/api/v2/cases/:caseId/referrals/:id', async (req, reply) => {
+      const id = String((req.params as Record<string, any>).id);
+      const existing = store.get('referrals', id);
+      if (existing === undefined) {
+        reply.code(404);
+        return { error: 'not found' };
+      }
+      const patch = extractData(req.body);
+      const merged = { ...existing, data: { ...(existing.data ?? {}), ...patch } };
+      store.replace('referrals', id, merged);
+      return { data: merged };
+    });
+
+    // --- Referrals (legacy convenience path) ---
     app.post('/api/v2/referrals', async (req, reply) => {
       const data = extractData(req.body);
       const id = randomUUID();
@@ -171,6 +249,14 @@ const plugin: MockSystemPlugin = {
       reply.code(200);
       return { data: record };
     });
+
+    // --- Reference data (getForms / getLookups / getLocations) ---
+    app.get('/api/v2/forms', async (req) => {
+      const data = listCollection(store, 'forms', req).data;
+      return { data };
+    });
+    app.get('/api/v2/lookups', async (req) => listCollection(store, 'lookups', req));
+    app.get('/api/v2/locations', async (req) => listCollection(store, 'locations', req));
   },
 
   seed,

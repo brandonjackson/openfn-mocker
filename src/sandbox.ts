@@ -65,7 +65,7 @@ export const SYSTEM_GUIDES: Record<string, SystemGuide> = {
     title: 'DHIS2',
     docs: 'https://docs.openfn.org/adaptors/packages/dhis2-docs',
     blurb:
-      'Aggregate + tracker health data. List responses carry a pager and a resource-typed array; writes return an ImportSummary envelope.',
+      'Aggregate + tracker health data. List responses carry a pager and a resource-typed array; writes return an ImportSummary envelope. The generic adaptor is fully covered: the new /api/tracker API, /api/analytics, /api/schemas, and CRUD for any resource (with an optional /api/{version}/ segment).',
     auth: 'Basic',
     credentialField: 'hostUrl',
     credential: { hostUrl: '{{ORIGIN}}/dhis2', username: 'admin', password: 'mock' },
@@ -100,6 +100,36 @@ export const SYSTEM_GUIDES: Record<string, SystemGuide> = {
           2
         ),
       },
+      {
+        method: 'POST',
+        path: '/api/tracker?importStrategy=CREATE_AND_UPDATE&async=false',
+        label: 'New Tracker API: import events/trackedEntities (bundleReport)',
+        body: JSON.stringify(
+          {
+            events: [
+              { program: 'IpHINAT79UW', programStage: 'A03MvHHogjR', orgUnit: 'DiszpKrYNg8', status: 'COMPLETED' },
+            ],
+          },
+          null,
+          2
+        ),
+      },
+      {
+        method: 'GET',
+        path: '/api/tracker/events',
+        label: 'Tracker export ({ instances, page, total })',
+      },
+      {
+        method: 'GET',
+        path: '/api/analytics?dimension=dx:fbfJHSPpUQD&dimension=pe:202401&dimension=ou:ImspTQPwCqd',
+        label: 'Analytics grid (headers + rows + metaData)',
+      },
+      { method: 'GET', path: '/api/schemas/dataElement', label: 'Metadata schema for a resource type' },
+      {
+        method: 'GET',
+        path: '/api/40/organisationUnits',
+        label: 'Optional API version segment (/api/{version}/…)',
+      },
     ],
   },
 
@@ -107,14 +137,17 @@ export const SYSTEM_GUIDES: Record<string, SystemGuide> = {
     title: 'FHIR (HAPI R4)',
     docs: 'https://docs.openfn.org/adaptors/packages/fhir-docs',
     blurb:
-      'HL7 FHIR R4 server. Searches return searchset Bundles, reads return the resource, and POST to the base runs a transaction/batch Bundle.',
+      'HL7 FHIR R4 server. Searches return searchset Bundles, reads return the resource, and POST to the base runs a transaction/batch Bundle. Also serves the /metadata CapabilityStatement, resource _history, and a Claim for getClaim().',
     auth: 'none / Bearer',
     credentialField: 'baseUrl',
     credential: { baseUrl: '{{ORIGIN}}/fhir', apiPath: '' },
     examples: [
+      { method: 'GET', path: '/metadata', label: 'CapabilityStatement (fhir get("metadata"))' },
       { method: 'GET', path: '/Patient', label: 'Search all patients (searchset Bundle)' },
       { method: 'GET', path: '/Patient/pat-1', label: 'Read one patient by id' },
+      { method: 'GET', path: '/Patient/pat-1/_history', label: 'Resource history Bundle' },
       { method: 'GET', path: '/Patient?name=Kamara', label: 'Search patients by name' },
+      { method: 'GET', path: '/Claim/claim-1', label: 'Read a Claim (fhir getClaim())' },
       { method: 'GET', path: '/Observation', label: 'Vital-sign observations' },
       {
         method: 'POST',
@@ -157,22 +190,29 @@ export const SYSTEM_GUIDES: Record<string, SystemGuide> = {
     title: 'OpenMRS',
     docs: 'https://docs.openfn.org/adaptors/packages/openmrs-docs',
     blurb:
-      'Medical record system exposed as REST ({ results: [] }) and a FHIR R4 module. The same seeded patients appear in both representations.',
+      'Medical record system exposed as a generic REST API ({ results, links }) and a FHIR R4 module. Any resource name works (with subresources like patient/{uuid}/identifier), updates POST to the uuid, and the same seeded patients appear in both representations.',
     auth: 'Basic',
     credentialField: 'instanceUrl',
     credential: { instanceUrl: '{{ORIGIN}}/openmrs', username: 'admin', password: 'mock' },
     examples: [
-      { method: 'GET', path: '/ws/rest/v1/patient', label: 'Patient list ({ results: [...] })' },
+      { method: 'GET', path: '/ws/rest/v1/session', label: 'Authenticated session' },
+      { method: 'GET', path: '/ws/rest/v1/patient', label: 'Patient list ({ results, links })' },
       { method: 'GET', path: '/ws/rest/v1/patient?q=Doe', label: 'Search by name / identifier' },
       {
         method: 'GET',
         path: '/ws/rest/v1/patient?v=ref',
         label: 'Reference representation (?v=ref)',
       },
+      { method: 'GET', path: '/ws/rest/v1/provider', label: 'Any resource name works (provider)' },
       {
         method: 'GET',
         path: '/ws/fhir2/R4/Patient',
         label: 'Same patients via the FHIR R4 module',
+      },
+      {
+        method: 'GET',
+        path: '/ws/fhir2/R4/Observation',
+        label: 'FHIR Observations (fhir.get("Observation"))',
       },
       {
         method: 'POST',
@@ -204,7 +244,7 @@ export const SYSTEM_GUIDES: Record<string, SystemGuide> = {
     title: 'CommCare HQ',
     docs: 'https://docs.openfn.org/adaptors/packages/commcare-docs',
     blurb:
-      'Mobile data collection. The domain-scoped Data API returns Tastypie { meta, objects } envelopes; the OpenRosa receiver ingests form XML.',
+      'Mobile data collection. The domain-scoped Data API returns Tastypie { meta, objects } envelopes for any resource (case, form, user, application, location); configurable reports and the OpenRosa form receiver are also served.',
     auth: 'Basic / apiKey header',
     credentialField: 'hostURL',
     credential: {
@@ -232,6 +272,12 @@ export const SYSTEM_GUIDES: Record<string, SystemGuide> = {
         label: 'Single case by case_id',
       },
       { method: 'GET', path: '/a/{{domain}}/api/v0.5/form/', label: 'Submitted forms' },
+      { method: 'GET', path: '/a/{{domain}}/api/v0.5/user/', label: 'Mobile workers (any v0.5 resource)' },
+      {
+        method: 'GET',
+        path: '/a/{{domain}}/api/v0.5/configurablereportdata/report-abc/',
+        label: 'Configurable report data (fetchReportData)',
+      },
       {
         method: 'POST',
         path: '/a/{{domain}}/receiver/',
@@ -252,12 +298,12 @@ export const SYSTEM_GUIDES: Record<string, SystemGuide> = {
     title: 'KoboToolbox',
     docs: 'https://docs.openfn.org/adaptors/packages/kobotoolbox-docs',
     blurb:
-      'Survey platform. Assets (forms) and their submissions use DRF { count, next, previous, results } envelopes; submission counts are live.',
+      'Survey platform. Assets (forms) and their submissions use DRF { count, next, previous, results } envelopes; submission counts are live. getForms, getSubmissions (?query=/?sort=), getDeploymentInfo and generic http.* asset/data operations are all covered.',
     auth: 'Token',
     credentialField: 'baseURL',
     credential: { baseURL: '{{ORIGIN}}/kobotoolbox', apiToken: 'mock-kobo-token' },
     examples: [
-      { method: 'GET', path: '/api/v2/assets/', label: 'Survey assets (DRF envelope)' },
+      { method: 'GET', path: '/api/v2/assets/?asset_type=survey', label: 'Survey assets (getForms)' },
       {
         method: 'GET',
         path: '/api/v2/assets/aHousehold01Q1/',
@@ -265,8 +311,18 @@ export const SYSTEM_GUIDES: Record<string, SystemGuide> = {
       },
       {
         method: 'GET',
+        path: '/api/v2/assets/aHousehold01Q1/deployment/',
+        label: 'Deployment info (getDeploymentInfo)',
+      },
+      {
+        method: 'GET',
         path: '/api/v2/assets/aHousehold01Q1/data/',
         label: 'Submissions for an asset',
+      },
+      {
+        method: 'GET',
+        path: '/api/v2/assets/aHousehold01Q1/data/?query={"water_source":"borehole"}',
+        label: 'Filter submissions (getSubmissions ?query=)',
       },
       {
         method: 'POST',
@@ -290,7 +346,7 @@ export const SYSTEM_GUIDES: Record<string, SystemGuide> = {
     title: 'Primero',
     docs: 'https://docs.openfn.org/adaptors/packages/primero-docs',
     blurb:
-      'Child-protection case management. Business fields nest under `data`; lists use { data, metadata }. POST /api/v2/tokens exchanges a bearer token.',
+      'Child-protection case management. Business fields nest under `data`; lists use { data, metadata }. POST /api/v2/tokens exchanges a bearer token. Cases, case referrals, and the forms/lookups/locations reference data are all served.',
     auth: 'Token via POST /api/v2/tokens',
     credentialField: 'baseUrl',
     credential: { baseUrl: '{{ORIGIN}}/primero', username: 'primero', password: 'mock' },
@@ -303,6 +359,9 @@ export const SYSTEM_GUIDES: Record<string, SystemGuide> = {
       },
       { method: 'GET', path: '/api/v2/cases', label: 'Case list ({ data, metadata })' },
       { method: 'GET', path: '/api/v2/cases?query=Jane', label: 'Free-text search over case data' },
+      { method: 'GET', path: '/api/v2/forms', label: 'Form definitions (getForms)' },
+      { method: 'GET', path: '/api/v2/lookups', label: 'Lookup values (getLookups)' },
+      { method: 'GET', path: '/api/v2/locations', label: 'Location hierarchy (getLocations)' },
       {
         method: 'POST',
         path: '/api/v2/cases',
@@ -329,7 +388,7 @@ export const SYSTEM_GUIDES: Record<string, SystemGuide> = {
     title: 'Airtable',
     docs: 'https://docs.openfn.org/adaptors',
     blurb:
-      'Spreadsheet-style base. User fields nest under `fields`; batch writes are capped at 10 records (11+ returns HTTP 422).',
+      "Spreadsheet-style base (Airtable's Web API, reached via OpenFn's generic http adaptor). User fields nest under `fields`; batch writes cap at 10 (11+ returns HTTP 422). Supports POST …/listRecords and PATCH/PUT performUpsert.",
     auth: 'Bearer',
     credentialField: 'baseUrl',
     credential: {
@@ -351,6 +410,16 @@ export const SYSTEM_GUIDES: Record<string, SystemGuide> = {
       },
       {
         method: 'POST',
+        path: '/v0/{{base_id}}/Contacts/listRecords',
+        label: 'List via POST (params in body)',
+        body: JSON.stringify(
+          { filterByFormula: "{Status} = 'Active'", sort: [{ field: 'Name', direction: 'asc' }] },
+          null,
+          2
+        ),
+      },
+      {
+        method: 'POST',
         path: '/v0/{{base_id}}/Contacts',
         label: 'Create a record',
         body: JSON.stringify(
@@ -369,6 +438,19 @@ export const SYSTEM_GUIDES: Record<string, SystemGuide> = {
               { fields: { Name: 'Batch One', Status: 'Active' } },
               { fields: { Name: 'Batch Two', Status: 'Lead' } },
             ],
+          },
+          null,
+          2
+        ),
+      },
+      {
+        method: 'PATCH',
+        path: '/v0/{{base_id}}/Contacts',
+        label: 'Upsert on a field (performUpsert.fieldsToMergeOn)',
+        body: JSON.stringify(
+          {
+            performUpsert: { fieldsToMergeOn: ['Email'] },
+            records: [{ fields: { Email: 'sandbox@example.org', Status: 'Active' } }],
           },
           null,
           2

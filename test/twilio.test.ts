@@ -123,4 +123,35 @@ describe('twilio', () => {
     expect(c.duration).toBe('45');
     expect(c.direction).toBe('outbound-api');
   });
+
+  it('GET single Call by sid returns the resource (404 when missing)', async () => {
+    const { app } = await makeServer();
+    const list = await app.inject({ method: 'GET', url: CALLS });
+    const sid = list.json().calls[0].sid;
+    const ok = await app.inject({
+      method: 'GET',
+      url: `/2010-04-01/Accounts/${SID}/Calls/${sid}.json`,
+    });
+    expect(ok.statusCode).toBe(200);
+    expect(ok.json().sid).toBe(sid);
+
+    const miss = await app.inject({
+      method: 'GET',
+      url: `/2010-04-01/Accounts/${SID}/Calls/CAmissing.json`,
+    });
+    expect(miss.statusCode).toBe(404);
+    expect(miss.json().code).toBe(20404);
+  });
+
+  it('POST accepts MessagingServiceSid and records it', async () => {
+    const { app } = await makeServer();
+    const res = await app.inject({
+      method: 'POST',
+      url: MESSAGES,
+      headers: { 'content-type': 'application/x-www-form-urlencoded' },
+      payload: 'To=%2B15558675399&Body=Hi&MessagingServiceSid=MGtest123',
+    });
+    expect(res.statusCode).toBe(201);
+    expect(res.json().messaging_service_sid).toBe('MGtest123');
+  });
 });

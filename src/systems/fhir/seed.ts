@@ -5,7 +5,7 @@ import type { SystemConfig } from '../types.js';
 export const DEFAULT_API_PATH = 'fhir';
 
 /** Resource types this mock knows how to seed. */
-export const RESOURCE_TYPES = ['Patient', 'Encounter', 'Observation', 'Condition'] as const;
+export const RESOURCE_TYPES = ['Patient', 'Encounter', 'Observation', 'Condition', 'Claim'] as const;
 
 /** Current instant as an ISO-8601 string (FHIR instant/dateTime). */
 export function nowIso(): string {
@@ -186,8 +186,41 @@ export function seed(store: DataStore, _config: SystemConfig): void {
     },
   ];
 
+  // A Claim so the fhir adaptor's getClaim() (GET Claim / Claim/:id) works.
+  const claims = [
+    {
+      resourceType: 'Claim',
+      id: 'claim-1',
+      meta: makeMeta(),
+      status: 'active',
+      type: {
+        coding: [
+          {
+            system: 'http://terminology.hl7.org/CodeSystem/claim-type',
+            code: 'institutional',
+            display: 'Institutional',
+          },
+        ],
+      },
+      use: 'claim',
+      patient: { reference: 'Patient/pat-1', display: 'Jane Doe' },
+      created: '2024-02-01',
+      provider: { display: 'Ngelehun CHC' },
+      priority: { coding: [{ code: 'normal' }] },
+      insurance: [{ sequence: 1, focal: true, coverage: { display: 'Mock National Health Insurance' } }],
+      item: [
+        {
+          sequence: 1,
+          productOrService: { text: 'Outpatient consultation' },
+          net: { value: 25, currency: 'USD' },
+        },
+      ],
+    },
+  ];
+
   for (const p of patients) store.create('Patient', p.id, p);
   for (const e of encounters) store.create('Encounter', e.id, e);
   for (const o of observations) store.create('Observation', o.id, o);
   for (const c of conditions) store.create('Condition', c.id, c);
+  for (const cl of claims) store.create('Claim', cl.id, cl);
 }

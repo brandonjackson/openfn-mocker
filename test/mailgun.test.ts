@@ -68,4 +68,26 @@ describe('mailgun (spec-driven reference)', () => {
     expect(Array.isArray(res.json().stats)).toBe(true);
     await app.close();
   });
+
+  it('records cc/bcc and flags attachments on the stored message', async () => {
+    const { app, store } = await createSystemServer(mailgun, config, { logLevel: 'silent' });
+    await app.inject({
+      method: 'POST',
+      url: MESSAGES,
+      payload: {
+        from: 'a@x.org',
+        to: 'primary@example.org',
+        cc: 'cc@example.org',
+        bcc: 'bcc@example.org',
+        subject: 'Attach',
+        text: 'B',
+        attachment: { filename: 'report.pdf', data: 'Zm9v' },
+      },
+    });
+    const stored = store.list('messages').find((m: any) => m.to === 'primary@example.org');
+    expect(stored.cc).toBe('cc@example.org');
+    expect(stored.bcc).toBe('bcc@example.org');
+    expect(stored.hasAttachment).toBe(true);
+    await app.close();
+  });
 });

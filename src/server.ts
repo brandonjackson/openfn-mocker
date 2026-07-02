@@ -6,11 +6,28 @@ import { authPlugin } from './auth.js';
 import { registerAdminRoutes } from './admin.js';
 import type { MockSystemPlugin, SystemConfig } from './systems/types.js';
 
+/**
+ * Collapse runs of `/` in a URL path (keeping the query string intact). Real
+ * deployments of these systems sit behind a proxy (nginx `merge_slashes on`),
+ * so some OpenFn adaptors build paths with doubled slashes (e.g. kobotoolbox
+ * emits `/api/v2//assets/{id}/data//`) and rely on the proxy normalizing them.
+ * Normalizing here keeps the mock faithful to that behavior.
+ */
+export function collapseSlashes(url: string): string {
+  const qIdx = url.indexOf('?');
+  const path = qIdx === -1 ? url : url.slice(0, qIdx);
+  const query = qIdx === -1 ? '' : url.slice(qIdx);
+  return path.replace(/\/{2,}/g, '/') + query;
+}
+
 /** Server-level Fastify options shared by the standalone and single-port modes. */
 export const fastifyServerOptions = {
   disableRequestLogging: true,
   ignoreTrailingSlash: true,
   bodyLimit: 10 * 1024 * 1024,
+  rewriteUrl(req: { url?: string }) {
+    return collapseSlashes(req.url ?? '/');
+  },
 } as const;
 
 /**
