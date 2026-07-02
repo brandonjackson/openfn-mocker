@@ -196,5 +196,54 @@ export function seed(store: DataStore, _config: SystemConfig): void {
       encounter: { uuid: encUuid },
       person: { uuid: patientRef.uuid, display: patientRef.display },
     });
+
+    // FHIR Observation mirroring the REST obs (so fhir.get('Observation') works).
+    store.create('fhir_observation', obsUuid, {
+      resourceType: 'Observation',
+      id: obsUuid,
+      status: 'final',
+      code: { coding: [{ system: 'http://loinc.org', code: '29463-7', display: 'Body weight' }], text: 'Weight (kg)' },
+      subject: { reference: `Patient/${patientRef.uuid}`, display: patientRef.display },
+      encounter: { reference: `Encounter/${encUuid}` },
+      effectiveDateTime: when,
+      valueQuantity: { value: weight, unit: 'kg', system: 'http://unitsofmeasure.org', code: 'kg' },
+    });
+  });
+
+  // A FHIR Condition for the first patient so fhir.get('Condition') returns data.
+  if (patientRefs[0]) {
+    const condUuid = randomUUID();
+    store.create('fhir_condition', condUuid, {
+      resourceType: 'Condition',
+      id: condUuid,
+      clinicalStatus: {
+        coding: [
+          { system: 'http://terminology.hl7.org/CodeSystem/condition-clinical', code: 'active', display: 'Active' },
+        ],
+      },
+      code: {
+        coding: [{ system: 'http://snomed.info/sct', code: '61462000', display: 'Malaria' }],
+        text: 'Malaria',
+      },
+      subject: { reference: `Patient/${patientRefs[0].uuid}`, display: patientRefs[0].display },
+    });
+  }
+
+  // A patient-identifier type so get('patientidentifiertype') returns data.
+  store.create('patientidentifiertype', OPENMRS_ID_TYPE_UUID, {
+    uuid: OPENMRS_ID_TYPE_UUID,
+    display: 'OpenMRS ID',
+    name: 'OpenMRS ID',
+    description: 'OpenMRS patient identifier',
+    required: false,
+  });
+
+  // A provider so get('provider') returns data.
+  const providerUuid = randomUUID();
+  store.create('provider', providerUuid, {
+    uuid: providerUuid,
+    display: 'Dr. Jane Provider',
+    person: { display: 'Jane Provider' },
+    identifier: 'PROV-001',
   });
 }

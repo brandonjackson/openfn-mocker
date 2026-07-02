@@ -151,4 +151,76 @@ describe('openmrs (REST + FHIR hybrid)', () => {
     expect(read.statusCode).toBe(200);
     expect(read.json().name[0].family).toBe('Newman');
   });
+
+  it('generic resource: get/create/update/destroy any resource name (relationship)', async () => {
+    const empty = await app.inject({ method: 'GET', url: '/ws/rest/v1/relationship' });
+    expect(empty.statusCode).toBe(200);
+    expect(empty.json().results).toEqual([]);
+
+    const create = await app.inject({
+      method: 'POST',
+      url: '/ws/rest/v1/relationship',
+      payload: { relationshipType: { display: 'Parent/Child' }, display: 'Jane is parent of John' },
+    });
+    expect(create.statusCode).toBe(201);
+    const uuid = create.json().uuid;
+
+    const list = await app.inject({ method: 'GET', url: '/ws/rest/v1/relationship' });
+    expect(list.json().results.length).toBe(1);
+
+    const upd = await app.inject({
+      method: 'POST',
+      url: `/ws/rest/v1/relationship/${uuid}`,
+      payload: { voided: true },
+    });
+    expect(upd.json().voided).toBe(true);
+
+    const del = await app.inject({ method: 'DELETE', url: `/ws/rest/v1/relationship/${uuid}?purge=true` });
+    expect(del.statusCode).toBe(204);
+  });
+
+  it('subresource create + list: patient/{uuid}/identifier', async () => {
+    const list = await app.inject({ method: 'GET', url: '/ws/rest/v1/patient' });
+    const uuid = list.json().results[0].uuid;
+
+    const create = await app.inject({
+      method: 'POST',
+      url: `/ws/rest/v1/patient/${uuid}/identifier`,
+      payload: { identifier: 'MRN-SUB-1', identifierType: { display: 'OpenMRS ID' } },
+    });
+    expect(create.statusCode).toBe(201);
+    expect(create.json().uuid).toBeTruthy();
+
+    const subs = await app.inject({ method: 'GET', url: `/ws/rest/v1/patient/${uuid}/identifier` });
+    expect(subs.statusCode).toBe(200);
+    expect(subs.json().results.length).toBe(1);
+    expect(subs.json().results[0].identifier).toBe('MRN-SUB-1');
+  });
+
+  it('GET /ws/rest/v1/session returns an authenticated session', async () => {
+    const res = await app.inject({ method: 'GET', url: '/ws/rest/v1/session' });
+    expect(res.statusCode).toBe(200);
+    expect(res.json().authenticated).toBe(true);
+    expect(res.json().user.username).toBeTruthy();
+  });
+
+  it('paginates lists with startIndex/limit and a next link', async () => {
+    const res = await app.inject({ method: 'GET', url: '/ws/rest/v1/concept?startIndex=0&limit=3' });
+    expect(res.statusCode).toBe(200);
+    const body = res.json();
+    expect(body.results.length).toBe(3);
+    expect(body.links.find((l: any) => l.rel === 'next')).toBeTruthy();
+  });
+
+  it('fhir.get Observation and Condition return seeded searchset Bundles', async () => {
+    const obs = await app.inject({ method: 'GET', url: '/ws/fhir2/R4/Observation' });
+    expect(obs.statusCode).toBe(200);
+    expect(obs.json().resourceType).toBe('Bundle');
+    expect(obs.json().total).toBeGreaterThanOrEqual(1);
+    expect(obs.json().entry[0].resource.resourceType).toBe('Observation');
+
+    const cond = await app.inject({ method: 'GET', url: '/ws/fhir2/R4/Condition' });
+    expect(cond.json().total).toBeGreaterThanOrEqual(1);
+    expect(cond.json().entry[0].resource.resourceType).toBe('Condition');
+  });
 });

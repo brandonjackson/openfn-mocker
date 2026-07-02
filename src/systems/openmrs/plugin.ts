@@ -7,27 +7,18 @@ import { seed } from './seed.js';
 /**
  * OpenMRS (port 4012) — a REST + FHIR R4 hybrid.
  *
- * The endpoints are not plain CRUD (the OpenMRS REST API uses a { results: [] }
- * list envelope, a ?v=ref|default|full verbosity switch, ?q= search, updates via
- * POST /{uuid} rather than PATCH, and 204 on DELETE; the FHIR module returns
- * searchset Bundles + resources), so routes are registered as custom handlers.
- * The FHIR Patients/Encounters are seeded from the same records as their REST
- * counterparts (see seed.ts) so the two representations stay in sync.
+ * The OpenFn openmrs adaptor is a GENERIC REST wrapper: get/create/update/upsert/
+ * destroy take a resource path (e.g. 'patient', 'patient/{uuid}',
+ * 'patient/{uuid}/identifier') and prepend /ws/rest/v1/. Updates are POST-to-uuid
+ * (not PATCH), delete is DELETE (?purge for hard delete), lists are the
+ * { results, links } envelope with ?v=ref|default|full and ?q= search plus
+ * startIndex/limit pagination. Because any resource name is valid, the REST API
+ * is served by a single wildcard dispatcher (avoids router static-vs-param
+ * backtracking) rather than a fixed route table. The fhir.* namespace
+ * (fhir.get) reads /ws/fhir2/R4/{type} and returns searchset Bundles; the FHIR
+ * Patients/Encounters/Observations are seeded from the same records as their
+ * REST counterparts (see seed.ts) so the representations stay in sync.
  */
-
-/** OpenMRS REST resources exposed under /ws/rest/v1/{resource}. */
-const REST_RESOURCES = [
-  'patient',
-  'person',
-  'encounter',
-  'obs',
-  'concept',
-  'location',
-  'encountertype',
-] as const;
-
-/** REST resources that accept writes (create/update/delete) in this mock. */
-const WRITABLE = new Set(['patient', 'person', 'encounter', 'obs', 'concept']);
 
 function restNotFound(): Record<string, any> {
   return {
@@ -60,6 +51,12 @@ function toRef(item: any, resource: string, port: number): Record<string, any> {
 /** Case-insensitive substring match against the record (name/identifier/display). */
 function matchesQuery(item: any, q: string): boolean {
   return JSON.stringify(item).toLowerCase().includes(q.toLowerCase());
+}
+
+/** Read a non-negative integer query param, falling back to `fallback`. */
+function intParam(value: unknown, fallback: number): number {
+  const n = typeof value === 'string' ? parseInt(value, 10) : NaN;
+  return Number.isFinite(n) && n >= 0 ? n : fallback;
 }
 
 /** Derive a display string for a freshly-created REST record. */
@@ -96,6 +93,14 @@ function fhirBundle(items: any[], type: string, port: number, req: FastifyReques
   };
 }
 
+/** Split a wildcard param into non-empty path segments. */
+function segmentsOf(req: FastifyRequest): string[] {
+  return String((req.params as Record<string, any>)['*'] ?? '')
+    .split('?')[0]
+    .split('/')
+    .filter(Boolean);
+}
+
 const plugin: MockSystemPlugin = {
   name: 'openmrs',
   specFile: 'openmrs.schema.json',
@@ -103,72 +108,145 @@ const plugin: MockSystemPlugin = {
   overrides(app: FastifyInstance, store: DataStore, config: SystemConfig) {
     const port = config.port;
 
-    // ---- OpenMRS REST API (/ws/rest/v1/{resource}) ----
-    for (const resource of REST_RESOURCES) {
-      const base = `/ws/rest/v1/${resource}`;
+    // ---- Shared REST helpers -------------------------------------------
 
-      // List (with ?q= search and ?v=ref|default|full verbosity).
-      app.get(base, async (req: FastifyRequest) => {
-        const { q, v } = req.query as Record<string, string | undefined>;
-        let items = store.list(resource);
-        if (q) items = items.filter((it) => matchesQuery(it, q));
-        if (v === 'ref') items = items.map((it) => toRef(it, resource, port));
-        return { results: items };
-      });
-
-      // Get single (respects ?v=ref).
-      app.get(`${base}/:uuid`, async (req: FastifyRequest, reply: FastifyReply) => {
-        const { uuid } = req.params as Record<string, string>;
-        const item = store.get(resource, uuid);
-        if (item === undefined) {
-          reply.code(404);
-          return restNotFound();
-        }
-        const { v } = req.query as Record<string, string | undefined>;
-        return v === 'ref' ? toRef(item, resource, port) : item;
-      });
-
-      if (WRITABLE.has(resource)) {
-        // Create -> 201 with the created object (generated uuid).
-        app.post(base, async (req: FastifyRequest, reply: FastifyReply) => {
-          const body = (req.body ?? {}) as Record<string, any>;
-          const uuid = typeof body.uuid === 'string' && body.uuid ? body.uuid : randomUUID();
-          const record: Record<string, any> = { ...body, uuid };
-          record.display = deriveDisplay(resource, record);
-          store.create(resource, uuid, record);
-          reply.code(201);
-          return record;
-        });
-
-        // Update via POST /{uuid} (shallow merge), OpenMRS-style.
-        app.post(`${base}/:uuid`, async (req: FastifyRequest, reply: FastifyReply) => {
-          const { uuid } = req.params as Record<string, string>;
-          const patch = (req.body ?? {}) as Record<string, any>;
-          const updated = store.update(resource, uuid, patch);
-          if (updated === undefined) {
-            reply.code(404);
-            return restNotFound();
-          }
-          return updated;
-        });
-
-        // Delete -> 204 No Content.
-        app.delete(`${base}/:uuid`, async (req: FastifyRequest, reply: FastifyReply) => {
-          const { uuid } = req.params as Record<string, string>;
-          if (!store.destroy(resource, uuid)) {
-            reply.code(404);
-            return restNotFound();
-          }
-          reply.code(204);
-          return null;
-        });
+    /** Build a { results, links } list envelope with ?q=, ?v=ref, paging. */
+    const listEnvelope = (resource: string, req: FastifyRequest): Record<string, any> => {
+      const { q, v } = req.query as Record<string, string | undefined>;
+      let items = store.list(resource);
+      if (q) items = items.filter((it) => matchesQuery(it, q));
+      const total = items.length;
+      const startIndex = intParam((req.query as any).startIndex, 0);
+      const limit = intParam((req.query as any).limit, 50);
+      let page = items.slice(startIndex, startIndex + limit);
+      if (v === 'ref') page = page.map((it) => toRef(it, resource, port));
+      const body: Record<string, any> = { results: page };
+      const links: any[] = [];
+      const base = `http://localhost:${port}/ws/rest/v1/${resource}`;
+      if (startIndex + limit < total) {
+        links.push({ rel: 'next', uri: `${base}?startIndex=${startIndex + limit}&limit=${limit}` });
       }
-    }
+      if (startIndex > 0) {
+        links.push({ rel: 'prev', uri: `${base}?startIndex=${Math.max(0, startIndex - limit)}&limit=${limit}` });
+      }
+      if (links.length) body.links = links;
+      return body;
+    };
 
-    // ---- FHIR R4 module (/ws/fhir2/R4/{Patient|Encounter}) ----
-    const fhirResources: Array<{ type: 'Patient' | 'Encounter'; collection: string }> = [
+    const getOne = (
+      collection: string,
+      uuid: string,
+      req: FastifyRequest,
+      reply: FastifyReply,
+      display = collection
+    ): any => {
+      const item = store.get(collection, uuid);
+      if (item === undefined) {
+        reply.code(404);
+        return restNotFound();
+      }
+      const { v } = req.query as Record<string, string | undefined>;
+      return v === 'ref' ? toRef(item, display, port) : item;
+    };
+
+    const createIn = (resource: string, body: any, reply: FastifyReply): any => {
+      const src = (body ?? {}) as Record<string, any>;
+      const uuid = typeof src.uuid === 'string' && src.uuid ? src.uuid : randomUUID();
+      const record: Record<string, any> = { ...src, uuid };
+      record.display = deriveDisplay(resource, record);
+      store.create(resource, uuid, record);
+      reply.code(201);
+      return record;
+    };
+
+    const updateIn = (collection: string, uuid: string, body: any, reply: FastifyReply): any => {
+      const updated = store.update(collection, uuid, (body ?? {}) as Record<string, any>);
+      if (updated === undefined) {
+        reply.code(404);
+        return restNotFound();
+      }
+      return updated;
+    };
+
+    const deleteIn = (collection: string, uuid: string, reply: FastifyReply): any => {
+      if (!store.destroy(collection, uuid)) {
+        reply.code(404);
+        return restNotFound();
+      }
+      reply.code(204);
+      return null;
+    };
+
+    // ---- Session (GET /ws/rest/v1/session) -----------------------------
+    // Handled inside the wildcard dispatcher below (segs === ['session']).
+    const sessionBody = () => ({
+      authenticated: true,
+      sessionId: 'mock-openmrs-session',
+      locale: 'en_GB',
+      user: {
+        uuid: '61bc0a0a-0000-4000-8000-000000000001',
+        display: (config.username as string) || 'admin',
+        username: (config.username as string) || 'admin',
+      },
+    });
+
+    // ---- OpenMRS REST API (/ws/rest/v1/**) -----------------------------
+    // A single wildcard dispatcher covers every resource, subresource, id and
+    // verb the generic adaptor can build.
+
+    app.get('/ws/rest/v1/*', async (req, reply) => {
+      const segs = segmentsOf(req);
+      if (segs.length === 0) return { results: [] };
+      if (segs.length === 1) {
+        if (segs[0] === 'session') return sessionBody();
+        return listEnvelope(segs[0], req);
+      }
+      if (segs.length === 2) return getOne(segs[0], segs[1], req, reply, segs[0]);
+      // Subresource list: /{resource}/{uuid}/{sub}
+      if (segs.length === 3) {
+        return { results: store.list(`${segs[0]}:${segs[1]}:${segs[2]}`) };
+      }
+      // Subresource item: /{resource}/{uuid}/{sub}/{subId}
+      const coll = `${segs[0]}:${segs[1]}:${segs[2]}`;
+      return getOne(coll, segs[3], req, reply, `${segs[0]}/${segs[1]}/${segs[2]}`);
+    });
+
+    app.post('/ws/rest/v1/*', async (req, reply) => {
+      const segs = segmentsOf(req);
+      if (segs.length === 1) return createIn(segs[0], req.body, reply);
+      if (segs.length === 2) return updateIn(segs[0], segs[1], req.body, reply);
+      // Subresource create: /{resource}/{uuid}/{sub}
+      if (segs.length === 3) {
+        const coll = `${segs[0]}:${segs[1]}:${segs[2]}`;
+        const body = (req.body ?? {}) as Record<string, any>;
+        const uuid = typeof body.uuid === 'string' && body.uuid ? body.uuid : randomUUID();
+        const record = { ...body, uuid };
+        store.create(coll, uuid, record);
+        reply.code(201);
+        return record;
+      }
+      // Subresource update: /{resource}/{uuid}/{sub}/{subId}
+      const coll = `${segs[0]}:${segs[1]}:${segs[2]}`;
+      return updateIn(coll, segs[3], req.body, reply);
+    });
+
+    app.delete('/ws/rest/v1/*', async (req, reply) => {
+      const segs = segmentsOf(req);
+      if (segs.length === 2) return deleteIn(segs[0], segs[1], reply);
+      if (segs.length === 4) {
+        const coll = `${segs[0]}:${segs[1]}:${segs[2]}`;
+        return deleteIn(coll, segs[3], reply);
+      }
+      reply.code(404);
+      return restNotFound();
+    });
+
+    // ---- FHIR R4 module (/ws/fhir2/R4/{Type}) --------------------------
+    const fhirResources: Array<{ type: string; collection: string }> = [
       { type: 'Patient', collection: 'fhir_patient' },
       { type: 'Encounter', collection: 'fhir_encounter' },
+      { type: 'Observation', collection: 'fhir_observation' },
+      { type: 'Condition', collection: 'fhir_condition' },
     ];
 
     for (const { type, collection } of fhirResources) {

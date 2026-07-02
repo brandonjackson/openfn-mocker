@@ -142,4 +142,76 @@ describe('primero (token-exchange, nested data envelope)', () => {
     const res = await app.inject({ method: 'GET', url: '/api/v2/cases/does-not-exist' });
     expect(res.statusCode).toBe(404);
   });
+
+  it('filters cases by an exact field (case_id) for upsert/getReferrals lookups', async () => {
+    const app = await makeApp();
+    const all = await app.inject({ method: 'GET', url: '/api/v2/cases' });
+    const target = all.json().data[0];
+    const res = await app.inject({
+      method: 'GET',
+      url: `/api/v2/cases?case_id=${encodeURIComponent(target.case_id)}`,
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.json().data.length).toBe(1);
+    expect(res.json().data[0].case_id).toBe(target.case_id);
+  });
+
+  it('GET /api/v2/cases/:id/referrals returns referrals for that case', async () => {
+    const app = await makeApp();
+    const cases = await app.inject({ method: 'GET', url: '/api/v2/cases' });
+    // The first seeded case has a seeded referral.
+    const withRef = cases.json().data.find((c: any) => c.case_id.endsWith('-001'));
+    const res = await app.inject({ method: 'GET', url: `/api/v2/cases/${withRef.id}/referrals` });
+    expect(res.statusCode).toBe(200);
+    expect(Array.isArray(res.json().data)).toBe(true);
+    expect(res.json().data.length).toBeGreaterThanOrEqual(1);
+    expect(res.json().data[0].data.transitioned_to).toBeTruthy();
+  });
+
+  it('POST /api/v2/cases/referrals creates a referral per case id', async () => {
+    const app = await makeApp();
+    const cases = await app.inject({ method: 'GET', url: '/api/v2/cases' });
+    const ids = cases.json().data.slice(0, 2).map((c: any) => c.id);
+    const res = await app.inject({
+      method: 'POST',
+      url: '/api/v2/cases/referrals',
+      payload: { data: { ids, transitioned_to: 'primero_cp', notes: 'bulk transfer' } },
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.json().data.length).toBe(2);
+    expect(res.json().data[0].data.transitioned_to).toBe('primero_cp');
+
+    // Each new referral is now readable under its case.
+    const check = await app.inject({ method: 'GET', url: `/api/v2/cases/${ids[1]}/referrals` });
+    expect(check.json().data.some((r: any) => r.data.transitioned_to === 'primero_cp')).toBe(true);
+  });
+
+  it('PATCH /api/v2/cases/:caseId/referrals/:id updates a referral', async () => {
+    const app = await makeApp();
+    const cases = await app.inject({ method: 'GET', url: '/api/v2/cases' });
+    const withRef = cases.json().data.find((c: any) => c.case_id.endsWith('-001'));
+    const refs = await app.inject({ method: 'GET', url: `/api/v2/cases/${withRef.id}/referrals` });
+    const ref = refs.json().data[0];
+    const res = await app.inject({
+      method: 'PATCH',
+      url: `/api/v2/cases/${withRef.id}/referrals/${ref.id}`,
+      payload: { data: { notes: 'updated note' } },
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.json().data.data.notes).toBe('updated note');
+  });
+
+  it('getForms / getLookups / getLocations return seeded reference data', async () => {
+    const app = await makeApp();
+    const forms = await app.inject({ method: 'GET', url: '/api/v2/forms' });
+    expect(forms.statusCode).toBe(200);
+    expect(forms.json().data.length).toBeGreaterThanOrEqual(3);
+
+    const lookups = await app.inject({ method: 'GET', url: '/api/v2/lookups' });
+    expect(lookups.json().data.length).toBeGreaterThanOrEqual(2);
+    expect(lookups.json().data[0].values.length).toBeGreaterThanOrEqual(1);
+
+    const locations = await app.inject({ method: 'GET', url: '/api/v2/locations?per=10&page=1' });
+    expect(locations.json().data.length).toBeGreaterThanOrEqual(3);
+  });
 });

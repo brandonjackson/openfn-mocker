@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import type { MockSystemPlugin, SystemConfig } from '../types.js';
 import type { DataStore } from '../../store.js';
-import { seed, makeMeta, nowIso, DEFAULT_API_PATH } from './seed.js';
+import { seed, makeMeta, nowIso, DEFAULT_API_PATH, RESOURCE_TYPES } from './seed.js';
 
 /**
  * FHIR (HAPI R4) — port 4013. Auth is none/Bearer (accept-all, handled by
@@ -28,6 +28,40 @@ function operationOutcome(
   return {
     resourceType: 'OperationOutcome',
     issue: [{ severity, code, diagnostics }],
+  };
+}
+
+/**
+ * Build a minimal-but-faithful R4 CapabilityStatement listing the resource types
+ * this mock serves. The fhir adaptor reaches this via `get('metadata')`.
+ */
+function capabilityStatement(baseUrl: string): Record<string, any> {
+  const interactions = ['read', 'vread', 'search-type', 'create', 'update', 'delete', 'history-instance'];
+  return {
+    resourceType: 'CapabilityStatement',
+    status: 'active',
+    date: nowIso(),
+    publisher: 'openfn-mocker',
+    kind: 'instance',
+    software: { name: 'openfn-mocker FHIR', version: '1.0.0' },
+    implementation: { description: 'openfn-mocker mock FHIR R4 server', url: baseUrl },
+    fhirVersion: '4.0.1',
+    format: ['application/fhir+json', 'json'],
+    rest: [
+      {
+        mode: 'server',
+        interaction: [{ code: 'transaction' }, { code: 'batch' }],
+        resource: RESOURCE_TYPES.map((type) => ({
+          type,
+          interaction: interactions.map((code) => ({ code })),
+          versioning: 'versioned',
+          searchParam: [
+            { name: '_id', type: 'token' },
+            { name: '_lastUpdated', type: 'date' },
+          ],
+        })),
+      },
+    ],
   };
 }
 
@@ -204,6 +238,11 @@ const plugin: MockSystemPlugin = {
     // POST /fhir and POST /fhir/  (transaction/batch Bundle).
     app.post(apiSeg || '/', async (req, reply) => handleBundle(req, reply));
 
+    // --- Capability statement -------------------------------------------
+    // GET /fhir/metadata -> CapabilityStatement (fhir adaptor: get('metadata')).
+    // Static 'metadata' takes precedence over the :resourceType param route.
+    app.get(`${apiSeg}/metadata`, async () => capabilityStatement(baseUrl));
+
     // --- Search ----------------------------------------------------------
     // POST /fhir/:resourceType/_search  (static segment wins over :id).
     app.post(`${apiSeg}/:resourceType/_search`, async (req) => {
@@ -215,6 +254,52 @@ const plugin: MockSystemPlugin = {
     app.get(`${apiSeg}/:resourceType`, async (req) => {
       const { resourceType } = req.params as Record<string, any>;
       return doSearch(req, resourceType);
+    });
+
+    // --- History ---------------------------------------------------------
+    // GET /fhir/:resourceType/:id/_history -> history Bundle. The store keeps
+    // only the current version, so history has a single entry (the current one).
+    const historyBundle = (resourceType: string, resource: any): Record<string, any> => {
+      const versionId = String(resource?.meta?.versionId ?? '1');
+      return {
+        resourceType: 'Bundle',
+        type: 'history',
+        total: 1,
+        entry: [
+          {
+            fullUrl: fullUrl(resourceType, resource.id),
+            resource,
+            request: { method: 'PUT', url: `${resourceType}/${resource.id}` },
+            response: {
+              status: '200 OK',
+              etag: `W/"${versionId}"`,
+              lastModified: resource?.meta?.lastUpdated ?? nowIso(),
+            },
+          },
+        ],
+      };
+    };
+
+    app.get(`${apiSeg}/:resourceType/:id/_history`, async (req, reply) => {
+      const { resourceType, id } = req.params as Record<string, any>;
+      const found = store.get(resourceType, id);
+      if (found === undefined) {
+        reply.code(404);
+        return operationOutcome('error', 'not-found', `Resource ${resourceType}/${id} not found`);
+      }
+      return historyBundle(resourceType, found);
+    });
+
+    // GET /fhir/:resourceType/:id/_history/:vid -> a specific version (mock
+    // keeps only the current one, so any vid returns it).
+    app.get(`${apiSeg}/:resourceType/:id/_history/:vid`, async (req, reply) => {
+      const { resourceType, id } = req.params as Record<string, any>;
+      const found = store.get(resourceType, id);
+      if (found === undefined) {
+        reply.code(404);
+        return operationOutcome('error', 'not-found', `Resource ${resourceType}/${id} not found`);
+      }
+      return found;
     });
 
     // --- Read ------------------------------------------------------------

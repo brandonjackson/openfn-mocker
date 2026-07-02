@@ -176,11 +176,60 @@ describe('fhir (HAPI R4)', () => {
     expect(read.statusCode).toBe(200);
   });
 
-  it('seeds Encounter, Observation and Condition collections', async () => {
+  it('seeds Encounter, Observation, Condition and Claim collections', async () => {
     const { store } = await makeApp();
     expect(store.count('Patient')).toBe(3);
     expect(store.count('Encounter')).toBe(2);
     expect(store.count('Observation')).toBe(2);
     expect(store.count('Condition')).toBe(1);
+    expect(store.count('Claim')).toBe(1);
+  });
+
+  it('GET /fhir/metadata returns a CapabilityStatement', async () => {
+    const { app } = await makeApp();
+    const res = await app.inject({ method: 'GET', url: '/fhir/metadata' });
+    expect(res.statusCode).toBe(200);
+    const body = res.json();
+    expect(body.resourceType).toBe('CapabilityStatement');
+    expect(body.fhirVersion).toBe('4.0.1');
+    expect(body.rest[0].mode).toBe('server');
+    const types = body.rest[0].resource.map((r: any) => r.type);
+    expect(types).toContain('Patient');
+    expect(types).toContain('Claim');
+  });
+
+  it('getClaim: GET /fhir/Claim (search) and /fhir/Claim/:id (read)', async () => {
+    const { app } = await makeApp();
+    const search = await app.inject({ method: 'GET', url: '/fhir/Claim' });
+    expect(search.statusCode).toBe(200);
+    expect(search.json().resourceType).toBe('Bundle');
+    expect(search.json().total).toBe(1);
+
+    const read = await app.inject({ method: 'GET', url: '/fhir/Claim/claim-1' });
+    expect(read.statusCode).toBe(200);
+    expect(read.json().resourceType).toBe('Claim');
+    expect(read.json().patient.reference).toBe('Patient/pat-1');
+  });
+
+  it('GET /fhir/:resourceType/:id/_history returns a history Bundle', async () => {
+    const { app } = await makeApp();
+    const res = await app.inject({ method: 'GET', url: '/fhir/Patient/pat-1/_history' });
+    expect(res.statusCode).toBe(200);
+    const body = res.json();
+    expect(body.resourceType).toBe('Bundle');
+    expect(body.type).toBe('history');
+    expect(body.total).toBe(1);
+    expect(body.entry[0].resource.id).toBe('pat-1');
+    expect(body.entry[0].response.status).toBe('200 OK');
+
+    // Versioned read returns the resource.
+    const vread = await app.inject({ method: 'GET', url: '/fhir/Patient/pat-1/_history/1' });
+    expect(vread.statusCode).toBe(200);
+    expect(vread.json().resourceType).toBe('Patient');
+
+    // History of a missing resource is a 404 OperationOutcome.
+    const missing = await app.inject({ method: 'GET', url: '/fhir/Patient/nope/_history' });
+    expect(missing.statusCode).toBe(404);
+    expect(missing.json().resourceType).toBe('OperationOutcome');
   });
 });

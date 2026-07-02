@@ -139,4 +139,108 @@ describe('kobotoolbox (DRF-style envelopes)', () => {
     });
     expect(readRes.json().patient_name).toBe('Bare Body');
   });
+
+  it('getForms: ?asset_type=survey filters the asset list', async () => {
+    const { app } = await server();
+    const res = await app.inject({
+      method: 'GET',
+      url: '/api/v2/assets/?format=json&asset_type=survey',
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.json().count).toBe(3);
+    const none = await app.inject({
+      method: 'GET',
+      url: '/api/v2/assets/?asset_type=question',
+    });
+    expect(none.json().count).toBe(0);
+  });
+
+  it('tolerates the double-slashed paths the adaptor emits', async () => {
+    const { app } = await server();
+    const res = await app.inject({
+      method: 'GET',
+      url: `/api/v2//assets/${ASSET_UID}/data//?format=json`,
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.json().count).toBe(5);
+  });
+
+  it('getDeploymentInfo: GET /api/v2/assets/:uid/deployment/', async () => {
+    const { app } = await server();
+    const res = await app.inject({
+      method: 'GET',
+      url: `/api/v2/assets/${ASSET_UID}/deployment/`,
+    });
+    expect(res.statusCode).toBe(200);
+    const body = res.json();
+    expect(body.active).toBe(true);
+    expect(body.submission_count).toBe(5);
+    expect(body.identifier).toContain(`/api/v2/assets/${ASSET_UID}/`);
+  });
+
+  it('getSubmissions: ?query= (Mongo filter) and ?sort= work', async () => {
+    const { app } = await server();
+    const query = encodeURIComponent(JSON.stringify({ water_source: 'borehole' }));
+    const res = await app.inject({
+      method: 'GET',
+      url: `/api/v2/assets/${ASSET_UID}/data/?query=${query}`,
+    });
+    expect(res.statusCode).toBe(200);
+    const body = res.json();
+    expect(body.results.every((s: any) => s.water_source === 'borehole')).toBe(true);
+
+    const sort = encodeURIComponent(JSON.stringify({ household_size: -1 }));
+    const sorted = await app.inject({
+      method: 'GET',
+      url: `/api/v2/assets/${ASSET_UID}/data/?sort=${sort}`,
+    });
+    const sizes = sorted.json().results.map((s: any) => s.household_size);
+    expect(sizes).toEqual([...sizes].sort((a: number, b: number) => b - a));
+  });
+
+  it('http.* create/update/delete asset round-trips', async () => {
+    const { app } = await server();
+    const create = await app.inject({
+      method: 'POST',
+      url: '/api/v2/assets/',
+      payload: { name: 'New Survey', asset_type: 'survey' },
+    });
+    expect(create.statusCode).toBe(201);
+    const uid = create.json().uid;
+    expect(typeof uid).toBe('string');
+
+    // Deploy it, then confirm deployment info flips active.
+    const deploy = await app.inject({ method: 'POST', url: `/api/v2/assets/${uid}/deployment/` });
+    expect(deploy.statusCode).toBe(200);
+    expect(deploy.json().active).toBe(true);
+
+    const patch = await app.inject({
+      method: 'PATCH',
+      url: `/api/v2/assets/${uid}/`,
+      payload: { name: 'Renamed Survey' },
+    });
+    expect(patch.json().name).toBe('Renamed Survey');
+
+    const del = await app.inject({ method: 'DELETE', url: `/api/v2/assets/${uid}/` });
+    expect(del.statusCode).toBe(204);
+  });
+
+  it('bulk PATCH updates submissions by id', async () => {
+    const { app } = await server();
+    const list = await app.inject({ method: 'GET', url: `/api/v2/assets/${ASSET_UID}/data/` });
+    const ids = list.json().results.slice(0, 2).map((s: any) => s._id);
+    const res = await app.inject({
+      method: 'PATCH',
+      url: `/api/v2/assets/${ASSET_UID}/data/bulk/`,
+      payload: { submission_ids: ids, data: { reviewed: true } },
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.json().successes).toBe(2);
+
+    const check = await app.inject({
+      method: 'GET',
+      url: `/api/v2/assets/${ASSET_UID}/data/${ids[0]}/`,
+    });
+    expect(check.json().reviewed).toBe(true);
+  });
 });
