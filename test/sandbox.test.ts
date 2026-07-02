@@ -127,6 +127,38 @@ describe('renderSandboxPage', () => {
       expect(SYSTEM_GUIDES[key].examples.length).toBeGreaterThan(0);
     }
   });
+
+  it('renders a per-system guide (setup steps + API overview) inside each card', () => {
+    const html = renderSandboxPage([{ name: 'dhis2', mountPath: '/dhis2' }]);
+    // The guide is built per-system in the client, labelled with both headings.
+    expect(html).toContain('Set up the adaptor');
+    expect(html).toContain('API overview');
+    // The system's adaptor docs link + the shared credentials doc are present.
+    expect(html).toContain('https://docs.openfn.org/adaptors/packages/dhis2-docs');
+    expect(html).toContain('https://docs.openfn.org/documentation/build/credentials');
+    // The old single top-of-page guide sections are gone.
+    expect(html).not.toContain('id="setup"');
+    expect(html).not.toContain('id="overview"');
+  });
+
+  it('carries an adaptor docs link for every catalogued system', () => {
+    for (const key of Object.keys(SYSTEM_GUIDES)) {
+      expect(SYSTEM_GUIDES[key].docs).toMatch(/^https:\/\/docs\.openfn\.org\//);
+    }
+  });
+
+  it('emits a sticky sidebar whose client builds a nav link per enabled system', () => {
+    const html = renderSandboxPage([
+      { name: 'dhis2', mountPath: '/dhis2' },
+      { name: 'mailgun', mountPath: '/mailgun' },
+    ]);
+    // The sidebar container is in the static skeleton; its links are built in the
+    // client from the embedded data, so assert both the anchor + the enabled systems.
+    expect(html).toContain('id="sidebar"');
+    expect(html).toContain('"#sys-"+sys.name');
+    expect(html).toContain('"name":"dhis2"');
+    expect(html).toContain('"name":"mailgun"');
+  });
 });
 
 describe('wantsHtml', () => {

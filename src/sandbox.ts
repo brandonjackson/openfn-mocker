@@ -38,6 +38,8 @@ export interface SystemGuide {
   auth: string;
   /** OpenFn credential URL field (e.g. hostUrl). */
   credentialField: string;
+  /** Link to this system's OpenFn adaptor documentation. */
+  docs?: string;
   /** Example OpenFn credential. `{{ORIGIN}}` is replaced in the browser. */
   credential: Record<string, unknown>;
   /**
@@ -61,6 +63,7 @@ const XML = 'text/xml';
 export const SYSTEM_GUIDES: Record<string, SystemGuide> = {
   dhis2: {
     title: 'DHIS2',
+    docs: 'https://docs.openfn.org/adaptors/packages/dhis2-docs',
     blurb:
       'Aggregate + tracker health data. List responses carry a pager and a resource-typed array; writes return an ImportSummary envelope.',
     auth: 'Basic',
@@ -102,6 +105,7 @@ export const SYSTEM_GUIDES: Record<string, SystemGuide> = {
 
   fhir: {
     title: 'FHIR (HAPI R4)',
+    docs: 'https://docs.openfn.org/adaptors/packages/fhir-docs',
     blurb:
       'HL7 FHIR R4 server. Searches return searchset Bundles, reads return the resource, and POST to the base runs a transaction/batch Bundle.',
     auth: 'none / Bearer',
@@ -151,6 +155,7 @@ export const SYSTEM_GUIDES: Record<string, SystemGuide> = {
 
   openmrs: {
     title: 'OpenMRS',
+    docs: 'https://docs.openfn.org/adaptors/packages/openmrs-docs',
     blurb:
       'Medical record system exposed as REST ({ results: [] }) and a FHIR R4 module. The same seeded patients appear in both representations.',
     auth: 'Basic',
@@ -197,6 +202,7 @@ export const SYSTEM_GUIDES: Record<string, SystemGuide> = {
 
   commcare: {
     title: 'CommCare HQ',
+    docs: 'https://docs.openfn.org/adaptors/packages/commcare-docs',
     blurb:
       'Mobile data collection. The domain-scoped Data API returns Tastypie { meta, objects } envelopes; the OpenRosa receiver ingests form XML.',
     auth: 'Basic / apiKey header',
@@ -244,6 +250,7 @@ export const SYSTEM_GUIDES: Record<string, SystemGuide> = {
 
   kobotoolbox: {
     title: 'KoboToolbox',
+    docs: 'https://docs.openfn.org/adaptors/packages/kobotoolbox-docs',
     blurb:
       'Survey platform. Assets (forms) and their submissions use DRF { count, next, previous, results } envelopes; submission counts are live.',
     auth: 'Token',
@@ -281,6 +288,7 @@ export const SYSTEM_GUIDES: Record<string, SystemGuide> = {
 
   primero: {
     title: 'Primero',
+    docs: 'https://docs.openfn.org/adaptors/packages/primero-docs',
     blurb:
       'Child-protection case management. Business fields nest under `data`; lists use { data, metadata }. POST /api/v2/tokens exchanges a bearer token.',
     auth: 'Token via POST /api/v2/tokens',
@@ -319,6 +327,7 @@ export const SYSTEM_GUIDES: Record<string, SystemGuide> = {
 
   airtable: {
     title: 'Airtable',
+    docs: 'https://docs.openfn.org/adaptors',
     blurb:
       'Spreadsheet-style base. User fields nest under `fields`; batch writes are capped at 10 records (11+ returns HTTP 422).',
     auth: 'Bearer',
@@ -370,6 +379,7 @@ export const SYSTEM_GUIDES: Record<string, SystemGuide> = {
 
   mailgun: {
     title: 'Mailgun',
+    docs: 'https://docs.openfn.org/adaptors/packages/mailgun-docs',
     blurb:
       'Transactional email. Sending an email also synthesizes a delivered event so it shows up in the events feed.',
     auth: 'Basic (api:key)',
@@ -397,6 +407,7 @@ export const SYSTEM_GUIDES: Record<string, SystemGuide> = {
 
   twilio: {
     title: 'Twilio',
+    docs: 'https://docs.openfn.org/adaptors/packages/twilio-docs',
     blurb:
       'SMS + voice. Form-encoded PascalCase input, snake_case JSON output. Reading a single message auto-advances its status queued to sent to delivered.',
     auth: 'Basic (sid:token)',
@@ -430,6 +441,7 @@ export const SYSTEM_GUIDES: Record<string, SystemGuide> = {
 
   'http-generic': {
     title: 'Generic HTTP',
+    docs: 'https://docs.openfn.org/adaptors/packages/http-docs',
     blurb:
       'Spec-less catch-all: any path works. A POST turns its path into a collection and the response echoes your request under `_mock`.',
     auth: 'any',
@@ -545,6 +557,7 @@ export function renderSandboxPage(
       blurb: guide.blurb,
       auth: guide.auth,
       credentialField: guide.credentialField,
+      docs: guide.docs,
       credential: guide.credential,
       examples: guide.examples,
     };
@@ -572,7 +585,10 @@ export function renderSandboxPage(
     '</head>\n' +
     '<body>\n' +
     HEADER +
-    '<main id="app"><p class="loading">Loading sandbox…</p></main>\n' +
+    '<div class="layout">\n' +
+    '<aside id="sidebar" class="sidebar"><p class="loading">…</p></aside>\n' +
+    '<main id="app" class="content"><p class="loading">Loading sandbox…</p></main>\n' +
+    '</div>\n' +
     FOOTER +
     '<script>window.__SANDBOX__ = ' +
     dataJson +
@@ -603,13 +619,13 @@ const STYLES = [
   '--accent:#4338ca;--accent-hover:#3730a3;--accent-soft:#eef2ff;--code:#0f172a;--code-ink:#e2e8f0;',
   '--get:#0a7d33;--post:#b45309;--put:#6d28d9;--patch:#0369a1;--delete:#b91c1c;--ok:#0a7d33;--err:#b91c1c;}',
   '*{box-sizing:border-box}',
-  'html{-webkit-text-size-adjust:100%}',
+  'html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}',
   'body{margin:0;background:var(--bg);color:var(--ink);',
   'font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}',
   'code,pre,.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;}',
   'a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}',
   'header.top{background:var(--code);color:#f8fafc;padding:26px 20px;}',
-  '.wrap{max-width:1000px;margin:0 auto;padding:0 20px;}',
+  '.wrap{max-width:1080px;margin:0 auto;padding:0 20px;}',
   'header.top .wrap{padding:0}',
   'header.top h1{margin:0 0 6px;font-size:22px;letter-spacing:-.01em;}',
   'header.top p{margin:0;color:#c7ccd6;max-width:70ch;}',
@@ -617,10 +633,36 @@ const STYLES = [
   'border:1px solid #33415a;border-radius:8px;padding:7px 11px;font-size:13px;}',
   '.baseurl b{color:#93c5fd;font-weight:600}',
   '.baseurl .mono{color:#f1f5f9}',
-  'main{max-width:1000px;margin:0 auto;padding:22px 20px 60px;}',
+  // Two-column layout: sticky left-hand nav + main content column.
+  '.layout{max-width:1080px;margin:0 auto;padding:22px 20px 60px;display:flex;gap:30px;align-items:flex-start;}',
+  '.sidebar{flex:0 0 200px;position:sticky;top:18px;align-self:flex-start;max-height:calc(100vh - 34px);overflow:auto;}',
+  '.sidebar-inner{font-size:14px}',
+  '.nav-group{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:700;margin:16px 0 6px}',
+  '.nav-group:first-child{margin-top:0}',
+  '.nav-list{list-style:none;margin:0 0 4px;padding:0}',
+  '.nav-list a{display:block;padding:5px 10px;border-radius:7px;color:var(--ink);border-left:2px solid transparent;line-height:1.35}',
+  '.nav-list a:hover{background:var(--accent-soft);color:var(--accent);text-decoration:none}',
+  '.nav-list a.active{background:var(--accent-soft);color:var(--accent);border-left-color:var(--accent);font-weight:600}',
+  '.content{flex:1;min-width:0}',
+  // Per-system guide block: "Set up the adaptor" steps + "API overview" docs links.
+  '.sys-guide{display:grid;grid-template-columns:1fr 1fr;gap:18px 28px;margin:10px 0 16px;',
+  'padding:14px 16px;background:var(--bg);border:1px solid var(--border);border-radius:10px}',
+  '.sys-guide h4{margin:0 0 10px;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}',
+  '.sys-guide p{margin:0 0 10px;color:var(--muted)}',
+  '.sys-guide code{background:#eef1f5;border:1px solid var(--border);border-radius:5px;padding:1px 5px;',
+  'font-size:12px;color:var(--code);word-break:break-word}',
+  '.steps{margin:0;padding:0;list-style:none;counter-reset:step;font-size:13.5px}',
+  '.steps>li{position:relative;padding:0 0 12px 34px;color:var(--muted)}',
+  '.steps>li:last-child{padding-bottom:0}',
+  '.steps>li::before{counter-increment:step;content:counter(step);position:absolute;left:0;top:-1px;',
+  'width:23px;height:23px;border-radius:50%;background:var(--accent-soft);color:var(--accent);',
+  'font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center}',
+  '.steps .step-h{display:block;color:var(--ink);font-weight:600;margin-bottom:1px}',
+  '.doc-links{list-style:none;margin:0;padding:0;display:grid;gap:7px;font-size:13.5px}',
+  '.doc-links a{font-weight:600}',
   '.loading{color:var(--muted)}',
   'section.console{background:var(--panel);border:1px solid var(--border);border-radius:12px;',
-  'padding:16px;margin-bottom:22px;box-shadow:0 1px 2px rgba(16,24,38,.04);}',
+  'padding:16px;margin-bottom:22px;box-shadow:0 1px 2px rgba(16,24,38,.04);scroll-margin-top:16px;}',
   'section.console h2,.sys h2{margin:0 0 4px;font-size:14px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);}',
   '.console .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px;}',
   '.console select,.console input,.console textarea,.ex input,.ex textarea{font:inherit;color:var(--ink);',
@@ -636,7 +678,7 @@ const STYLES = [
   'button.ghost:hover{background:var(--accent-soft)}',
   'button:disabled{opacity:.55;cursor:progress}',
   '.sys{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px 16px 6px;',
-  'margin-bottom:16px;box-shadow:0 1px 2px rgba(16,24,38,.04);}',
+  'margin-bottom:16px;box-shadow:0 1px 2px rgba(16,24,38,.04);scroll-margin-top:16px;}',
   '.sys-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 12px;}',
   '.sys-head h3{margin:0;font-size:18px;letter-spacing:-.01em}',
   '.sys-head .mount{font-size:13px;color:var(--accent);background:var(--accent-soft);border-radius:6px;padding:2px 8px}',
@@ -664,7 +706,14 @@ const STYLES = [
   'font-size:12.5px;max-height:360px;overflow:auto;white-space:pre-wrap;word-break:break-word}',
   '.admin-links{display:flex;gap:8px;flex-wrap:wrap;padding:10px 0 6px;border-top:1px solid var(--border);margin-top:6px}',
   'footer{color:var(--muted);font-size:13px;text-align:center;padding:0 20px 40px}',
-  '@media(max-width:640px){.ex .path{min-width:140px}header.top h1{font-size:19px}}',
+  // Stack the sidebar above the content on narrow screens (nav becomes a wrap).
+  '@media(max-width:820px){.layout{flex-direction:column;gap:16px;padding-top:18px}',
+  '.sidebar{position:static;flex:none;width:100%;max-height:none;overflow:visible;',
+  'border:1px solid var(--border);background:var(--panel);border-radius:12px;padding:12px 14px}',
+  '.nav-list{display:flex;flex-wrap:wrap;gap:4px 6px;margin-bottom:2px}',
+  '.nav-list a{border-left:none;padding:4px 9px}',
+  '.nav-group{margin:10px 0 5px}.nav-group:first-child{margin-top:0}}',
+  '@media(max-width:640px){.ex .path{min-width:140px}header.top h1{font-size:19px}.sys-guide{grid-template-columns:1fr;gap:16px}}',
 ].join('');
 
 const HEADER = [
@@ -677,9 +726,12 @@ const HEADER = [
 ].join('');
 
 const FOOTER = [
-  '<footer>Every request runs against the live in-memory mock. Data resets on restart or via the reset ',
-  'endpoints. Raw system index: <a href="/_admin/systems">/_admin/systems</a> · ',
-  '<a href="https://github.com/brandonjackson/openfn-mocker">source &amp; docs</a></footer>',
+  '<footer>Every request runs against the live in-memory mock; data resets on restart or via the reset endpoints.<br>',
+  '<a href="https://docs.openfn.org/documentation" target="_blank" rel="noopener">OpenFn docs</a> · ',
+  '<a href="https://docs.openfn.org/adaptors" target="_blank" rel="noopener">Adaptors reference</a> · ',
+  '<a href="https://docs.openfn.org/documentation/build/credentials" target="_blank" rel="noopener">Credentials</a> · ',
+  '<a href="/_admin/systems">/_admin/systems</a> · ',
+  '<a href="https://github.com/brandonjackson/openfn-mocker">source</a></footer>',
 ].join('');
 
 /*
@@ -694,6 +746,12 @@ const CLIENT_JS = [
   'function sub(s){return typeof s==="string"?s.split("{{ORIGIN}}").join(ORIGIN):s;}',
   'function el(tag,cls,text){var n=document.createElement(tag);if(cls)n.className=cls;',
   'if(text!=null)n.textContent=text;return n;}',
+  // Build an element from mixed parts (strings become text nodes; nodes append as-is).
+  'function rich(tag,cls,parts){var n=el(tag,cls);for(var i=0;i<parts.length;i++){var p=parts[i];',
+  'n.appendChild(typeof p==="string"?document.createTextNode(p):p);}return n;}',
+  'function bold(t){return el("b",null,t);}',
+  'function codeEl(t){return el("code",null,t);}',
+  'function link(t,href){var a=el("a",null,t);a.href=href;a.target="_blank";a.rel="noopener";return a;}',
   'function pretty(text,ctype){if(ctype&&ctype.indexOf("json")===-1){return text;}',
   'try{return JSON.stringify(JSON.parse(text),null,2);}catch(e){return text;}}',
   // Perform a request and render into a response container.
@@ -727,7 +785,7 @@ const CLIENT_JS = [
   'respEl.appendChild(el("pre",null,pretty(text,ctype)));}',
   // The shared top console.
   'function buildConsole(){',
-  'var sec=el("section","console");sec.appendChild(el("h2",null,"Request console"));',
+  'var sec=el("section","console");sec.id="console";sec.appendChild(el("h2",null,"Request console"));',
   'var row=el("div","row");',
   'var sel=document.createElement("select");["GET","POST","PUT","PATCH","DELETE"].forEach(function(m){',
   'var o=document.createElement("option");o.value=m;o.textContent=m;sel.appendChild(o);});',
@@ -763,13 +821,33 @@ const CLIENT_JS = [
   'return wrap;}',
   // One system card.
   'function buildSystem(sys){',
-  'var card=el("section","sys");',
+  'var card=el("section","sys");card.id="sys-"+sys.name;',
   'var head=el("div","sys-head");',
   'head.appendChild(el("h3",null,sys.title));',
   'head.appendChild(el("span","mount",sys.mountPath));',
   'if(sys.auth){head.appendChild(el("span","auth","auth: "+sys.auth));}',
   'card.appendChild(head);',
-  'card.appendChild(el("p","blurb",sys.blurb));',
+  // Per-system guide: how to set up this adaptor + an API overview with docs links.
+  'var guide=el("div","sys-guide");',
+  'var setup=el("div","sys-guide-col");setup.appendChild(el("h4",null,"Set up the adaptor"));',
+  'var steps=el("ol","steps");',
+  'steps.appendChild(rich("li",null,[el("span","step-h","Create the credential"),',
+  '"In OpenFn open ",bold("Settings \\u2192 Credentials \\u2192 New credential"),", pick ",bold(sys.title),',
+  '", and name it e.g. ",codeEl("mocker-"+sys.name),"."]));',
+  'steps.appendChild(rich("li",null,[el("span","step-h","Point it at this mock"),',
+  '"Under ",bold("Credential environments"),", set ",bold(sys.credentialField)," to ",',
+  'codeEl(ORIGIN+sys.mountPath),". Any ",bold("auth")," value works \\u2014 it is only logged. ",',
+  '"Copy the full credential below."]));',
+  'steps.appendChild(rich("li",null,[el("span","step-h","Grant access & attach"),',
+  '"Under ",bold("Projects access")," add your project, save, then select the credential on the workflow step."]));',
+  'setup.appendChild(steps);',
+  'var ov=el("div","sys-guide-col");ov.appendChild(el("h4",null,"API overview"));',
+  'ov.appendChild(el("p",null,sys.blurb));',
+  'var dl=el("ul","doc-links");',
+  'if(sys.docs){dl.appendChild(rich("li",null,[link(sys.title+" adaptor docs \\u2197",sys.docs)]));}',
+  'dl.appendChild(rich("li",null,[link("Managing credentials \\u2197","https://docs.openfn.org/documentation/build/credentials")]));',
+  'ov.appendChild(dl);',
+  'guide.appendChild(setup);guide.appendChild(ov);card.appendChild(guide);',
   // Credential block.
   'var cred=el("div","cred");',
   'var ch=el("div","cred-head");ch.appendChild(el("span",null,"OpenFn credential"));',
@@ -794,16 +872,44 @@ const CLIENT_JS = [
   'admin.appendChild(mk("reset","POST",sys.mountPath+"/_admin/reset"));',
   'card.appendChild(admin);',
   'return card;}',
+  // Left-hand navigation: the request console plus one link per system.
+  'function buildSidebar(){',
+  'var nav=el("nav","sidebar-inner");',
+  'var g=el("ul","nav-list");var li=el("li");var a=el("a",null,"Request console");',
+  'a.href="#console";li.appendChild(a);g.appendChild(li);nav.appendChild(g);',
+  'if(DATA.systems.length){',
+  'nav.appendChild(el("div","nav-group","Systems"));',
+  'var s=el("ul","nav-list");',
+  'for(var j=0;j<DATA.systems.length;j++){var sys=DATA.systems[j];var li2=el("li");',
+  'var a2=el("a",null,sys.title);a2.href="#sys-"+sys.name;li2.appendChild(a2);s.appendChild(li2);}',
+  'nav.appendChild(s);}',
+  'return nav;}',
+  // Scroll-spy: highlight the nav link for whichever section is currently in view.
+  'function setupScrollSpy(){',
+  'var order=[],map={};var links=document.querySelectorAll(".nav-list a");',
+  'for(var i=0;i<links.length;i++){var href=links[i].getAttribute("href");',
+  'if(href&&href.charAt(0)==="#"){var id=href.slice(1);',
+  'if(document.getElementById(id)){map[id]=links[i];order.push(id);}}}',
+  'if(!order.length)return;var ticking=false;',
+  'function offset(){return window.pageYOffset||window.scrollY||0;}',
+  'function update(){ticking=false;var pos=offset()+130;var active=order[0];',
+  'for(var k=0;k<order.length;k++){var e=document.getElementById(order[k]);',
+  'if(e&&e.getBoundingClientRect().top+offset()<=pos)active=order[k];}',
+  'for(var m=0;m<order.length;m++){map[order[m]].className=order[m]===active?"active":"";}}',
+  'window.addEventListener("scroll",function(){if(!ticking){ticking=true;',
+  '(window.requestAnimationFrame||function(f){setTimeout(f,16);})(update);}});',
+  'update();}',
   // Boot.
   'function boot(){',
   'var base=document.getElementById("base-url");if(base)base.textContent=ORIGIN;',
+  'var side=document.getElementById("sidebar");if(side){side.innerHTML="";side.appendChild(buildSidebar());}',
   'var app=document.getElementById("app");app.innerHTML="";',
   'app.appendChild(buildConsole());',
-  'if(!DATA.systems.length){app.appendChild(el("p","loading","No systems are enabled."));return;}',
-  'var intro=el("p","blurb","Enabled systems ("+DATA.systems.length+'
-    + '"). Edit any path or body, then Run.");',
-  'app.appendChild(intro);',
-  'for(var i=0;i<DATA.systems.length;i++){app.appendChild(buildSystem(DATA.systems[i]));}}',
+  'if(!DATA.systems.length){app.appendChild(el("p","loading","No systems are enabled."));setupScrollSpy();return;}',
+  'app.appendChild(el("p","blurb","Enabled systems ("+DATA.systems.length+'
+    + '"). Each card shows how to set up its OpenFn adaptor, then lets you run requests live \\u2014 edit any path or body, then Run."));',
+  'for(var i=0;i<DATA.systems.length;i++){app.appendChild(buildSystem(DATA.systems[i]));}',
+  'setupScrollSpy();}',
   'if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",boot);}else{boot();}',
   '})();',
 ].join('');
