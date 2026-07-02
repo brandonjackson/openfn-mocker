@@ -9,6 +9,9 @@
     "build": "tsc -p tsconfig.json",
     "start": "node dist/index.js",
     "dev": "tsx watch src/index.ts",
+    "setup": "tsx src/generate/setup.ts",
+    "generate-seed": "tsx src/generate/cli.ts",
+    "snapshot-default": "tsx src/generate/snapshot.ts",
     "test": "vitest run",
     "test:watch": "vitest"
   },
@@ -16,6 +19,7 @@
     "node": ">=20"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.109.1",
     "@fastify/formbody": "^7",
     "fastify": "^4",
     "yaml": "^2"

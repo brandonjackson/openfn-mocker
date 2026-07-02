@@ -1,0 +1,371 @@
+{
+  "events": {
+    "6491b13828834eba9c34fc1110891741": {
+      "id": "6491b13828834eba9c34fc1110891741",
+      "event": "accepted",
+      "timestamp": 1783014536.259,
+      "recipient": "jane.doe@example.org",
+      "message": {
+        "headers": {
+          "message-id": "20260702174856.d1d650.37662508@sandbox-test.mailgun.org",
+          "from": "Mailgun Sandbox <postmaster@sandbox-test.mailgun.org>",
+          "to": "jane.doe@example.org",
+          "subject": "Notification #1"
+        }
+      },
+      "delivery-status": {
+        "code": 250,
+        "message": "",
+        "description": ""
+      }
+    },
+    "262198e434ed440abe98edc22b481573": {
+      "id": "262198e434ed440abe98edc22b481573",
+      "event": "delivered",
+      "timestamp": 1783010936.259,
+      "recipient": "john.smith@example.org",
+      "message": {
+        "headers": {
+          "message-id": "20260702174856.635772.ce9c626f@sandbox-test.mailgun.org",
+          "from": "Mailgun Sandbox <postmaster@sandbox-test.mailgun.org>",
+          "to": "john.smith@example.org",
+          "subject": "Notification #2"
+        }
+      },
+      "delivery-status": {
+        "code": 250,
+        "message": "",
+        "description": ""
+      }
+    },
+    "e1f36ca124ba441ca8a4cd158271d25b": {
+      "id": "e1f36ca124ba441ca8a4cd158271d25b",
+      "event": "opened",
+      "timestamp": 1783007336.259,
+      "recipient": "clinic@example.org",
+      "message": {
+        "headers": {
+          "message-id": "20260702174856.a01337.27f1e931@sandbox-test.mailgun.org",
+          "from": "Mailgun Sandbox <postmaster@sandbox-test.mailgun.org>",
+          "to": "clinic@example.org",
+          "subject": "Notification #3"
+        }
+      },
+      "delivery-status": {
+        "code": 250,
+        "message": "",
+        "description": ""
+      }
+    },
+    "1f82a4f2660349e0b73947e05a314e9b": {
+      "id": "1f82a4f2660349e0b73947e05a314e9b",
+      "event": "delivered",
+      "timestamp": 1783003736.259,
+      "recipient": "jane.doe@example.org",
+      "message": {
+        "headers": {
+          "message-id": "20260702174856.0a4dee.ec7a43be@sandbox-test.mailgun.org",
+          "from": "Mailgun Sandbox <postmaster@sandbox-test.mailgun.org>",
+          "to": "jane.doe@example.org",
+          "subject": "Notification #4"
+        }
+      },
+      "delivery-status": {
+        "code": 250,
+        "message": "",
+        "description": ""
+      }
+    },
+    "2a7058c667aa47f0b3fca14a99d7ec8b": {
+      "id": "2a7058c667aa47f0b3fca14a99d7ec8b",
+      "event": "bounced",
+      "timestamp": 1783000136.259,
+      "recipient": "john.smith@example.org",
+      "message": {
+        "headers": {
+          "message-id": "20260702174856.96a655.a44a73fb@sandbox-test.mailgun.org",
+          "from": "Mailgun Sandbox <postmaster@sandbox-test.mailgun.org>",
+          "to": "john.smith@example.org",
+          "subject": "Notification #5"
+        }
+      },
+      "delivery-status": {
+        "code": 550,
+        "message": "Mailbox does not exist",
+        "description": "The email account that you tried to reach does not exist."
+      }
+    },
+    "359d6b20064945e196b92a5ac6e1d189": {
+      "id": "359d6b20064945e196b92a5ac6e1d189",
+      "event": "delivered",
+      "timestamp": 1782996536.259,
+      "recipient": "clinic@example.org",
+      "message": {
+        "headers": {
+          "message-id": "20260702174856.657398.e870af67@sandbox-test.mailgun.org",
+          "from": "Mailgun Sandbox <postmaster@sandbox-test.mailgun.org>",
+          "to": "clinic@example.org",
+          "subject": "Notification #6"
+        }
+      },
+      "delivery-status": {
+        "code": 250,
+        "message": "",
+        "description": ""
+      }
+    },
+    "717660f96eb348c0b6333417510bb62c": {
+      "id": "717660f96eb348c0b6333417510bb62c",
+      "event": "opened",
+      "timestamp": 1782992936.259,
+      "recipient": "jane.doe@example.org",
+      "message": {
+        "headers": {
+          "message-id": "20260702174856.e3194d.233fc8f2@sandbox-test.mailgun.org",
+          "from": "Mailgun Sandbox <postmaster@sandbox-test.mailgun.org>",
+          "to": "jane.doe@example.org",
+          "subject": "Notification #7"
+        }
+      },
+      "delivery-status": {
+        "code": 250,
+        "message": "",
+        "description": ""
+      }
+    },
+    "73a151d5a0fb4a359ef8db2952c97d57": {
+      "id": "73a151d5a0fb4a359ef8db2952c97d57",
+      "event": "clicked",
+      "timestamp": 1782989336.259,
+      "recipient": "john.smith@example.org",
+      "message": {
+        "headers": {
+          "message-id": "20260702174856.c8ad11.874fd0ea@sandbox-test.mailgun.org",
+          "from": "Mailgun Sandbox <postmaster@sandbox-test.mailgun.org>",
+          "to": "john.smith@example.org",
+          "subject": "Notification #8"
+        }
+      },
+      "delivery-status": {
+        "code": 250,
+        "message": "",
+        "description": ""
+      }
+    },
+    "a070dac8a60f4a72bb3217aad8676662": {
+      "id": "a070dac8a60f4a72bb3217aad8676662",
+      "event": "delivered",
+      "timestamp": 1782985736.259,
+      "recipient": "clinic@example.org",
+      "message": {
+        "headers": {
+          "message-id": "20260702174856.4c656d.2b689bb2@sandbox-test.mailgun.org",
+          "from": "Mailgun Sandbox <postmaster@sandbox-test.mailgun.org>",
+          "to": "clinic@example.org",
+          "subject": "Notification #9"
+        }
+      },
+      "delivery-status": {
+        "code": 250,
+        "message": "",
+        "description": ""
+      }
+    },
+    "6f48f57533144ddab70c990784562e33": {
+      "id": "6f48f57533144ddab70c990784562e33",
+      "event": "complained",
+      "timestamp": 1782982136.259,
+      "recipient": "jane.doe@example.org",
+      "message": {
+        "headers": {
+          "message-id": "20260702174856.410919.f5d8e46c@sandbox-test.mailgun.org",
+          "from": "Mailgun Sandbox <postmaster@sandbox-test.mailgun.org>",
+          "to": "jane.doe@example.org",
+          "subject": "Notification #10"
+        }
+      },
+      "delivery-status": {
+        "code": 250,
+        "message": "",
+        "description": ""
+      }
+    }
+  },
+  "stats": {
+    "total": {
+      "start": "Thu, 25 Jun 2026 17:48:56 GMT",
+      "end": "Thu, 02 Jul 2026 17:48:56 GMT",
+      "resolution": "day",
+      "stats": [
+        {
+          "time": "Fri, 26 Jun 2026 17:48:56 GMT",
+          "accepted": {
+            "outgoing": 12,
+            "incoming": 0,
+            "total": 12
+          },
+          "delivered": {
+            "smtp": 11,
+            "http": 1,
+            "total": 12
+          },
+          "failed": {
+            "permanent": {
+              "total": 1
+            },
+            "temporary": {
+              "espblock": 0
+            }
+          },
+          "opened": {
+            "total": 5
+          }
+        },
+        {
+          "time": "Sat, 27 Jun 2026 17:48:56 GMT",
+          "accepted": {
+            "outgoing": 12,
+            "incoming": 0,
+            "total": 12
+          },
+          "delivered": {
+            "smtp": 11,
+            "http": 1,
+            "total": 12
+          },
+          "failed": {
+            "permanent": {
+              "total": 1
+            },
+            "temporary": {
+              "espblock": 0
+            }
+          },
+          "opened": {
+            "total": 5
+          }
+        },
+        {
+          "time": "Sun, 28 Jun 2026 17:48:56 GMT",
+          "accepted": {
+            "outgoing": 12,
+            "incoming": 0,
+            "total": 12
+          },
+          "delivered": {
+            "smtp": 11,
+            "http": 1,
+            "total": 12
+          },
+          "failed": {
+            "permanent": {
+              "total": 1
+            },
+            "temporary": {
+              "espblock": 0
+            }
+          },
+          "opened": {
+            "total": 5
+          }
+        },
+        {
+          "time": "Mon, 29 Jun 2026 17:48:56 GMT",
+          "accepted": {
+            "outgoing": 12,
+            "incoming": 0,
+            "total": 12
+          },
+          "delivered": {
+            "smtp": 11,
+            "http": 1,
+            "total": 12
+          },
+          "failed": {
+            "permanent": {
+              "total": 1
+            },
+            "temporary": {
+              "espblock": 0
+            }
+          },
+          "opened": {
+            "total": 5
+          }
+        },
+        {
+          "time": "Tue, 30 Jun 2026 17:48:56 GMT",
+          "accepted": {
+            "outgoing": 12,
+            "incoming": 0,
+            "total": 12
+          },
+          "delivered": {
+            "smtp": 11,
+            "http": 1,
+            "total": 12
+          },
+          "failed": {
+            "permanent": {
+              "total": 1
+            },
+            "temporary": {
+              "espblock": 0
+            }
+          },
+          "opened": {
+            "total": 5
+          }
+        },
+        {
+          "time": "Wed, 01 Jul 2026 17:48:56 GMT",
+          "accepted": {
+            "outgoing": 12,
+            "incoming": 0,
+            "total": 12
+          },
+          "delivered": {
+            "smtp": 11,
+            "http": 1,
+            "total": 12
+          },
+          "failed": {
+            "permanent": {
+              "total": 1
+            },
+            "temporary": {
+              "espblock": 0
+            }
+          },
+          "opened": {
+            "total": 5
+          }
+        },
+        {
+          "time": "Thu, 02 Jul 2026 17:48:56 GMT",
+          "accepted": {
+            "outgoing": 12,
+            "incoming": 0,
+            "total": 12
+          },
+          "delivered": {
+            "smtp": 11,
+            "http": 1,
+            "total": 12
+          },
+          "failed": {
+            "permanent": {
+              "total": 1
+            },
+            "temporary": {
+              "espblock": 0
+            }
+          },
+          "opened": {
+            "total": 5
+          }
+        }
+      ]
+    }
+  }
+}

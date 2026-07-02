@@ -111,6 +111,104 @@ Environment variables take precedence over the YAML file, which makes container 
 | `MOCKER_PORT` | Override the single listen port. |
 | `PORT` | PaaS single-port convention (Railway etc.). Used when `MOCKER_PORT` is unset. |
 | `MOCKER_SYSTEMS` | Comma-separated allowlist. Only the named systems are enabled, everything else is disabled. e.g. `MOCKER_SYSTEMS=dhis2,mailgun,http-generic`. |
+| `MOCKER_DATASET` | Which seed dataset to load (folder under `datasets/`). Default `default`. See [Seed datasets](#seed-datasets). |
+| `MOCKER_DATASETS_DIR` | Directory holding datasets (default `datasets`). |
+
+## Seed datasets
+
+The data each system returns comes from a **dataset**: a folder under `datasets/`
+holding one JSON dump per system plus a copy of the config that generated it. The
+server loads one dataset at boot, chosen by `MOCKER_DATASET` (default `default`).
+
+- **`default`** is committed to the repo, covers every system with one coherent
+  imaginary scenario (a Sierra Leone public-health program), and is what the test
+  suite runs against and the Docker image ships with. It is served straight from
+  the built-in TypeScript seeds (`src/systems/<name>/seed.ts`) — no API key, no
+  network, fully deterministic — so CI and the Railway deploy never depend on an
+  LLM. Change it by editing the seed files.
+- **Custom datasets** are generated on demand with an LLM, stored locally, and
+  **git-ignored** (only `default` is committed). Use them for a demo flavoured for
+  a specific context — say a Dominican Republic rollout with Spanish names, DR
+  facilities, and `+1-809` phone numbers.
+
+The LLM runs **only at generation time**, never at server boot: `pnpm generate-seed`
+freezes the output to JSON on disk, and the running server just loads that JSON.
+
+### Generating a custom dataset
+
+1. Put your Anthropic token in the environment (override the model with
+   `ANTHROPIC_MODEL` if you like; the default is `claude-opus-4-8`):
+
+   ```bash
+   export ANTHROPIC_API_KEY=sk-ant-...
+   ```
+
+2. Write a generation config. It describes the project at a high level and, if you
+   want, per system and per table. Save it as e.g. `dr.yaml`:
+
+   ```yaml
+   name: dominican-republic
+   description: >
+     A maternal-health demo set in the Dominican Republic. Patients and staff have
+     Dominican Spanish names; facilities are real DR provinces and municipios; phone
+     numbers use the +1-809 area code; SMS and email are in Spanish.
+   systems:
+     dhis2:
+       description: Org-unit hierarchy country -> province -> municipio using real DR names.
+       collections:
+         organisationUnits: "Use Distrito Nacional, Santiago, Santo Domingo."
+     twilio:
+       description: Appointment-reminder SMS in Spanish, +1-809 numbers.
+   ```
+
+3. Generate. Each system's `default` data is shown to the model as the shape to
+   match, so the result stays structurally faithful (same fields, id formats, and
+   cross-references) while the content is re-flavoured:
+
+   ```bash
+   pnpm generate-seed --name dominican-republic --config dr.yaml
+   # limit to some systems:   --systems dhis2,fhir,twilio
+   # preview without calling the API: --dry-run
+   ```
+
+   This writes `datasets/dominican-republic/<system>.json` plus a copy of the
+   config as `datasets/dominican-republic/dataset.yaml`.
+
+### Running against a dataset
+
+```bash
+MOCKER_DATASET=dominican-republic pnpm start
+# or generate-if-missing then serve, in one step:
+MOCKER_DATASET=dominican-republic MOCKER_DATASET_CONFIG=dr.yaml pnpm setup
+```
+
+`pnpm setup` serves the named dataset, generating it first if the folder doesn't
+exist yet (it does nothing special for `default`, so Docker/CI are unaffected).
+
+### Test example
+
+The commands below generate a dataset, serve it, and confirm the returned data is
+actually re-flavoured — no API key needed for the preview or the built-in default:
+
+```bash
+# 1. Preview what would be generated (offline, no API call):
+pnpm generate-seed --name dominican-republic --config dr.yaml --dry-run
+
+# 2. Generate it (needs ANTHROPIC_API_KEY), then serve on port 4000:
+pnpm generate-seed --name dominican-republic --config dr.yaml
+MOCKER_DATASET=dominican-republic MOCKER_SYSTEMS=dhis2,fhir pnpm start &
+
+# 3. See the DR-flavoured data come back through the real API envelopes:
+curl -s localhost:4000/dhis2/api/organisationUnits | jq '.organisationUnits[].name'
+curl -s localhost:4000/fhir/Patient | jq '.entry[].resource.name'
+```
+
+The default dataset and the dataset loader are covered by the test suite:
+
+```bash
+pnpm test            # 121 tests, including test/datasets.test.ts
+pnpm snapshot-default # regenerate datasets/default/ from the seed files
+```
 
 ## Supported systems
 

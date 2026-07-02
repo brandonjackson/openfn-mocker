@@ -7,7 +7,7 @@ async function main(): Promise<void> {
 
   await app.listen({ port: config.port, host: '0.0.0.0' });
 
-  printStartupTable(running, config.port);
+  printStartupTable(running, config.port, config.dataset);
 
   let closing = false;
   const shutdown = async () => {
@@ -20,11 +20,12 @@ async function main(): Promise<void> {
   process.on('SIGTERM', shutdown);
 }
 
-function printStartupTable(running: RunningSystem[], port: number): void {
+function printStartupTable(running: RunningSystem[], port: number, dataset: string): void {
   const base = `http://localhost:${port}`;
   const lines = [
     '',
     `  openfn-mocker running on ${base}`,
+    `  dataset: ${dataset}`,
     `  open ${base} in a browser for the API sandbox`,
     '  ' + '─'.repeat(44),
     ...running.map((r) => `  ${r.name.padEnd(16)} ${base}${r.mountPath}`),

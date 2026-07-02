@@ -3,3 +3,7 @@ dist
 *.log
 .DS_Store
 coverage
+
+# Generated seed datasets are local-only; the committed `default` is the exception.
+datasets/*
+!datasets/default/
