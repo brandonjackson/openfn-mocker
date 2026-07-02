@@ -3,6 +3,7 @@ import { registerSystem, fastifyServerOptions } from './server.js';
 import { plugins } from './systems/index.js';
 import { makeLogLevel } from './logger.js';
 import { renderSandboxPage, wantsHtml } from './sandbox.js';
+import { seedForDataset, DEFAULT_DATASET } from './datasets.js';
 import type { MockerConfig } from './config.js';
 import type { DataStore } from './store.js';
 import type { MockSystemPlugin, SystemConfig } from './systems/types.js';
@@ -26,6 +27,7 @@ export async function buildServer(
   config: MockerConfig
 ): Promise<{ app: FastifyInstance; running: RunningSystem[] }> {
   const running: RunningSystem[] = [];
+  const datasetName = config.dataset || DEFAULT_DATASET;
 
   const app = Fastify({
     logger: { level: makeLogLevel(config.log_level) },
@@ -41,10 +43,17 @@ export async function buildServer(
     if (!plugin) continue; // e.g. salesforce placeholder — enabled but unimplemented
     const mountPath = `/${name}`;
 
+    // Seed from the active dataset: `default` uses the plugin's built-in seed,
+    // any other dataset loads its JSON dump (falling back to the built-in seed
+    // if that system wasn't generated). Everything else about the plugin is
+    // unchanged, so custom routes and admin re-seed keep working.
+    const datasetSeed = seedForDataset(plugin, datasetName);
+    const seededPlugin = datasetSeed === plugin.seed ? plugin : { ...plugin, seed: datasetSeed };
+
     await app.register(
       async (instance) => {
-        const { store } = await registerSystem(instance, plugin, sysConfig, { mountPath });
-        running.push({ name, mountPath, store, plugin, config: sysConfig });
+        const { store } = await registerSystem(instance, seededPlugin, sysConfig, { mountPath });
+        running.push({ name, mountPath, store, plugin: seededPlugin, config: sysConfig });
       },
       { prefix: mountPath }
     );

@@ -1,0 +1,268 @@
+{
+  "cases": {
+    "case-0001": {
+      "case_id": "case-0001",
+      "case_type": "patient",
+      "date_opened": "2026-06-27T17:48:56.244Z",
+      "date_modified": "2026-07-02T17:48:56.244Z",
+      "closed": false,
+      "owner_id": "owner-clinic-001",
+      "user_id": "user-fieldworker-01",
+      "server_date_modified": "2026-07-02T17:48:56.244Z",
+      "indices": {},
+      "xform_ids": [],
+      "properties": {
+        "case_name": "Jane Doe",
+        "case_type": "patient",
+        "owner_id": "owner-clinic-001",
+        "external_id": null,
+        "first_name": "Jane",
+        "last_name": "Doe",
+        "age": "28",
+        "village": "Ngelehun",
+        "dob": null,
+        "sex": "female"
+      }
+    },
+    "case-0002": {
+      "case_id": "case-0002",
+      "case_type": "patient",
+      "date_opened": "2026-06-28T17:48:56.244Z",
+      "date_modified": "2026-07-02T17:48:56.244Z",
+      "closed": false,
+      "owner_id": "owner-clinic-001",
+      "user_id": "user-fieldworker-01",
+      "server_date_modified": "2026-07-02T17:48:56.244Z",
+      "indices": {},
+      "xform_ids": [],
+      "properties": {
+        "case_name": "John Smith",
+        "case_type": "patient",
+        "owner_id": "owner-clinic-001",
+        "external_id": null,
+        "first_name": "John",
+        "last_name": "Smith",
+        "age": "45",
+        "village": "Bombali",
+        "dob": null,
+        "sex": "male"
+      }
+    },
+    "case-0003": {
+      "case_id": "case-0003",
+      "case_type": "patient",
+      "date_opened": "2026-06-29T17:48:56.244Z",
+      "date_modified": "2026-07-02T17:48:56.244Z",
+      "closed": false,
+      "owner_id": "owner-clinic-002",
+      "user_id": "user-fieldworker-01",
+      "server_date_modified": "2026-07-02T17:48:56.244Z",
+      "indices": {},
+      "xform_ids": [],
+      "properties": {
+        "case_name": "Amina Kamara",
+        "case_type": "patient",
+        "owner_id": "owner-clinic-002",
+        "external_id": null,
+        "first_name": "Amina",
+        "last_name": "Kamara",
+        "age": "33",
+        "village": "Ngelehun",
+        "dob": null,
+        "sex": "female"
+      }
+    },
+    "case-0004": {
+      "case_id": "case-0004",
+      "case_type": "patient",
+      "date_opened": "2026-06-30T17:48:56.244Z",
+      "date_modified": "2026-07-02T17:48:56.244Z",
+      "closed": false,
+      "owner_id": "owner-clinic-002",
+      "user_id": "user-fieldworker-01",
+      "server_date_modified": "2026-07-02T17:48:56.244Z",
+      "indices": {},
+      "xform_ids": [],
+      "properties": {
+        "case_name": "Ibrahim Sesay",
+        "case_type": "patient",
+        "owner_id": "owner-clinic-002",
+        "external_id": null,
+        "first_name": "Ibrahim",
+        "last_name": "Sesay",
+        "age": "9",
+        "village": "Makeni",
+        "dob": null,
+        "sex": "male"
+      }
+    },
+    "case-0005": {
+      "case_id": "case-0005",
+      "case_type": "patient",
+      "date_opened": "2026-07-01T17:48:56.244Z",
+      "date_modified": "2026-07-02T17:48:56.244Z",
+      "closed": false,
+      "owner_id": "owner-clinic-001",
+      "user_id": "user-fieldworker-01",
+      "server_date_modified": "2026-07-02T17:48:56.244Z",
+      "indices": {},
+      "xform_ids": [],
+      "properties": {
+        "case_name": "Fatmata Conteh",
+        "case_type": "patient",
+        "owner_id": "owner-clinic-001",
+        "external_id": null,
+        "first_name": "Fatmata",
+        "last_name": "Conteh",
+        "age": "52",
+        "village": "Bombali",
+        "dob": null,
+        "sex": "female"
+      }
+    }
+  },
+  "forms": {
+    "form-0001": {
+      "id": "form-0001",
+      "domain": "test-project",
+      "app_id": "app-001",
+      "received_on": "2026-07-02T14:48:56.244Z",
+      "form": {
+        "@xmlns": "http://openrosa.org/formdesigner/PATIENT-REG-FORM",
+        "@name": "Patient Registration",
+        "patient_name": "Jane Doe",
+        "patient_age": "28",
+        "village": "Ngelehun",
+        "meta": {
+          "instanceID": "uuid:form-0001",
+          "userID": "user-fieldworker-01",
+          "deviceID": "commcare-mock",
+          "timeStart": "2026-07-02T14:48:56.244Z",
+          "timeEnd": "2026-07-02T14:48:56.244Z",
+          "appVersion": "CommCare Mock 2.53"
+        }
+      },
+      "metadata": {
+        "instanceID": "uuid:form-0001",
+        "userID": "user-fieldworker-01",
+        "timeEnd": "2026-07-02T14:48:56.244Z",
+        "deviceID": "commcare-mock"
+      }
+    },
+    "form-0002": {
+      "id": "form-0002",
+      "domain": "test-project",
+      "app_id": "app-001",
+      "received_on": "2026-07-02T15:48:56.244Z",
+      "form": {
+        "@xmlns": "http://openrosa.org/formdesigner/PATIENT-REG-FORM",
+        "@name": "Patient Registration",
+        "patient_name": "John Smith",
+        "patient_age": "45",
+        "village": "Bombali",
+        "meta": {
+          "instanceID": "uuid:form-0002",
+          "userID": "user-fieldworker-01",
+          "deviceID": "commcare-mock",
+          "timeStart": "2026-07-02T15:48:56.244Z",
+          "timeEnd": "2026-07-02T15:48:56.244Z",
+          "appVersion": "CommCare Mock 2.53"
+        }
+      },
+      "metadata": {
+        "instanceID": "uuid:form-0002",
+        "userID": "user-fieldworker-01",
+        "timeEnd": "2026-07-02T15:48:56.244Z",
+        "deviceID": "commcare-mock"
+      }
+    },
+    "form-0003": {
+      "id": "form-0003",
+      "domain": "test-project",
+      "app_id": "app-001",
+      "received_on": "2026-07-02T16:48:56.244Z",
+      "form": {
+        "@xmlns": "http://openrosa.org/formdesigner/PATIENT-REG-FORM",
+        "@name": "Patient Registration",
+        "patient_name": "Amina Kamara",
+        "patient_age": "33",
+        "village": "Ngelehun",
+        "meta": {
+          "instanceID": "uuid:form-0003",
+          "userID": "user-fieldworker-01",
+          "deviceID": "commcare-mock",
+          "timeStart": "2026-07-02T16:48:56.244Z",
+          "timeEnd": "2026-07-02T16:48:56.244Z",
+          "appVersion": "CommCare Mock 2.53"
+        }
+      },
+      "metadata": {
+        "instanceID": "uuid:form-0003",
+        "userID": "user-fieldworker-01",
+        "timeEnd": "2026-07-02T16:48:56.244Z",
+        "deviceID": "commcare-mock"
+      }
+    }
+  },
+  "user": {
+    "user-fieldworker-01": {
+      "id": "user-fieldworker-01",
+      "username": "fieldworker01@test-project.commcarehq.org",
+      "first_name": "Field",
+      "last_name": "Worker",
+      "email": "fieldworker01@test-project.commcarehq.org",
+      "groups": [],
+      "phone_numbers": [],
+      "user_data": {},
+      "resource_uri": "/a/test-project/api/v0.5/user/user-fieldworker-01/"
+    },
+    "user-clinic-02": {
+      "id": "user-clinic-02",
+      "username": "clinic02@test-project.commcarehq.org",
+      "first_name": "Clinic",
+      "last_name": "Nurse",
+      "email": "clinic02@test-project.commcarehq.org",
+      "groups": [],
+      "phone_numbers": [],
+      "user_data": {},
+      "resource_uri": "/a/test-project/api/v0.5/user/user-clinic-02/"
+    }
+  },
+  "application": {
+    "app-001": {
+      "id": "app-001",
+      "name": "Patient Registration App",
+      "version": 12,
+      "modules": [
+        {
+          "case_type": "patient",
+          "forms": [
+            {
+              "name": {
+                "en": "Patient Registration"
+              },
+              "xmlns": "http://openrosa.org/formdesigner/PATIENT-REG-FORM"
+            }
+          ]
+        }
+      ],
+      "resource_uri": "/a/test-project/api/v0.5/application/app-001/"
+    }
+  },
+  "location": {
+    "loc-001": {
+      "location_id": "loc-001",
+      "name": "Ngelehun CHC",
+      "site_code": "ngelehun",
+      "location_type": "facility",
+      "resource_uri": "/a/test-project/api/v0.5/location/loc-001/"
+    },
+    "loc-002": {
+      "location_id": "loc-002",
+      "name": "Bo District",
+      "site_code": "bo",
+      "location_type": "district",
+      "resource_uri": "/a/test-project/api/v0.5/location/loc-002/"
+    }
+  }
+}

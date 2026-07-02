@@ -1,0 +1,256 @@
+{
+  "cases": {
+    "ea1c1f91-b444-4bfd-baf1-f12deab22447": {
+      "id": "ea1c1f91-b444-4bfd-baf1-f12deab22447",
+      "case_id": "CP-2024-001",
+      "status": "open",
+      "registration_date": "2024-01-15",
+      "owned_by": "caseworker1",
+      "created_at": "2026-07-02T17:48:56.257Z",
+      "data": {
+        "name_first": "Jane",
+        "name_last": "Doe",
+        "age": 12,
+        "sex": "female",
+        "protection_concerns": [
+          "neglect"
+        ],
+        "risk_level": "high"
+      }
+    },
+    "66a8bf9e-87c7-47e7-b7dd-e0c479baea6d": {
+      "id": "66a8bf9e-87c7-47e7-b7dd-e0c479baea6d",
+      "case_id": "CP-2024-002",
+      "status": "open",
+      "registration_date": "2024-02-03",
+      "owned_by": "caseworker2",
+      "created_at": "2026-07-02T17:48:56.257Z",
+      "data": {
+        "name_first": "Kofi",
+        "name_last": "Mensah",
+        "age": 9,
+        "sex": "male",
+        "protection_concerns": [
+          "abandonment"
+        ],
+        "risk_level": "medium"
+      }
+    },
+    "5f359d70-9f5e-46dc-89a6-c12e1bfd5187": {
+      "id": "5f359d70-9f5e-46dc-89a6-c12e1bfd5187",
+      "case_id": "CP-2024-003",
+      "status": "open",
+      "registration_date": "2024-03-21",
+      "owned_by": "caseworker1",
+      "created_at": "2026-07-02T17:48:56.257Z",
+      "data": {
+        "name_first": "Amina",
+        "name_last": "Sesay",
+        "age": 15,
+        "sex": "female",
+        "protection_concerns": [
+          "sexual_abuse",
+          "exploitation"
+        ],
+        "risk_level": "high"
+      }
+    },
+    "18b74ab6-2489-4f4c-ad50-afa68afeb1d8": {
+      "id": "18b74ab6-2489-4f4c-ad50-afa68afeb1d8",
+      "case_id": "CP-2024-004",
+      "status": "open",
+      "registration_date": "2024-04-10",
+      "owned_by": "caseworker3",
+      "created_at": "2026-07-02T17:48:56.257Z",
+      "data": {
+        "name_first": "Samuel",
+        "name_last": "Kamara",
+        "age": 7,
+        "sex": "male",
+        "protection_concerns": [
+          "physical_abuse"
+        ],
+        "risk_level": "low"
+      }
+    }
+  },
+  "incidents": {
+    "54f4793a-b780-4e98-bc5d-b4e4cf571d6b": {
+      "id": "54f4793a-b780-4e98-bc5d-b4e4cf571d6b",
+      "incident_id": "IN-2026-001",
+      "status": "open",
+      "owned_by": "caseworker1",
+      "created_at": "2026-07-02T17:48:56.257Z",
+      "case_id": "CP-2024-001",
+      "data": {
+        "incident_date": "2024-01-20",
+        "description": "Child found without adequate care at home.",
+        "cp_incident_violence_type": "neglect"
+      }
+    },
+    "ed0a71cc-7da1-4ca8-8246-50c2e2a5b562": {
+      "id": "ed0a71cc-7da1-4ca8-8246-50c2e2a5b562",
+      "incident_id": "IN-2026-002",
+      "status": "open",
+      "owned_by": "caseworker1",
+      "created_at": "2026-07-02T17:48:56.257Z",
+      "case_id": "CP-2024-003",
+      "data": {
+        "incident_date": "2024-03-25",
+        "description": "Reported exploitation at place of work.",
+        "cp_incident_violence_type": "exploitation"
+      }
+    }
+  },
+  "referrals": {
+    "c987625c-2da4-4ec0-9800-1bc19f41a25c": {
+      "id": "c987625c-2da4-4ec0-9800-1bc19f41a25c",
+      "record_id": "ea1c1f91-b444-4bfd-baf1-f12deab22447",
+      "record_type": "case",
+      "status": "in_progress",
+      "created_at": "2026-07-02T17:48:56.257Z",
+      "data": {
+        "transitioned_to": "social_worker2",
+        "transitioned_by": "caseworker1",
+        "notes": "Home visit needed.",
+        "service_record_id": null
+      }
+    },
+    "8302d65d-0313-49ff-99f5-e1268c1a8be2": {
+      "id": "8302d65d-0313-49ff-99f5-e1268c1a8be2",
+      "record_id": "5f359d70-9f5e-46dc-89a6-c12e1bfd5187",
+      "record_type": "case",
+      "status": "in_progress",
+      "created_at": "2026-07-02T17:48:56.257Z",
+      "data": {
+        "transitioned_to": "health_worker1",
+        "transitioned_by": "caseworker1",
+        "notes": "Medical assessment.",
+        "service_record_id": null
+      }
+    }
+  },
+  "forms": {
+    "1": {
+      "id": 1,
+      "unique_id": "basic_identity",
+      "name": {
+        "en": "Basic Identity"
+      },
+      "module_ids": [
+        "primeromodule-cp"
+      ],
+      "parent_form": "case"
+    },
+    "2": {
+      "id": 2,
+      "unique_id": "family_details",
+      "name": {
+        "en": "Family Details"
+      },
+      "module_ids": [
+        "primeromodule-cp"
+      ],
+      "parent_form": "case"
+    },
+    "3": {
+      "id": 3,
+      "unique_id": "protection_concerns",
+      "name": {
+        "en": "Protection Concerns"
+      },
+      "module_ids": [
+        "primeromodule-cp"
+      ],
+      "parent_form": "case"
+    }
+  },
+  "lookups": {
+    "1": {
+      "id": 1,
+      "unique_id": "lookup-risk-level",
+      "name": {
+        "en": "Risk Level"
+      },
+      "values": [
+        {
+          "id": "high",
+          "display_text": {
+            "en": "High"
+          }
+        },
+        {
+          "id": "medium",
+          "display_text": {
+            "en": "Medium"
+          }
+        },
+        {
+          "id": "low",
+          "display_text": {
+            "en": "Low"
+          }
+        }
+      ]
+    },
+    "2": {
+      "id": 2,
+      "unique_id": "lookup-protection-concerns",
+      "name": {
+        "en": "Protection Concerns"
+      },
+      "values": [
+        {
+          "id": "neglect",
+          "display_text": {
+            "en": "Neglect"
+          }
+        },
+        {
+          "id": "abandonment",
+          "display_text": {
+            "en": "Abandonment"
+          }
+        },
+        {
+          "id": "sexual_abuse",
+          "display_text": {
+            "en": "Sexual Abuse"
+          }
+        }
+      ]
+    }
+  },
+  "locations": {
+    "1": {
+      "id": 1,
+      "code": "SL",
+      "type": "country",
+      "name": {
+        "en": "Sierra Leone"
+      },
+      "admin_level": 0,
+      "hierarchy_path": "SL"
+    },
+    "2": {
+      "id": 2,
+      "code": "SL01",
+      "type": "province",
+      "name": {
+        "en": "Southern Province"
+      },
+      "admin_level": 1,
+      "hierarchy_path": "SL.SL01"
+    },
+    "3": {
+      "id": 3,
+      "code": "SL0101",
+      "type": "district",
+      "name": {
+        "en": "Bo"
+      },
+      "admin_level": 2,
+      "hierarchy_path": "SL.SL01.SL0101"
+    }
+  }
+}

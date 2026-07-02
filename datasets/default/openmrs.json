@@ -1,0 +1,923 @@
+{
+  "encountertype": {
+    "8cc54dd3-8a82-430b-976f-6049c6f40153": {
+      "uuid": "8cc54dd3-8a82-430b-976f-6049c6f40153",
+      "display": "Vitals",
+      "name": "Vitals",
+      "description": "Collection of vital signs"
+    },
+    "d341788c-7ecc-4608-ada5-6e446e6e7ac4": {
+      "uuid": "d341788c-7ecc-4608-ada5-6e446e6e7ac4",
+      "display": "Admission",
+      "name": "Admission",
+      "description": "Patient admission to a ward"
+    },
+    "0fa978a7-c744-4ec5-b7e4-a48d8b422a1b": {
+      "uuid": "0fa978a7-c744-4ec5-b7e4-a48d8b422a1b",
+      "display": "Consultation",
+      "name": "Consultation",
+      "description": "Outpatient clinical consultation"
+    }
+  },
+  "location": {
+    "db4f1c73-e02d-4af1-8f01-3c05c873c9c6": {
+      "uuid": "db4f1c73-e02d-4af1-8f01-3c05c873c9c6",
+      "display": "Outpatient Clinic",
+      "name": "Outpatient Clinic"
+    },
+    "df456f1f-48d7-4955-901f-30a38e2903b2": {
+      "uuid": "df456f1f-48d7-4955-901f-30a38e2903b2",
+      "display": "Inpatient Ward",
+      "name": "Inpatient Ward"
+    }
+  },
+  "concept": {
+    "2f2a6521-2272-4ead-ab7d-2a62f614e4b2": {
+      "uuid": "2f2a6521-2272-4ead-ab7d-2a62f614e4b2",
+      "display": "Weight (kg)",
+      "datatype": {
+        "uuid": "9b4538fa-02dd-4582-83ed-e8910ad4abce",
+        "display": "Numeric"
+      },
+      "conceptClass": {
+        "uuid": "9f355999-6ff4-4a7b-b00e-0a1e803c2962",
+        "display": "Finding"
+      }
+    },
+    "b3ca0422-334a-445a-a1d0-d17e09776b01": {
+      "uuid": "b3ca0422-334a-445a-a1d0-d17e09776b01",
+      "display": "Height (cm)",
+      "datatype": {
+        "uuid": "7417257b-18ec-48d3-b149-48136a52f134",
+        "display": "Numeric"
+      },
+      "conceptClass": {
+        "uuid": "8d18bff3-1ca2-4145-a457-6eaa8aed0a74",
+        "display": "Finding"
+      }
+    },
+    "bac76175-e1f0-4c6e-ab77-d7145e680a52": {
+      "uuid": "bac76175-e1f0-4c6e-ab77-d7145e680a52",
+      "display": "Temperature (C)",
+      "datatype": {
+        "uuid": "9e896001-9608-47eb-8a83-e3eb4a1a9b00",
+        "display": "Numeric"
+      },
+      "conceptClass": {
+        "uuid": "b3243759-8d2e-4eb7-9fb3-dc638571e07e",
+        "display": "Finding"
+      }
+    },
+    "79925547-5b1a-4f0c-9e91-7416b2015d76": {
+      "uuid": "79925547-5b1a-4f0c-9e91-7416b2015d76",
+      "display": "Pulse",
+      "datatype": {
+        "uuid": "91773d6e-146c-4c62-9a69-6154343823e1",
+        "display": "Numeric"
+      },
+      "conceptClass": {
+        "uuid": "abb7ef17-94d2-476e-81f8-000f4c0ebe6f",
+        "display": "Finding"
+      }
+    },
+    "d3e5fbc7-9777-46ea-99c7-f2da8f9085af": {
+      "uuid": "d3e5fbc7-9777-46ea-99c7-f2da8f9085af",
+      "display": "Systolic blood pressure",
+      "datatype": {
+        "uuid": "e849f298-dfc3-4493-99e3-f4f87239bcd8",
+        "display": "Numeric"
+      },
+      "conceptClass": {
+        "uuid": "2f415e17-93ec-4385-8290-aea4f929e8de",
+        "display": "Finding"
+      }
+    },
+    "80e10f1d-8401-4af4-a3a3-6c8c71cee0c5": {
+      "uuid": "80e10f1d-8401-4af4-a3a3-6c8c71cee0c5",
+      "display": "Diastolic blood pressure",
+      "datatype": {
+        "uuid": "24b8aa05-0252-463b-8cd6-c5c23c9b3701",
+        "display": "Numeric"
+      },
+      "conceptClass": {
+        "uuid": "7663c0a2-51f4-4c06-8d87-771bfe54243a",
+        "display": "Finding"
+      }
+    },
+    "33040628-a32e-40ab-a7d4-05da6f86b696": {
+      "uuid": "33040628-a32e-40ab-a7d4-05da6f86b696",
+      "display": "Respiratory rate",
+      "datatype": {
+        "uuid": "f36c9865-26e1-4816-8aba-ea6842c3f0a8",
+        "display": "Numeric"
+      },
+      "conceptClass": {
+        "uuid": "11cdef84-4156-4c66-b384-99e85c3b948d",
+        "display": "Finding"
+      }
+    },
+    "2aca3bce-da50-447e-a9a7-a00c6ebf151c": {
+      "uuid": "2aca3bce-da50-447e-a9a7-a00c6ebf151c",
+      "display": "HIV positive",
+      "datatype": {
+        "uuid": "68a12ebb-997e-400a-b6f9-473df12e07c1",
+        "display": "Coded"
+      },
+      "conceptClass": {
+        "uuid": "3f9f76c1-10c3-42c0-b1a9-8f85d23846e8",
+        "display": "Diagnosis"
+      }
+    },
+    "3fb87333-9681-4fe9-a844-5d305f6c1218": {
+      "uuid": "3fb87333-9681-4fe9-a844-5d305f6c1218",
+      "display": "Malaria smear",
+      "datatype": {
+        "uuid": "aa27f9aa-0942-4dec-b2bb-a9fd21e5a1e0",
+        "display": "Coded"
+      },
+      "conceptClass": {
+        "uuid": "99cc7f4d-9a5c-421b-b3dc-d96075a1df07",
+        "display": "Test"
+      }
+    },
+    "045ddd06-a176-4223-b481-f8383e673e5c": {
+      "uuid": "045ddd06-a176-4223-b481-f8383e673e5c",
+      "display": "Chief complaint",
+      "datatype": {
+        "uuid": "4eab3b3e-8f91-4459-b4cb-91b425ec93c9",
+        "display": "Text"
+      },
+      "conceptClass": {
+        "uuid": "06221a09-f447-4850-9963-28285184daec",
+        "display": "Symptom"
+      }
+    }
+  },
+  "person": {
+    "7ba71a4f-6bf3-4787-a97c-c61573913075": {
+      "uuid": "7ba71a4f-6bf3-4787-a97c-c61573913075",
+      "display": "Jane Doe",
+      "gender": "F",
+      "birthdate": "1996-03-15",
+      "age": null,
+      "dead": false,
+      "names": [
+        {
+          "uuid": "700a972f-eccc-4ee4-985c-d219c1b8c35a",
+          "display": "Jane Doe",
+          "givenName": "Jane",
+          "familyName": "Doe",
+          "preferred": true
+        }
+      ],
+      "addresses": [
+        {
+          "uuid": "ac7e7705-90ef-485d-8625-6f98bbcc5fe8",
+          "cityVillage": "Ngelehun",
+          "country": "Sierra Leone",
+          "preferred": true
+        }
+      ]
+    },
+    "634878a8-b1aa-42c7-83a9-c039386b297c": {
+      "uuid": "634878a8-b1aa-42c7-83a9-c039386b297c",
+      "display": "John Smith",
+      "gender": "M",
+      "birthdate": "1985-07-22",
+      "age": null,
+      "dead": false,
+      "names": [
+        {
+          "uuid": "aed382a6-b647-4884-81a5-1335e60b8c63",
+          "display": "John Smith",
+          "givenName": "John",
+          "familyName": "Smith",
+          "preferred": true
+        }
+      ],
+      "addresses": [
+        {
+          "uuid": "f89efb04-4dc5-4752-9af9-daa188e3b57e",
+          "cityVillage": "Bo",
+          "country": "Sierra Leone",
+          "preferred": true
+        }
+      ]
+    },
+    "f661ed39-852a-4783-9615-24d23f7eb684": {
+      "uuid": "f661ed39-852a-4783-9615-24d23f7eb684",
+      "display": "Aminata Kamara",
+      "gender": "F",
+      "birthdate": "2001-11-02",
+      "age": null,
+      "dead": false,
+      "names": [
+        {
+          "uuid": "df1cbcac-4b98-4c2c-8d4e-b1c0dfb86a99",
+          "display": "Aminata Kamara",
+          "givenName": "Aminata",
+          "familyName": "Kamara",
+          "preferred": true
+        }
+      ],
+      "addresses": [
+        {
+          "uuid": "bd8def74-a477-4083-925f-cbca9a0c64d1",
+          "cityVillage": "Kenema",
+          "country": "Sierra Leone",
+          "preferred": true
+        }
+      ]
+    },
+    "3241dcba-d38c-41d5-96fe-62a85bdf3653": {
+      "uuid": "3241dcba-d38c-41d5-96fe-62a85bdf3653",
+      "display": "Mohamed Bangura",
+      "gender": "M",
+      "birthdate": "1978-01-30",
+      "age": null,
+      "dead": false,
+      "names": [
+        {
+          "uuid": "efb16ed6-860f-4915-84f5-4e8c08429063",
+          "display": "Mohamed Bangura",
+          "givenName": "Mohamed",
+          "familyName": "Bangura",
+          "preferred": true
+        }
+      ],
+      "addresses": [
+        {
+          "uuid": "259f74ff-0447-4016-98d1-54624864d3ef",
+          "cityVillage": "Makeni",
+          "country": "Sierra Leone",
+          "preferred": true
+        }
+      ]
+    },
+    "4e3e6fff-f789-40d5-b551-f74278b0b25f": {
+      "uuid": "4e3e6fff-f789-40d5-b551-f74278b0b25f",
+      "display": "Fatmata Sesay",
+      "gender": "F",
+      "birthdate": "2010-05-19",
+      "age": null,
+      "dead": false,
+      "names": [
+        {
+          "uuid": "e61bb2c3-80c2-4102-94c0-6a338d4a6cf6",
+          "display": "Fatmata Sesay",
+          "givenName": "Fatmata",
+          "familyName": "Sesay",
+          "preferred": true
+        }
+      ],
+      "addresses": [
+        {
+          "uuid": "87b99b28-3e7f-41d7-9ddd-9ce287cf064f",
+          "cityVillage": "Freetown",
+          "country": "Sierra Leone",
+          "preferred": true
+        }
+      ]
+    }
+  },
+  "patient": {
+    "7f1d7195-3335-4316-93c5-d3683d1170b1": {
+      "uuid": "7f1d7195-3335-4316-93c5-d3683d1170b1",
+      "display": "MRN-001 - Jane Doe",
+      "identifiers": [
+        {
+          "uuid": "b5a306a9-0342-4dd0-a86d-a5996af7bb68",
+          "identifier": "MRN-001",
+          "identifierType": {
+            "uuid": "05a29f94-c0ed-11e2-94be-8c13b969e334",
+            "display": "OpenMRS ID"
+          },
+          "preferred": true
+        }
+      ],
+      "person": {
+        "uuid": "7ba71a4f-6bf3-4787-a97c-c61573913075",
+        "display": "Jane Doe",
+        "gender": "F",
+        "birthdate": "1996-03-15",
+        "age": null,
+        "dead": false,
+        "names": [
+          {
+            "uuid": "700a972f-eccc-4ee4-985c-d219c1b8c35a",
+            "display": "Jane Doe",
+            "givenName": "Jane",
+            "familyName": "Doe",
+            "preferred": true
+          }
+        ],
+        "addresses": [
+          {
+            "uuid": "ac7e7705-90ef-485d-8625-6f98bbcc5fe8",
+            "cityVillage": "Ngelehun",
+            "country": "Sierra Leone",
+            "preferred": true
+          }
+        ]
+      }
+    },
+    "cc781908-3b49-4774-8a12-453e65485f3e": {
+      "uuid": "cc781908-3b49-4774-8a12-453e65485f3e",
+      "display": "MRN-002 - John Smith",
+      "identifiers": [
+        {
+          "uuid": "d28d9cb4-d696-4d7e-9670-2c45b9facf58",
+          "identifier": "MRN-002",
+          "identifierType": {
+            "uuid": "05a29f94-c0ed-11e2-94be-8c13b969e334",
+            "display": "OpenMRS ID"
+          },
+          "preferred": true
+        }
+      ],
+      "person": {
+        "uuid": "634878a8-b1aa-42c7-83a9-c039386b297c",
+        "display": "John Smith",
+        "gender": "M",
+        "birthdate": "1985-07-22",
+        "age": null,
+        "dead": false,
+        "names": [
+          {
+            "uuid": "aed382a6-b647-4884-81a5-1335e60b8c63",
+            "display": "John Smith",
+            "givenName": "John",
+            "familyName": "Smith",
+            "preferred": true
+          }
+        ],
+        "addresses": [
+          {
+            "uuid": "f89efb04-4dc5-4752-9af9-daa188e3b57e",
+            "cityVillage": "Bo",
+            "country": "Sierra Leone",
+            "preferred": true
+          }
+        ]
+      }
+    },
+    "fb75ec09-b640-48bc-927f-312a8fa93778": {
+      "uuid": "fb75ec09-b640-48bc-927f-312a8fa93778",
+      "display": "MRN-003 - Aminata Kamara",
+      "identifiers": [
+        {
+          "uuid": "33a3ba2e-c6e7-450d-a987-ed5ed2f8e1f8",
+          "identifier": "MRN-003",
+          "identifierType": {
+            "uuid": "05a29f94-c0ed-11e2-94be-8c13b969e334",
+            "display": "OpenMRS ID"
+          },
+          "preferred": true
+        }
+      ],
+      "person": {
+        "uuid": "f661ed39-852a-4783-9615-24d23f7eb684",
+        "display": "Aminata Kamara",
+        "gender": "F",
+        "birthdate": "2001-11-02",
+        "age": null,
+        "dead": false,
+        "names": [
+          {
+            "uuid": "df1cbcac-4b98-4c2c-8d4e-b1c0dfb86a99",
+            "display": "Aminata Kamara",
+            "givenName": "Aminata",
+            "familyName": "Kamara",
+            "preferred": true
+          }
+        ],
+        "addresses": [
+          {
+            "uuid": "bd8def74-a477-4083-925f-cbca9a0c64d1",
+            "cityVillage": "Kenema",
+            "country": "Sierra Leone",
+            "preferred": true
+          }
+        ]
+      }
+    },
+    "b43ad077-3579-4819-b453-36dcbc3b8684": {
+      "uuid": "b43ad077-3579-4819-b453-36dcbc3b8684",
+      "display": "MRN-004 - Mohamed Bangura",
+      "identifiers": [
+        {
+          "uuid": "4f96b0d7-60b7-41fd-85f8-8c11d67fdcbe",
+          "identifier": "MRN-004",
+          "identifierType": {
+            "uuid": "05a29f94-c0ed-11e2-94be-8c13b969e334",
+            "display": "OpenMRS ID"
+          },
+          "preferred": true
+        }
+      ],
+      "person": {
+        "uuid": "3241dcba-d38c-41d5-96fe-62a85bdf3653",
+        "display": "Mohamed Bangura",
+        "gender": "M",
+        "birthdate": "1978-01-30",
+        "age": null,
+        "dead": false,
+        "names": [
+          {
+            "uuid": "efb16ed6-860f-4915-84f5-4e8c08429063",
+            "display": "Mohamed Bangura",
+            "givenName": "Mohamed",
+            "familyName": "Bangura",
+            "preferred": true
+          }
+        ],
+        "addresses": [
+          {
+            "uuid": "259f74ff-0447-4016-98d1-54624864d3ef",
+            "cityVillage": "Makeni",
+            "country": "Sierra Leone",
+            "preferred": true
+          }
+        ]
+      }
+    },
+    "8c4b8d6e-73d5-47c3-a7b4-cd19c341bf6c": {
+      "uuid": "8c4b8d6e-73d5-47c3-a7b4-cd19c341bf6c",
+      "display": "MRN-005 - Fatmata Sesay",
+      "identifiers": [
+        {
+          "uuid": "f5f03def-9289-47d0-aab0-e9dd26de9e19",
+          "identifier": "MRN-005",
+          "identifierType": {
+            "uuid": "05a29f94-c0ed-11e2-94be-8c13b969e334",
+            "display": "OpenMRS ID"
+          },
+          "preferred": true
+        }
+      ],
+      "person": {
+        "uuid": "4e3e6fff-f789-40d5-b551-f74278b0b25f",
+        "display": "Fatmata Sesay",
+        "gender": "F",
+        "birthdate": "2010-05-19",
+        "age": null,
+        "dead": false,
+        "names": [
+          {
+            "uuid": "e61bb2c3-80c2-4102-94c0-6a338d4a6cf6",
+            "display": "Fatmata Sesay",
+            "givenName": "Fatmata",
+            "familyName": "Sesay",
+            "preferred": true
+          }
+        ],
+        "addresses": [
+          {
+            "uuid": "87b99b28-3e7f-41d7-9ddd-9ce287cf064f",
+            "cityVillage": "Freetown",
+            "country": "Sierra Leone",
+            "preferred": true
+          }
+        ]
+      }
+    }
+  },
+  "fhir_patient": {
+    "7f1d7195-3335-4316-93c5-d3683d1170b1": {
+      "resourceType": "Patient",
+      "id": "7f1d7195-3335-4316-93c5-d3683d1170b1",
+      "active": true,
+      "identifier": [
+        {
+          "system": "http://openmrs.org/identifier/OpenMRS-ID",
+          "value": "MRN-001"
+        }
+      ],
+      "name": [
+        {
+          "family": "Doe",
+          "given": [
+            "Jane"
+          ],
+          "text": "Jane Doe"
+        }
+      ],
+      "gender": "female",
+      "birthDate": "1996-03-15",
+      "address": [
+        {
+          "city": "Ngelehun",
+          "country": "Sierra Leone"
+        }
+      ]
+    },
+    "cc781908-3b49-4774-8a12-453e65485f3e": {
+      "resourceType": "Patient",
+      "id": "cc781908-3b49-4774-8a12-453e65485f3e",
+      "active": true,
+      "identifier": [
+        {
+          "system": "http://openmrs.org/identifier/OpenMRS-ID",
+          "value": "MRN-002"
+        }
+      ],
+      "name": [
+        {
+          "family": "Smith",
+          "given": [
+            "John"
+          ],
+          "text": "John Smith"
+        }
+      ],
+      "gender": "male",
+      "birthDate": "1985-07-22",
+      "address": [
+        {
+          "city": "Bo",
+          "country": "Sierra Leone"
+        }
+      ]
+    },
+    "fb75ec09-b640-48bc-927f-312a8fa93778": {
+      "resourceType": "Patient",
+      "id": "fb75ec09-b640-48bc-927f-312a8fa93778",
+      "active": true,
+      "identifier": [
+        {
+          "system": "http://openmrs.org/identifier/OpenMRS-ID",
+          "value": "MRN-003"
+        }
+      ],
+      "name": [
+        {
+          "family": "Kamara",
+          "given": [
+            "Aminata"
+          ],
+          "text": "Aminata Kamara"
+        }
+      ],
+      "gender": "female",
+      "birthDate": "2001-11-02",
+      "address": [
+        {
+          "city": "Kenema",
+          "country": "Sierra Leone"
+        }
+      ]
+    },
+    "b43ad077-3579-4819-b453-36dcbc3b8684": {
+      "resourceType": "Patient",
+      "id": "b43ad077-3579-4819-b453-36dcbc3b8684",
+      "active": true,
+      "identifier": [
+        {
+          "system": "http://openmrs.org/identifier/OpenMRS-ID",
+          "value": "MRN-004"
+        }
+      ],
+      "name": [
+        {
+          "family": "Bangura",
+          "given": [
+            "Mohamed"
+          ],
+          "text": "Mohamed Bangura"
+        }
+      ],
+      "gender": "male",
+      "birthDate": "1978-01-30",
+      "address": [
+        {
+          "city": "Makeni",
+          "country": "Sierra Leone"
+        }
+      ]
+    },
+    "8c4b8d6e-73d5-47c3-a7b4-cd19c341bf6c": {
+      "resourceType": "Patient",
+      "id": "8c4b8d6e-73d5-47c3-a7b4-cd19c341bf6c",
+      "active": true,
+      "identifier": [
+        {
+          "system": "http://openmrs.org/identifier/OpenMRS-ID",
+          "value": "MRN-005"
+        }
+      ],
+      "name": [
+        {
+          "family": "Sesay",
+          "given": [
+            "Fatmata"
+          ],
+          "text": "Fatmata Sesay"
+        }
+      ],
+      "gender": "female",
+      "birthDate": "2010-05-19",
+      "address": [
+        {
+          "city": "Freetown",
+          "country": "Sierra Leone"
+        }
+      ]
+    }
+  },
+  "encounter": {
+    "34cbd314-b40d-4bca-9967-eb0a383db6e6": {
+      "uuid": "34cbd314-b40d-4bca-9967-eb0a383db6e6",
+      "display": "Vitals 2026-07-02",
+      "encounterDatetime": "2026-07-02T17:48:56.247Z",
+      "encounterType": {
+        "uuid": "8cc54dd3-8a82-430b-976f-6049c6f40153",
+        "display": "Vitals"
+      },
+      "patient": {
+        "uuid": "7f1d7195-3335-4316-93c5-d3683d1170b1",
+        "display": "MRN-001 - Jane Doe"
+      },
+      "location": {
+        "uuid": "db4f1c73-e02d-4af1-8f01-3c05c873c9c6",
+        "display": "Outpatient Clinic"
+      }
+    },
+    "9f6f5798-ab71-4886-b105-9cc2a3feb7bf": {
+      "uuid": "9f6f5798-ab71-4886-b105-9cc2a3feb7bf",
+      "display": "Admission 2026-07-01",
+      "encounterDatetime": "2026-07-01T17:48:56.247Z",
+      "encounterType": {
+        "uuid": "d341788c-7ecc-4608-ada5-6e446e6e7ac4",
+        "display": "Admission"
+      },
+      "patient": {
+        "uuid": "cc781908-3b49-4774-8a12-453e65485f3e",
+        "display": "MRN-002 - John Smith"
+      },
+      "location": {
+        "uuid": "df456f1f-48d7-4955-901f-30a38e2903b2",
+        "display": "Inpatient Ward"
+      }
+    },
+    "627818dc-af5d-4951-ab7a-35b9a1dea058": {
+      "uuid": "627818dc-af5d-4951-ab7a-35b9a1dea058",
+      "display": "Consultation 2026-06-30",
+      "encounterDatetime": "2026-06-30T17:48:56.247Z",
+      "encounterType": {
+        "uuid": "0fa978a7-c744-4ec5-b7e4-a48d8b422a1b",
+        "display": "Consultation"
+      },
+      "patient": {
+        "uuid": "fb75ec09-b640-48bc-927f-312a8fa93778",
+        "display": "MRN-003 - Aminata Kamara"
+      },
+      "location": {
+        "uuid": "db4f1c73-e02d-4af1-8f01-3c05c873c9c6",
+        "display": "Outpatient Clinic"
+      }
+    }
+  },
+  "fhir_encounter": {
+    "34cbd314-b40d-4bca-9967-eb0a383db6e6": {
+      "resourceType": "Encounter",
+      "id": "34cbd314-b40d-4bca-9967-eb0a383db6e6",
+      "status": "finished",
+      "class": {
+        "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+        "code": "AMB",
+        "display": "ambulatory"
+      },
+      "subject": {
+        "reference": "Patient/7f1d7195-3335-4316-93c5-d3683d1170b1",
+        "display": "MRN-001 - Jane Doe"
+      },
+      "period": {
+        "start": "2026-07-02T17:48:56.247Z"
+      }
+    },
+    "9f6f5798-ab71-4886-b105-9cc2a3feb7bf": {
+      "resourceType": "Encounter",
+      "id": "9f6f5798-ab71-4886-b105-9cc2a3feb7bf",
+      "status": "finished",
+      "class": {
+        "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+        "code": "AMB",
+        "display": "ambulatory"
+      },
+      "subject": {
+        "reference": "Patient/cc781908-3b49-4774-8a12-453e65485f3e",
+        "display": "MRN-002 - John Smith"
+      },
+      "period": {
+        "start": "2026-07-01T17:48:56.247Z"
+      }
+    },
+    "627818dc-af5d-4951-ab7a-35b9a1dea058": {
+      "resourceType": "Encounter",
+      "id": "627818dc-af5d-4951-ab7a-35b9a1dea058",
+      "status": "finished",
+      "class": {
+        "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+        "code": "AMB",
+        "display": "ambulatory"
+      },
+      "subject": {
+        "reference": "Patient/fb75ec09-b640-48bc-927f-312a8fa93778",
+        "display": "MRN-003 - Aminata Kamara"
+      },
+      "period": {
+        "start": "2026-06-30T17:48:56.247Z"
+      }
+    }
+  },
+  "obs": {
+    "ce950f15-00f7-488d-9840-8d124584f368": {
+      "uuid": "ce950f15-00f7-488d-9840-8d124584f368",
+      "display": "Weight (kg): 55",
+      "concept": {
+        "uuid": "2f2a6521-2272-4ead-ab7d-2a62f614e4b2",
+        "display": "Weight (kg)"
+      },
+      "value": 55,
+      "obsDatetime": "2026-07-02T17:48:56.247Z",
+      "encounter": {
+        "uuid": "34cbd314-b40d-4bca-9967-eb0a383db6e6"
+      },
+      "person": {
+        "uuid": "7f1d7195-3335-4316-93c5-d3683d1170b1",
+        "display": "MRN-001 - Jane Doe"
+      }
+    },
+    "92c7e849-13bd-48a2-9681-8ab3b7b3d7ae": {
+      "uuid": "92c7e849-13bd-48a2-9681-8ab3b7b3d7ae",
+      "display": "Weight (kg): 58",
+      "concept": {
+        "uuid": "2f2a6521-2272-4ead-ab7d-2a62f614e4b2",
+        "display": "Weight (kg)"
+      },
+      "value": 58,
+      "obsDatetime": "2026-07-01T17:48:56.247Z",
+      "encounter": {
+        "uuid": "9f6f5798-ab71-4886-b105-9cc2a3feb7bf"
+      },
+      "person": {
+        "uuid": "cc781908-3b49-4774-8a12-453e65485f3e",
+        "display": "MRN-002 - John Smith"
+      }
+    },
+    "eb07a59e-f9ae-42f9-abd4-9a17fb087363": {
+      "uuid": "eb07a59e-f9ae-42f9-abd4-9a17fb087363",
+      "display": "Weight (kg): 61",
+      "concept": {
+        "uuid": "2f2a6521-2272-4ead-ab7d-2a62f614e4b2",
+        "display": "Weight (kg)"
+      },
+      "value": 61,
+      "obsDatetime": "2026-06-30T17:48:56.247Z",
+      "encounter": {
+        "uuid": "627818dc-af5d-4951-ab7a-35b9a1dea058"
+      },
+      "person": {
+        "uuid": "fb75ec09-b640-48bc-927f-312a8fa93778",
+        "display": "MRN-003 - Aminata Kamara"
+      }
+    }
+  },
+  "fhir_observation": {
+    "ce950f15-00f7-488d-9840-8d124584f368": {
+      "resourceType": "Observation",
+      "id": "ce950f15-00f7-488d-9840-8d124584f368",
+      "status": "final",
+      "code": {
+        "coding": [
+          {
+            "system": "http://loinc.org",
+            "code": "29463-7",
+            "display": "Body weight"
+          }
+        ],
+        "text": "Weight (kg)"
+      },
+      "subject": {
+        "reference": "Patient/7f1d7195-3335-4316-93c5-d3683d1170b1",
+        "display": "MRN-001 - Jane Doe"
+      },
+      "encounter": {
+        "reference": "Encounter/34cbd314-b40d-4bca-9967-eb0a383db6e6"
+      },
+      "effectiveDateTime": "2026-07-02T17:48:56.247Z",
+      "valueQuantity": {
+        "value": 55,
+        "unit": "kg",
+        "system": "http://unitsofmeasure.org",
+        "code": "kg"
+      }
+    },
+    "92c7e849-13bd-48a2-9681-8ab3b7b3d7ae": {
+      "resourceType": "Observation",
+      "id": "92c7e849-13bd-48a2-9681-8ab3b7b3d7ae",
+      "status": "final",
+      "code": {
+        "coding": [
+          {
+            "system": "http://loinc.org",
+            "code": "29463-7",
+            "display": "Body weight"
+          }
+        ],
+        "text": "Weight (kg)"
+      },
+      "subject": {
+        "reference": "Patient/cc781908-3b49-4774-8a12-453e65485f3e",
+        "display": "MRN-002 - John Smith"
+      },
+      "encounter": {
+        "reference": "Encounter/9f6f5798-ab71-4886-b105-9cc2a3feb7bf"
+      },
+      "effectiveDateTime": "2026-07-01T17:48:56.247Z",
+      "valueQuantity": {
+        "value": 58,
+        "unit": "kg",
+        "system": "http://unitsofmeasure.org",
+        "code": "kg"
+      }
+    },
+    "eb07a59e-f9ae-42f9-abd4-9a17fb087363": {
+      "resourceType": "Observation",
+      "id": "eb07a59e-f9ae-42f9-abd4-9a17fb087363",
+      "status": "final",
+      "code": {
+        "coding": [
+          {
+            "system": "http://loinc.org",
+            "code": "29463-7",
+            "display": "Body weight"
+          }
+        ],
+        "text": "Weight (kg)"
+      },
+      "subject": {
+        "reference": "Patient/fb75ec09-b640-48bc-927f-312a8fa93778",
+        "display": "MRN-003 - Aminata Kamara"
+      },
+      "encounter": {
+        "reference": "Encounter/627818dc-af5d-4951-ab7a-35b9a1dea058"
+      },
+      "effectiveDateTime": "2026-06-30T17:48:56.247Z",
+      "valueQuantity": {
+        "value": 61,
+        "unit": "kg",
+        "system": "http://unitsofmeasure.org",
+        "code": "kg"
+      }
+    }
+  },
+  "fhir_condition": {
+    "5eece655-0543-4fc1-9344-bd920f88d0d0": {
+      "resourceType": "Condition",
+      "id": "5eece655-0543-4fc1-9344-bd920f88d0d0",
+      "clinicalStatus": {
+        "coding": [
+          {
+            "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+            "code": "active",
+            "display": "Active"
+          }
+        ]
+      },
+      "code": {
+        "coding": [
+          {
+            "system": "http://snomed.info/sct",
+            "code": "61462000",
+            "display": "Malaria"
+          }
+        ],
+        "text": "Malaria"
+      },
+      "subject": {
+        "reference": "Patient/7f1d7195-3335-4316-93c5-d3683d1170b1",
+        "display": "MRN-001 - Jane Doe"
+      }
+    }
+  },
+  "patientidentifiertype": {
+    "05a29f94-c0ed-11e2-94be-8c13b969e334": {
+      "uuid": "05a29f94-c0ed-11e2-94be-8c13b969e334",
+      "display": "OpenMRS ID",
+      "name": "OpenMRS ID",
+      "description": "OpenMRS patient identifier",
+      "required": false
+    }
+  },
+  "provider": {
+    "77eb1255-66cb-4100-9f04-820c8a2f9f27": {
+      "uuid": "77eb1255-66cb-4100-9f04-820c8a2f9f27",
+      "display": "Dr. Jane Provider",
+      "person": {
+        "display": "Jane Provider"
+      },
+      "identifier": "PROV-001"
+    }
+  }
+}

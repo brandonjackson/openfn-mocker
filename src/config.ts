@@ -7,10 +7,13 @@ export interface MockerConfig {
   log_level: string;
   /** Single port the whole mock listens on; every system is path-prefixed under it. */
   port: number;
+  /** Which seed dataset to load at boot (folder under datasets/). Default `default`. */
+  dataset: string;
   systems: Record<string, SystemConfig & { enabled: boolean }>;
 }
 
 const DEFAULT_PORT = 4000;
+const DEFAULT_DATASET = 'default';
 
 /**
  * Load mock.config.yaml (from `path`, then $MOCKER_CONFIG, then ./mock.config.yaml),
@@ -33,6 +36,7 @@ export function loadConfig(path?: string): MockerConfig {
     log_level: typeof raw.log_level === 'string' ? raw.log_level : 'info',
     // `admin_port` is accepted as a legacy alias for `port`.
     port: Number(raw.port ?? raw.admin_port ?? DEFAULT_PORT),
+    dataset: typeof raw.dataset === 'string' && raw.dataset.trim() ? raw.dataset.trim() : DEFAULT_DATASET,
     systems: {},
   };
 
@@ -64,6 +68,10 @@ function applyEnvOverrides(config: MockerConfig): void {
   const env = process.env;
 
   if (env.MOCKER_LOG_LEVEL) config.log_level = env.MOCKER_LOG_LEVEL;
+
+  // Select the seed dataset (folder under datasets/). `default` is served from
+  // the built-in TypeScript seeds; any other name loads generated JSON dumps.
+  if (env.MOCKER_DATASET && env.MOCKER_DATASET.trim()) config.dataset = env.MOCKER_DATASET.trim();
 
   // PORT is the Railway / PaaS convention; MOCKER_PORT is an explicit override.
   if (env.MOCKER_PORT) config.port = Number(env.MOCKER_PORT);
