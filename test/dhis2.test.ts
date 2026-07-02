@@ -177,4 +177,94 @@ describe('dhis2', () => {
     const res = await app.inject({ method: 'GET', url: '/api/trackedEntityTypes' });
     expect(res.json().trackedEntityTypes).toHaveLength(2);
   });
+
+  it('accepts an optional API version segment (/api/{version}/...)', async () => {
+    const { app } = await boot();
+    const res = await app.inject({ method: 'GET', url: '/api/42/organisationUnits' });
+    expect(res.statusCode).toBe(200);
+    // Same seeded org units as the versionless path, via the generic layer.
+    expect(res.json().organisationUnits).toHaveLength(3);
+
+    const info = await app.inject({ method: 'GET', url: '/api/40/system/info' });
+    expect(info.statusCode).toBe(200);
+    expect(info.json().version).toBe('2.39');
+  });
+
+  it('new Tracker API: POST /api/tracker imports and GET /api/tracker/:type reads back', async () => {
+    const { app } = await boot();
+    const res = await app.inject({
+      method: 'POST',
+      url: '/api/tracker',
+      query: { async: 'false', importStrategy: 'CREATE_AND_UPDATE' },
+      payload: {
+        trackedEntities: [
+          { trackedEntityType: 'nEenWmSyUEp', orgUnit: 'DiszpKrYNg8', attributes: [] },
+        ],
+        events: [{ program: 'IpHINAT79UW', orgUnit: 'DiszpKrYNg8', status: 'ACTIVE' }],
+      },
+    });
+    expect(res.statusCode).toBe(200);
+    const body = res.json();
+    expect(body.status).toBe('OK');
+    expect(body.stats.created).toBe(2);
+    expect(body.bundleReport.typeReportMap.TRACKED_ENTITY.stats.created).toBe(1);
+    expect(body.bundleReport.typeReportMap.EVENT.stats.created).toBe(1);
+
+    const te = await app.inject({ method: 'GET', url: '/api/tracker/trackedEntities' });
+    expect(te.statusCode).toBe(200);
+    expect(te.json().instances).toHaveLength(1);
+    expect(te.json().total).toBe(1);
+  });
+
+  it('GET /api/analytics returns a headers/rows grid', async () => {
+    const { app } = await boot();
+    const res = await app.inject({
+      method: 'GET',
+      url: '/api/analytics?dimension=dx:fbfJHSPpUQD&dimension=pe:202401',
+    });
+    expect(res.statusCode).toBe(200);
+    const body = res.json();
+    expect(Array.isArray(body.headers)).toBe(true);
+    expect(Array.isArray(body.rows)).toBe(true);
+    expect(body.rows.length).toBeGreaterThanOrEqual(1);
+    expect(body.metaData.items).toBeTruthy();
+  });
+
+  it('GET /api/schemas lists schemas; /api/schemas/:type returns one', async () => {
+    const { app } = await boot();
+    const all = await app.inject({ method: 'GET', url: '/api/schemas' });
+    expect(all.json().schemas.length).toBeGreaterThan(0);
+    const one = await app.inject({ method: 'GET', url: '/api/schemas/dataElement' });
+    expect(one.statusCode).toBe(200);
+    expect(one.json().plural).toBe('dataElements');
+  });
+
+  it('generic classic CRUD works for an unseeded resourceType (dataSets)', async () => {
+    const { app } = await boot();
+    const create = await app.inject({
+      method: 'POST',
+      url: '/api/dataSets',
+      payload: { name: 'Monthly Report', periodType: 'Monthly' },
+    });
+    expect(create.statusCode).toBe(200);
+    const uid = create.json().response.reference;
+    expect(uid).toMatch(/^[A-Za-z][A-Za-z0-9]{10}$/);
+
+    const list = await app.inject({ method: 'GET', url: '/api/dataSets' });
+    expect(list.json().dataSets.find((d: any) => d.id === uid)).toBeTruthy();
+
+    const patch = await app.inject({
+      method: 'PATCH',
+      url: `/api/dataSets/${uid}`,
+      payload: { name: 'Renamed Report' },
+    });
+    expect(patch.statusCode).toBe(200);
+    const read = await app.inject({ method: 'GET', url: `/api/dataSets/${uid}` });
+    expect(read.json().name).toBe('Renamed Report');
+
+    const del = await app.inject({ method: 'DELETE', url: `/api/dataSets/${uid}` });
+    expect(del.statusCode).toBe(200);
+    const gone = await app.inject({ method: 'GET', url: `/api/dataSets/${uid}` });
+    expect(gone.statusCode).toBe(404);
+  });
 });

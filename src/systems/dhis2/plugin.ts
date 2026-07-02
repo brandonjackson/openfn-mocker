@@ -1,4 +1,4 @@
-import type { FastifyInstance, FastifyRequest } from 'fastify';
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import type { MockSystemPlugin, SystemConfig } from '../types.js';
 import type { DataStore } from '../../store.js';
 import { seed, genUid } from './seed.js';
@@ -104,6 +104,64 @@ const NOT_FOUND = {
   status: 'ERROR',
   message: 'Object not found.',
 };
+
+/**
+ * New Tracker API (/api/tracker) object types, mapped to their store collection,
+ * the id field carried inside each object, and the bundleReport type key.
+ */
+const TRACKER_TYPES: Record<string, { collection: string; idField: string; reportType: string }> = {
+  trackedEntities: { collection: 'trackedEntities', idField: 'trackedEntity', reportType: 'TRACKED_ENTITY' },
+  events: { collection: 'events', idField: 'event', reportType: 'EVENT' },
+  enrollments: { collection: 'enrollments', idField: 'enrollment', reportType: 'ENROLLMENT' },
+  relationships: { collection: 'relationships', idField: 'relationship', reportType: 'RELATIONSHIP' },
+};
+
+/** A representative DHIS2 /api/analytics response (aggregate grid). */
+function analyticsResponse(): Record<string, any> {
+  return {
+    headers: [
+      { name: 'dx', column: 'Data', valueType: 'TEXT', type: 'java.lang.String', hidden: false, meta: true },
+      { name: 'pe', column: 'Period', valueType: 'TEXT', type: 'java.lang.String', hidden: false, meta: true },
+      { name: 'ou', column: 'Organisation unit', valueType: 'TEXT', type: 'java.lang.String', hidden: false, meta: true },
+      { name: 'value', column: 'Value', valueType: 'NUMBER', type: 'java.lang.Double', hidden: false, meta: false },
+    ],
+    metaData: {
+      items: {
+        fbfJHSPpUQD: { name: 'ANC 1st visit' },
+        cYeuwXTCPkU: { name: 'ANC 2nd visit' },
+        ImspTQPwCqd: { name: 'Sierra Leone' },
+        '202401': { name: 'January 2024' },
+      },
+      dimensions: { dx: ['fbfJHSPpUQD', 'cYeuwXTCPkU'], pe: ['202401'], ou: ['ImspTQPwCqd'] },
+    },
+    rows: [
+      ['fbfJHSPpUQD', '202401', 'ImspTQPwCqd', '123.0'],
+      ['cYeuwXTCPkU', '202401', 'ImspTQPwCqd', '98.0'],
+    ],
+    width: 4,
+    height: 2,
+  };
+}
+
+/** A small /api/schemas catalog (enough for get('schemas') / get('schemas/x')). */
+function schemaList(port: number): Array<Record<string, any>> {
+  const mk = (name: string, plural: string, klass: string) => ({
+    name,
+    plural,
+    klass: `org.hisp.dhis.${klass}`,
+    metadata: true,
+    href: `http://localhost:${port}/api/schemas/${name}`,
+  });
+  return [
+    mk('dataElement', 'dataElements', 'dataelement.DataElement'),
+    mk('organisationUnit', 'organisationUnits', 'organisationunit.OrganisationUnit'),
+    mk('program', 'programs', 'program.Program'),
+    mk('trackedEntityType', 'trackedEntityTypes', 'trackedentity.TrackedEntityType'),
+    mk('dataSet', 'dataSets', 'dataset.DataSet'),
+    mk('optionSet', 'optionSets', 'option.OptionSet'),
+    mk('option', 'options', 'option.Option'),
+  ];
+}
 
 const plugin: MockSystemPlugin = {
   name: 'dhis2',
@@ -214,6 +272,216 @@ const plugin: MockSystemPlugin = {
       return {
         status: 'OK',
         stats: { created, updated: 0, deleted: 0, ignored: 0, total: created },
+      };
+    });
+
+    // ---------------------------------------------------------------------
+    // Generic /api/** layer for the modern (generic) dhis2 adaptor.
+    //
+    // The adaptor routes everything through /api[/{version}]/{path}, so this
+    // wildcard covers: an optional numeric version segment, the new Tracker API
+    // (POST/GET /api/tracker), analytics, schemas, resourceTypes, and classic
+    // CRUD for ANY resourceType. The specific routes above take priority (static
+    // beats wildcard), so seeded resources and the existing tests are unaffected;
+    // this only handles versioned paths and endpoints not covered above.
+    // ---------------------------------------------------------------------
+
+    /** Wildcard path -> segments, stripping a trailing `.json` and a leading numeric version. */
+    const apiSegments = (req: FastifyRequest): string[] => {
+      let segs = String((req.params as Record<string, any>)['*'] ?? '')
+        .split('?')[0]
+        .split('/')
+        .filter(Boolean);
+      if (segs.length && /^\d+$/.test(segs[0])) segs = segs.slice(1); // /api/{version}/...
+      if (segs.length) segs[segs.length - 1] = segs[segs.length - 1].replace(/\.json$/, '');
+      return segs;
+    };
+
+    const systemInfo = () => ({
+      version: (config.version as string) || '2.39',
+      revision: '9d9dcf1',
+      serverDate: new Date().toISOString(),
+      contextPath: `http://localhost:${config.port}`,
+    });
+
+    /** POST /api/tracker — import trackedEntities/events/enrollments/relationships. */
+    const trackerImport = (body: Record<string, any>, reply: FastifyReply) => {
+      const typeReportMap: Record<string, any> = {};
+      let total = 0;
+      for (const [key, meta] of Object.entries(TRACKER_TYPES)) {
+        const arr = Array.isArray(body[key]) ? body[key] : [];
+        const objectReports = arr.map((obj: any) => {
+          const o = obj && typeof obj === 'object' ? obj : {};
+          const existing = o[meta.idField];
+          const uid = existing != null && String(existing).length > 0 ? String(existing) : genUid();
+          store.create(meta.collection, uid, { ...o, [meta.idField]: uid });
+          total++;
+          return { uid, trackerType: meta.reportType, errorReports: [] };
+        });
+        if (objectReports.length) {
+          typeReportMap[meta.reportType] = {
+            trackerType: meta.reportType,
+            stats: { created: objectReports.length, updated: 0, deleted: 0, ignored: 0, total: objectReports.length },
+            objectReports,
+          };
+        }
+      }
+      reply.code(200);
+      return {
+        status: 'OK',
+        validationReport: { errorReports: [], warningReports: [] },
+        stats: { created: total, updated: 0, deleted: 0, ignored: 0, total },
+        bundleReport: { status: 'OK', typeReportMap },
+      };
+    };
+
+    // GET /api/** — reads for the generic adaptor + new endpoints.
+    app.get('/api/*', async (req: FastifyRequest, reply) => {
+      const segs = apiSegments(req);
+      if (segs.length === 0) return {};
+      const [head, second, third] = segs;
+      const query = (req.query ?? {}) as Record<string, any>;
+
+      if (head === 'system' && second === 'info') return systemInfo();
+      if (head === 'analytics') return analyticsResponse();
+      if (head === 'resourceTypes') {
+        return { resourceTypes: schemaList(config.port).map((s) => ({ singular: s.name, plural: s.plural, href: s.href })) };
+      }
+      if (head === 'schemas') {
+        const all = schemaList(config.port);
+        if (second) {
+          const found = all.find((s) => s.name === second || s.plural === second);
+          if (!found) {
+            reply.code(404);
+            return NOT_FOUND;
+          }
+          return found;
+        }
+        return { schemas: all };
+      }
+      if (head === 'tracker') {
+        // /api/tracker/{type}[/{id}]
+        const meta = second ? TRACKER_TYPES[second] : undefined;
+        if (!meta) return { instances: [], page: 1, pageSize: 50, total: 0 };
+        if (third) {
+          const item = store.get(meta.collection, third);
+          if (item === undefined) {
+            reply.code(404);
+            return NOT_FOUND;
+          }
+          return item;
+        }
+        const instances = store.list(meta.collection);
+        return { instances, page: 1, pageSize: 50, total: instances.length };
+      }
+      if (head === 'dataValueSets') {
+        const dataValues: any[] = [];
+        for (const set of store.list('dataValueSets')) {
+          if (Array.isArray(set?.dataValues)) dataValues.push(...set.dataValues);
+        }
+        return { dataValues };
+      }
+
+      // Classic resource: /api/{resourceType}[/{id}]
+      if (segs.length === 1) return listEnvelope(head, store.list(head), query);
+      const item = store.get(head, segs[segs.length - 1]);
+      if (item === undefined) {
+        reply.code(404);
+        return NOT_FOUND;
+      }
+      return item;
+    });
+
+    // POST /api/** — new Tracker imports + classic creates for any resourceType.
+    app.post('/api/*', async (req: FastifyRequest, reply) => {
+      const segs = apiSegments(req);
+      if (segs.length === 0) {
+        reply.code(404);
+        return NOT_FOUND;
+      }
+      const head = segs[0];
+      const body = (req.body ?? {}) as Record<string, any>;
+
+      if (head === 'tracker') return trackerImport(body, reply);
+
+      // Classic create: store + ImportSummary. Only for a bare collection path.
+      if (segs.length === 1) {
+        const idField = ID_FIELD[head] ?? 'id';
+        const existing = body[idField];
+        const uid = existing != null && String(existing).length > 0 ? String(existing) : genUid();
+        const record = { ...(typeof body === 'object' && !Array.isArray(body) ? body : {}), [idField]: uid };
+        store.create(head, uid, record);
+        reply.code(200);
+        reply.header('Location', `http://localhost:${config.port}/api/${head}/${uid}`);
+        return importSummary(uid);
+      }
+      // POST to /api/{resource}/{id} (update-by-post): merge.
+      const updated = store.update(head, segs[segs.length - 1], body);
+      reply.code(200);
+      return updated ? importSummary(String(segs[segs.length - 1])) : NOT_FOUND;
+    });
+
+    // PUT /api/{resourceType}/{id} — full update.
+    app.put('/api/*', async (req: FastifyRequest, reply) => {
+      const segs = apiSegments(req);
+      if (segs.length < 2) {
+        reply.code(404);
+        return NOT_FOUND;
+      }
+      const [head] = segs;
+      const id = segs[segs.length - 1];
+      const idField = ID_FIELD[head] ?? 'id';
+      const body = (req.body ?? {}) as Record<string, any>;
+      store.replace(head, id, { ...body, [idField]: id });
+      reply.code(200);
+      return importSummary(id);
+    });
+
+    // PATCH /api/{resourceType}/{id} — partial update (http.patch).
+    app.patch('/api/*', async (req: FastifyRequest, reply) => {
+      const segs = apiSegments(req);
+      if (segs.length < 2) {
+        reply.code(404);
+        return NOT_FOUND;
+      }
+      const [head] = segs;
+      const id = segs[segs.length - 1];
+      const updated = store.update(head, id, (req.body ?? {}) as Record<string, any>);
+      if (updated === undefined) {
+        reply.code(404);
+        return NOT_FOUND;
+      }
+      reply.code(200);
+      return importSummary(id);
+    });
+
+    // DELETE /api/{resourceType}/{id} (classic) or DELETE /api/tracker/{type}/{id}.
+    // (The adaptor's destroy() on tracker types goes through POST /api/tracker
+    // with importStrategy=DELETE; a bare DELETE is also accepted here.)
+    app.delete('/api/*', async (req: FastifyRequest, reply) => {
+      const segs = apiSegments(req);
+      if (segs[0] === 'tracker') {
+        const meta = segs[1] ? TRACKER_TYPES[segs[1]] : undefined;
+        if (meta && segs[2]) store.destroy(meta.collection, segs[2]);
+        reply.code(200);
+        return { httpStatus: 'OK', httpStatusCode: 200, status: 'OK' };
+      }
+      if (segs.length < 2) {
+        reply.code(404);
+        return NOT_FOUND;
+      }
+      const head = segs[0];
+      const id = segs[segs.length - 1];
+      if (!store.destroy(head, id)) {
+        reply.code(404);
+        return NOT_FOUND;
+      }
+      reply.code(200);
+      return {
+        httpStatus: 'OK',
+        httpStatusCode: 200,
+        status: 'OK',
+        response: { responseType: 'ObjectReport', uid: id, klass: head },
       };
     });
   },
