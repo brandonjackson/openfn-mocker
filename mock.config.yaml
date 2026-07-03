@@ -6,10 +6,27 @@
 log_level: info
 port: 4000
 
+# Optional top-level defaults for simulated network behavior. Anything set here
+# cascades onto every system that does not set its own; a per-system block wins,
+# and `latency` is merged key-by-key so a system can override just one field.
+# Left commented out, every system answers instantly and never fails (the
+# historical behavior). See "Simulating stochastic behavior" in the README.
+# latency:
+#   mean_ms: 150        # average added delay per request
+#   stddev_ms: 40       # Gaussian jitter around the mean
+# error_rate: 0.0       # probability [0,1] of an injected failure response
+
 systems:
   dhis2:
     enabled: true
     version: "2.39"
+    # Example: make DHIS2 feel like a busy, occasionally-flaky remote instance.
+    latency:
+      mean_ms: 200
+      stddev_ms: 60
+      min_ms: 20
+      max_ms: 1500
+    error_rate: 0.02
 
   commcare:
     enabled: true
