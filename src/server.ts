@@ -5,6 +5,7 @@ import { RequestLog, summarizeBody, makeLogLevel } from './logger.js';
 import { authPlugin, enforceAuth } from './auth.js';
 import { registerBehavior } from './behavior.js';
 import { registerAdminRoutes } from './admin.js';
+import { externalOrigin, isProxied, rewriteToExternalOrigin } from './systems/shared/self-url.js';
 import type { MockSystemPlugin, SystemConfig } from './systems/types.js';
 
 /**
@@ -81,6 +82,29 @@ export async function registerSystem(
   // Optional stochastic behavior (latency + error injection) from the system's
   // config block. No-ops when the config leaves the knobs at their defaults.
   registerBehavior(app, config);
+
+  // Rewrite internal self-referential URLs (http://localhost:<port>/...) to the
+  // public origin when the request came through a reverse proxy, so paging
+  // links, FHIR fullUrls, Location headers, etc. are reachable from a deployed
+  // instance (Railway, Render, Fly, ...) and carry the /<system> mount prefix.
+  // Gated on X-Forwarded-Host: direct/local/test traffic is left untouched, so
+  // this never changes behavior when the mock is hit directly.
+  const internalOrigin = `http://localhost:${config.port}`;
+  app.addHook('onSend', async (request, reply, payload) => {
+    if (!isProxied(request)) return payload;
+    const origin = externalOrigin(request, config.port);
+    if (origin === internalOrigin) return payload;
+
+    const location = reply.getHeader('location');
+    if (typeof location === 'string' && location.includes(internalOrigin)) {
+      reply.header('location', rewriteToExternalOrigin(location, internalOrigin, origin, mountPath));
+    }
+
+    if (typeof payload === 'string' && payload.includes(internalOrigin)) {
+      return rewriteToExternalOrigin(payload, internalOrigin, origin, mountPath);
+    }
+    return payload;
+  });
 
   // Record every response into the ring buffer for /_admin/requests.
   app.addHook('onResponse', async (request, reply) => {

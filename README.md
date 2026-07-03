@@ -158,6 +158,15 @@ honors automatically. Each system is then reachable at
 `https://<your-app>.up.railway.app/<system>` (e.g. `.../dhis2/api/...`,
 `.../fhir/Patient`). No wildcard DNS or per-system service is needed.
 
+**Self-referential URLs follow the public domain.** Several systems return URLs
+that point back at themselves (events paging links, FHIR `fullUrl`s and `self`
+links, DHIS2 `contextPath`, `Location` headers, KoboToolbox asset URLs). When a
+request arrives through the platform's proxy (identified by the `X-Forwarded-Host`
+header it sets), those URLs are rewritten from the internal `localhost:<port>`
+to the public `https://<your-app>.up.railway.app/<system>` origin — mount prefix
+included — so a client that follows them reaches the right place. Requests made
+directly to the process (no proxy header) are left untouched.
+
 ## Configuration
 
 Configuration is read from `mock.config.yaml` (override the path with the `MOCKER_CONFIG` environment variable). A top-level `port` sets the single listen port; each system has its own block under `systems:` and is mounted at `/<name>`.
