@@ -1016,6 +1016,288 @@ export const SYSTEM_GUIDES: Record<string, SystemGuide> = {
   },
 };
 
+/**
+ * Per-adaptor-function usage examples, keyed by system name — the fan-in point
+ * for the sandbox "Usage" tab. Each entry lists a system's adaptor functions
+ * with example OpenFn job code and an `apiRef` naming the example on its "API"
+ * tab that the function calls (`ex0`, `ex1`, … by position, or an example's own
+ * `id`). A system with no entry here (and no inline `guide.usage`) shows the
+ * "coming soon" placeholder. OpenSPP declares its usage inline on the guide, so
+ * it is intentionally absent from this map.
+ */
+export const SYSTEM_USAGE: Record<string, UsageExample[]> = {
+  "dhis2": [
+    { fn: "create", signature: "create(path, data, params?)", description: "Create a new DHIS2 record (program, event, tracked entity, data set, ...).",
+      code: "create('trackedEntityInstances', {\n  orgUnit: 'DiszpKrYNg8', trackedEntityType: 'nEenWmSyUEp',\n  attributes: [{ attribute: 'w75KJ2mc4zz', value: 'Aminata' }]\n});", apiRef: "ex4" },
+    { fn: "get", signature: "get(path, params?)", description: "Retrieve any DHIS2 resource as JSON via its REST path.",
+      code: "get('programs/IpHINAT79UW', { fields: 'id,name,programStages' });", apiRef: "ex3" },
+    { fn: "update", signature: "update(resourceType, path, data, options?)", description: "Replace an existing resource; requires the full object body.",
+      code: "update('events', 'PVqUD2hvU4E', {\n  program: 'IpHINAT79UW', orgUnit: 'DiszpKrYNg8', status: 'COMPLETED'\n});", apiRef: "ex5" },
+    { fn: "upsert", signature: "upsert(resourceType, query, data, options?)", description: "Update a record matched by query, or create it if none is found.",
+      code: "upsert('trackedEntities', {}, {\n  orgUnit: 'DiszpKrYNg8', trackedEntityType: 'nEenWmSyUEp',\n  attributes: [{ attribute: 'w75KJ2mc4zz', value: 'Aminata' }]\n});", apiRef: "ex5" },
+    { fn: "destroy", signature: "destroy(resourceType, path, data?, options?)", description: "Delete a DHIS2 record by resourceType and id/path.",
+      code: "destroy('trackedEntities', 'LcRd6Nyaq7T');", apiRef: "ex5" },
+    { fn: "tracker.import", signature: "tracker.import(strategy, payload, options?)", description: "Import tracker data (events, enrollments, trackedEntities) via /api/tracker.",
+      code: "tracker.import('CREATE_AND_UPDATE', {\n  events: [{ program: 'IpHINAT79UW', programStage: 'A03MvHHogjR', orgUnit: 'DiszpKrYNg8', status: 'COMPLETED' }]\n});", apiRef: "ex5" },
+    { fn: "tracker.export", signature: "tracker.export(path, query?, options?)", description: "Export tracker data (events, enrollments, trackedEntities) from /api/tracker.",
+      code: "tracker.export('events', { orgUnit: 'DiszpKrYNg8', program: 'IpHINAT79UW' });", apiRef: "ex6" },
+  ],
+  "commcare": [
+    { fn: "get", signature: "get(path, params = {}, callback = state => state)", description: "Fetch resources from CommCare's REST API, auto-paginating into state.data.",
+      code: "get('/case', { type: 'patient' });", apiRef: "ex1" },
+    { fn: "post", signature: "post(path, data, params = {}, callback = state => state)", description: "Send a JSON body via POST to a CommCare REST API resource.",
+      code: "post('/case', { case_type: 'patient', case_name: 'Jane Doe' });" },
+    { fn: "submitXls", signature: "submitXls(data, params)", description: "Bulk-upload an array of objects to CommCare by converting them into an XLS import.",
+      code: "submitXls([{ name: 'Jane Doe', phone: '0000000' }], {\n  case_type: 'patient', search_field: 'external_id', create_new_cases: 'on',\n});" },
+    { fn: "submit", signature: "submit(data)", description: "Convert JSON fields to XML and submit them to CommCare as an OpenRosa x-form.",
+      code: "submit(\n  fields(\n    field('@', state => ({ xmlns: `http://openrosa.org/formdesigner/${state.formId}` })),\n    field('case_type', () => 'patient')\n  )\n);", apiRef: "ex6" },
+    { fn: "fetchReportData", signature: "fetchReportData(reportId, params, postUrl)", description: "GET data from a CommCare configurable report and POST the response elsewhere.",
+      code: "fetchReportData('report-abc', { limit: 10 }, 'https://www.example.com/api/');", apiRef: "ex5" },
+    { fn: "request", signature: "request(method, path, body, params = {})", description: "Make an arbitrary HTTP request against any CommCare REST API endpoint.",
+      code: "request('GET', '/case', {}, { offset: 0, limit: 20 });", apiRef: "ex0" },
+    { fn: "bulk", signature: "bulk(type, data, params)", description: "Bulk-upload case-data or lookup-table records to CommCare as an XLSX import.",
+      code: "bulk('case-data', [{ name: 'Jane Doe', phone: '0000000' }], {\n  case_type: 'patient', search_field: 'external_id', create_new_cases: 'on',\n});" },
+  ],
+  "openmrs": [
+    { fn: "get", signature: "get(path, options = {})", description: "Fetch a resource or search a list from OpenMRS, with automatic pagination.",
+      code: "get('patient', { q: 'Kamara', limit: 10 });", apiRef: "ex2" },
+    { fn: "create", signature: "create(path, data)", description: "Create a new resource (patient, person, encounter, ...) in OpenMRS.",
+      code: "create('patient', {\n  identifiers: [{ identifier: 'SL-10432', identifierType: '05a29f94-...', preferred: true }],\n  person: { gender: 'F', birthdate: '1990-04-12', names: [{ givenName: 'Fatmata', familyName: 'Kamara' }] },\n});", apiRef: "ex7" },
+    { fn: "update", signature: "update(path, data)", description: "Update specific properties of an existing OpenMRS resource.",
+      code: "update('person/3cad37ad-984d-4c65-a019-3eb120c9c373', { gender: 'F' });" },
+    { fn: "upsert", signature: "upsert(path, data, params = {})", description: "Update a matching resource if a query finds one, else create it.",
+      code: "upsert('patient', $.data, { q: 'Fatmata Kamara', limit: 1 });", apiRef: "ex2" },
+    { fn: "destroy", signature: "destroy(path, options = {})", description: "Void (or with purge:true, permanently delete) a resource by UUID.",
+      code: "destroy('patient/1fdaa696-e759-4a7d-a066-f1ae557c151b');" },
+    { fn: "http.get", signature: "http.get(path, options = {})", description: "Send a raw GET request to any OpenMRS REST path, unmodified.",
+      code: "http.get('/ws/rest/v1/patient', { query: { v: 'ref', limit: 5 } });", apiRef: "ex3" },
+    { fn: "http.post", signature: "http.post(path, data, options = {})", description: "Send a raw POST request with a JSON payload to an OpenMRS REST path.",
+      code: "http.post('/ws/rest/v1/patient', {\n  person: { gender: 'M', birthdate: '1985-02-20', names: [{ givenName: 'Mohamed', familyName: 'Sesay' }] },\n});", apiRef: "ex7" },
+    { fn: "http.request", signature: "http.request(method, path, options = {})", description: "Send an HTTP request with any method to an OpenMRS REST path.",
+      code: "http.request('GET', '/ws/rest/v1/provider', { query: { limit: 10 } });", apiRef: "ex4" },
+    { fn: "fhir.get", signature: "fhir.get(path, query, callback)", description: "Query the OpenMRS FHIR R4 module for resources like Patient or Observation.",
+      code: "fhir.get('Observation', { patient: '1fdaa696-...', _count: 50 });", apiRef: "ex6" },
+  ],
+  "fhir": [
+    { fn: "request", signature: "request(method, path, options = {}, callback = s => s)", description: "Send a generic HTTP request to the baseURL defined in config.",
+      code: "request('GET', 'metadata')", apiRef: "ex0" },
+    { fn: "post", signature: "post(path, data, options = {}, callback = s => s)", description: "Send a HTTP POST request to the baseURL defined in config.",
+      code: "post('Bundle', { resourceType: 'Bundle' });", apiRef: "ex8" },
+    { fn: "get", signature: "get(path, params = {}, options = {}, callback = s => s)", description: "Send a HTTP GET request to the baseURL defined in config.",
+      code: "get('Patient/pat-1');", apiRef: "ex2" },
+    { fn: "create", signature: "create(resourceType, resource, params, callback = s => s)", description: "Create a new resource; server assigns the id.",
+      code: "create('Patient', {\n  name: [{ use: 'official', family: 'Kamara', given: ['Aminata'] }],\n});", apiRef: "ex7" },
+    { fn: "createTransactionBundle", signature: "createTransactionBundle(entries, callback = s => s)", description: "Create a transaction Bundle to process multiple requests at once.",
+      code: "createTransactionBundle([\n  { resource: { resourceType: 'Patient', name: [{ family: 'Kamara' }] }, request: { method: 'POST', url: 'Patient' } },\n]);", apiRef: "ex8" },
+    { fn: "getClaim", signature: "getClaim(claimId, params, callback = s => s)", description: "Get a Claim by id, or search Claims with query params.",
+      code: "getClaim('claim-1');", apiRef: "ex5" },
+  ],
+  "http-generic": [
+    { fn: "request", signature: "request(method, path, options)", description: "Make an HTTP request with a custom method, path, and options.",
+      code: "request('GET', '/api/v1/referrals', { query: { status: 'open' } });", apiRef: "ex1" },
+    { fn: "get", signature: "get(path, options)", description: "Make a GET request to retrieve data from an endpoint.",
+      code: "get('/api/v1/referrals');", apiRef: "ex1" },
+    { fn: "post", signature: "post(path, data, options)", description: "Make a POST request to create a resource at an endpoint.",
+      code: "post('/api/v1/referrals', { patientId: '123', reason: 'Specialist consult' });", apiRef: "ex0" },
+    { fn: "put", signature: "put(path, data, options)", description: "Make a PUT request to replace a resource at an endpoint.",
+      code: "put('/anything/you/want', { id: 1, status: 'updated' });", apiRef: "ex2" },
+    { fn: "patch", signature: "patch(path, data, options)", description: "Make a PATCH request to partially update a resource at an endpoint.",
+      code: "patch('/anything/you/want', { status: 'closed' });", apiRef: "ex2" },
+    { fn: "del", signature: "del(path, options)", description: "Make a DELETE request to remove a resource at an endpoint.",
+      code: "del('/anything/you/want/123');", apiRef: "ex2" },
+  ],
+  "kobotoolbox": [
+    { fn: "getForms", signature: "getForms()", description: "Fetch all survey forms (assets) accessible to the authorized user.",
+      code: "getForms();", apiRef: "ex0" },
+    { fn: "getSubmissions", signature: "getSubmissions(formId, options = {})", description: "Fetch submissions for a form, auto-paginated up to a limit.",
+      code: "getSubmissions('aHousehold01Q1');", apiRef: "ex3" },
+    { fn: "getSubmissions (filtered)", signature: "getSubmissions(formId, options = {})", description: "Fetch submissions for a form, filtered with a MongoDB-style query.",
+      code: "getSubmissions('aHousehold01Q1', {\n  query: { water_source: 'borehole' }\n});", apiRef: "ex4" },
+    { fn: "getDeploymentInfo", signature: "getDeploymentInfo(formId)", description: "Fetch deployment status and submission count for a form.",
+      code: "getDeploymentInfo('aHousehold01Q1');", apiRef: "ex2" },
+    { fn: "http.get", signature: "http.get(path, options = {})", description: "Make a GET request to any KoboToolbox endpoint, e.g. a single asset.",
+      code: "http.get('assets/aHousehold01Q1');", apiRef: "ex1" },
+    { fn: "http.post", signature: "http.post(path, data, options = {})", description: "Make a POST request to submit survey data to a KoboToolbox endpoint.",
+      code: "http.post('assets/aHousehold01Q1/submissions/', {\n  household_head_name: 'Fatu Conteh', water_source: 'borehole'\n});", apiRef: "ex5" },
+    { fn: "http.request", signature: "http.request(method, path, options = {})", description: "Make an HTTP request with any method to a KoboToolbox endpoint.",
+      code: "http.request('PATCH', 'assets/aHousehold01Q1/data/bulk/', {\n  data: { submission_ids: [12001], data: { water_source: 'piped' } }\n});" },
+  ],
+  "primero": [
+    { fn: "getCases", signature: "getCases(query, options, callback?)", description: "Fetch cases from Primero, optionally filtered by query params.",
+      code: "getCases({ remote: true, sex: 'female' });", apiRef: "ex1" },
+    { fn: "createCase", signature: "createCase(params, callback?)", description: "Create a new case; the server assigns a CP-YYYY-NNN display id.",
+      code: "createCase({ data: { age: 16, sex: 'female', name: 'Edwine Edgemont' } });", apiRef: "ex6" },
+    { fn: "updateCase", signature: "updateCase(id, params, callback?)", description: "Update an existing case by id; subforms merge.",
+      code: "updateCase('CP-2026-014', { data: { age: 17 } });" },
+    { fn: "upsertCase", signature: "upsertCase(params, callback?)", description: "Create or update a case, matched by one or more external id fields.",
+      code: "upsertCase({\n  externalIds: ['case_id'],\n  data: { case_id: 'CP-2026-041', age: 20, status: 'open' },\n});" },
+    { fn: "getReferrals", signature: "getReferrals(params, callback?)", description: "Fetch referrals for one case, looked up by record id or case id.",
+      code: "getReferrals({ id: 'CP-2026-014' });" },
+    { fn: "createReferrals", signature: "createReferrals(params, callback?)", description: "Bulk-refer one or more cases to a single user.",
+      code: "createReferrals({\n  data: { ids: ['CP-2026-014'], transitioned_to: 'primero_cp' },\n});" },
+    { fn: "updateReferral", signature: "updateReferral(params, callback?)", description: "Update a single referral on a case, looked up by record/case id.",
+      code: "updateReferral({ caseId: 'CP-2026-014', id: 'referral-1', data: { notes: 'Updated' } });" },
+    { fn: "getForms", signature: "getForms(query, callback?)", description: "Fetch form definitions accessible to the user, optionally by module.",
+      code: "getForms({ module_id: 'primeromodule-cp' });", apiRef: "ex3" },
+    { fn: "getLookups", signature: "getLookups(query, callback?)", description: "Fetch a paginated list of lookup values.",
+      code: "getLookups({ per: 50, page: 1 });", apiRef: "ex4" },
+    { fn: "getLocations", signature: "getLocations(query, callback?)", description: "Fetch a paginated location hierarchy.",
+      code: "getLocations({ page: 1, per: 20 });", apiRef: "ex5" },
+  ],
+  "mailgun": [
+    { fn: "send", signature: "send(params)", description: "Send an email through Mailgun, optionally attaching a file from a URL or base64.",
+      code: "send({\n  from: 'admin@openfn.org', to: 'jane.doe@example.org', subject: 'Welcome', text: 'Hello there!'\n});", apiRef: "ex0" },
+  ],
+  "twilio": [
+    { fn: "sendSMS", signature: "sendSMS(params)", description: "Sends an SMS message from a Twilio number to another phone number.",
+      code: "sendSMS({\n  body: 'Hello from OpenFn',\n  from: '+15005550006',\n  to: '+23276000000',\n});", apiRef: "ex0" },
+  ],
+  "godata": [
+    { fn: "listOutbreaks", signature: "listOutbreaks(callback?)", description: "Fetch the full list of outbreaks.",
+      code: "listOutbreaks();", apiRef: "ex1" },
+    { fn: "getOutbreak", signature: "getOutbreak(query, callback?)", description: "Get one or more outbreaks matching a query filter.",
+      code: "getOutbreak({ where: { name: 'Ebola in Sierra Leone' } });", apiRef: "ex1" },
+    { fn: "upsertOutbreak", signature: "upsertOutbreak(outbreak, callback?)", description: "Create or update an outbreak, matched by externalId.",
+      code: "upsertOutbreak({ externalId: 'ob-sl-covid19', data: { name: 'Ebola in Sierra Leone' } });" },
+    { fn: "listCases", signature: "listCases(id, callback?)", description: "Fetch all cases within an outbreak by its id.",
+      code: "listCases('ob-sl-covid19');", apiRef: "ex2" },
+    { fn: "getCase", signature: "getCase(id, query, callback?)", description: "Get one or more cases in an outbreak matching a query filter.",
+      code: "getCase('ob-sl-covid19', { where: { firstName: 'Jane' } });", apiRef: "ex3" },
+    { fn: "upsertCase", signature: "upsertCase(id, externalId, goDataCase, callback?)", description: "Create or update a case in an outbreak, matched by externalId.",
+      code: "upsertCase('ob-sl-covid19', 'visualId', {\n  firstName: 'Jane', visualId: 'CASE-001',\n});", apiRef: "ex5" },
+    { fn: "listContacts", signature: "listContacts(id, callback?)", description: "Fetch all contacts within an outbreak by its id.",
+      code: "listContacts('ob-sl-covid19');" },
+    { fn: "getContact", signature: "getContact(id, query, callback?)", description: "Get one or more contacts in an outbreak matching a query filter.",
+      code: "getContact('ob-sl-covid19', { where: { firstName: 'Jane' } });" },
+    { fn: "upsertContact", signature: "upsertContact(id, externalId, goDataContact, callback?)", description: "Create or update a contact in an outbreak, matched by externalId.",
+      code: "upsertContact('ob-sl-covid19', 'visualId', {\n  firstName: 'Jane', gender: 'female',\n});" },
+    { fn: "listLocations", signature: "listLocations(callback?)", description: "Fetch the complete list of locations.",
+      code: "listLocations();", apiRef: "ex4" },
+    { fn: "getLocation", signature: "getLocation(query, callback?)", description: "Get one or more locations matching a query filter.",
+      code: "getLocation({ where: { name: 'Freetown' } });", apiRef: "ex4" },
+    { fn: "upsertLocation", signature: "upsertLocation(externalId, goDataLocation, callback?)", description: "Create or update a location, matched by externalId.",
+      code: "upsertLocation('loc-001', { name: 'Freetown Health Centre' });" },
+    { fn: "listReferenceData", signature: "listReferenceData(callback?)", description: "Fetch the complete list of reference-data entries.",
+      code: "listReferenceData();" },
+    { fn: "getReferenceData", signature: "getReferenceData(query, callback?)", description: "Get reference-data entries matching a query filter.",
+      code: "getReferenceData({ where: { categoryId: 'LNG_REFERENCE_DATA_CATEGORY_CENTRE_NAME' } });" },
+    { fn: "upsertReferenceData", signature: "upsertReferenceData(externalId, goDataReferenceData, callback?)", description: "Create or update a reference-data entry, matched by externalId.",
+      code: "upsertReferenceData('ref-001', { value: 'Custom label' });" },
+  ],
+  "rapidpro": [
+    { fn: "addContact", signature: "addContact(params, callback = s => s)", description: "Add a new contact to RapidPro.",
+      code: "addContact({\n  name: 'Amara', language: 'eng', urns: ['tel:+23276000000']\n});", apiRef: "ex1" },
+    { fn: "upsertContact", signature: "upsertContact(params, callback = s => s)", description: "Upsert a contact to RapidPro, deduplicating on the URN value.",
+      code: "upsertContact({\n  name: 'Amara', language: 'eng', urns: ['tel:+23276000000']\n});", apiRef: "ex1" },
+    { fn: "startFlow", signature: "startFlow(params, callback = s => s)", description: "Start a RapidPro flow for a number of contacts.",
+      code: "startFlow({\n  flow: 'f5901b62-ba76-4003-9c62-72fdacc1b7b7',\n  contacts: ['a052b00c-15b3-48e6-9771-edbaa277a353']\n});", apiRef: "ex2" },
+    { fn: "sendBroadcast", signature: "sendBroadcast(params, callback = s => s)", description: "Send a message to a list of contacts and/or URNs.",
+      code: "sendBroadcast({\n  text: 'Your ANC appointment is tomorrow',\n  urns: ['tel:+23276000000']\n});", apiRef: "ex3" },
+  ],
+  "odk": [
+    { fn: "getForms", signature: "getForms(projectId)", description: "Fetch all forms for a project.",
+      code: "getForms(1);", apiRef: "ex2" },
+    { fn: "getSubmissions", signature: "getSubmissions(projectId, xmlFormId, query = {})", description: "Fetch submissions to a form, optionally filtered with an OData query.",
+      code: "getSubmissions(1, 'household-survey', {\n  $filter: \"__system/submissionDate gt 2020-01-31T23:59:59.999Z\"\n});", apiRef: "ex3" },
+    { fn: "get", signature: "get(path, options = {})", description: "Make a GET request against the ODK Central server.",
+      code: "get('v1/projects/1/forms');", apiRef: "ex2" },
+    { fn: "post", signature: "post(path, body, options = {})", description: "Make a POST request against the ODK Central server.",
+      code: "post('v1/projects/1/forms/household-survey.svc/Submissions', {\n  deviceID: 'device-01', instanceID: 'uuid:abc123'\n});", apiRef: "ex4" },
+    { fn: "request", signature: "request(method, path, body, options = {})", description: "Make a general HTTP request against ODK Central with any method.",
+      code: "request('GET', 'v1/projects');", apiRef: "ex1" },
+  ],
+  "openlmis": [
+    { fn: "get", signature: "get(path, options, callback?)", description: "Send a GET request to retrieve a resource from OpenLMIS.",
+      code: "get('/facilities');", apiRef: "ex1" },
+    { fn: "post", signature: "post(path, body, callback?)", description: "Send a POST request to create a resource, e.g. initiate a requisition.",
+      code: "post(`/requisitions/initiate?program=${$.programId}&facility=${$.facilityId}`, {});", apiRef: "ex4" },
+    { fn: "put", signature: "put(path, body, callback?)", description: "Send a PUT request to update an existing OpenLMIS resource.",
+      code: "put('/programs/123', { name: 'Essential Meds', code: '123' });" },
+    { fn: "request", signature: "request(method, path, body, options, callback?)", description: "Send a custom HTTP request (any method), e.g. to fetch an OAuth token.",
+      code: "request('POST', '/oauth/token?grant_type=client_credentials', {});", apiRef: "ex0" },
+  ],
+  "openimis": [
+    { fn: "getFHIR", signature: "getFHIR(path, params, callback = s => s)", description: "Fetch insurees as a FHIR Patient Bundle from OpenIMIS.",
+      code: "getFHIR('Patient');", apiRef: "ex1" },
+    { fn: "getFHIR (by id)", signature: "getFHIR(path, params, callback = s => s)", description: "Fetch a single insuree (FHIR Patient) by its resource id.",
+      code: "getFHIR('Patient/insuree-0001');", apiRef: "ex2" },
+    { fn: "getFHIR (Contract)", signature: "getFHIR(path, params, callback = s => s)", description: "Fetch policies as FHIR Contract resources.",
+      code: "getFHIR('Contract');", apiRef: "ex3" },
+    { fn: "getFHIR (Claim)", signature: "getFHIR(path, params, callback = s => s)", description: "Fetch claims as FHIR Claim resources.",
+      code: "getFHIR('Claim');", apiRef: "ex4" },
+  ],
+  "opencrvs": [
+    { fn: "queryEvents", signature: "queryEvents(variables, options?)", description: "Run an events search query against the OpenCRVS GraphQL API.",
+      code: "queryEvents({\n  event: 'birth', registrationStatuses: ['REGISTERED'],\n});", apiRef: "ex0" },
+    { fn: "createEvent", signature: "createEvent(type, options?)", description: "Create an OpenCRVS v2 event, e.g. a birth or death registration.",
+      code: "createEvent('v2.birth', { transactionId: 'sandbox-txn-1' });", apiRef: "ex2" },
+    { fn: "notifyEvent", signature: "notifyEvent(eventId, declaration, options?)", description: "Notify (advance) an existing OpenCRVS v2 event with declaration data.",
+      code: "notifyEvent($.id, {\n  'child.name': { firstname: 'Test', surname: 'Baby' },\n  'child.dob': '2026-05-01',\n});", apiRef: "ex2" },
+    { fn: "submitBirthNotification", signature: "submitBirthNotification(declaration, options?)", description: "Create a v2 birth event and notify it in one step.",
+      code: "submitBirthNotification({\n  'child.name': { firstname: 'Test', surname: 'Baby' },\n  'child.gender': 'female',\n});", apiRef: "ex2" },
+    { fn: "getLocations", signature: "getLocations(options?)", description: "Fetch the list of locations from the country-config host.",
+      code: "getLocations();", apiRef: "ex3" },
+  ],
+  "openelis": [
+    { fn: "http.get", signature: "http.get(path, options)", description: "Send a GET request to fetch lab orders, results, or reports from OpenELIS.",
+      code: "http.get('fhir/ServiceRequest');", apiRef: "ex0" },
+    { fn: "http.post", signature: "http.post(path, body, options)", description: "Send a POST request to create or submit data, e.g. a new lab order.",
+      code: "http.post('fhir/ServiceRequest', {\n  resourceType: 'ServiceRequest', status: 'active', intent: 'order', subject: { reference: 'Patient/pat-0001' },\n});", apiRef: "ex3" },
+    { fn: "http.request", signature: "http.request(method, path, body, options)", description: "Make a general HTTP request with any method to an OpenELIS endpoint.",
+      code: "http.request('GET', 'fhir/DiagnosticReport/report-0001');", apiRef: "ex1" },
+  ],
+  "cht": [
+    { fn: "get", signature: "get(path, options, callback?)", description: "Make a GET request against the CHT base URL.",
+      code: "get('/api/v2/export/contacts', { query: { filters: { search: 'jim' } } });", apiRef: "ex4" },
+    { fn: "post", signature: "post(path, body, options, callback?)", description: "Make a POST request against the CHT base URL.",
+      code: "post('/api/v1/people', { name: 'Hannah', phone: '+254712345678', type: 'contact', contact_type: 'patient' });", apiRef: "ex0" },
+    { fn: "put", signature: "put(path, options, callback?)", description: "Make a PUT request against the CHT base URL.",
+      code: "put('/api/v1/settings', { query: { overwrite: true } });" },
+    { fn: "request", signature: "request(method, path, body, options, callback?)", description: "Make a general HTTP request with any method against the CHT base URL.",
+      code: "request('GET', '/medic/_changes', null, { query: { since: 0 } });", apiRef: "ex1" },
+  ],
+  "openhim": [
+    { fn: "getChannels", signature: "getChannels(channelId?)", description: "Fetch all OpenHIM channel records, or a single channel by id.",
+      code: "getChannels();", apiRef: "ex0" },
+    { fn: "createChannel", signature: "createChannel(body)", description: "Create a new routing channel in OpenHIM.",
+      code: "createChannel({ name: 'FHIR Server Testing', urlPattern: '^/fhir/.*$', methods: ['GET', 'POST'] });" },
+    { fn: "getClients", signature: "getClients(clientId?)", description: "Fetch all registered OpenHIM client records, or a single client by id.",
+      code: "getClients();", apiRef: "ex1" },
+    { fn: "createClient", signature: "createClient(body)", description: "Register a new client record in OpenHIM.",
+      code: "createClient({ clientID: 'fhir-server-7', name: 'FHIR Server', roles: ['fhir'] });", apiRef: "ex3" },
+    { fn: "getTransactions", signature: "getTransactions(options = {})", description: "Fetch OpenHIM transactions, optionally filtered/paginated or by id.",
+      code: "getTransactions({ filterLimit: 5, filterPage: 0 });", apiRef: "ex2" },
+    { fn: "getTasks", signature: "getTasks(options)", description: "Fetch all OpenHIM tasks, or a single task by id.",
+      code: "getTasks({ filterLimit: 10, filterPage: 0 });" },
+    { fn: "createTask", signature: "createTask(body)", description: "Create a new orchestrated task (batch of transaction retries).",
+      code: "createTask({ tids: ['5bb777777bbb66cc5d4444ee'], batchSize: 2, paused: true });" },
+    { fn: "createEncounter", signature: "createEncounter(encounterData)", description: "Create a CHW encounter record via the sample mediator route.",
+      code: "createEncounter({ patientId: '12345', encounterType: 'home-visit' });", apiRef: "ex4" },
+    { fn: "http.request", signature: "http.request(method, path, body, options = {})", description: "Make a general-purpose HTTP request with any method to OpenHIM.",
+      code: "http.request('GET', '/transactions');", apiRef: "ex2" },
+  ],
+  "openboxes": [
+    { fn: "get", signature: "get(path, options)", description: "Send a GET request to retrieve data from a resource path.",
+      code: "get('products', { query: { max: 10 } });", apiRef: "ex1" },
+    { fn: "post", signature: "post(path, body, options)", description: "Send a POST request with a body to create or submit data to a resource.",
+      code: "post('products', { name: 'New product', description: 'A new product' });", apiRef: "ex4" },
+    { fn: "request", signature: "request(method, path, options)", description: "Perform a flexible HTTP request using any method to a resource path.",
+      code: "request('GET', '/stockMovements', { query: { max: 5 } });", apiRef: "ex3" },
+  ],
+  "ihris": [
+    { fn: "fhir.get", signature: "fhir.get(path, query)", description: "Make a GET request to any FHIR endpoint in iHRIS.",
+      code: "fhir.get('Practitioner', { name: 'Sesay' });", apiRef: "ex1" },
+    { fn: "http.get", signature: "http.get(resource, options)", description: "Get a FHIR resource by id, or list all resources of a given type.",
+      code: "http.get('/fhir/Practitioner');", apiRef: "ex0" },
+    { fn: "http.post", signature: "http.post(resource, body, options)", description: "Create a new FHIR resource, e.g. add a Practitioner.",
+      code: "http.post('/fhir/Practitioner', {\n  resourceType: 'Practitioner', name: [{ family: 'Sesay', given: ['Aminata'] }],\n});", apiRef: "ex3" },
+    { fn: "http.put", signature: "http.put(resource, body, options)", description: "Update an existing FHIR resource at the given resource path.",
+      code: "http.put('/fhir/Practitioner/6462', {\n  resourceType: 'Practitioner', id: '6462', active: true,\n});" },
+    { fn: "http.request", signature: "http.request(method, path, body, options)", description: "Make a general HTTP request with any method to any iHRIS endpoint.",
+      code: "http.request('GET', '/fhir/PractitionerRole/role-prac-0001', {}, {});", apiRef: "ex2" },
+  ],
+};
+
 /** A running system as seen by the renderer. */
 export interface RunningSystemView {
   name: string;
@@ -1092,23 +1374,38 @@ function resolveCredential(
   };
 }
 
-/** Resolve a guide's examples: interpolate `{{token}}`s and prepend the mount path. */
+/**
+ * Resolve a guide's examples: interpolate `{{token}}`s, prepend the mount path,
+ * and give every example a stable id (`ex0`, `ex1`, … by position when it does
+ * not declare its own). The id is the anchor a `usage` example's `apiRef` points
+ * at, so authored usage can reference an example by its position without the
+ * example needing a hand-written id.
+ */
 function resolveExamples(
   guide: SystemGuide | undefined,
   mountPath: string,
   vars: Record<string, string>
 ): SandboxExample[] {
   if (!guide) return [];
-  return guide.examples.map((ex) => {
+  return guide.examples.map((ex, i) => {
     const resolved = JSON.parse(interpolate(JSON.stringify(ex), vars)) as SandboxExample;
-    return { ...resolved, path: mountPath + resolved.path };
+    return { ...resolved, id: resolved.id ?? 'ex' + i, path: mountPath + resolved.path };
   });
 }
 
-/** Resolve a guide's usage examples: interpolate `{{token}}`s (code stays as-is otherwise). */
-function resolveUsage(guide: SystemGuide | undefined, vars: Record<string, string>): UsageExample[] {
-  if (!guide?.usage) return [];
-  return guide.usage.map((u) => JSON.parse(interpolate(JSON.stringify(u), vars)) as UsageExample);
+/**
+ * Resolve a system's usage examples: prefer the guide's own inline `usage`, else
+ * the shared SYSTEM_USAGE map (keyed by system name — the fan-in point for
+ * usage content authored per adaptor). `{{token}}`s are interpolated; code is
+ * otherwise verbatim.
+ */
+function resolveUsage(
+  name: string,
+  guide: SystemGuide | undefined,
+  vars: Record<string, string>
+): UsageExample[] {
+  const list = guide?.usage ?? SYSTEM_USAGE[name] ?? [];
+  return list.map((u) => JSON.parse(interpolate(JSON.stringify(u), vars)) as UsageExample);
 }
 
 /** HTML-escape for text placed in the document (defense in depth). */
@@ -1149,7 +1446,7 @@ export function renderSandboxPage(
       authRequired: Boolean(auth?.required),
       authSchemes: auth?.schemes ?? [],
       examples: resolveExamples(guide, sys.mountPath, vars),
-      usage: resolveUsage(guide, vars),
+      usage: resolveUsage(sys.name, guide, vars),
     };
   });
 
