@@ -25,6 +25,7 @@ export function makeDisplayId(prefix: string, year: number, seq: number): string
 /** Assemble a full case record (server fields + nested data). */
 export function makeCase(opts: {
   seq: number;
+  id?: string;
   owned_by?: string;
   registration_date?: string;
   status?: string;
@@ -35,7 +36,7 @@ export function makeCase(opts: {
     ? Number(opts.registration_date.slice(0, 4))
     : now.getFullYear();
   return {
-    id: randomUUID(),
+    id: opts.id ?? randomUUID(),
     case_id: makeDisplayId('CP', year, opts.seq),
     status: opts.status ?? 'open',
     registration_date: opts.registration_date ?? now.toISOString().slice(0, 10),
@@ -94,6 +95,8 @@ export function seed(store: DataStore, _config: SystemConfig): void {
   const cases = [
     makeCase({
       seq: 1,
+      // Pinned id so http.* usage examples can GET/PATCH a known case by record id.
+      id: 'a4d1f9c2-3b7e-4e18-9c2a-8f6b1d0e5a73',
       owned_by: 'caseworker1',
       registration_date: '2024-01-15',
       data: {

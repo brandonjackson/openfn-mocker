@@ -19,4 +19,6 @@ export const usage: UsageExample[] = [
     code: "patch('/anything/you/want', { status: 'closed' });", apiRef: "ex2" },
   { fn: "del", signature: "del(path, options)", description: "Make a DELETE request to remove a resource at an endpoint.",
     code: "del('/anything/you/want/123');", apiRef: "ex2" },
+  { fn: "parseXML", signature: "parseXML(data, script)", description: "Parse an XML string into state (no HTTP request); pass an optional callback to extract data.",
+    code: "parseXML('<library><book><title>Wuthering Heights</title></book></library>');" },
 ];

@@ -246,6 +246,22 @@ const plugin: MockSystemPlugin = {
       return updateIn(coll, segs[3], req.body, reply);
     });
 
+    app.put('/ws/rest/v1/*', async (req, reply) => {
+      const segs = segmentsOf(req);
+      // Full replace of an existing record: /{resource}/{uuid}.
+      if (segs.length === 2) {
+        const [resource, uuid] = segs;
+        const record: Record<string, any> = { ...((req.body ?? {}) as Record<string, any>), uuid };
+        record.display = deriveDisplay(resource, record);
+        store.replace(resource, uuid, record);
+        return record;
+      }
+      // Collection root: fall back to create (like POST).
+      if (segs.length === 1) return createIn(segs[0], req.body, reply);
+      reply.code(404);
+      return restNotFound();
+    });
+
     app.delete('/ws/rest/v1/*', async (req, reply) => {
       const segs = segmentsOf(req);
       if (segs.length === 2) return deleteIn(segs[0], segs[1], reply);

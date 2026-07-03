@@ -27,4 +27,10 @@ export const usage: UsageExample[] = [
     code: "getLookups({ per: 50, page: 1 });", apiRef: "ex4" },
   { fn: "getLocations", signature: "getLocations(query, callback?)", description: "Fetch a paginated location hierarchy.",
     code: "getLocations({ page: 1, per: 20 });", apiRef: "ex5" },
+  { fn: "http.get", signature: "http.get(path, options?)", description: "Low-level GET against the /api/v2 base; here the case list.",
+    code: "http.get('/cases');", apiRef: "ex1" },
+  { fn: "http.post", signature: "http.post(path, data, options?)", description: "Low-level POST; the body is sent wrapped in a { data } envelope.",
+    code: "http.post('cases', { age: 16, sex: 'female', name: 'Edwine Edgemont' });", apiRef: "ex6" },
+  { fn: "http.patch", signature: "http.patch(path, data, options?)", description: "Low-level PATCH of one case by record id; nested data merges.",
+    code: "http.patch('cases/a4d1f9c2-3b7e-4e18-9c2a-8f6b1d0e5a73', { age: 17 });" },
 ];
