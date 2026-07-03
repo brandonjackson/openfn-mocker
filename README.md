@@ -805,7 +805,7 @@ registry key is the mount path) and add a matching block to `mock.config.yaml`.
 Some systems are custom-shaped on purpose to match reality:
 
 - DHIS2 list responses use `{ pager, "<resourceType>": [...] }`; writes return an ImportSummary envelope.
-- CommCare uses the Tastypie `{ meta, objects }` envelope on domain-scoped paths and an OpenRosa XML receiver.
+- CommCare uses the Tastypie `{ meta, objects }` envelope on domain-scoped paths and an OpenRosa XML receiver. Note `fetchReportData(reportId, params, postUrl)`: the adaptor (via `language-common`) refuses an absolute `postUrl` whose origin differs from the credential's `hostUrl` and throws `BASE_URL_MISMATCH`, so point `postUrl` at a **relative, same-origin** path on the mock (e.g. `/a/test-project/api/v0.5/case/`) rather than an external `https://…` URL.
 - OpenMRS mirrors each seed patient as both a REST record and a FHIR R4 resource sharing the same UUID.
 - FHIR returns searchset Bundles and OperationOutcome errors, with transaction/batch support on `POST /fhir`.
 - Kobotoolbox and Primero use DRF-style `{ count, next, previous, results }` and Primero's `{ data, metadata }` envelopes respectively; Primero nests business fields under `data`.
