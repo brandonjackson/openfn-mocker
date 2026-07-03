@@ -848,12 +848,13 @@ ignore the URL path — openspp's `odoo-await`, for one, hardcodes `/xmlrpc/2/..
 and would otherwise never reach a `/openspp`-prefixed mount. A run fails if the
 CLI exits non-zero or reports an error (its `✗` marker).
 
-The systems under test are discovered automatically from the `usage` blocks in
-`src/sandbox.ts`, so a system is covered the moment it gains usage examples.
-Because it spawns real subprocesses and hits npm, it is **not** part of
-`pnpm test`; run it on demand or in a network-enabled CI job. Adaptors that
-can't yet be driven against the mock (see the Roadmap below) show up here as
-failures — that is the empirical check behind those gaps.
+The systems under test are discovered automatically from each plugin's `usage`
+examples (`MockSystemPlugin.usage`, authored per adaptor next to its seed data),
+so a system is covered the moment its plugin gains usage examples. Because it
+spawns real subprocesses and hits npm, it is **not** part of `pnpm test`; run it
+on demand or in a network-enabled CI job. Adaptors that can't yet be driven
+against the mock (see the Roadmap below) show up here as failures — that is the
+empirical check behind those gaps.
 
 ## Roadmap
 
@@ -898,6 +899,6 @@ box:
 - Stack: Node.js 20+, TypeScript (ESM, `NodeNext`), Fastify, Vitest, built with `tsc` to `dist/`. Package manager is pnpm.
 - IDs use Node's built-in `crypto.randomUUID()` (or a system-specific format where the real API differs).
 - Before opening a PR: `pnpm build` must exit clean and `pnpm test` must pass. Add tests for any new endpoint or system.
-- When you add usage examples to a system's `usage` block, run [`pnpm test:usage`](#testing-usage-examples-end-to-end) to confirm the snippets actually run through the real adaptor against the mock.
+- When you add usage examples to a plugin's `usage` array (next to its seed data, so the snippet and the records it reads stay together), run [`pnpm test:usage`](#testing-usage-examples-end-to-end) to confirm the snippets actually run through the real adaptor against the mock.
 - Keep plugins thin and specs faithful. Match real field names, envelopes, and status codes. Prefer building a focused subset spec over vendoring a multi-megabyte one.
 - Please do not commit secrets or real PII; seed data should be synthetic.

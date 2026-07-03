@@ -37,6 +37,15 @@ const plugin: MockSystemPlugin = {
     ],
   },
 
+  usage: [
+    { fn: "get", signature: "get(path, options)", description: "Send a GET request to retrieve data from a resource path.",
+      code: "get('products', { query: { max: 10 } });", apiRef: "ex1" },
+    { fn: "post", signature: "post(path, body, options)", description: "Send a POST request with a body to create or submit data to a resource.",
+      code: "post('products', { name: 'New product', description: 'A new product' });", apiRef: "ex4" },
+    { fn: "request", signature: "request(method, path, options)", description: "Perform a flexible HTTP request using any method to a resource path.",
+      code: "request('GET', '/stockMovements', { query: { max: 5 } });", apiRef: "ex3" },
+  ],
+
   async overrides(app: FastifyInstance, store: DataStore, _config: SystemConfig) {
     // POST /api/login — token exchange (accept any credentials).
     app.post('/api/login', async (_req, reply) => {

@@ -78,6 +78,23 @@ const plugin: MockSystemPlugin = {
     ],
   },
 
+  usage: [
+    { fn: "get", signature: "get(path, params = {}, callback = state => state)", description: "Fetch resources from CommCare's REST API, auto-paginating into state.data.",
+      code: "get('/case', { type: 'patient' });", apiRef: "ex1" },
+    { fn: "post", signature: "post(path, data, params = {}, callback = state => state)", description: "Send a JSON body via POST to a CommCare REST API resource.",
+      code: "post('/case', { case_type: 'patient', case_name: 'Jane Doe' });" },
+    { fn: "submitXls", signature: "submitXls(data, params)", description: "Bulk-upload an array of objects to CommCare by converting them into an XLS import.",
+      code: "submitXls([{ name: 'Jane Doe', phone: '0000000' }], {\n  case_type: 'patient', search_field: 'external_id', create_new_cases: 'on',\n});" },
+    { fn: "submit", signature: "submit(data)", description: "Convert JSON fields to XML and submit them to CommCare as an OpenRosa x-form.",
+      code: "submit(\n  fields(\n    field('@', state => ({ xmlns: `http://openrosa.org/formdesigner/${state.formId}` })),\n    field('case_type', () => 'patient')\n  )\n);", apiRef: "ex6" },
+    { fn: "fetchReportData", signature: "fetchReportData(reportId, params, postUrl)", description: "GET data from a CommCare configurable report and POST the response to another same-origin endpoint.",
+      code: "// postUrl must share hostUrl's origin: use a relative path, not an external\n// absolute URL (which the adaptor rejects with BASE_URL_MISMATCH).\nfetchReportData('report-abc', { limit: 10 }, '/a/test-project/api/v0.5/case/');", apiRef: "ex5" },
+    { fn: "request", signature: "request(method, path, body, params = {})", description: "Make an arbitrary HTTP request against any CommCare REST API endpoint.",
+      code: "request('GET', '/case', {}, { offset: 0, limit: 20 });", apiRef: "ex0" },
+    { fn: "bulk", signature: "bulk(type, data, params)", description: "Bulk-upload case-data or lookup-table records to CommCare as an XLSX import.",
+      code: "bulk('case-data', [{ name: 'Jane Doe', phone: '0000000' }], {\n  case_type: 'patient', search_field: 'external_id', create_new_cases: 'on',\n});" },
+  ],
+
   async overrides(app: FastifyInstance, store: DataStore, config: SystemConfig) {
     const configuredDomain = (config.domain as string) || DEFAULT_DOMAIN;
     const appId = (config.appId as string) || DEFAULT_APP_ID;
