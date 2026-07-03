@@ -822,36 +822,6 @@ export const SYSTEM_GUIDES: Record<string, SystemGuide> = {
   },
 };
 
-/** Preferred display order; anything else falls in after, alphabetically. */
-const PREFERRED_ORDER = [
-  // Health & clinical DPGs
-  'dhis2',
-  'fhir',
-  'openmrs',
-  'openimis',
-  'openelis',
-  'ihris',
-  'openhim',
-  // Community health & case management
-  'commcare',
-  'cht',
-  'primero',
-  'godata',
-  // Data collection & messaging
-  'kobotoolbox',
-  'odk',
-  'rapidpro',
-  // Registries & supply chain
-  'opencrvs',
-  'openspp',
-  'openlmis',
-  'openboxes',
-  // Operational tools
-  'mailgun',
-  'twilio',
-  'http-generic',
-];
-
 /** A running system as seen by the renderer. */
 export interface RunningSystemView {
   name: string;
@@ -911,16 +881,7 @@ export function renderSandboxPage(
 ): string {
   const name = opts.name ?? 'openfn-mocker';
 
-  const ordered = [...systems].sort((a, b) => {
-    const ia = PREFERRED_ORDER.indexOf(a.name);
-    const ib = PREFERRED_ORDER.indexOf(b.name);
-    if (ia !== -1 && ib !== -1) return ia - ib;
-    if (ia !== -1) return -1;
-    if (ib !== -1) return 1;
-    return a.name.localeCompare(b.name);
-  });
-
-  const cards = ordered.map((sys) => {
+  const cards = systems.map((sys) => {
     const guide = SYSTEM_GUIDES[sys.name]
       ? resolveGuide(SYSTEM_GUIDES[sys.name], sys)
       : genericGuide(sys);
@@ -937,6 +898,10 @@ export function renderSandboxPage(
       examples: guide.examples,
     };
   });
+
+  // Everything is ordered alphabetically by title (A–Z) so the content pages
+  // match the left-hand nav, which is sorted the same way in the client.
+  cards.sort((a, b) => a.title.localeCompare(b.title));
 
   const data = { name, systems: cards };
   // Escape "<" so the JSON can never terminate the <script> element early.
@@ -994,7 +959,7 @@ const STYLES = [
   '--accent:#4338ca;--accent-hover:#3730a3;--accent-soft:#eef2ff;--code:#0f172a;--code-ink:#e2e8f0;',
   '--get:#0a7d33;--post:#b45309;--put:#6d28d9;--patch:#0369a1;--delete:#b91c1c;--ok:#0a7d33;--err:#b91c1c;}',
   '*{box-sizing:border-box}',
-  'html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}',
+  'html{-webkit-text-size-adjust:100%}',
   'body{margin:0;background:var(--bg);color:var(--ink);',
   'font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}',
   'code,pre,.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;}',
@@ -1019,6 +984,10 @@ const STYLES = [
   '.nav-list a:hover{background:var(--accent-soft);color:var(--accent);text-decoration:none}',
   '.nav-list a.active{background:var(--accent-soft);color:var(--accent);border-left-color:var(--accent);font-weight:600}',
   '.content{flex:1;min-width:0}',
+  // Each nav target is its own page: only the active one is shown. Clicking a
+  // nav link swaps pages via the hash router (no scrolling animation).
+  '.page{display:none}',
+  '.page.active{display:block}',
   // Per-system guide block: "Set up the adaptor" steps + "API overview" docs links.
   '.sys-guide{display:grid;grid-template-columns:1fr 1fr;gap:18px 28px;margin:10px 0 16px;',
   'padding:14px 16px;background:var(--bg);border:1px solid var(--border);border-radius:10px}',
@@ -1163,7 +1132,8 @@ const CLIENT_JS = [
   'respEl.appendChild(el("pre",null,pretty(text,ctype)));}',
   // The shared top console.
   'function buildConsole(){',
-  'var sec=el("section","console");sec.id="console";sec.appendChild(el("h2",null,"Request console"));',
+  'var sec=el("section","console page");sec.id="console";sec.appendChild(el("h2",null,"Request console"));',
+  'sec.appendChild(el("p","blurb","Send an ad-hoc request to any mounted system, or pick a system from the left to open its setup guide and runnable examples."));',
   'var row=el("div","row");',
   'var sel=document.createElement("select");["GET","POST","PUT","PATCH","DELETE"].forEach(function(m){',
   'var o=document.createElement("option");o.value=m;o.textContent=m;sel.appendChild(o);});',
@@ -1179,7 +1149,8 @@ const CLIENT_JS = [
   'btn.addEventListener("click",function(){send(sel.value,path.value,ct.value,body.value,resp,btn);});',
   'window.__loadConsole=function(method,p,contentType,b){sel.value=method;path.value=p;',
   'ct.value=contentType||"application/json";body.value=b||"";',
-  'sec.scrollIntoView({behavior:"smooth",block:"start"});};',
+  // Navigate to the console page (fires the router); if already there just jump up.
+  'if(currentId()!=="console"){window.location.hash="#console";}else{window.scrollTo(0,0);}};',
   'return sec;}',
   // A single example row (editable path + body, inline response).
   'function buildExample(ex,authHeader){',
@@ -1199,7 +1170,7 @@ const CLIENT_JS = [
   'return wrap;}',
   // One system card.
   'function buildSystem(sys){',
-  'var card=el("section","sys");card.id="sys-"+sys.name;',
+  'var card=el("section","sys page");card.id="sys-"+sys.name;',
   'var head=el("div","sys-head");',
   'head.appendChild(el("h3",null,sys.title));',
   'head.appendChild(el("span","mount",sys.mountPath));',
@@ -1267,32 +1238,31 @@ const CLIENT_JS = [
   'var a2=el("a",null,sys.title);a2.href="#sys-"+sys.name;li2.appendChild(a2);s.appendChild(li2);}',
   'nav.appendChild(s);}',
   'return nav;}',
-  // Scroll-spy: highlight the nav link for whichever section is currently in view.
-  'function setupScrollSpy(){',
-  'var order=[],map={};var links=document.querySelectorAll(".nav-list a");',
-  'for(var i=0;i<links.length;i++){var href=links[i].getAttribute("href");',
-  'if(href&&href.charAt(0)==="#"){var id=href.slice(1);',
-  'if(document.getElementById(id)){map[id]=links[i];order.push(id);}}}',
-  'if(!order.length)return;var ticking=false;',
-  'function offset(){return window.pageYOffset||window.scrollY||0;}',
-  'function update(){ticking=false;var pos=offset()+130;var active=order[0];',
-  'for(var k=0;k<order.length;k++){var e=document.getElementById(order[k]);',
-  'if(e&&e.getBoundingClientRect().top+offset()<=pos)active=order[k];}',
-  'for(var m=0;m<order.length;m++){map[order[m]].className=order[m]===active?"active":"";}}',
-  'window.addEventListener("scroll",function(){if(!ticking){ticking=true;',
-  '(window.requestAnimationFrame||function(f){setTimeout(f,16);})(update);}});',
-  'update();}',
+  // Hash router: each nav link points at a page id (#console or #sys-<name>);
+  // show only the active page and highlight its nav link. Defaults to the
+  // console when the hash is empty or unknown.
+  'function currentId(){var h=(window.location.hash||"").replace(/^#/,"");',
+  'return h&&document.getElementById(h)?h:"console";}',
+  'function showPage(){var id=currentId();',
+  'var pages=document.querySelectorAll("#app .page");',
+  'for(var i=0;i<pages.length;i++){',
+  'if(pages[i].id===id){pages[i].classList.add("active");}else{pages[i].classList.remove("active");}}',
+  'var links=document.querySelectorAll(".nav-list a");',
+  'for(var j=0;j<links.length;j++){var href=links[j].getAttribute("href")||"";',
+  'if(href==="#"+id){links[j].classList.add("active");}else{links[j].classList.remove("active");}}',
+  'window.scrollTo(0,0);}',
   // Boot.
   'function boot(){',
   'var base=document.getElementById("base-url");if(base)base.textContent=ORIGIN;',
   'var side=document.getElementById("sidebar");if(side){side.innerHTML="";side.appendChild(buildSidebar());}',
   'var app=document.getElementById("app");app.innerHTML="";',
-  'app.appendChild(buildConsole());',
-  'if(!DATA.systems.length){app.appendChild(el("p","loading","No systems are enabled."));setupScrollSpy();return;}',
-  'app.appendChild(el("p","blurb","Enabled systems ("+DATA.systems.length+'
-    + '"). Each card shows how to set up its OpenFn adaptor, then lets you run requests live \\u2014 edit any path or body, then Run."));',
+  'var consolePage=buildConsole();',
+  'if(!DATA.systems.length){consolePage.appendChild(el("p","loading","No systems are enabled."));}',
+  'app.appendChild(consolePage);',
+  // One page per system; the router shows just one at a time.
   'for(var i=0;i<DATA.systems.length;i++){app.appendChild(buildSystem(DATA.systems[i]));}',
-  'setupScrollSpy();}',
+  'window.addEventListener("hashchange",showPage);',
+  'showPage();}',
   'if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",boot);}else{boot();}',
   '})();',
 ].join('');
