@@ -103,6 +103,15 @@ const plugin: MockSystemPlugin = {
   // then sends that token on every other call. The token endpoint itself must
   // stay open (you call it before you have a token); everything else requires it.
   auth: { required: true, schemes: ['bearer', 'token'], exemptPaths: ['/api/v2/tokens'] },
+  credential: {
+    type: 'userpass',
+    authHeader: { scheme: 'bearer', value: 'mock_primero_token' },
+    fields: [
+      { name: 'url', role: 'url' },
+      { name: 'user', role: 'username', value: 'primero' },
+      { name: 'password', role: 'secret', secret: { charset: 'alnum', length: 16 } },
+    ],
+  },
 
   async overrides(app: FastifyInstance, store: DataStore, _config: SystemConfig) {
     // --- Token exchange: accept ANY body, never validate. ---

@@ -33,6 +33,14 @@ function toSearchResult(e: any): Record<string, any> {
 
 const plugin: MockSystemPlugin = {
   name: 'opencrvs',
+  credential: {
+    type: 'oauth',
+    fields: [
+      { name: 'domain', role: 'url' },
+      { name: 'clientId', role: 'secret', secret: { charset: 'hex', length: 24 } },
+      { name: 'clientSecret', role: 'secret', secret: { charset: 'hex', length: 32 } },
+    ],
+  },
 
   async overrides(app: FastifyInstance, store: DataStore, _config: SystemConfig) {
     // --- GraphQL (queryEvents / searchEvents) ---

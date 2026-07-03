@@ -23,6 +23,14 @@ function makeRecord(body: any): Record<string, any> {
 
 const plugin: MockSystemPlugin = {
   name: 'openhim',
+  credential: {
+    type: 'userpass',
+    fields: [
+      { name: 'apiUrl', role: 'url' },
+      { name: 'username', role: 'email', value: 'root@openhim.org' },
+      { name: 'password', role: 'secret', secret: { charset: 'alnum', length: 16 } },
+    ],
+  },
 
   async overrides(app: FastifyInstance, store: DataStore, _config: SystemConfig) {
     // POST /chw/encounter — sample mediator route (createEncounter).

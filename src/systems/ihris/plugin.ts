@@ -15,6 +15,14 @@ const API_SEG = '/fhir';
 
 const plugin: MockSystemPlugin = {
   name: 'ihris',
+  credential: {
+    type: 'userpass',
+    fields: [
+      { name: 'baseUrl', role: 'url' },
+      { name: 'username', role: 'username', value: 'admin' },
+      { name: 'password', role: 'secret', secret: { charset: 'alnum', length: 16 } },
+    ],
+  },
 
   async overrides(app: FastifyInstance, store: DataStore, config: SystemConfig) {
     registerFhirRoutes(app, store, {

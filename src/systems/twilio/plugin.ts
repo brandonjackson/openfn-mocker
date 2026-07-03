@@ -42,6 +42,15 @@ const plugin: MockSystemPlugin = {
   specFile: 'twilio.openapi.json',
   // Twilio uses HTTP Basic auth (`accountSid:authToken`); reject anonymous requests.
   auth: { required: true, schemes: ['basic'] },
+  credential: {
+    type: 'apikey',
+    authHeader: { scheme: 'basic', userField: 'accountSid', passField: 'authToken' },
+    fields: [
+      { name: 'baseUrl', role: 'url' },
+      { name: 'accountSid', role: 'static', value: '{{account_sid}}' },
+      { name: 'authToken', role: 'secret', secret: { charset: 'hex', length: 32 } },
+    ],
+  },
 
   async overrides(app: FastifyInstance, store: DataStore, config: SystemConfig) {
     const configuredSid = accountSidFrom(config);

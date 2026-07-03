@@ -102,6 +102,13 @@ const plugin: MockSystemPlugin = {
   specFile: 'fhir-r4.openapi.json',
   // FHIR auth is optional (open server, or Bearer). Do not gate requests.
   auth: { required: false },
+  credential: {
+    type: 'none',
+    fields: [
+      { name: 'baseUrl', role: 'url' },
+      { name: 'apiPath', role: 'static', value: '' },
+    ],
+  },
 
   async overrides(app: FastifyInstance, store: DataStore, config: SystemConfig) {
     // apiPath may be explicitly empty (""), in which case the FHIR API lives at

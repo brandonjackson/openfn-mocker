@@ -42,6 +42,16 @@ function intParam(value: unknown, fallback: number): number {
 
 const plugin: MockSystemPlugin = {
   name: 'openlmis',
+  credential: {
+    type: 'userpass',
+    fields: [
+      { name: 'baseUrl', role: 'url' },
+      { name: 'username', role: 'username', value: 'admin' },
+      { name: 'password', role: 'secret', secret: { charset: 'alnum', length: 16 } },
+      { name: 'clientId', role: 'static', value: 'user-client' },
+      { name: 'clientSecret', role: 'secret', secret: { charset: 'hex', length: 32 } },
+    ],
+  },
 
   async overrides(app: FastifyInstance, store: DataStore, _config: SystemConfig) {
     // --- OAuth2 token (accept any client credentials). ---

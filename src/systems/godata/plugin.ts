@@ -58,6 +58,14 @@ function listWithFilter(store: DataStore, collection: string, req: FastifyReques
 
 const plugin: MockSystemPlugin = {
   name: 'godata',
+  credential: {
+    type: 'userpass',
+    fields: [
+      { name: 'apiUrl', role: 'url' },
+      { name: 'email', role: 'email', value: 'api@who.int' },
+      { name: 'password', role: 'secret', secret: { charset: 'alnum', length: 16 } },
+    ],
+  },
 
   async overrides(app: FastifyInstance, store: DataStore, _config: SystemConfig) {
     // --- Token exchange (accept any credentials). ---

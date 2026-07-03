@@ -25,6 +25,15 @@ const plugin: MockSystemPlugin = {
   specFile: 'mailgun.openapi.json',
   // Mailgun uses HTTP Basic auth (`api:<key>`); reject requests with no credentials.
   auth: { required: true, schemes: ['basic'] },
+  credential: {
+    type: 'apikey',
+    authHeader: { scheme: 'basic', user: 'api', passField: 'apiKey' },
+    fields: [
+      { name: 'baseUrl', role: 'url' },
+      { name: 'domain', role: 'static', value: '{{domain}}' },
+      { name: 'apiKey', role: 'secret', secret: { prefix: 'key-', charset: 'hex', length: 32 } },
+    ],
+  },
 
   async overrides(app: FastifyInstance, store: DataStore, config: SystemConfig) {
     const configuredDomain = (config.domain as string) || DEFAULT_DOMAIN;

@@ -134,6 +134,17 @@ path or body, hit **Run**, see the live response inline), and a free-form
 request console for anything else. It is a single self-contained page served
 from the mock itself, so every request runs against the real in-memory data.
 
+**Ready-to-paste credentials.** Each card shows the exact OpenFn credential for
+that adaptor, labelled by type — **username & password**, **API key**, **OAuth
+client credentials**, or **no credentials** — because the sandbox knows the
+difference: it reads each system's credential shape from its plugin
+(`MockSystemPlugin.credential`), which mirrors the adaptor's real
+`configuration-schema.json`. Secret fields (passwords, API keys, tokens, client
+secrets) are **generated** as fresh, correctly-shaped suggestions right in your
+browser, so you can **Copy** the whole credential straight into OpenFn (hit
+**Regenerate** for a new set). The card also shows whether the mock *enforces*
+the credential (returns `401` when it is missing) or accepts anonymous requests.
+
 The root path content-negotiates: browsers (`Accept: text/html`) get the
 sandbox; API clients (`curl`, the OpenFn adaptors) still get the documented
 JSON index, so nothing about programmatic use changes.
@@ -509,32 +520,32 @@ pnpm snapshot-default # regenerate datasets/default/ from the seed files
 
 ## Supported systems
 
-Every system is mounted at `/<name>` on the shared port. The credential URL field is the mock's origin plus that path (e.g. `http://localhost:4000/dhis2`).
+Every system is mounted at `/<name>` on the shared port. The credential URL field is the mock's origin plus that path (e.g. `http://localhost:4000/dhis2`). The **credential type** column reflects each adaptor's real [`configuration-schema.json`](https://github.com/OpenFn/adaptors) — whether it takes a username/password, an API key, or OAuth client credentials. Field names and types are declared once, per plugin (`MockSystemPlugin.credential`), and the [browser sandbox](#browser-sandbox) reads them to render and generate ready-to-paste credentials.
 
-| System | Mount path | Credential URL field | Auth | Status |
+| System | Mount path | Credential URL field | Credential type | Status |
 |--------|------------|-----------------------|------|--------|
-| dhis2 | `/dhis2` | `hostUrl` | Basic | stable |
-| commcare | `/commcare` | `hostURL` | Basic or apiKey header | stable |
-| openmrs | `/openmrs` | `instanceUrl` | Basic | stable |
-| fhir | `/fhir` | `baseUrl` | none / Bearer | stable |
-| http-generic | `/http-generic` | `baseUrl` | any | stable |
+| dhis2 | `/dhis2` | `hostUrl` | username & password | stable |
+| commcare | `/commcare` | `hostUrl` | username & password | stable |
+| openmrs | `/openmrs` | `instanceUrl` | username & password | stable |
+| fhir | `/fhir` | `baseUrl` | none | stable |
+| http-generic | `/http-generic` | `baseUrl` | none | stable |
 | salesforce | `/salesforce` | — | — | planned |
-| kobotoolbox | `/kobotoolbox` | `baseURL` | Token | stable |
-| primero | `/primero` | `baseUrl` | Token via `POST /api/v2/tokens` | stable |
-| godata | `/godata` | `apiUrl` | Token via `POST /users/login` | stable |
-| rapidpro | `/rapidpro` | `host` | Token | stable |
-| odk | `/odk` | `baseURL` | Session token via `POST /v1/sessions` | stable |
-| openlmis | `/openlmis` | `hostUrl` | OAuth2 via `POST /api/oauth/token` | stable |
-| openimis | `/openimis` | `baseUrl` | Token via `POST /api/api_fhir_r4/login/` | stable |
-| openspp | `/openspp` | `baseUrl` | Odoo XML-RPC authenticate | stable |
-| opencrvs | `/opencrvs` | `url` | Bearer JWT | stable |
-| openelis | `/openelis` | `baseUrl` | Basic / Bearer | stable |
-| cht | `/cht` | `baseUrl` | Basic | stable |
-| openhim | `/openhim` | `apiURL` | OpenHIM header auth | stable |
-| openboxes | `/openboxes` | `baseUrl` | Token via `POST /api/login` | stable |
-| ihris | `/ihris` | `baseUrl` | Basic / Bearer | stable |
-| mailgun | `/mailgun` | `baseUrl` | Basic (`api:key`) | stable |
-| twilio | `/twilio` | `baseUrl` | Basic (`sid:token`) | stable |
+| kobotoolbox | `/kobotoolbox` | `baseUrl` | username & password | stable |
+| primero | `/primero` | `url` | username & password | stable |
+| godata | `/godata` | `apiUrl` | username & password | stable |
+| rapidpro | `/rapidpro` | `host` | API key | stable |
+| odk | `/odk` | `baseUrl` | username & password | stable |
+| openlmis | `/openlmis` | `baseUrl` | username & password | stable |
+| openimis | `/openimis` | `baseUrl` | username & password | stable |
+| openspp | `/openspp` | `baseUrl` | username & password | stable |
+| opencrvs | `/opencrvs` | `domain` | OAuth client credentials | stable |
+| openelis | `/openelis` | `baseUrl` | username & password | stable |
+| cht | `/cht` | `baseUrl` | username & password | stable |
+| openhim | `/openhim` | `apiUrl` | username & password | stable |
+| openboxes | `/openboxes` | `baseUrl` | username & password | stable |
+| ihris | `/ihris` | `baseUrl` | username & password | stable |
+| mailgun | `/mailgun` | `baseUrl` | API key | stable |
+| twilio | `/twilio` | `baseUrl` | API key | stable |
 
 Root admin routes (`/_admin/systems`, `/_admin/reset-all`) and a `GET /` index live on the shared port. Hitting `GET /` from a browser serves an interactive [API sandbox](#browser-sandbox); API clients get JSON.
 
@@ -561,71 +572,71 @@ const plugin: MockSystemPlugin = {
 
 ## Using with OpenFn
 
-Create (or edit) the credential for each adaptor and point its URL field at the mock's origin plus the system's mount path. Any username/password/token works. The fixtures below match the seed data and defaults shipped in `mock.config.yaml`. Replace `http://localhost:4000` with your deployed origin as needed.
+Create (or edit) the credential for each adaptor and point its URL field at the mock's origin plus the system's mount path. The field names below match each adaptor's real `configuration-schema.json`, so the credential targets the mock correctly; the mock validates that a credential is *present*, not its value, so any secret works. The easiest path is to open the [browser sandbox](#browser-sandbox) at `http://localhost:4000`, pick a system, and copy the ready-to-paste credential it generates (secrets shown as `<generated>` below). Non-secret identifiers (`domain`, `appId`, `accountSid`, `database`, `apiVersion`) match the defaults shipped in `mock.config.yaml`. Replace `http://localhost:4000` with your deployed origin as needed.
 
 ```json
-// DHIS2
-{ "hostUrl": "http://localhost:4000/dhis2", "username": "admin", "password": "mock" }
+// DHIS2  (username & password)
+{ "hostUrl": "http://localhost:4000/dhis2", "username": "admin", "password": "<generated>" }
 
-// CommCare
-{ "hostURL": "http://localhost:4000/commcare", "domain": "test-project", "appId": "abc123", "username": "user@test.com", "password": "mock" }
+// CommCare  (username & password)
+{ "hostUrl": "http://localhost:4000/commcare", "domain": "test-project", "appId": "abc123", "username": "user@test.com", "password": "<generated>" }
 
-// OpenMRS
-{ "instanceUrl": "http://localhost:4000/openmrs", "username": "admin", "password": "mock" }
+// OpenMRS  (username & password)
+{ "instanceUrl": "http://localhost:4000/openmrs", "username": "admin", "password": "<generated>" }
 
-// FHIR  (the /fhir mount is the FHIR base, so apiPath is empty)
+// FHIR  (no credential; the /fhir mount is the FHIR base, so apiPath is empty)
 { "baseUrl": "http://localhost:4000/fhir", "apiPath": "" }
 
-// Generic HTTP
+// Generic HTTP  (no credential)
 { "baseUrl": "http://localhost:4000/http-generic" }
 
-// Kobotoolbox
-{ "baseURL": "http://localhost:4000/kobotoolbox", "apiToken": "mock-kobo-token" }
+// KoboToolbox  (username & password)
+{ "baseUrl": "http://localhost:4000/kobotoolbox", "username": "mocker", "password": "<generated>", "apiVersion": "v2" }
 
-// Primero
-{ "baseUrl": "http://localhost:4000/primero", "username": "primero", "password": "mock" }
+// Primero  (username & password; note the fields are `url` and `user`)
+{ "url": "http://localhost:4000/primero", "user": "primero", "password": "<generated>" }
 
-// Go.Data
-{ "apiUrl": "http://localhost:4000/godata", "email": "api@who.int", "password": "mock" }
+// Go.Data  (email & password)
+{ "apiUrl": "http://localhost:4000/godata", "email": "api@who.int", "password": "<generated>" }
 
-// RapidPro / TextIt
-{ "host": "http://localhost:4000/rapidpro", "token": "mock-rapidpro-token", "apiVersion": "v2" }
+// RapidPro / TextIt  (API key)
+{ "host": "http://localhost:4000/rapidpro", "token": "<generated>", "apiVersion": "v2" }
 
-// ODK Central
-{ "baseURL": "http://localhost:4000/odk", "email": "fieldworker@example.org", "password": "mock" }
+// ODK Central  (email & password)
+{ "baseUrl": "http://localhost:4000/odk", "email": "fieldworker@example.org", "password": "<generated>" }
 
-// OpenLMIS
-{ "hostUrl": "http://localhost:4000/openlmis", "username": "admin", "password": "mock" }
+// OpenLMIS  (username & password + OAuth client)
+{ "baseUrl": "http://localhost:4000/openlmis", "username": "admin", "password": "<generated>", "clientId": "user-client", "clientSecret": "<generated>" }
 
-// openIMIS
-{ "baseUrl": "http://localhost:4000/openimis", "username": "Admin", "password": "mock" }
+// openIMIS  (username & password)
+{ "baseUrl": "http://localhost:4000/openimis", "username": "Admin", "password": "<generated>" }
 
-// OpenSPP  (Odoo XML-RPC)
-{ "baseUrl": "http://localhost:4000/openspp", "db": "openspp", "username": "admin", "password": "mock" }
+// OpenSPP  (username & password; Odoo XML-RPC, field is `database`)
+{ "baseUrl": "http://localhost:4000/openspp", "database": "openspp", "username": "admin", "password": "<generated>" }
 
-// OpenCRVS
-{ "url": "http://localhost:4000/opencrvs", "token": "mock-opencrvs-token" }
+// OpenCRVS  (OAuth client credentials; the adaptor derives its URL from `domain`)
+{ "domain": "http://localhost:4000/opencrvs", "clientId": "<generated>", "clientSecret": "<generated>" }
 
-// OpenELIS Global
-{ "baseUrl": "http://localhost:4000/openelis", "username": "admin", "password": "mock" }
+// OpenELIS Global  (username & password)
+{ "baseUrl": "http://localhost:4000/openelis", "username": "admin", "password": "<generated>" }
 
-// CHT (Community Health Toolkit)
-{ "baseUrl": "http://localhost:4000/cht", "username": "medic", "password": "mock" }
+// CHT (Community Health Toolkit)  (username & password)
+{ "baseUrl": "http://localhost:4000/cht", "username": "medic", "password": "<generated>" }
 
-// OpenHIM
-{ "apiURL": "http://localhost:4000/openhim", "username": "root@openhim.org", "password": "mock" }
+// OpenHIM  (username & password)
+{ "apiUrl": "http://localhost:4000/openhim", "username": "root@openhim.org", "password": "<generated>" }
 
-// OpenBoxes
-{ "baseUrl": "http://localhost:4000/openboxes", "username": "admin", "password": "mock" }
+// OpenBoxes  (username & password)
+{ "baseUrl": "http://localhost:4000/openboxes", "username": "admin", "password": "<generated>" }
 
-// iHRIS
-{ "baseUrl": "http://localhost:4000/ihris", "username": "admin", "password": "mock" }
+// iHRIS  (username & password)
+{ "baseUrl": "http://localhost:4000/ihris", "username": "admin", "password": "<generated>" }
 
-// Mailgun
-{ "baseUrl": "http://localhost:4000/mailgun", "domain": "sandbox-test.mailgun.org", "apiKey": "mock-api-key" }
+// Mailgun  (API key)
+{ "baseUrl": "http://localhost:4000/mailgun", "domain": "sandbox-test.mailgun.org", "apiKey": "<generated>" }
 
-// Twilio
-{ "baseUrl": "http://localhost:4000/twilio", "accountSid": "ACtest123456", "authToken": "mock-auth-token" }
+// Twilio  (API key; accountSid must match the mock's configured account_sid)
+{ "baseUrl": "http://localhost:4000/twilio", "accountSid": "ACtest123456", "authToken": "<generated>" }
 ```
 
 Each system implements the API surface its OpenFn adaptor actually calls (see [`openfn/adaptors`](https://github.com/OpenFn/adaptors)) with the real envelope shapes, status codes, and ID formats, so responses are structurally indistinguishable from the live system. Because several adaptors are *generic* clients (they build arbitrary paths rather than exposing one function per endpoint), those mocks cover a correspondingly broad surface:
@@ -726,10 +737,24 @@ It is deliberately small — identity, an optional spec, and two lifecycle hooks
 interface MockSystemPlugin {
   name: string;                 // stable key, matches the registry + config block (e.g. 'dhis2')
   specFile?: string;            // filename in specs/ (omit for spec-less catch-alls like http-generic)
+  auth?: AuthRequirement;       // whether the mock returns 401 for anonymous requests (presence, not value)
+  credential?: CredentialSpec;  // the OpenFn credential shape the sandbox renders + generates suggestions for
   overrides?(app, store, config): void | Promise<void>;  // register custom / non-CRUD routes
   seed(store, config): void;    // populate the store at boot and on /_admin/reset|seed
 }
 ```
+
+**`credential` (`CredentialSpec`, `src/auth.ts`)** declares the OpenFn credential
+a user pastes into OpenFn to reach this system, matching the adaptor's real
+`configuration-schema.json`. It is the single source of truth for the system's
+credential: a `type` (`userpass` / `apikey` / `oauth` / `none`) plus ordered
+`fields`, each with a `role` (`url`, `static`, `username`, `email`, or `secret`)
+and — for secrets — a `secret` generation shape (`charset`, `length`, `prefix`).
+The [browser sandbox](#browser-sandbox) reads it to label the credential,
+generate ready-to-paste suggestions for the secret fields in the browser, and
+build the `Authorization` header for its live example requests (via an optional
+`authHeader`). Nothing at request time reads it — it is presentation metadata, so
+it never affects the mock's actual behavior (that is `auth`'s job).
 
 **`config` (`SystemConfig`)** is the system's block from `mock.config.yaml`,
 after env overrides and cascaded defaults are applied. It always carries:

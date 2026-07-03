@@ -38,6 +38,14 @@ function findContact(store: DataStore, opts: { uuid?: string; urn?: string }): a
 
 const plugin: MockSystemPlugin = {
   name: 'rapidpro',
+  credential: {
+    type: 'apikey',
+    fields: [
+      { name: 'host', role: 'url' },
+      { name: 'token', role: 'secret', secret: { charset: 'hex', length: 40 } },
+      { name: 'apiVersion', role: 'static', value: 'v2' },
+    ],
+  },
 
   async overrides(app: FastifyInstance, store: DataStore, _config: SystemConfig) {
     // --- Contacts ---

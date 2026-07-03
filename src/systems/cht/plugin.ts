@@ -35,6 +35,14 @@ function putDoc(store: DataStore, doc: Record<string, any>): Record<string, any>
 
 const plugin: MockSystemPlugin = {
   name: 'cht',
+  credential: {
+    type: 'userpass',
+    fields: [
+      { name: 'baseUrl', role: 'url' },
+      { name: 'username', role: 'username', value: 'medic' },
+      { name: 'password', role: 'secret', secret: { charset: 'alnum', length: 16 } },
+    ],
+  },
 
   async overrides(app: FastifyInstance, store: DataStore, _config: SystemConfig) {
     // --- Medic REST: create people / places ---
