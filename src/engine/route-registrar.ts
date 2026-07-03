@@ -1,8 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import type { DataStore } from '../store.js';
-import type { ParsedSpec } from './spec-parser.js';
-import { toFastifyPath } from './response-generator.js';
 
 export interface CrudOptions {
   /** Store collection name backing this resource. */
@@ -139,72 +137,3 @@ export function registerCrud(app: FastifyInstance, store: DataStore, opts: CrudO
   }
 }
 
-/**
- * Best-effort auto-wiring of simple CRUD from a parsed spec. Groups operations
- * by resource (an item path is one whose last segment is a `{param}`; its
- * collection path is the parent). Complex plugins ignore this and call
- * registerCrud / raw routes directly.
- *
- * `opts.only` filters to specific collection names (the last static segment of
- * the collection path).
- */
-export function registerFromSpec(
-  app: FastifyInstance,
-  store: DataStore,
-  spec: ParsedSpec,
-  opts?: { only?: string[] }
-): void {
-  interface Group {
-    collectionPath: string;
-    collection: string;
-    idParam?: string;
-    methods: Set<'list' | 'get' | 'create' | 'update' | 'replace' | 'delete'>;
-  }
-  const groups = new Map<string, Group>();
-
-  const analyze = (
-    p: string
-  ): { collectionPath: string; isItem: boolean; idParam?: string } => {
-    const segs = p.split('/').filter(Boolean);
-    const last = segs[segs.length - 1];
-    if (last && last.startsWith('{') && last.endsWith('}')) {
-      return { collectionPath: '/' + segs.slice(0, -1).join('/'), isItem: true, idParam: last.slice(1, -1) };
-    }
-    return { collectionPath: '/' + segs.join('/'), isItem: false };
-  };
-
-  const lastStatic = (p: string): string => {
-    const segs = p.split('/').filter((s) => s && !(s.startsWith('{') && s.endsWith('}')));
-    return segs[segs.length - 1] ?? 'root';
-  };
-
-  for (const op of spec.operations) {
-    const { collectionPath, isItem, idParam } = analyze(op.path);
-    let g = groups.get(collectionPath);
-    if (!g) {
-      g = { collectionPath, collection: lastStatic(collectionPath), methods: new Set() };
-      groups.set(collectionPath, g);
-    }
-    if (isItem && idParam && !g.idParam) g.idParam = idParam;
-    const m = op.method.toUpperCase();
-    if (!isItem && m === 'GET') g.methods.add('list');
-    else if (!isItem && m === 'POST') g.methods.add('create');
-    else if (isItem && m === 'GET') g.methods.add('get');
-    else if (isItem && m === 'PATCH') g.methods.add('update');
-    else if (isItem && m === 'PUT') g.methods.add('replace');
-    else if (isItem && m === 'DELETE') g.methods.add('delete');
-  }
-
-  for (const g of groups.values()) {
-    if (opts?.only && !opts.only.includes(g.collection)) continue;
-    if (g.methods.size === 0) continue;
-    const basePath = toFastifyPath(g.collectionPath);
-    registerCrud(app, store, {
-      collection: g.collection,
-      basePath,
-      idParam: g.idParam ?? 'id',
-      itemPath: g.idParam ? `${basePath.replace(/\/+$/, '')}/:${g.idParam}` : undefined,
-      methods: [...g.methods],
-    });
-  }
-}

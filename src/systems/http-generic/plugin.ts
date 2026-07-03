@@ -47,6 +47,8 @@ function toRecord(body: any, req: FastifyRequest, path: string): Record<string, 
 
 const plugin: MockSystemPlugin = {
   name: 'http-generic',
+  // The OpenFn adaptor for this catch-all is @openfn/language-http.
+  adaptorName: 'http',
   // The generic http adaptor talks to arbitrary endpoints with arbitrary (or no)
   // auth, so this catch-all never requires credentials.
   auth: { required: false },

@@ -169,7 +169,12 @@ directly to the process (no proxy header) are left untouched.
 
 ## Configuration
 
-Configuration is read from `mock.config.yaml` (override the path with the `MOCKER_CONFIG` environment variable). A top-level `port` sets the single listen port; each system has its own block under `systems:` and is mounted at `/<name>`.
+Configuration is read from `mock.config.yaml` (override the path with the `MOCKER_CONFIG` environment variable). A top-level `port` sets the single listen port.
+
+**Every registered system is enabled by default** and mounted at `/<name>` — the
+registry in `src/systems/index.ts` is the only list of systems, so the config
+file can never drift from the code. A block under `systems:` is only needed to
+*disable* a system (`enabled: false`) or to *override* its settings:
 
 ```yaml
 log_level: info
@@ -177,16 +182,13 @@ port: 4000
 
 systems:
   dhis2:
-    enabled: true
     version: "2.39"
 
   commcare:
-    enabled: true
     domain: test-project
     app_id: abc123
 
   fhir:
-    enabled: true
     # Empty apiPath: the /fhir mount is the FHIR base, so resources are served
     # at /fhir/Patient (not /fhir/fhir/Patient).
     apiPath: ""
@@ -196,7 +198,7 @@ systems:
     enabled: false
 ```
 
-A system is enabled unless it sets `enabled: false`. Any extra keys in a system block (for example `domain`, `apiPath`, `account_sid`, `version`) are passed straight through to that system's plugin.
+Any extra keys in a system block (for example `domain`, `apiPath`, `account_sid`, `version`) are passed straight through to that system's plugin. Enabling a name with no registered plugin logs a warning at boot instead of silently doing nothing.
 
 ### Configuration terms
 
@@ -205,7 +207,7 @@ plugin-specific keys. The framework keys are understood by every system:
 
 | Term | Type | Default | Meaning |
 |------|------|---------|---------|
-| `enabled` | bool | `true` | Mount this system. `false` leaves it out (and is how `salesforce` ships as a placeholder). |
+| `enabled` | bool | `true` | Mount this system. Registered systems mount even without a config block; `enabled: false` leaves one out (and is how `salesforce` ships as a placeholder). |
 | `seed` | string | — | Reserved per-system seed selector; normally you pick data with the top-level `dataset` / `MOCKER_DATASET` instead. |
 | `latency` | map | — | Per-request response-time simulation. See [Simulating stochastic behavior](#simulating-stochastic-behavior). |
 | `error_rate` | number | `0` | Probability in `[0, 1]` that a request gets an injected failure instead of the real response. |
@@ -531,6 +533,7 @@ pnpm snapshot-default # regenerate datasets/default/ from the seed files
 
 Every system is mounted at `/<name>` on the shared port. The credential URL field is the mock's origin plus that path (e.g. `http://localhost:4000/dhis2`). The **credential type** column reflects each adaptor's real [`configuration-schema.json`](https://github.com/OpenFn/adaptors) — whether it takes a username/password, an API key, or OAuth client credentials. Field names and types are declared once, per plugin (`MockSystemPlugin.credential`), and the [browser sandbox](#browser-sandbox) reads them to render and generate ready-to-paste credentials.
 
+<!-- BEGIN GENERATED: supported-systems (edit plugins + run `pnpm readme`, do not edit by hand) -->
 | System | Mount path | Credential URL field | Credential type | Status |
 |--------|------------|-----------------------|------|--------|
 | dhis2 | `/dhis2` | `hostUrl` | username & password | stable |
@@ -538,12 +541,13 @@ Every system is mounted at `/<name>` on the shared port. The credential URL fiel
 | openmrs | `/openmrs` | `instanceUrl` | username & password | stable |
 | fhir | `/fhir` | `baseUrl` | none | stable |
 | http-generic | `/http-generic` | `baseUrl` | none | stable |
-| salesforce | `/salesforce` | — | — | planned |
 | kobotoolbox | `/kobotoolbox` | `baseUrl` | username & password | stable |
 | primero | `/primero` | `url` | username & password | stable |
-| godata | `/godata` | `apiUrl` | username & password | stable |
+| mailgun | `/mailgun` | `baseUrl` | API key | stable |
+| twilio | `/twilio` | `baseUrl` | API key | stable |
+| godata | `/godata` | `apiUrl` | email & password | stable |
 | rapidpro | `/rapidpro` | `host` | API key | stable |
-| odk | `/odk` | `baseUrl` | username & password | stable |
+| odk | `/odk` | `baseUrl` | email & password | stable |
 | openlmis | `/openlmis` | `baseUrl` | username & password | stable |
 | openimis | `/openimis` | `baseUrl` | username & password | stable |
 | openspp | `/openspp` | `baseUrl` | username & password | stable |
@@ -553,8 +557,8 @@ Every system is mounted at `/<name>` on the shared port. The credential URL fiel
 | openhim | `/openhim` | `apiUrl` | username & password | stable |
 | openboxes | `/openboxes` | `baseUrl` | username & password | stable |
 | ihris | `/ihris` | `baseUrl` | username & password | stable |
-| mailgun | `/mailgun` | `baseUrl` | API key | stable |
-| twilio | `/twilio` | `baseUrl` | API key | stable |
+| salesforce | `/salesforce` | — | — | planned |
+<!-- END GENERATED: supported-systems -->
 
 Root admin routes (`/_admin/systems`, `/_admin/reset-all`) and a `GET /` index live on the shared port. Hitting `GET /` from a browser serves an interactive [API sandbox](#browser-sandbox); API clients get JSON.
 
@@ -583,17 +587,18 @@ const plugin: MockSystemPlugin = {
 
 Create (or edit) the credential for each adaptor and point its URL field at the mock's origin plus the system's mount path. The field names below match each adaptor's real `configuration-schema.json`, so the credential targets the mock correctly; the mock validates that a credential is *present*, not its value, so any secret works. The easiest path is to open the [browser sandbox](#browser-sandbox) at `http://localhost:4000`, pick a system, and copy the ready-to-paste credential it generates (secrets shown as `<generated>` below). Non-secret identifiers (`domain`, `appId`, `accountSid`, `database`, `apiVersion`) match the defaults shipped in `mock.config.yaml`. Replace `http://localhost:4000` with your deployed origin as needed.
 
+<!-- BEGIN GENERATED: credentials (edit plugins + run `pnpm readme`, do not edit by hand) -->
 ```json
 // DHIS2  (username & password)
 { "hostUrl": "http://localhost:4000/dhis2", "username": "admin", "password": "<generated>" }
 
-// CommCare  (username & password)
+// CommCare HQ  (username & password)
 { "hostUrl": "http://localhost:4000/commcare", "domain": "test-project", "appId": "abc123", "username": "user@test.com", "password": "<generated>" }
 
 // OpenMRS  (username & password)
 { "instanceUrl": "http://localhost:4000/openmrs", "username": "admin", "password": "<generated>" }
 
-// FHIR  (no credential; the /fhir mount is the FHIR base, so apiPath is empty)
+// FHIR (HAPI R4)  (no credential)
 { "baseUrl": "http://localhost:4000/fhir", "apiPath": "" }
 
 // Generic HTTP  (no credential)
@@ -602,8 +607,14 @@ Create (or edit) the credential for each adaptor and point its URL field at the 
 // KoboToolbox  (username & password)
 { "baseUrl": "http://localhost:4000/kobotoolbox", "username": "mocker", "password": "<generated>", "apiVersion": "v2" }
 
-// Primero  (username & password; note the fields are `url` and `user`)
+// Primero  (username & password)
 { "url": "http://localhost:4000/primero", "user": "primero", "password": "<generated>" }
+
+// Mailgun  (API key)
+{ "baseUrl": "http://localhost:4000/mailgun", "domain": "sandbox-test.mailgun.org", "apiKey": "<generated>" }
+
+// Twilio  (API key)
+{ "baseUrl": "http://localhost:4000/twilio", "accountSid": "ACtest123456", "authToken": "<generated>" }
 
 // Go.Data  (email & password)
 { "apiUrl": "http://localhost:4000/godata", "email": "api@who.int", "password": "<generated>" }
@@ -614,16 +625,16 @@ Create (or edit) the credential for each adaptor and point its URL field at the 
 // ODK Central  (email & password)
 { "baseUrl": "http://localhost:4000/odk", "email": "fieldworker@example.org", "password": "<generated>" }
 
-// OpenLMIS  (username & password + OAuth client)
+// OpenLMIS  (username & password)
 { "baseUrl": "http://localhost:4000/openlmis", "username": "admin", "password": "<generated>", "clientId": "user-client", "clientSecret": "<generated>" }
 
 // openIMIS  (username & password)
 { "baseUrl": "http://localhost:4000/openimis", "username": "Admin", "password": "<generated>" }
 
-// OpenSPP  (username & password; Odoo XML-RPC, field is `database`)
+// OpenSPP  (username & password)
 { "baseUrl": "http://localhost:4000/openspp", "database": "openspp", "username": "admin", "password": "<generated>" }
 
-// OpenCRVS  (OAuth client credentials; the adaptor derives its URL from `domain`)
+// OpenCRVS  (OAuth client credentials)
 { "domain": "http://localhost:4000/opencrvs", "clientId": "<generated>", "clientSecret": "<generated>" }
 
 // OpenELIS Global  (username & password)
@@ -640,13 +651,8 @@ Create (or edit) the credential for each adaptor and point its URL field at the 
 
 // iHRIS  (username & password)
 { "baseUrl": "http://localhost:4000/ihris", "username": "admin", "password": "<generated>" }
-
-// Mailgun  (API key)
-{ "baseUrl": "http://localhost:4000/mailgun", "domain": "sandbox-test.mailgun.org", "apiKey": "<generated>" }
-
-// Twilio  (API key; accountSid must match the mock's configured account_sid)
-{ "baseUrl": "http://localhost:4000/twilio", "accountSid": "ACtest123456", "authToken": "<generated>" }
 ```
+<!-- END GENERATED: credentials -->
 
 Each system implements the API surface its OpenFn adaptor actually calls (see [`openfn/adaptors`](https://github.com/OpenFn/adaptors)) with the real envelope shapes, status codes, and ID formats, so responses are structurally indistinguishable from the live system. Because several adaptors are *generic* clients (they build arbitrary paths rather than exposing one function per endpoint), those mocks cover a correspondingly broad surface:
 
@@ -702,9 +708,29 @@ curl -X POST http://localhost:4000/_admin/reset-all
 
 ## Adding a new system
 
-Systems are spec-driven. Each is backed by an OpenAPI or JSON-schema document in `specs/` that is the source of truth for routes and response shapes, plus a thin plugin. A shared engine (`src/engine/`) turns specs and plugin declarations into Fastify routes and correctly-shaped responses, so plugins stay small.
+A mock is a hand-written plugin whose scope is defined by **references**, not by
+a runtime spec engine:
 
-1. Drop a spec in `specs/` covering just the endpoints the adaptor calls (a faithful subset is fine; you do not need the whole API surface). Spec-less catch-all systems like http-generic omit this.
+- **The published adaptor is the source of truth for what to cover.** Its
+  `ast.json` (the public operations) and `types/*.d.ts` from the
+  [OpenFn adaptors repo](https://github.com/OpenFn/adaptors), published to npm,
+  define the API surface the adaptor actually calls — the same sources
+  [`pnpm audit:adaptors`](#auditing-adaptor-function-coverage) reads (e.g.
+  `https://cdn.jsdelivr.net/npm/@openfn/language-<name>/ast.json`).
+- **`specs/` holds reference documents** — focused OpenAPI/JSON-schema subsets
+  of the real APIs, kept for authoring and review (see `specs/README.md`).
+  They are not loaded at runtime unless a plugin chooses to (mailgun uses its
+  spec for response shaping); a plugin's routes are ordinary Fastify handlers.
+- **Shared helpers do the repetitive parts**: `registerCrud` and `paginate` in
+  `src/engine/`, plus `registerFhirRoutes` and the XML-RPC codec in
+  `src/systems/shared/` for whole families of systems (openIMIS, OpenELIS and
+  iHRIS share one FHIR helper).
+
+Steps:
+
+1. Study the adaptor's surface (its `ast.json` / types, per above) and the real
+   API's docs. Optionally add a focused reference spec to `specs/` for future
+   maintainers.
 2. Create `src/systems/<name>/plugin.ts` implementing `MockSystemPlugin`:
 
    ```ts
@@ -713,18 +739,18 @@ Systems are spec-driven. Each is backed by an OpenAPI or JSON-schema document in
 
    const plugin: MockSystemPlugin = {
      name: 'mysystem',
-     specFile: 'mysystem.openapi.json', // optional
+     // adaptorName: 'my-adaptor',      // only if the npm adaptor name differs
+     // specFile: 'mysystem.openapi.json', // optional pointer to a reference spec
      // Auth policy (optional). Omit or use { required: false } for open systems;
      // { required: true, schemes: [...] } returns 401 when no credential is sent.
      auth: { required: true, schemes: ['basic'] },
      seed,                               // populates the store at boot / reset
      overrides(app, store, config) {
-       // Register custom / non-CRUD routes on `app` here. The system is mounted
+       // Register the system's routes on `app` here. The system is mounted
        // at /mysystem, so a route '/api/things' is served at /mysystem/api/things.
        // Auth parsing, admin routes and request logging are already attached,
-       // so request.mockAuth is available in every handler.
-       // Call the engine helpers (route-registrar, response-generator,
-       // spec-parser) for CRUD wiring and envelope generation.
+       // so request.mockAuth is available in every handler. Lean on the shared
+       // helpers (registerCrud, paginate, registerFhirRoutes) where they fit.
      },
    };
 
@@ -732,10 +758,11 @@ Systems are spec-driven. Each is backed by an OpenAPI or JSON-schema document in
    ```
 
 3. Add `src/systems/<name>/seed.ts` exporting a `seed(store, config)` function that writes a small set of realistic records (fewer than 50 per collection).
-4. Register the plugin in `src/systems/index.ts` (the registry key is the mount path) and add a block to `mock.config.yaml`.
-5. Add `test/<name>.test.ts` exercising the endpoints, and run `pnpm test`. Tests build a single system with `createSystemServer`, so they use unprefixed paths (e.g. `/api/things`); the running server mounts the same routes under `/<name>`.
+4. Register the plugin in `src/systems/index.ts`. The registry key is the mount path and must equal `plugin.name` (guarded by `test/registry.test.ts`). No `mock.config.yaml` block is needed — every registered system is enabled by default; add a block only to disable it or set overrides.
+5. Author `guide.ts` (sandbox blurb + runnable API examples) and `usage.ts` (per-adaptor-function job snippets) next to the seed, and set `credential` on the plugin so the sandbox can render and generate the OpenFn credential.
+6. Add `test/<name>.test.ts` exercising the endpoints, then run `pnpm test` and `pnpm readme` (regenerates the README's supported-systems table and credential examples from the plugin). Tests build a single system with `createSystemServer`, so they use unprefixed paths (e.g. `/api/things`); the running server mounts the same routes under `/<name>`.
 
-The engine provides CRUD wiring, envelope shaping, and seeding; a plugin only needs to declare its identity and spec, register any non-CRUD routes in `overrides`, and supply seed data. Where an API's envelopes do not fit plain CRUD (DHIS2 import summaries, FHIR Bundles, Tastypie/DRF wrappers, Twilio's `.json` snake_case shapes), plugins register custom Fastify handlers and use engine helpers such as `paginate()` for the parts that do fit.
+Where an API's envelopes do not fit plain CRUD (DHIS2 import summaries, FHIR Bundles, Tastypie/DRF wrappers, Twilio's `.json` snake_case shapes), write custom Fastify handlers — that fidelity is the point of the mock — and use helpers such as `paginate()` for the parts that do fit.
 
 ### Plugin API reference
 
@@ -744,11 +771,14 @@ It is deliberately small — identity, an optional spec, and two lifecycle hooks
 
 ```ts
 interface MockSystemPlugin {
-  name: string;                 // stable key, matches the registry + config block (e.g. 'dhis2')
-  specFile?: string;            // filename in specs/ (omit for spec-less catch-alls like http-generic)
+  name: string;                 // stable key, matches the registry + mount path (e.g. 'dhis2')
+  adaptorName?: string;         // npm adaptor short name when it differs from `name` (http-generic -> http)
+  specFile?: string;            // pointer to a reference spec in specs/ (authoring aid, not runtime config)
   auth?: AuthRequirement;       // whether the mock returns 401 for anonymous requests (presence, not value)
   credential?: CredentialSpec;  // the OpenFn credential shape the sandbox renders + generates suggestions for
-  overrides?(app, store, config): void | Promise<void>;  // register custom / non-CRUD routes
+  guide?: SystemGuide;          // sandbox blurb + runnable API examples (authored in guide.ts)
+  usage?: UsageExample[];       // per-adaptor-function job snippets (authored in usage.ts; run by test:usage)
+  overrides?(app, store, config): void | Promise<void>;  // register the system's routes
   seed(store, config): void;    // populate the store at boot and on /_admin/reset|seed
 }
 ```
@@ -798,7 +828,9 @@ on the `mysystem` plugin serves it at `/mysystem/api/things`, and
 `request.mockAuth` is already available in every handler.
 
 Register the finished plugin in `src/systems/index.ts` under its `name` (the
-registry key is the mount path) and add a matching block to `mock.config.yaml`.
+registry key is the mount path and must equal `plugin.name` — `test/registry.test.ts`
+guards both). A `mock.config.yaml` block is optional: every registered system is
+enabled by default, so add one only to disable the system or set overrides.
 
 ### Notable per-system shapes
 
@@ -938,6 +970,7 @@ box:
 - Stack: Node.js 20+, TypeScript (ESM, `NodeNext`), Fastify, Vitest, built with `tsc` to `dist/`. Package manager is pnpm.
 - IDs use Node's built-in `crypto.randomUUID()` (or a system-specific format where the real API differs).
 - Before opening a PR: `pnpm build`, `pnpm typecheck`, and `pnpm test` must all pass — CI (`.github/workflows/ci.yml`) runs exactly these on every push to main and every PR. `typecheck` type-checks `test/` and `scripts/` too, which `build` does not. Add tests for any new endpoint or system.
+- The README's supported-systems table and credential examples are generated from plugin metadata: run `pnpm readme` after adding or changing a plugin (`pnpm test` fails if they are stale, via `test/readme.test.ts`).
 - When you add usage examples to a system's `usage.ts` (next to its `seed.ts`, so the snippet and the records it reads stay together), run [`pnpm test:usage`](#testing-usage-examples-end-to-end) to confirm the snippets actually run through the real adaptor against the mock.
-- Keep plugins thin and specs faithful. Match real field names, envelopes, and status codes. Prefer building a focused subset spec over vendoring a multi-megabyte one.
+- Keep plugins thin and mocks faithful. Match real field names, envelopes, and status codes. Reference specs in `specs/` should stay focused subsets, not multi-megabyte vendored documents.
 - Please do not commit secrets or real PII; seed data should be synthetic.

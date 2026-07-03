@@ -91,7 +91,20 @@ export interface UsageExample {
 export interface MockSystemPlugin {
   /** Stable system key, e.g. 'dhis2' (matches the registry + config key). */
   name: string;
-  /** Filename in specs/ (omit for spec-less catch-all systems like http-generic). */
+  /**
+   * npm adaptor short name, when it differs from `name` (the CLI expands it to
+   * `@openfn/language-<adaptorName>`). Omit when they match — almost always.
+   * Read by `pnpm test:usage` and `pnpm audit:adaptors`, so the mapping lives
+   * on the plugin instead of being duplicated across scripts.
+   */
+  adaptorName?: string;
+  /**
+   * Reference spec in specs/ documenting the API surface this mock covers
+   * (an OpenAPI/JSON-schema subset of the real API). Authoring reference, not
+   * runtime configuration — a plugin may choose to load it for response
+   * shaping (mailgun does), but nothing loads it automatically. Omit for
+   * systems with no reference spec.
+   */
   specFile?: string;
   /**
    * How this system treats authentication. Enforced automatically by

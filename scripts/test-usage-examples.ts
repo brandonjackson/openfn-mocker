@@ -48,7 +48,6 @@
  *   pnpm test:usage -- --cli "npx -y @openfn/cli"   # override the CLI command
  */
 import { spawn, spawnSync } from 'node:child_process';
-import { randomBytes } from 'node:crypto';
 import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -56,21 +55,13 @@ import { join } from 'node:path';
 import { createSystemServer } from '../src/server.js';
 import { loadConfig } from '../src/config.js';
 import { plugins } from '../src/systems/index.js';
+import { resolveCredentialValues, systemVars } from '../src/credentials.js';
 import type { MockSystemPlugin, SystemConfig, UsageExample } from '../src/systems/types.js';
-import type { CredentialSpec } from '../src/auth.js';
 
-/* -------------------------------------------------------------------------- */
-/* System name -> OpenFn adaptor short name                                   */
-/*                                                                            */
-/* The CLI expands a short name like `openspp` to `@openfn/language-openspp`  */
-/* and auto-installs it. Almost every system key already matches its adaptor  */
-/* name 1:1; list only the exceptions here.                                   */
-/* -------------------------------------------------------------------------- */
-const ADAPTOR_NAMES: Record<string, string> = {
-  'http-generic': 'http',
-};
-
-const adaptorFor = (system: string): string => ADAPTOR_NAMES[system] ?? system;
+/* The CLI expands a short name like `openspp` to `@openfn/language-openspp`
+ * and auto-installs it. The mapping lives on each plugin (`adaptorName`,
+ * defaulting to the system key), so scripts never carry their own copy. */
+const adaptorFor = (system: string): string => plugins[system]?.adaptorName ?? system;
 
 /**
  * A system's usage examples, read from its plugin (`MockSystemPlugin.usage`) —
@@ -103,54 +94,20 @@ function parseArgs(argv: string[]): Args {
   return args;
 }
 
-/** Replace `{{ORIGIN}}` and `{{token}}` placeholders (unknown tokens kept as-is). */
-function interpolate(text: string, origin: string, vars: Record<string, string>): string {
-  return text.replace(/\{\{(\w+)\}\}/g, (m, key: string) =>
-    key === 'ORIGIN' ? origin : key in vars ? vars[key] : m
-  );
-}
-
-/** Build the `{{token}}` map for a system: guide defaults overridden by live config. */
-function systemVars(system: string, config: SystemConfig): Record<string, string> {
-  const vars: Record<string, string> = { ...(plugins[system]?.guide?.vars ?? {}) };
-  for (const [k, v] of Object.entries(config)) {
-    if (typeof v === 'string' || typeof v === 'number') vars[k] = String(v);
-  }
-  return vars;
-}
-
-/** Generate a random secret suggestion, matching the sandbox's shape rules. */
-function generateSecret(shape: CredentialSpec['fields'][number]['secret']): string {
-  const length = shape?.length ?? 16;
-  const prefix = shape?.prefix ?? '';
-  const alphabet =
-    shape?.charset === 'hex' ? '0123456789abcdef' : 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  const bytes = randomBytes(length);
-  let body = '';
-  for (let i = 0; i < length; i++) body += alphabet[bytes[i] % alphabet.length];
-  return prefix + body;
-}
-
 /**
  * Resolve the plugin's credential spec into a concrete `state.configuration`,
- * exactly as the sandbox would generate one — except the URL field points at
- * the root-mounted mock origin (no `/<system>` prefix, since the system owns
- * this whole port). Systems with no credential just get a `baseUrl`.
+ * exactly as the sandbox would generate one (shared helpers in
+ * src/credentials.ts) — except the URL field points at the root-mounted mock
+ * origin (no `/<system>` prefix, since the system owns this whole port).
+ * Systems with no credential just get a `baseUrl`.
  */
 function resolveConfiguration(
   plugin: MockSystemPlugin,
   origin: string,
-  vars: Record<string, string>
+  config: SystemConfig
 ): Record<string, unknown> {
-  const spec = plugin.credential;
-  if (!spec) return { baseUrl: origin };
-  const out: Record<string, unknown> = {};
-  for (const f of spec.fields) {
-    if (f.role === 'url') out[f.name] = origin;
-    else if (f.role === 'secret') out[f.name] = generateSecret(f.secret);
-    else out[f.name] = interpolate(f.value ?? '', origin, vars);
-  }
-  return out;
+  const vars = { ...systemVars(plugin.guide, config), ORIGIN: origin };
+  return resolveCredentialValues(plugin.credential, { url: origin, vars });
 }
 
 /** Boot one system, mounted at the root, on an ephemeral loopback port. */
@@ -380,7 +337,7 @@ async function main(): Promise<void> {
     mkdirSync(dir, { recursive: true });
 
     const { app, origin, config } = await startSystem(system, plugin);
-    const configuration = resolveConfiguration(plugin, origin, systemVars(system, config));
+    const configuration = resolveConfiguration(plugin, origin, config);
     console.log(`── ${system} @ ${origin}  (adaptor: ${adaptor}, ${usage.length} example(s))`);
 
     try {

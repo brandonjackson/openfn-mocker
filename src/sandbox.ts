@@ -17,6 +17,7 @@
  */
 
 import { plugins } from './systems/index.js';
+import { interpolate, systemVars } from './credentials.js';
 import type { CredentialSpec, CredentialFieldSpec, AuthRequirement } from './auth.js';
 import type { SandboxExample, SystemGuide, UsageExample } from './systems/types.js';
 
@@ -25,22 +26,6 @@ export interface RunningSystemView {
   name: string;
   mountPath: string;
   config?: Record<string, unknown>;
-}
-
-/** Replace `{{key}}` tokens (except {{ORIGIN}}, resolved in the browser). */
-function interpolate(text: string, vars: Record<string, string>): string {
-  return text.replace(/\{\{(\w+)\}\}/g, (match, key: string) =>
-    key === 'ORIGIN' ? match : key in vars ? vars[key] : match
-  );
-}
-
-/** Build the `{{token}}` var map for a system (guide defaults, overridden by live config). */
-function systemVars(guide: SystemGuide | undefined, sys: RunningSystemView): Record<string, string> {
-  const vars: Record<string, string> = { ...(guide?.vars ?? {}) };
-  for (const [k, v] of Object.entries(sys.config ?? {})) {
-    if (typeof v === 'string' || typeof v === 'number') vars[k] = String(v);
-  }
-  return vars;
 }
 
 /** A credential field resolved for the client (secrets carry their shape, not a value). */
@@ -146,7 +131,8 @@ export function renderSandboxPage(
   const cards = systems.map((sys) => {
     const plugin = plugins[sys.name];
     const guide = plugin?.guide;
-    const vars = systemVars(guide, sys);
+    // {{ORIGIN}} stays unresolved for the browser: it is never in the var map.
+    const vars = systemVars(guide, sys.config);
     const auth: AuthRequirement | undefined = plugin?.auth;
     return {
       name: sys.name,

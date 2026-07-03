@@ -1,6 +1,8 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { parse as parseYaml } from 'yaml';
+import { plugins } from './systems/index.js';
+import { DEFAULT_DATASET } from './datasets.js';
 import type { SystemConfig } from './systems/types.js';
 
 export interface MockerConfig {
@@ -26,7 +28,6 @@ export interface MockerConfig {
 }
 
 const DEFAULT_PORT = 4000;
-const DEFAULT_DATASET = 'default';
 
 /**
  * Load mock.config.yaml (from `path`, then $MOCKER_CONFIG, then ./mock.config.yaml),
@@ -36,9 +37,12 @@ const DEFAULT_DATASET = 'default';
  *   - MOCKER_PORT / PORT   -> override the single listen port (PORT is the
  *                             Railway / PaaS convention)
  *
- * Every enabled system is mounted at `/<name>` on this one shared port, so there
- * are no per-system ports. The resolved port is copied onto each system's config
- * so plugins that build self-referential URLs keep working.
+ * Every registered plugin (src/systems/index.ts) is enabled by default: a block
+ * under `systems:` is only needed to disable one (`enabled: false`) or to set
+ * overrides, so the config file is never a second registry that can drift from
+ * the code. Every enabled system is mounted at `/<name>` on the one shared
+ * port, so there are no per-system ports. The resolved port is copied onto each
+ * system's config so plugins that build self-referential URLs keep working.
  */
 export function loadConfig(path?: string): MockerConfig {
   const configPath = resolve(path ?? process.env.MOCKER_CONFIG ?? 'mock.config.yaml');
@@ -66,6 +70,14 @@ export function loadConfig(path?: string): MockerConfig {
       // Enabled unless explicitly `enabled: false`.
       enabled: sys.enabled !== false,
     };
+  }
+
+  // Registered plugins with no config block get a default one, so a new system
+  // mounts the moment it is added to the registry — no yaml edit required.
+  for (const name of Object.keys(plugins)) {
+    if (!config.systems[name]) {
+      config.systems[name] = { port: config.port, enabled: true };
+    }
   }
 
   applyEnvOverrides(config);

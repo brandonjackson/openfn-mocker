@@ -9,11 +9,12 @@ import { usage } from './usage.js';
 import { guide } from './guide.js';
 
 /**
- * Mailgun (port 4018) — the spec-driven reference plugin. It demonstrates the
- * intended pattern for spec-backed systems: load + parse the OpenAPI spec, then
- * register handlers (here custom, because Mailgun's endpoints are not plain
- * CRUD) and use response-generator helpers (shapeRecord) to keep responses
- * schema-shaped. Auth is accept-all (handled by createSystemServer).
+ * Mailgun (port 4018) — the one plugin that loads its reference spec at
+ * runtime: it parses specs/mailgun.openapi.json and uses shapeRecord to keep
+ * event responses schema-shaped. Handlers are still custom (Mailgun's
+ * endpoints are not plain CRUD); for every other system the spec is an
+ * authoring reference only (see specs/README.md). Auth is accept-all
+ * (handled by createSystemServer).
  */
 
 /** From a Mailgun `to` param (string, csv, or array) get the first recipient. */

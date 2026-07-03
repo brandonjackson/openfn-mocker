@@ -8,7 +8,7 @@ const MESSAGES = '/v3/sandbox-test.mailgun.org/messages';
 const EVENTS = '/v3/sandbox-test.mailgun.org/events';
 const STATS = '/v3/sandbox-test.mailgun.org/stats/total';
 
-describe('mailgun (spec-driven reference)', () => {
+describe('mailgun (loads its reference spec at runtime)', () => {
   it('POST messages returns { id, message: "Queued. Thank you." } (200)', async () => {
     const { app } = await createSystemServer(mailgun, config, { logLevel: 'silent' });
     const res = await app.inject({

@@ -19,9 +19,13 @@ port: 4000
 #   max: 30             # ...this many requests per window
 #   window_ms: 1000     # window length (fixed-window counter, resets each window)
 
+# Every system registered in src/systems/index.ts is enabled and mounted at
+# /<name> by default — a block below is only needed to DISABLE a system
+# (enabled: false) or to OVERRIDE its settings (behavior knobs, plugin keys).
+# Any extra keys in a block are passed straight to that system's plugin as its
+# SystemConfig (e.g. `domain`, `apiPath`, `account_sid`, `version`).
 systems:
   dhis2:
-    enabled: true
     version: "2.39"
     # Example: make DHIS2 feel like a busy, occasionally-flaky remote instance.
     latency:
@@ -32,74 +36,21 @@ systems:
     error_rate: 0.02
 
   commcare:
-    enabled: true
     domain: test-project
     app_id: abc123
 
-  openmrs:
-    enabled: true
-
   fhir:
-    enabled: true
     variant: r4
     # Empty apiPath: the /fhir mount is the FHIR base, so resources are served at
     # /fhir/Patient (not /fhir/fhir/Patient).
     apiPath: ""
 
-  http-generic:
-    enabled: true
-
   # Salesforce is a disabled placeholder (no plugin in v1).
   salesforce:
     enabled: false
 
-  kobotoolbox:
-    enabled: true
-
-  primero:
-    enabled: true
-
   mailgun:
-    enabled: true
     domain: sandbox-test.mailgun.org
 
   twilio:
-    enabled: true
     account_sid: ACtest123456
-
-  # --- Additional Digital Public Goods OpenFn has adaptors for ---
-  godata:
-    enabled: true
-
-  rapidpro:
-    enabled: true
-
-  odk:
-    enabled: true
-
-  openlmis:
-    enabled: true
-
-  openimis:
-    enabled: true
-
-  openspp:
-    enabled: true
-
-  opencrvs:
-    enabled: true
-
-  openelis:
-    enabled: true
-
-  cht:
-    enabled: true
-
-  openhim:
-    enabled: true
-
-  openboxes:
-    enabled: true
-
-  ihris:
-    enabled: true

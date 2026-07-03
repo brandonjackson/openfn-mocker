@@ -39,12 +39,10 @@
  */
 import { plugins } from '../src/systems/index.js';
 
-/* System key -> npm adaptor short name. Mirrors ADAPTOR_NAMES in
- * scripts/test-usage-examples.ts; almost every key matches 1:1. */
-const ADAPTOR_NAMES: Record<string, string> = {
-  'http-generic': 'http',
-};
-const adaptorFor = (system: string): string => ADAPTOR_NAMES[system] ?? system;
+/* System key -> npm adaptor short name. Declared on each plugin
+ * (`adaptorName`, defaulting to the system key) — the same mapping
+ * scripts/test-usage-examples.ts reads. */
+const adaptorFor = (system: string): string => plugins[system]?.adaptorName ?? system;
 
 /* Namespaces re-exported by an adaptor that make API calls (and so need mock
  * endpoints + examples). Everything else a namespace might hold — `util` and
