@@ -1,7 +1,7 @@
 import { describe, it, expect, afterAll } from 'vitest';
 import type { FastifyInstance } from 'fastify';
 import { buildServer } from '../src/app.js';
-import { renderSandboxPage, wantsHtml, SYSTEM_GUIDES } from '../src/sandbox.js';
+import { renderSandboxPage, wantsHtml, SYSTEM_GUIDES, SYSTEM_USAGE } from '../src/sandbox.js';
 import type { MockerConfig } from '../src/config.js';
 
 const config: MockerConfig = {
@@ -248,6 +248,34 @@ describe('sandbox credential (sourced from the plugin, generated in the browser)
     const html = renderSandboxPage([{ name: 'mystery', mountPath: '/mystery' }]);
     expect(html).toContain('"type":"none"');
     expect(html).toContain('{{ORIGIN}}/mystery');
+  });
+});
+
+describe('usage snippets (copied verbatim into OpenFn jobs)', () => {
+  // An adaptor's request() (via @openfn/language-common) refuses an absolute URL
+  // whose origin differs from the credential's base URL and throws
+  // BASE_URL_MISMATCH — client-side, before anything reaches the mock. A snippet
+  // must therefore never hand an adaptor HTTP function an external absolute URL:
+  // that is exactly what broke the CommCare fetchReportData example (its postUrl
+  // pointed at https://www.example.com/api/). URL arguments must be relative,
+  // same-origin paths instead.
+  //
+  // The only absolute URLs a snippet may legitimately contain are XML namespace
+  // URIs used as *data* (e.g. an OpenRosa xmlns), never as a request target.
+  const NAMESPACE_HOSTS = new Set(['openrosa.org', 'www.w3.org']);
+  const ABSOLUTE_URL = /https?:\/\/([^/\s'"`){}$]+)/g;
+
+  it('never hand an adaptor an external absolute URL (BASE_URL_MISMATCH guard)', () => {
+    const offenders: string[] = [];
+    for (const [system, examples] of Object.entries(SYSTEM_USAGE)) {
+      for (const ex of examples) {
+        for (const match of (ex.code ?? '').matchAll(ABSOLUTE_URL)) {
+          const host = match[1];
+          if (!NAMESPACE_HOSTS.has(host)) offenders.push(`${system}/${ex.fn} -> ${host}`);
+        }
+      }
+    }
+    expect(offenders, `external absolute URL(s) in usage snippet(s): ${offenders.join(', ')}`).toEqual([]);
   });
 });
 
