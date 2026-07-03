@@ -17,6 +17,7 @@
  */
 
 import { plugins } from './systems/index.js';
+import { serializeValue } from './systems/shared/xmlrpc.js';
 import type { CredentialSpec, CredentialFieldSpec, AuthRequirement } from './auth.js';
 
 /** A single runnable example request shown under a system. */
@@ -30,6 +31,47 @@ export interface SandboxExample {
   body?: string;
   /** Content-Type for the body (default application/json). */
   contentType?: string;
+  /**
+   * Stable id, unique within the system. Lets a `usage` example link to the
+   * API request its adaptor function calls (the "Run the request" cross-link on
+   * the Usage tab). Optional — omit for examples nothing links to.
+   */
+  id?: string;
+}
+
+/**
+ * One adaptor *function*, shown on a system's "Usage" tab: the OpenFn job code a
+ * user writes to call it, plus a link to the underlying API request it fires
+ * (the matching `SandboxExample.id`). This is what turns the sandbox from "here
+ * are the endpoints" into "here is how each adaptor function maps onto them".
+ */
+export interface UsageExample {
+  /** Adaptor function name, e.g. 'getGroup'. */
+  fn: string;
+  /** Full call signature, e.g. 'getGroup(sppId, callback?)'. */
+  signature: string;
+  /** One line: what the function does. */
+  description: string;
+  /** Example OpenFn job code (a short, self-contained snippet). */
+  code: string;
+  /** id of the SandboxExample this function exercises, for the API cross-link. */
+  apiRef?: string;
+}
+
+/** Build an XML-RPC methodCall document (keeps the OpenSPP examples readable). */
+function xmlrpcCall(method: string, params: any[]): string {
+  return (
+    '<?xml version="1.0"?><methodCall><methodName>' +
+    method +
+    '</methodName><params>' +
+    params.map((p) => '<param>' + serializeValue(p) + '</param>').join('') +
+    '</params></methodCall>'
+  );
+}
+
+/** Build an Odoo `execute_kw` methodCall body for the OpenSPP (XML-RPC) mock. */
+function oddoExecuteKw(model: string, method: string, args: any[], kwargs: Record<string, any> = {}): string {
+  return xmlrpcCall('execute_kw', ['openspp', 2, 'mock', model, method, args, kwargs]);
 }
 
 /**
@@ -52,8 +94,15 @@ export interface SystemGuide {
    * `{{domain}}`). Overridden by the matching key in the system's live config.
    */
   vars?: Record<string, string>;
-  /** Runnable example requests. */
+  /** Runnable example requests (the "API" tab). */
   examples: SandboxExample[];
+  /**
+   * Per-adaptor-function usage examples (the "Usage" tab): the OpenFn job code
+   * for each function and a link to the API request it calls. Omit while a
+   * system's usage examples have not been authored yet — the Usage tab then
+   * shows a "coming soon" placeholder that links to the adaptor docs.
+   */
+  usage?: UsageExample[];
 }
 
 const FORM = 'application/x-www-form-urlencoded';
@@ -575,40 +624,256 @@ export const SYSTEM_GUIDES: Record<string, SystemGuide> = {
     title: 'OpenSPP',
     docs: 'https://docs.openfn.org/adaptors/packages/openspp-docs',
     blurb:
-      'Social-protection registry built on Odoo. The adaptor speaks Odoo XML-RPC (/xmlrpc/2/common + /xmlrpc/2/object): individuals and group households live in res.partner, with g2p.program enrolments and spp.area/spp.service.point. Requests and responses are XML — use the request console with Content-Type text/xml.',
+      'Social-protection registry built on Odoo. The adaptor speaks Odoo XML-RPC (/xmlrpc/2/common + /xmlrpc/2/object): individuals and group households live in res.partner (looked up by their spp_id), with g2p.program enrolments, group memberships and spp.area/spp.service.point. Requests and responses are XML; the mock resolves Odoo domains including dotted relational paths like partner_id.spp_id. Every adaptor function below is covered — see the Usage tab.',
     auth: 'Odoo authenticate (XML-RPC)',
     examples: [
       {
+        id: 'authenticate',
         method: 'POST',
         path: '/xmlrpc/2/common',
-        label: 'authenticate → uid (XML-RPC)',
+        label: 'authenticate → uid (login)',
         contentType: XML,
-        body:
-          '<?xml version="1.0"?><methodCall><methodName>authenticate</methodName><params>' +
-          '<param><value><string>openspp</string></value></param>' +
-          '<param><value><string>admin</string></value></param>' +
-          '<param><value><string>mock</string></value></param>' +
-          '<param><value><struct></struct></value></param></params></methodCall>',
+        body: xmlrpcCall('authenticate', ['openspp', 'admin', 'mock', {}]),
       },
       {
+        id: 'search-group',
         method: 'POST',
         path: '/xmlrpc/2/object',
-        label: 'search_read households (res.partner where is_group=true)',
+        label: 'search_read group registrants (res.partner, is_group=true) — getGroup / searchGroup',
         contentType: XML,
-        body:
-          '<?xml version="1.0"?><methodCall><methodName>execute_kw</methodName><params>' +
-          '<param><value><string>openspp</string></value></param>' +
-          '<param><value><int>2</int></value></param>' +
-          '<param><value><string>mock</string></value></param>' +
-          '<param><value><string>res.partner</string></value></param>' +
-          '<param><value><string>search_read</string></value></param>' +
-          '<param><value><array><data><value><array><data>' +
-          '<value><array><data><value><string>is_group</string></value>' +
-          '<value><string>=</string></value><value><boolean>1</boolean></value>' +
-          '</data></array></value></data></array></value></data></array></value></param>' +
-          '<param><value><struct><member><name>fields</name><value><array><data>' +
-          '<value><string>name</string></value><value><string>kind</string></value>' +
-          '</data></array></value></member></struct></value></param></params></methodCall>',
+        body: oddoExecuteKw(
+          'res.partner',
+          'search_read',
+          [[['is_registrant', '=', true], ['is_group', '=', true]]],
+          { fields: ['name', 'spp_id', 'kind', 'area_id'] }
+        ),
+      },
+      {
+        id: 'search-individual',
+        method: 'POST',
+        path: '/xmlrpc/2/object',
+        label: 'search_read individuals (res.partner, is_group=false) — getIndividual / searchIndividual',
+        contentType: XML,
+        body: oddoExecuteKw(
+          'res.partner',
+          'search_read',
+          [[['is_registrant', '=', true], ['is_group', '=', false]]],
+          { fields: ['name', 'spp_id', 'gender', 'birthdate'] }
+        ),
+      },
+      {
+        id: 'create-individual',
+        method: 'POST',
+        path: '/xmlrpc/2/object',
+        label: 'create an individual registrant (res.partner) — createIndividual',
+        contentType: XML,
+        body: oddoExecuteKw('res.partner', 'create', [
+          { name: 'Fatima Bangura', is_registrant: true, is_group: false, gender: 'Female', birthdate: '1994-03-08' },
+        ]),
+      },
+      {
+        id: 'create-group',
+        method: 'POST',
+        path: '/xmlrpc/2/object',
+        label: 'create a group registrant (res.partner) — createGroup',
+        contentType: XML,
+        body: oddoExecuteKw('res.partner', 'create', [
+          { name: 'Bangura Household', is_registrant: true, is_group: true, kind: 'Household' },
+        ]),
+      },
+      {
+        id: 'group-members',
+        method: 'POST',
+        path: '/xmlrpc/2/object',
+        label: 'search_read live memberships (g2p.group.membership, is_ended=false) — getGroupMembers / addToGroup',
+        contentType: XML,
+        body: oddoExecuteKw(
+          'g2p.group.membership',
+          'search_read',
+          [[['is_ended', '=', false], ['group', '=', 1]]],
+          { fields: ['individual', 'kind', 'individual_gender', 'start_date'] }
+        ),
+      },
+      {
+        id: 'programs',
+        method: 'POST',
+        path: '/xmlrpc/2/object',
+        label: 'search_read programs (g2p.program) — getProgram / getPrograms',
+        contentType: XML,
+        body: oddoExecuteKw('g2p.program', 'search_read', [[]], { fields: ['name', 'program_id', 'state'] }),
+      },
+      {
+        id: 'enrolments',
+        method: 'POST',
+        path: '/xmlrpc/2/object',
+        label: "search_read enrolments via dotted domain partner_id.spp_id — enroll / unenroll / getEnrolledPrograms",
+        contentType: XML,
+        body: oddoExecuteKw(
+          'g2p.program_membership',
+          'search_read',
+          [[['partner_id.spp_id', '=', 'GRP_KAMARA01']]],
+          { fields: ['partner_id', 'program_id', 'state'] }
+        ),
+      },
+      {
+        id: 'service-points',
+        method: 'POST',
+        path: '/xmlrpc/2/object',
+        label: 'search_read service points (spp.service.point) — getServicePoint / searchServicePoint',
+        contentType: XML,
+        body: oddoExecuteKw('spp.service.point', 'search_read', [[]], {
+          fields: ['name', 'spp_id', 'area_id', 'is_disabled'],
+        }),
+      },
+      {
+        id: 'areas',
+        method: 'POST',
+        path: '/xmlrpc/2/object',
+        label: 'search_read areas (spp.area) — getArea / searchArea',
+        contentType: XML,
+        body: oddoExecuteKw('spp.area', 'search_read', [[]], { fields: ['name', 'spp_id', 'code', 'parent_id'] }),
+      },
+    ],
+    usage: [
+      {
+        fn: 'getGroup',
+        signature: 'getGroup(sppId, callback?)',
+        description: 'Fetch one group (household) registrant by its spp_id.',
+        code: "getGroup('GRP_KAMARA01');",
+        apiRef: 'search-group',
+      },
+      {
+        fn: 'getIndividual',
+        signature: 'getIndividual(sppId, callback?)',
+        description: 'Fetch one individual registrant by its spp_id.',
+        code: "getIndividual('IND_AMINA001');",
+        apiRef: 'search-individual',
+      },
+      {
+        fn: 'searchGroup',
+        signature: 'searchGroup(domain, options?, callback?)',
+        description: 'Search group registrants with an Odoo domain (adds is_group=true).',
+        code: "searchGroup([['spp_id', 'ilike', 'GRP']], { limit: 10 });",
+        apiRef: 'search-group',
+      },
+      {
+        fn: 'searchIndividual',
+        signature: 'searchIndividual(domain, options?, callback?)',
+        description: 'Search individual registrants with an Odoo domain (adds is_group=false).',
+        code: "searchIndividual([['gender', '=', 'Female']], { offset: 0 });",
+        apiRef: 'search-individual',
+      },
+      {
+        fn: 'createGroup',
+        signature: 'createGroup(data, callback?)',
+        description: 'Create a group (household) registrant; returns its new spp_id.',
+        code: "createGroup({ name: 'Bangura Household', kind: 'Household' });",
+        apiRef: 'create-group',
+      },
+      {
+        fn: 'createIndividual',
+        signature: 'createIndividual(data, callback?)',
+        description: 'Create an individual registrant; returns its new spp_id.',
+        code: "createIndividual({ name: 'Fatima Bangura', gender: 'Female' });",
+        apiRef: 'create-individual',
+      },
+      {
+        fn: 'updateGroup',
+        signature: 'updateGroup(sppId, data)',
+        description: 'Update a group registrant found by spp_id.',
+        code: "updateGroup('GRP_KAMARA01', { name: 'Kamara Family' });",
+        apiRef: 'search-group',
+      },
+      {
+        fn: 'updateIndividual',
+        signature: 'updateIndividual(sppId, data)',
+        description: 'Update an individual registrant found by spp_id.',
+        code: "updateIndividual('IND_AMINA001', { phone: '+23276000999' });",
+        apiRef: 'search-individual',
+      },
+      {
+        fn: 'getGroupMembers',
+        signature: 'getGroupMembers(sppId, options?, callback?)',
+        description: 'List the live members of a group (is_ended=false).',
+        code: "getGroupMembers('GRP_KAMARA01', { limit: 20 });",
+        apiRef: 'group-members',
+      },
+      {
+        fn: 'addToGroup',
+        signature: "addToGroup(groupSppId, individualSppId, role?)",
+        description: 'Add an individual to a group, optionally with a membership role.',
+        code: "addToGroup('GRP_KAMARA01', 'IND_FATMATA1', 'Head');",
+        apiRef: 'group-members',
+      },
+      {
+        fn: 'removeFromGroup',
+        signature: 'removeFromGroup(groupSppId, individualSppId)',
+        description: "End an individual's live membership in a group.",
+        code: "removeFromGroup('GRP_KAMARA01', 'IND_MOHAMED1');",
+        apiRef: 'group-members',
+      },
+      {
+        fn: 'getProgram',
+        signature: 'getProgram(programId, callback?)',
+        description: 'Fetch one program by its program_id.',
+        code: "getProgram('PROG_CT2024');",
+        apiRef: 'programs',
+      },
+      {
+        fn: 'getPrograms',
+        signature: 'getPrograms(options?, callback?)',
+        description: 'List all programs (supports offset/limit).',
+        code: 'getPrograms({ offset: 0 });',
+        apiRef: 'programs',
+      },
+      {
+        fn: 'enroll',
+        signature: 'enroll(sppId, programId)',
+        description: 'Enroll a registrant into a program (creates/updates the membership).',
+        code: "enroll('GRP_KAMARA01', 'PROG_CT2024');",
+        apiRef: 'enrolments',
+      },
+      {
+        fn: 'unenroll',
+        signature: 'unenroll(sppId, programId)',
+        description: 'Remove a registrant from a program (marks the membership not-enrolled).',
+        code: "unenroll('GRP_KAMARA01', 'PROG_CT2024');",
+        apiRef: 'enrolments',
+      },
+      {
+        fn: 'getEnrolledPrograms',
+        signature: 'getEnrolledPrograms(sppId, callback?)',
+        description: 'List the programs a registrant is enrolled in.',
+        code: "getEnrolledPrograms('GRP_KAMARA01');",
+        apiRef: 'enrolments',
+      },
+      {
+        fn: 'getServicePoint',
+        signature: 'getServicePoint(sppId, callback?)',
+        description: 'Fetch one service point (pay point / agent) by spp_id.',
+        code: "getServicePoint('SVP_BO01');",
+        apiRef: 'service-points',
+      },
+      {
+        fn: 'searchServicePoint',
+        signature: 'searchServicePoint(domain, options?, callback?)',
+        description: 'Search service points with an Odoo domain.',
+        code: "searchServicePoint([['is_disabled', '=', false]]);",
+        apiRef: 'service-points',
+      },
+      {
+        fn: 'getArea',
+        signature: 'getArea(sppId, callback?)',
+        description: 'Fetch one area by spp_id.',
+        code: "getArea('AREA_SL_BO');",
+        apiRef: 'areas',
+      },
+      {
+        fn: 'searchArea',
+        signature: 'searchArea(domain, options?, callback?)',
+        description: 'Search areas with an Odoo domain.',
+        code: "searchArea([['code', 'ilike', 'SL']]);",
+        apiRef: 'areas',
       },
     ],
   },
@@ -840,6 +1105,12 @@ function resolveExamples(
   });
 }
 
+/** Resolve a guide's usage examples: interpolate `{{token}}`s (code stays as-is otherwise). */
+function resolveUsage(guide: SystemGuide | undefined, vars: Record<string, string>): UsageExample[] {
+  if (!guide?.usage) return [];
+  return guide.usage.map((u) => JSON.parse(interpolate(JSON.stringify(u), vars)) as UsageExample);
+}
+
 /** HTML-escape for text placed in the document (defense in depth). */
 function esc(s: string): string {
   return s
@@ -878,6 +1149,7 @@ export function renderSandboxPage(
       authRequired: Boolean(auth?.required),
       authSchemes: auth?.schemes ?? [],
       examples: resolveExamples(guide, sys.mountPath, vars),
+      usage: resolveUsage(guide, vars),
     };
   });
 
@@ -1091,6 +1363,27 @@ const STYLES = [
   '.resp pre{margin:0;padding:13px;background:var(--code);color:var(--code-ink);border-radius:var(--radius);',
   'font-size:12.5px;max-height:380px;overflow:auto;white-space:pre-wrap;word-break:break-word}',
   '.admin-links{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:12px 0 8px;border-top:1px solid var(--border-soft);margin-top:8px}',
+  // Per-system tab bar (Setup / API / Usage) + panels.
+  '.tabbar{display:flex;gap:2px;border-bottom:1px solid var(--border);margin:16px 0 18px}',
+  '.tab{background:none;border:none;border-bottom:2px solid transparent;border-radius:0;',
+  'color:var(--muted);padding:9px 16px;font-size:14px;font-weight:600;margin-bottom:-1px}',
+  '.tab:hover{color:var(--ink);background:var(--wash)}',
+  '.tab.active{color:var(--accent);border-bottom-color:var(--accent)}',
+  '.tabpanel{display:none}',
+  '.tabpanel.active{display:block}',
+  // API example flash when jumped to from a Usage link.
+  '.ex{transition:background .3s,box-shadow .3s;border-radius:var(--radius)}',
+  '.ex-flash{background:var(--accent-soft);box-shadow:0 0 0 3px var(--accent-soft)}',
+  // Usage cards: signature chip, description, code block, "run the request" link.
+  '.use-intro{color:var(--muted);margin:0 0 16px;max-width:80ch}',
+  '.use{border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px}',
+  '.use-sig{display:inline-block;font-size:13.5px;color:var(--accent-strong);background:var(--accent-soft);',
+  'border:1px solid #cfe3fb;border-radius:6px;padding:3px 9px;font-weight:600}',
+  '.use-desc{color:var(--muted);margin:9px 0 0}',
+  '.use-code{margin:10px 0 0;padding:12px 14px;background:var(--code);color:var(--code-ink);',
+  'border-radius:var(--radius);font-size:12.5px;overflow-x:auto;white-space:pre-wrap;word-break:break-word}',
+  '.use-link{margin-top:10px}',
+  '.empty{color:var(--muted);padding:10px 0}',
   // Footer: OpenFn dark slate with light links.
   'footer.foot{background:var(--footer);color:var(--footer-ink);padding:32px 24px;margin-top:8px}',
   'footer.foot .foot-note{margin:0 0 10px;font-size:13.5px;text-align:center}',
@@ -1220,7 +1513,7 @@ const CLIENT_JS = [
   // The shared top console.
   'function buildConsole(){',
   'var sec=el("section","console page");sec.id="console";sec.appendChild(el("h2",null,"Request console"));',
-  'sec.appendChild(el("p","blurb","Send an ad-hoc request to any mounted system, or pick a system from the left to open its setup guide and runnable examples."));',
+  'sec.appendChild(el("p","blurb","Send an ad-hoc request to any mounted system, or pick a system from the left for its Setup, API and Usage tabs."));',
   'var row=el("div","row");',
   'var sel=document.createElement("select");["GET","POST","PUT","PATCH","DELETE"].forEach(function(m){',
   'var o=document.createElement("option");o.value=m;o.textContent=m;sel.appendChild(o);});',
@@ -1240,8 +1533,11 @@ const CLIENT_JS = [
   'if(currentId()!=="console"){window.location.hash="#console";}else{window.scrollTo(0,0);}};',
   'return sec;}',
   // A single example row (editable path + body, inline response).
-  'function buildExample(ex,getAuth){',
+  // One runnable API example. `sysName` + `ex.id` give it a stable DOM id so a
+  // Usage-tab entry can jump to (and flash) the request its function calls.
+  'function buildExample(ex,getAuth,sysName){',
   'var wrap=el("div","ex");',
+  'if(ex.id){wrap.id="ex-"+sysName+"-"+ex.id;}',
   'var head=el("div","ex-head");',
   'head.appendChild(el("span","m "+ex.method,ex.method));',
   'var path=el("input","path");path.type="text";path.value=ex.path;',
@@ -1255,7 +1551,23 @@ const CLIENT_JS = [
   'run.addEventListener("click",function(){',
   'send(ex.method,path.value,ex.contentType,body?body.value:null,resp,run,getAuth?getAuth():null);});',
   'return wrap;}',
-  // One system card.
+  // One adaptor-function usage card: signature, description, example job code,
+  // and (when apiRef is set) a button that switches to the API tab and flashes
+  // the underlying request.
+  'function buildUsage(u,sysName,activate){',
+  'var wrap=el("div","use");',
+  'wrap.appendChild(el("code","use-sig",u.signature||u.fn));',
+  'if(u.description){wrap.appendChild(el("p","use-desc",u.description));}',
+  'wrap.appendChild(el("pre","use-code",u.code));',
+  'if(u.apiRef){var a=el("button","ghost use-link","Run the API request \\u2192");',
+  'a.addEventListener("click",function(){activate("api");',
+  'var t=document.getElementById("ex-"+sysName+"-"+u.apiRef);',
+  'if(t){t.scrollIntoView({block:"center"});t.classList.add("ex-flash");',
+  'setTimeout(function(){t.classList.remove("ex-flash");},1400);}});',
+  'wrap.appendChild(a);}',
+  'return wrap;}',
+  // One system card. Three tabs: Setup (guide + credential), API (runnable
+  // requests) and Usage (per-adaptor-function example code linking to the API).
   'function buildSystem(sys){',
   'var card=el("section","sys page");card.id="sys-"+sys.name;',
   'var head=el("div","sys-head");',
@@ -1266,7 +1578,20 @@ const CLIENT_JS = [
   'head.appendChild(el("span","auth"+(sys.authRequired?" req":""),',
   'sys.authRequired?"requires a credential":"accepts anonymous"));',
   'card.appendChild(head);',
-  // Per-system guide: how to set up this adaptor + an API overview with docs links.
+  // Tab bar + three panels; activate() flips which panel/button is shown.
+  'var panels={};var buttons={};',
+  'function activate(name){for(var k in panels){var on=(k===name);',
+  'panels[k].classList.toggle("active",on);buttons[k].classList.toggle("active",on);}}',
+  'var tabbar=el("div","tabbar");',
+  'var defs=[["setup","Setup"],["api","API"],["usage","Usage"]];',
+  'for(var d=0;d<defs.length;d++){(function(key,lbl){var b=el("button","tab",lbl);',
+  'b.addEventListener("click",function(){activate(key);});buttons[key]=b;tabbar.appendChild(b);})(defs[d][0],defs[d][1]);}',
+  'card.appendChild(tabbar);',
+  // authHeader is read by the API Run buttons via getAuth(), so Regenerate (in
+  // Setup) updates both the shown credential and what the examples send.
+  'var state={vals:{},authHeader:null};',
+  // ---- Setup panel: adaptor guide + credential. ----
+  'var setupPanel=el("div","tabpanel");panels.setup=setupPanel;',
   'var guide=el("div","sys-guide");',
   'var setup=el("div","sys-guide-col");setup.appendChild(el("h4",null,"Set up the adaptor"));',
   'var steps=el("ol","steps");',
@@ -1288,7 +1613,7 @@ const CLIENT_JS = [
   'if(sys.docs){dl.appendChild(rich("li",null,[link(sys.title+" adaptor docs \\u2197",sys.docs)]));}',
   'dl.appendChild(rich("li",null,[link("Managing credentials \\u2197","https://docs.openfn.org/documentation/build/credentials")]));',
   'ov.appendChild(dl);',
-  'guide.appendChild(setup);guide.appendChild(ov);card.appendChild(guide);',
+  'guide.appendChild(setup);guide.appendChild(ov);setupPanel.appendChild(guide);',
   // Credential block: a fresh, ready-to-paste suggestion generated per page view.
   'var cred=el("div","cred");',
   'var ch=el("div","cred-head");',
@@ -1300,9 +1625,6 @@ const CLIENT_JS = [
   'var regen=el("button","ghost","Regenerate");var copy=el("button","ghost","Copy");',
   'chR.appendChild(regen);chR.appendChild(copy);ch.appendChild(chR);cred.appendChild(ch);',
   'var pre=el("pre",null,"");cred.appendChild(pre);',
-  // state.authHeader is read by the example Run buttons via getAuth(), so
-  // Regenerate updates both the shown credential and what the examples send.
-  'var state={vals:{},authHeader:null};',
   'function renderCred(){state.vals=resolveCredValues(sys.credential);',
   'state.authHeader=buildAuthHeader(sys.credential.authHeader,state.vals);',
   'pre.textContent=JSON.stringify(state.vals,null,2);}',
@@ -1311,14 +1633,17 @@ const CLIENT_JS = [
   'copy.addEventListener("click",function(){',
   'if(navigator.clipboard){navigator.clipboard.writeText(pre.textContent).then(function(){',
   'copy.textContent="Copied";setTimeout(function(){copy.textContent="Copy";},1200);});}});',
-  'card.appendChild(cred);',
+  'setupPanel.appendChild(cred);',
   // Only note "generated" when the credential actually carries a secret.
   'var hasSecret=sys.credential.fields.some(function(f){return f.role==="secret";});',
-  'if(hasSecret){card.appendChild(el("p","cred-note",',
+  'if(hasSecret){setupPanel.appendChild(el("p","cred-note",',
   '"Secret values are freshly generated suggestions \\u2014 the mock accepts any value; use Regenerate for a new set."));}',
-  // Examples read the current auth header via getAuth so Regenerate takes effect.
-  'for(var i=0;i<sys.examples.length;i++){card.appendChild(buildExample(sys.examples[i],function(){return state.authHeader;}));}',
-  // Admin quick links (route through the top console).
+  'card.appendChild(setupPanel);',
+  // ---- API panel: runnable example requests + admin quick links. ----
+  'var apiPanel=el("div","tabpanel");panels.api=apiPanel;',
+  'if(sys.examples.length){for(var i=0;i<sys.examples.length;i++){',
+  'apiPanel.appendChild(buildExample(sys.examples[i],function(){return state.authHeader;},sys.name));}}',
+  'else{apiPanel.appendChild(el("p","empty","No example requests for this system yet \\u2014 use the Request console above."));}',
   'var admin=el("div","admin-links");',
   'admin.appendChild(el("span","dim","admin:"));',
   'var mk=function(lbl,method,p,b){var g=el("button","ghost",lbl);g.addEventListener("click",function(){',
@@ -1327,7 +1652,19 @@ const CLIENT_JS = [
   'admin.appendChild(mk("requests","GET",sys.mountPath+"/_admin/requests"));',
   'admin.appendChild(mk("store","GET",sys.mountPath+"/_admin/store"));',
   'admin.appendChild(mk("reset","POST",sys.mountPath+"/_admin/reset"));',
-  'card.appendChild(admin);',
+  'apiPanel.appendChild(admin);',
+  'card.appendChild(apiPanel);',
+  // ---- Usage panel: per-adaptor-function example job code. ----
+  'var usagePanel=el("div","tabpanel");panels.usage=usagePanel;',
+  'if(sys.usage&&sys.usage.length){',
+  'usagePanel.appendChild(el("p","use-intro",',
+  '"How each adaptor function maps onto the API above \\u2014 the OpenFn job code plus a link to the request it fires."));',
+  'for(var u=0;u<sys.usage.length;u++){usagePanel.appendChild(buildUsage(sys.usage[u],sys.name,activate));}}',
+  'else{var ph=el("div","empty");',
+  'ph.appendChild(document.createTextNode("Per-function usage examples for this adaptor are coming soon. "));',
+  'if(sys.docs){ph.appendChild(link("See the adaptor docs \\u2197",sys.docs));}usagePanel.appendChild(ph);}',
+  'card.appendChild(usagePanel);',
+  'activate("setup");',
   'return card;}',
   // Left-hand navigation: the request console plus one link per system.
   'function buildSidebar(){',
