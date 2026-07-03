@@ -50,6 +50,29 @@ const plugin: MockSystemPlugin = {
   guide,
 
   async overrides(app: FastifyInstance, store: DataStore, _config: SystemConfig) {
+    // The cht adaptor always sends `content-type: application/json` (Utils.js
+    // hardcodes it), even on requests that carry no body: put() passes a null
+    // body, and post() routes its body through an option key that
+    // language-common's request ignores, so the body never reaches the wire.
+    // Fastify's built-in JSON parser 400s on an empty body, so replace it (scoped
+    // to this system) with one that treats an empty body as `{}`.
+    app.removeContentTypeParser('application/json');
+    app.addContentTypeParser(
+      'application/json',
+      { parseAs: 'string' },
+      (_req: unknown, body: string, done: (err: Error | null, body?: any) => void) => {
+        if (!body || body.trim() === '') {
+          done(null, {});
+          return;
+        }
+        try {
+          done(null, JSON.parse(body));
+        } catch (err) {
+          done(err as Error, undefined);
+        }
+      }
+    );
+
     // --- Medic REST: create people / places ---
     for (const kind of ['people', 'places'] as const) {
       app.post(`/api/v1/${kind}`, async (req, reply) => {

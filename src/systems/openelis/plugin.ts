@@ -12,8 +12,16 @@ import { guide } from './guide.js';
  * orders and results as ServiceRequest / Specimen / Observation /
  * DiagnosticReport tied to a Patient. Mounted as /openelis, so resources live at
  * /openelis/fhir/ServiceRequest.
+ *
+ * The openelis adaptor prefixes every request path with
+ * `/api/OpenELIS-Global/rest/` (see language-openelis http.request), so a job
+ * calling `http.get('fhir/ServiceRequest')` actually hits
+ * `/api/OpenELIS-Global/rest/fhir/ServiceRequest`. We register the FHIR surface
+ * under that real base as well as the plain `/fhir` base used by the sandbox
+ * guide and unit tests.
  */
 const API_SEG = '/fhir';
+const ADAPTOR_API_SEG = '/api/OpenELIS-Global/rest/fhir';
 
 const plugin: MockSystemPlugin = {
   name: 'openelis',
@@ -30,12 +38,10 @@ const plugin: MockSystemPlugin = {
   guide,
 
   async overrides(app: FastifyInstance, store: DataStore, config: SystemConfig) {
-    registerFhirRoutes(app, store, {
-      apiSeg: API_SEG,
-      resourceTypes: ['Patient', 'ServiceRequest', 'Specimen', 'Observation', 'DiagnosticReport', 'Task'],
-      softwareName: 'OpenELIS Global FHIR R4',
-      port: config.port,
-    });
+    const resourceTypes = ['Patient', 'ServiceRequest', 'Specimen', 'Observation', 'DiagnosticReport', 'Task'];
+    const softwareName = 'OpenELIS Global FHIR R4';
+    registerFhirRoutes(app, store, { apiSeg: API_SEG, resourceTypes, softwareName, port: config.port });
+    registerFhirRoutes(app, store, { apiSeg: ADAPTOR_API_SEG, resourceTypes, softwareName, port: config.port });
   },
 
   seed,

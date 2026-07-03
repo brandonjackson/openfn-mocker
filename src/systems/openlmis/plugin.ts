@@ -59,6 +59,28 @@ const plugin: MockSystemPlugin = {
   guide,
 
   async overrides(app: FastifyInstance, store: DataStore, _config: SystemConfig) {
+    // The openlmis adaptor's authorize() hardcodes `Content-Type: application/json`
+    // on the token request but sends no body (grant_type/username/password ride in
+    // the query string), and get()/put() likewise set that header with a null body.
+    // Fastify's built-in JSON parser 400s on an empty body, so replace it (scoped to
+    // this system) with one that treats an empty body as `{}`.
+    app.removeContentTypeParser('application/json');
+    app.addContentTypeParser(
+      'application/json',
+      { parseAs: 'string' },
+      (_req: unknown, body: string, done: (err: Error | null, body?: any) => void) => {
+        if (!body || body.trim() === '') {
+          done(null, {});
+          return;
+        }
+        try {
+          done(null, JSON.parse(body));
+        } catch (err) {
+          done(err as Error, undefined);
+        }
+      }
+    );
+
     // --- OAuth2 token (accept any client credentials). ---
     app.post('/api/oauth/token', async (_req, reply) => {
       reply.code(200);
@@ -83,6 +105,16 @@ const plugin: MockSystemPlugin = {
           return { message: `${collection} ${id} not found`, messageKey: 'error.notFound' };
         }
         return found;
+      });
+
+      // Update a resource (PUT is a full replace in the reference-data API).
+      app.put(`/api/${collection}/:id`, async (req) => {
+        const id = String((req.params as Record<string, any>).id);
+        const body = (req.body ?? {}) as Record<string, any>;
+        const existing = store.get(collection, id);
+        const record = { ...(existing ?? {}), ...body, id };
+        store.create(collection, id, record);
+        return record;
       });
     }
 
