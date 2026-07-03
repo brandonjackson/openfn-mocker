@@ -188,6 +188,104 @@ systems:
     error_rate: 0.05            # overrides the 0.0 default
 ```
 
+#### Load testing in CI
+
+The behavior knobs turn the mock into a controllable target for an automated
+load test: a deterministic, in-memory backend that you can make as slow and as
+flaky as production, without touching a real instance or its rate limits. Point
+your load tool at it, drive traffic, and assert on the results — a stable
+baseline you can run on every push.
+
+For the injected error, simulate **`429 Too Many Requests`** (throttling). Under
+sustained load, real external systems (DHIS2, Salesforce, Twilio) start rejecting
+excess requests, and a load test exists precisely to reach that regime — so 429
+is the failure mode worth reproducing, because it exercises your workflow's
+backoff/retry path. (Don't inject `401 Unauthorized` here: a missing or invalid
+credential is a deterministic, built-in behavior the system should return on its
+own, not a random fault to sprinkle into a load test.)
+
+A GitHub Actions job that boots the mock with load-test tuning and runs
+[k6](https://k6.io) against it:
+
+```yaml
+# .github/workflows/loadtest.yml
+name: load-test
+on: [push]
+
+jobs:
+  loadtest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # A config tuned for load: production-like latency, and a slice of 429s so
+      # the workflow's throttle handling is actually on the hook.
+      - name: Write load-test config
+        run: |
+          cat > loadtest.config.yaml <<'YAML'
+          port: 4000
+          latency:
+            mean_ms: 250        # production-like average
+            stddev_ms: 80       # realistic jitter
+            min_ms: 20
+            max_ms: 3000
+          error_rate: 0.10      # 10% of requests are throttled...
+          error_status: 429     # ...as Too Many Requests
+          systems:
+            dhis2: { enabled: true }
+            fhir:  { enabled: true }
+          YAML
+
+      - name: Start openfn-mocker
+        run: |
+          docker build -t openfn-mocker .
+          docker run -d --name mocker -p 4000:4000 \
+            -e MOCKER_CONFIG=/app/loadtest.config.yaml \
+            -v "$PWD/loadtest.config.yaml:/app/loadtest.config.yaml:ro" \
+            openfn-mocker
+          # Wait for readiness on the aggregated admin route.
+          for i in $(seq 1 30); do curl -fs localhost:4000/_admin/systems && break; sleep 1; done
+
+      - name: Run k6 load test
+        uses: grafana/k6-action@v0.3.1
+        with:
+          filename: loadtest.js
+
+      - name: Mocker logs (on failure)
+        if: failure()
+        run: docker logs mocker
+```
+
+```js
+// loadtest.js — 50 concurrent users for 30s against the throttled mock.
+import http from 'k6/http';
+import { check } from 'k6';
+
+export const options = {
+  vus: 50,
+  duration: '30s',
+  thresholds: {
+    // Latency budget with headroom over the mock's ~250ms mean + jitter.
+    http_req_duration: ['p(95)<1500'],
+    // We inject ~10% 429s on purpose, so allow a little slack above that; a
+    // higher failure rate means real errors (5xx / dropped connections).
+    http_req_failed: ['rate<0.15'],
+  },
+};
+
+export default function () {
+  const res = http.get('http://localhost:4000/dhis2/api/organisationUnits');
+  // 200 = served, 429 = injected throttle (expected). A 5xx is a real failure.
+  check(res, { 'no server error': (r) => r.status < 500 });
+}
+```
+
+k6 counts the injected 429s as `http_req_failed`, so the `rate<0.15` threshold
+tracks the configured `error_rate` (0.10) with headroom; the `no server error`
+check catches anything that is a genuine fault rather than a simulated throttle.
+Tighten the thresholds and raise `vus` to turn the mock into a regression gate on
+your workflow's latency and retry behavior.
+
 ### Environment overrides
 
 Environment variables take precedence over the YAML file, which makes container deployment easy:
