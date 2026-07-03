@@ -100,6 +100,192 @@ systems:
 
 A system is enabled unless it sets `enabled: false`. Any extra keys in a system block (for example `domain`, `apiPath`, `account_sid`, `base_id`, `version`) are passed straight through to that system's plugin.
 
+### Configuration terms
+
+Each block under `systems:` accepts a small set of framework-level keys plus any
+plugin-specific keys. The framework keys are understood by every system:
+
+| Term | Type | Default | Meaning |
+|------|------|---------|---------|
+| `enabled` | bool | `true` | Mount this system. `false` leaves it out (and is how `salesforce` ships as a placeholder). |
+| `seed` | string | — | Reserved per-system seed selector; normally you pick data with the top-level `dataset` / `MOCKER_DATASET` instead. |
+| `latency` | map | — | Per-request response-time simulation. See [Simulating stochastic behavior](#simulating-stochastic-behavior). |
+| `error_rate` | number | `0` | Probability in `[0, 1]` that a request gets an injected failure instead of the real response. |
+| `error_status` | number | `500` | HTTP status used for an injected failure. |
+
+Everything else in a block is **plugin-specific** and passed straight through to
+that system's plugin as its `SystemConfig`. The plugin keys in the shipped
+config are:
+
+| System | Plugin keys | Meaning |
+|--------|-------------|---------|
+| `dhis2` | `version` | Value reported by `GET /api/system/info`. |
+| `commcare` | `domain`, `app_id` | Project space and app id used in Tastypie paths / envelopes. |
+| `fhir` | `variant`, `apiPath` | FHIR release (`r4`) and the sub-path of the FHIR base (empty because `/fhir` is already the base). |
+| `mailgun` | `domain` | Sending domain in `POST /v3/{domain}/messages`. |
+| `twilio` | `account_sid` | Account SID echoed in message/call resources. |
+| `airtable` | `base_id` | Base id in `/{base_id}/{table}` paths. |
+
+The single shared listen `port` is also copied onto every system's config so
+plugins that build self-referential URLs (fhir, openmrs, kobotoolbox, mailgun,
+dhis2) resolve the right origin; you do not set it per system.
+
+### Simulating stochastic behavior
+
+By default every mock answers instantly and never fails, which is convenient but
+unrealistic. Two optional, per-system blocks let a mock behave like a real,
+imperfect remote service so you can test how an OpenFn workflow copes with
+latency, timeouts, and transient errors.
+
+```yaml
+systems:
+  dhis2:
+    enabled: true
+    latency:
+      mean_ms: 200      # average added delay per request (Gaussian center)
+      stddev_ms: 60     # standard deviation of the delay (Gaussian spread)
+      min_ms: 20        # floor applied after sampling (never negative)
+      max_ms: 1500      # ceiling applied after sampling
+    error_rate: 0.02    # 2% of requests get an injected failure
+    error_status: 503   # status for that failure (default 500)
+```
+
+**Latency** (`latency:` block) — each request sleeps for a delay drawn from a
+normal distribution `N(mean_ms, stddev_ms)`, clamped to `[min_ms, max_ms]`,
+before the real handler runs:
+
+| Term | Type | Default | Meaning |
+|------|------|---------|---------|
+| `mean_ms` | number | `0` | Mean added delay in milliseconds (center of the distribution). |
+| `stddev_ms` | number | `0` | Standard deviation in milliseconds. `0` makes every response take exactly `mean_ms`. |
+| `min_ms` | number | `0` | Lower clamp after sampling. Negative samples are floored to this (never below 0). |
+| `max_ms` | number | ∞ | Upper clamp after sampling. |
+
+**Error injection** (`error_rate` / `error_status`) — independently of latency,
+each request has an `error_rate` probability of being answered with a synthetic
+failure (`{ "error": "injected_failure", "injected": true, ... }`) at
+`error_status` instead of reaching the handler.
+
+Both features are **off unless configured**, so existing configs are unchanged.
+The per-system `/_admin` API is always exempt — it never sleeps and never gets
+an injected error, so you can still inspect a system you have made slow or flaky.
+
+You can also set `latency` and `error_rate` at the **top level** of the config
+as defaults for every system. A per-system block overrides the default, and the
+`latency` map is merged key-by-key, so a system can override just `mean_ms`
+while inheriting the shared `stddev_ms`:
+
+```yaml
+# Slow the whole mock down, then make one system flakier than the rest.
+latency:
+  mean_ms: 150
+  stddev_ms: 40
+error_rate: 0.0
+
+systems:
+  dhis2:
+    latency: { mean_ms: 400 }   # inherits stddev_ms: 40
+    error_rate: 0.05            # overrides the 0.0 default
+```
+
+#### Load testing in CI
+
+The behavior knobs turn the mock into a controllable target for an automated
+load test: a deterministic, in-memory backend that you can make as slow and as
+flaky as production, without touching a real instance or its rate limits. Point
+your load tool at it, drive traffic, and assert on the results — a stable
+baseline you can run on every push.
+
+For the injected error, simulate **`429 Too Many Requests`** (throttling). Under
+sustained load, real external systems (DHIS2, Salesforce, Twilio) start rejecting
+excess requests, and a load test exists precisely to reach that regime — so 429
+is the failure mode worth reproducing, because it exercises your workflow's
+backoff/retry path. (Don't inject `401 Unauthorized` here: a missing or invalid
+credential is a deterministic, built-in behavior the system should return on its
+own, not a random fault to sprinkle into a load test.)
+
+A GitHub Actions job that boots the mock with load-test tuning and runs
+[k6](https://k6.io) against it:
+
+```yaml
+# .github/workflows/loadtest.yml
+name: load-test
+on: [push]
+
+jobs:
+  loadtest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # A config tuned for load: production-like latency, and a slice of 429s so
+      # the workflow's throttle handling is actually on the hook.
+      - name: Write load-test config
+        run: |
+          cat > loadtest.config.yaml <<'YAML'
+          port: 4000
+          latency:
+            mean_ms: 250        # production-like average
+            stddev_ms: 80       # realistic jitter
+            min_ms: 20
+            max_ms: 3000
+          error_rate: 0.10      # 10% of requests are throttled...
+          error_status: 429     # ...as Too Many Requests
+          systems:
+            dhis2: { enabled: true }
+            fhir:  { enabled: true }
+          YAML
+
+      - name: Start openfn-mocker
+        run: |
+          docker build -t openfn-mocker .
+          docker run -d --name mocker -p 4000:4000 \
+            -e MOCKER_CONFIG=/app/loadtest.config.yaml \
+            -v "$PWD/loadtest.config.yaml:/app/loadtest.config.yaml:ro" \
+            openfn-mocker
+          # Wait for readiness on the aggregated admin route.
+          for i in $(seq 1 30); do curl -fs localhost:4000/_admin/systems && break; sleep 1; done
+
+      - name: Run k6 load test
+        uses: grafana/k6-action@v0.3.1
+        with:
+          filename: loadtest.js
+
+      - name: Mocker logs (on failure)
+        if: failure()
+        run: docker logs mocker
+```
+
+```js
+// loadtest.js — 50 concurrent users for 30s against the throttled mock.
+import http from 'k6/http';
+import { check } from 'k6';
+
+export const options = {
+  vus: 50,
+  duration: '30s',
+  thresholds: {
+    // Latency budget with headroom over the mock's ~250ms mean + jitter.
+    http_req_duration: ['p(95)<1500'],
+    // We inject ~10% 429s on purpose, so allow a little slack above that; a
+    // higher failure rate means real errors (5xx / dropped connections).
+    http_req_failed: ['rate<0.15'],
+  },
+};
+
+export default function () {
+  const res = http.get('http://localhost:4000/dhis2/api/organisationUnits');
+  // 200 = served, 429 = injected throttle (expected). A 5xx is a real failure.
+  check(res, { 'no server error': (r) => r.status < 500 });
+}
+```
+
+k6 counts the injected 429s as `http_req_failed`, so the `rate<0.15` threshold
+tracks the configured `error_rate` (0.10) with headroom; the `no server error`
+check catches anything that is a genuine fault rather than a simulated throttle.
+Tighten the thresholds and raise `vus` to turn the mock into a regression gate on
+your workflow's latency and retry behavior.
+
 ### Environment overrides
 
 Environment variables take precedence over the YAML file, which makes container deployment easy:
@@ -344,6 +530,55 @@ Systems are spec-driven. Each is backed by an OpenAPI or JSON-schema document in
 5. Add `test/<name>.test.ts` exercising the endpoints, and run `pnpm test`. Tests build a single system with `createSystemServer`, so they use unprefixed paths (e.g. `/api/things`); the running server mounts the same routes under `/<name>`.
 
 The engine provides CRUD wiring, envelope shaping, and seeding; a plugin only needs to declare its identity and spec, register any non-CRUD routes in `overrides`, and supply seed data. Where an API's envelopes do not fit plain CRUD (DHIS2 import summaries, FHIR Bundles, Tastypie/DRF wrappers, Twilio's `.json` snake_case shapes), plugins register custom Fastify handlers and use engine helpers such as `paginate()` for the parts that do fit.
+
+### Plugin API reference
+
+A plugin is a plain object implementing `MockSystemPlugin` (`src/systems/types.ts`).
+It is deliberately small — identity, an optional spec, and two lifecycle hooks:
+
+```ts
+interface MockSystemPlugin {
+  name: string;                 // stable key, matches the registry + config block (e.g. 'dhis2')
+  specFile?: string;            // filename in specs/ (omit for spec-less catch-alls like http-generic)
+  overrides?(app, store, config): void | Promise<void>;  // register custom / non-CRUD routes
+  seed(store, config): void;    // populate the store at boot and on /_admin/reset|seed
+}
+```
+
+**`config` (`SystemConfig`)** is the system's block from `mock.config.yaml`,
+after env overrides and cascaded defaults are applied. It always carries:
+
+- `port` — the shared listen port (for building self-referential URLs);
+- the framework keys from [Configuration terms](#configuration-terms)
+  (`enabled`, `latency`, `error_rate`, `error_status`, `seed`);
+- every plugin-specific key from the block (typed as `[key: string]: any`),
+  e.g. `config.version` for dhis2 or `config.domain` for commcare.
+
+**Registration lifecycle.** When a system is mounted, `registerSystem`
+(`src/server.ts`) wires the following onto the (possibly path-prefixed) Fastify
+instance, in order, *before* your plugin runs:
+
+1. Body parsing — JSON, form-urlencoded, and raw-string for `text/xml` /
+   `application/xml` / `text/plain`.
+2. Accept-all auth — sets `request.mockAuth` (parsed for logging; never rejects).
+3. Stochastic behavior — the `latency` / `error_rate` hooks from
+   [Simulating stochastic behavior](#simulating-stochastic-behavior)
+   (no-op unless configured).
+4. Request logging — every response is recorded into a 100-entry ring buffer for
+   `/_admin/requests`.
+5. Admin routes — `/_admin/status|requests|store|reset|seed` relative to the
+   instance (so `/<name>/_admin/*` when prefixed).
+
+Then it calls `plugin.overrides?.(app, store, config)` and finally
+`plugin.seed(store, config)`. Because every system is registered as an
+encapsulated Fastify plugin under its own prefix, routes and hooks are scoped to
+that instance and never collide with other systems on the shared port. Inside
+`overrides` a route path is relative to the mount, so registering `/api/things`
+on the `mysystem` plugin serves it at `/mysystem/api/things`, and
+`request.mockAuth` is already available in every handler.
+
+Register the finished plugin in `src/systems/index.ts` under its `name` (the
+registry key is the mount path) and add a matching block to `mock.config.yaml`.
 
 ### Notable per-system shapes
 

@@ -9,6 +9,13 @@ export interface MockerConfig {
   port: number;
   /** Which seed dataset to load at boot (folder under datasets/). Default `default`. */
   dataset: string;
+  /**
+   * Optional top-level defaults for stochastic behavior (latency + error_rate).
+   * Copied onto every system that does not set its own, so you can slow down or
+   * flake out the whole mock in one place. A per-system block overrides it.
+   */
+  latency?: Record<string, any>;
+  error_rate?: number;
   systems: Record<string, SystemConfig & { enabled: boolean }>;
 }
 
@@ -37,6 +44,8 @@ export function loadConfig(path?: string): MockerConfig {
     // `admin_port` is accepted as a legacy alias for `port`.
     port: Number(raw.port ?? raw.admin_port ?? DEFAULT_PORT),
     dataset: typeof raw.dataset === 'string' && raw.dataset.trim() ? raw.dataset.trim() : DEFAULT_DATASET,
+    latency: raw.latency && typeof raw.latency === 'object' ? raw.latency : undefined,
+    error_rate: raw.error_rate !== undefined ? Number(raw.error_rate) : undefined,
     systems: {},
   };
 
@@ -56,9 +65,15 @@ export function loadConfig(path?: string): MockerConfig {
 
   // All systems share the single listen port; copy it onto each system config so
   // plugins that build absolute self-URLs (fhir, openmrs, kobotoolbox, mailgun,
-  // dhis2) reference the right port.
+  // dhis2) reference the right port. Also cascade the optional top-level behavior
+  // defaults (latency / error_rate): a system inherits them unless it sets its
+  // own, and latency is merged key-by-key so a system can override just `mean_ms`.
   for (const sys of Object.values(config.systems)) {
     sys.port = config.port;
+    if (config.latency) sys.latency = { ...config.latency, ...(sys.latency ?? {}) };
+    if (config.error_rate !== undefined && sys.error_rate === undefined) {
+      sys.error_rate = config.error_rate;
+    }
   }
 
   return config;

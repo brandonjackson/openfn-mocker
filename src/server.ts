@@ -3,6 +3,7 @@ import formbody from '@fastify/formbody';
 import { DataStore } from './store.js';
 import { RequestLog, summarizeBody, makeLogLevel } from './logger.js';
 import { authPlugin } from './auth.js';
+import { registerBehavior } from './behavior.js';
 import { registerAdminRoutes } from './admin.js';
 import type { MockSystemPlugin, SystemConfig } from './systems/types.js';
 
@@ -70,6 +71,10 @@ export async function registerSystem(
 
   // Accept-all auth, applied directly so it covers every route on this instance.
   await authPlugin(app);
+
+  // Optional stochastic behavior (latency + error injection) from the system's
+  // config block. No-ops when the config leaves the knobs at their defaults.
+  registerBehavior(app, config);
 
   // Record every response into the ring buffer for /_admin/requests.
   app.addHook('onResponse', async (request, reply) => {
