@@ -8,7 +8,6 @@ import fhir from '../src/systems/fhir/plugin.js';
 import httpGeneric from '../src/systems/http-generic/plugin.js';
 import kobotoolbox from '../src/systems/kobotoolbox/plugin.js';
 import primero from '../src/systems/primero/plugin.js';
-import airtable from '../src/systems/airtable/plugin.js';
 
 const apps: FastifyInstance[] = [];
 /** Build a system with enforcement live (autoAuth off, so we drive auth ourselves). */
@@ -136,12 +135,5 @@ describe('open systems stay accept-all', () => {
     const { app } = await raw(httpGeneric);
     const res = await app.inject({ method: 'GET', url: '/anything/at/all' });
     expect(res.statusCode).toBe(200);
-  });
-
-  it('Airtable (bearer) is gated, confirming open != a global default', async () => {
-    const { app } = await raw(airtable, { base_id: 'appABC123' });
-    const res = await app.inject({ method: 'GET', url: '/v0/appABC123/Contacts' });
-    expect(res.statusCode).toBe(401);
-    expect(res.headers['www-authenticate']).toContain('Bearer');
   });
 });

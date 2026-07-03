@@ -6,7 +6,7 @@ import type { AuthRequirement } from '../auth.js';
  * Per-system runtime configuration. `port` is the single shared listen port
  * (copied onto every system by loadConfig) so plugins can build self-referential
  * URLs; every other key comes from the system's block in mock.config.yaml
- * (e.g. `domain`, `apiPath`, `account_sid`, `base_id`, `version`).
+ * (e.g. `domain`, `apiPath`, `account_sid`, `version`).
  */
 export interface SystemConfig {
   port: number;

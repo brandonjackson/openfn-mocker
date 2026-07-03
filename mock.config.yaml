@@ -67,10 +67,6 @@ systems:
     enabled: true
     account_sid: ACtest123456
 
-  airtable:
-    enabled: true
-    base_id: appABC123
-
   # --- Additional Digital Public Goods OpenFn has adaptors for ---
   godata:
     enabled: true

@@ -12,7 +12,6 @@ const config: MockerConfig = {
     fhir: { enabled: true, port: 0, apiPath: '' },
     commcare: { enabled: true, port: 0, domain: 'test-project' },
     twilio: { enabled: true, port: 0, account_sid: 'ACtest123456' },
-    airtable: { enabled: true, port: 0, base_id: 'appABC123' },
     'http-generic': { enabled: true, port: 0 },
     salesforce: { enabled: false, port: 0 }, // placeholder, no plugin
   },
@@ -103,19 +102,16 @@ describe('renderSandboxPage', () => {
     expect(html).toContain('/dhis2/api/system/info');
   });
 
-  it('interpolates config-dependent tokens (domain, account_sid, base_id)', () => {
+  it('interpolates config-dependent tokens (domain, account_sid)', () => {
     const html = renderSandboxPage([
       { name: 'commcare', mountPath: '/commcare', config: { domain: 'my-project' } },
       { name: 'twilio', mountPath: '/twilio', config: { account_sid: 'ACcustom999' } },
-      { name: 'airtable', mountPath: '/airtable', config: { base_id: 'appCUSTOM' } },
     ]);
     expect(html).toContain('/commcare/a/my-project/api/v0.5/case/');
     expect(html).toContain('ACcustom999');
-    expect(html).toContain('appCUSTOM');
     // No unresolved config tokens remain.
     expect(html).not.toContain('{{domain}}');
     expect(html).not.toContain('{{account_sid}}');
-    expect(html).not.toContain('{{base_id}}');
   });
 
   it('falls back to guide defaults when config omits the token', () => {
@@ -177,6 +173,16 @@ describe('renderSandboxPage', () => {
     expect(html).toContain('"#sys-"+sys.name');
     expect(html).toContain('"name":"dhis2"');
     expect(html).toContain('"name":"mailgun"');
+  });
+
+  it('sorts the sidebar nav links alphabetically by title', () => {
+    // The nav links are ordered client-side; assert the sort is by title so the
+    // left-hand list reads A–Z regardless of the curated card order.
+    const html = renderSandboxPage([
+      { name: 'dhis2', mountPath: '/dhis2' },
+      { name: 'mailgun', mountPath: '/mailgun' },
+    ]);
+    expect(html).toContain('a.title.localeCompare(b.title)');
   });
 });
 
