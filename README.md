@@ -112,6 +112,7 @@ plugin-specific keys. The framework keys are understood by every system:
 | `latency` | map | — | Per-request response-time simulation. See [Simulating stochastic behavior](#simulating-stochastic-behavior). |
 | `error_rate` | number | `0` | Probability in `[0, 1]` that a request gets an injected failure instead of the real response. |
 | `error_status` | number | `500` | HTTP status used for an injected failure. |
+| `rate_limit` | map | — | Deterministic throttling: reject requests above a per-window threshold. See [Simulating stochastic behavior](#simulating-stochastic-behavior). |
 
 Everything else in a block is **plugin-specific** and passed straight through to
 that system's plugin as its `SystemConfig`. The plugin keys in the shipped
@@ -166,14 +167,39 @@ each request has an `error_rate` probability of being answered with a synthetic
 failure (`{ "error": "injected_failure", "injected": true, ... }`) at
 `error_status` instead of reaching the handler.
 
+**Rate limiting** (`rate_limit:` block) — unlike `error_rate`, which fails
+requests at random regardless of volume, this rejects requests only once traffic
+exceeds a threshold. Each system keeps a fixed-window counter: up to `max`
+requests per `window_ms` are served normally, and every request beyond that in
+the same window is answered with `status` (default `429`) and
+`{ "error": "rate_limited", "injected": true, ... }`. The counter resets at each
+window boundary. This reproduces the throttling regime a real API enters under
+sustained load, which is exactly what a load test drives toward, so it exercises
+your workflow's backoff/retry path deterministically rather than by chance.
+
+```yaml
+systems:
+  dhis2:
+    rate_limit:
+      max: 20           # requests allowed per window
+      window_ms: 1000   # window length in ms (default 1000)
+      status: 429       # status for a throttled request (default 429)
+```
+
+| Term | Type | Default | Meaning |
+|------|------|---------|---------|
+| `max` | number | — | Requests allowed per window. Absent or `0` disables the limiter. |
+| `window_ms` | number | `1000` | Length of the counting window in milliseconds. |
+| `status` | number | `429` | HTTP status returned once the limit is exceeded. |
+
 Both features are **off unless configured**, so existing configs are unchanged.
 The per-system `/_admin` API is always exempt — it never sleeps and never gets
 an injected error, so you can still inspect a system you have made slow or flaky.
 
-You can also set `latency` and `error_rate` at the **top level** of the config
-as defaults for every system. A per-system block overrides the default, and the
-`latency` map is merged key-by-key, so a system can override just `mean_ms`
-while inheriting the shared `stddev_ms`:
+You can also set `latency`, `error_rate`, and `rate_limit` at the **top level**
+of the config as defaults for every system. A per-system block overrides the
+default, and the `latency` and `rate_limit` maps are merged key-by-key, so a
+system can override just `mean_ms` (or just `max`) while inheriting the rest:
 
 ```yaml
 # Slow the whole mock down, then make one system flakier than the rest.
@@ -196,13 +222,17 @@ flaky as production, without touching a real instance or its rate limits. Point
 your load tool at it, drive traffic, and assert on the results — a stable
 baseline you can run on every push.
 
-For the injected error, simulate **`429 Too Many Requests`** (throttling). Under
-sustained load, real external systems (DHIS2, Salesforce, Twilio) start rejecting
-excess requests, and a load test exists precisely to reach that regime — so 429
-is the failure mode worth reproducing, because it exercises your workflow's
-backoff/retry path. (Don't inject `401 Unauthorized` here: a missing or invalid
-credential is a deterministic, built-in behavior the system should return on its
-own, not a random fault to sprinkle into a load test.)
+The failure mode worth reproducing is **`429 Too Many Requests`** (throttling).
+Under sustained load, real external systems (DHIS2, Salesforce, Twilio) start
+rejecting excess requests, and a load test exists precisely to reach that regime,
+because it exercises your workflow's backoff/retry path. Use the `rate_limit`
+block for this rather than `error_rate`: a real service throttles as a function
+of *volume* (fine until you push too hard, then 429s), which the limiter models
+deterministically, whereas `error_rate` fails a fixed fraction of requests
+regardless of load. Keep `error_rate` for genuinely random faults (transient
+5xx, dropped connections). (Don't simulate `401 Unauthorized` here: a missing or
+invalid credential is a deterministic, built-in behavior the system should
+return on its own, not a fault to sprinkle into a load test.)
 
 A GitHub Actions job that boots the mock with load-test tuning and runs
 [k6](https://k6.io) against it:
@@ -218,8 +248,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # A config tuned for load: production-like latency, and a slice of 429s so
-      # the workflow's throttle handling is actually on the hook.
+      # A config tuned for load: production-like latency, and a real throttle so
+      # the workflow's 429 handling is on the hook once traffic climbs past the
+      # ceiling.
       - name: Write load-test config
         run: |
           cat > loadtest.config.yaml <<'YAML'
@@ -229,8 +260,9 @@ jobs:
             stddev_ms: 80       # realistic jitter
             min_ms: 20
             max_ms: 3000
-          error_rate: 0.10      # 10% of requests are throttled...
-          error_status: 429     # ...as Too Many Requests
+          rate_limit:
+            max: 30             # serve up to 30 req/s per system...
+            window_ms: 1000     # ...then 429 the excess (Too Many Requests)
           systems:
             dhis2: { enabled: true }
             fhir:  { enabled: true }
@@ -267,24 +299,26 @@ export const options = {
   thresholds: {
     // Latency budget with headroom over the mock's ~250ms mean + jitter.
     http_req_duration: ['p(95)<1500'],
-    // We inject ~10% 429s on purpose, so allow a little slack above that; a
+    // Once 50 VUs push past the 30 req/s ceiling the mock 429s the excess, which
+    // k6 counts as http_req_failed — expected under load, so allow slack; a
     // higher failure rate means real errors (5xx / dropped connections).
-    http_req_failed: ['rate<0.15'],
+    http_req_failed: ['rate<0.4'],
   },
 };
 
 export default function () {
   const res = http.get('http://localhost:4000/dhis2/api/organisationUnits');
-  // 200 = served, 429 = injected throttle (expected). A 5xx is a real failure.
+  // 200 = served, 429 = throttled once over the rate limit (expected). A 5xx is
+  // a real failure.
   check(res, { 'no server error': (r) => r.status < 500 });
 }
 ```
 
-k6 counts the injected 429s as `http_req_failed`, so the `rate<0.15` threshold
-tracks the configured `error_rate` (0.10) with headroom; the `no server error`
-check catches anything that is a genuine fault rather than a simulated throttle.
-Tighten the thresholds and raise `vus` to turn the mock into a regression gate on
-your workflow's latency and retry behavior.
+k6 counts the throttled 429s as `http_req_failed`, so the threshold accommodates
+however much of your offered load spills past the `rate_limit` ceiling; the `no
+server error` check catches anything that is a genuine fault rather than a
+throttle. Tighten the thresholds and raise `vus` to turn the mock into a
+regression gate on your workflow's latency and retry behavior.
 
 ### Environment overrides
 

@@ -15,6 +15,9 @@ port: 4000
 #   mean_ms: 150        # average added delay per request
 #   stddev_ms: 40       # Gaussian jitter around the mean
 # error_rate: 0.0       # probability [0,1] of an injected failure response
+# rate_limit:           # deterministic throttling: 429 once traffic exceeds...
+#   max: 30             # ...this many requests per window
+#   window_ms: 1000     # window length (fixed-window counter, resets each window)
 
 systems:
   dhis2:

@@ -24,6 +24,22 @@ export interface LatencyConfig {
   max_ms?: number;
 }
 
+/**
+ * Deterministic request-rate ceiling: reject a request once more than `max`
+ * requests have been seen within a rolling `window_ms`. Distinct from
+ * `error_rate`, which fails requests at random regardless of volume — this only
+ * fires under sustained load, reproducing a real API's throttling regime (the
+ * failure mode a load test exists to reach).
+ */
+export interface RateLimitConfig {
+  /** Max requests allowed per window before rejection. 0/absent disables it. */
+  max?: number;
+  /** Length of the counting window, in milliseconds. Default 1000. */
+  window_ms?: number;
+  /** HTTP status used when the limit is exceeded. Default 429. */
+  status?: number;
+}
+
 export interface BehaviorConfig {
   /** Per-request latency simulation. */
   latency?: LatencyConfig;
@@ -34,6 +50,8 @@ export interface BehaviorConfig {
   error_rate?: number;
   /** HTTP status used for an injected failure. Default 500. */
   error_status?: number;
+  /** Deterministic rate limiting: reject requests above a threshold. */
+  rate_limit?: RateLimitConfig;
 }
 
 /** A resolved, fully-defaulted view of the behavior knobs. */
@@ -44,6 +62,10 @@ interface ResolvedBehavior {
   max: number;
   errorRate: number;
   errorStatus: number;
+  /** Rate-limit ceiling, or 0 when unlimited. */
+  rateLimitMax: number;
+  rateLimitWindowMs: number;
+  rateLimitStatus: number;
 }
 
 function num(value: unknown, fallback: number): number {
@@ -56,6 +78,7 @@ export function resolveBehavior(config: BehaviorConfig | undefined): ResolvedBeh
   const latency = config?.latency ?? {};
   const min = Math.max(0, num(latency.min_ms, 0));
   const maxRaw = num(latency.max_ms, Number.POSITIVE_INFINITY);
+  const rl = config?.rate_limit ?? {};
   return {
     mean: Math.max(0, num(latency.mean_ms, 0)),
     stddev: Math.max(0, num(latency.stddev_ms, 0)),
@@ -63,12 +86,15 @@ export function resolveBehavior(config: BehaviorConfig | undefined): ResolvedBeh
     max: Math.max(min, maxRaw),
     errorRate: Math.min(1, Math.max(0, num(config?.error_rate, 0))),
     errorStatus: Math.trunc(num(config?.error_status, 500)),
+    rateLimitMax: Math.max(0, Math.trunc(num(rl.max, 0))),
+    rateLimitWindowMs: Math.max(1, Math.trunc(num(rl.window_ms, 1000))),
+    rateLimitStatus: Math.trunc(num(rl.status, 429)),
   };
 }
 
-/** True if the knobs would ever do anything (latency or errors). */
+/** True if the knobs would ever do anything (latency, errors, or rate limit). */
 function isActive(b: ResolvedBehavior): boolean {
-  return b.mean > 0 || b.stddev > 0 || b.errorRate > 0;
+  return b.mean > 0 || b.stddev > 0 || b.errorRate > 0 || b.rateLimitMax > 0;
 }
 
 /**
@@ -91,23 +117,56 @@ export function sampleDelayMs(b: ResolvedBehavior): number {
   return Math.min(b.max, Math.max(b.min, Math.round(raw)));
 }
 
+/**
+ * A fixed-window request counter. Returns false while the caller is within the
+ * `max`-per-`window_ms` budget and true once it should be throttled. Resets the
+ * count at each window boundary. Disabled (always false) when `max` is 0.
+ */
+export function makeRateLimiter(b: ResolvedBehavior): (now: number) => boolean {
+  if (b.rateLimitMax <= 0) return () => false;
+  let windowStart = 0;
+  let count = 0;
+  return (now: number): boolean => {
+    if (now - windowStart >= b.rateLimitWindowMs) {
+      windowStart = now;
+      count = 0;
+    }
+    count += 1;
+    return count > b.rateLimitMax;
+  };
+}
+
 const sleep = (ms: number): Promise<void> =>
   ms > 0 ? new Promise((r) => setTimeout(r, ms)) : Promise.resolve();
 
 /**
  * Attach stochastic-behavior hooks to a Fastify instance: an `onRequest` hook
- * that (1) sleeps for a sampled latency and (2) with probability `error_rate`
- * short-circuits the real handler with an injected failure response. No-ops
- * (registers nothing) when the config leaves every knob at its default, so
- * systems without a behavior block keep answering instantly.
+ * that (1) rejects with a 429 once the rate limit is exceeded, (2) sleeps for a
+ * sampled latency, and (3) with probability `error_rate` short-circuits the real
+ * handler with an injected failure response. No-ops (registers nothing) when the
+ * config leaves every knob at its default, so systems without a behavior block
+ * keep answering instantly.
  */
 export function registerBehavior(app: FastifyInstance, config: SystemConfig): void {
   const b = resolveBehavior(config as BehaviorConfig);
   if (!isActive(b)) return;
 
+  const overLimit = makeRateLimiter(b);
+
   app.addHook('onRequest', async (request, reply) => {
     // Never delay/fail the admin API — you still want to inspect a "slow" system.
     if ((request.url ?? '').includes('/_admin')) return;
+
+    // Rate limiting happens before latency so a throttled request is rejected
+    // promptly, the way a real load balancer sheds excess traffic.
+    if (b.rateLimitMax > 0 && overLimit(Date.now())) {
+      reply.code(b.rateLimitStatus).send({
+        error: 'rate_limited',
+        message: `openfn-mocker rejected this request: over ${b.rateLimitMax} requests per ${b.rateLimitWindowMs}ms`,
+        injected: true,
+      });
+      return;
+    }
 
     await sleep(sampleDelayMs(b));
 
