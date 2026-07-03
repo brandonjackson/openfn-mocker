@@ -820,6 +820,42 @@ Some systems are custom-shaped on purpose to match reality:
 - CHT returns CouchDB write acks (`{ ok, id, rev }`), a `_changes` feed filterable by `?since=`, and `_bulk_docs` batch writes.
 - OpenHIM records are Mongo docs keyed by a 24-hex `_id`; OpenBoxes nests every payload under a `data` key with 32-hex ids.
 
+## Roadmap
+
+The mock covers the request/response surface each adaptor calls, but a few
+systems can't yet be driven **end to end** by their stock OpenFn adaptor without
+a workaround. These are the known gaps to close so every adaptor works against
+the mock out of the box:
+
+- **OAuth flows.** OpenCRVS (`clientId`/`clientSecret`) and OpenLMIS (OAuth2
+  password grant) authenticate by exchanging client credentials for an access
+  token. The [sandbox](#browser-sandbox) now *suggests* the right client
+  credentials, but the mock doesn't serve the matching token handshake, so the
+  stock adaptors can't complete OAuth against it. Add real `/token`-style
+  endpoints (and honour an `access_token` a credential may already carry) so the
+  OAuth adaptors run unmodified.
+- **Base-URL override for Twilio & Mailgun.** Their real credential schemas have
+  **no URL field** — the adaptors always call `api.twilio.com` /
+  `api.mailgun.net`. The mock adds a `baseUrl` for convenience, but the stock
+  adaptor ignores it, so it can't currently be pointed at the mock. Needs an
+  adaptor base-URL override upstream, or a documented DNS/proxy shim.
+- **OpenCRVS API model.** The mock models OpenCRVS's older bearer + REST/GraphQL
+  shape; the current adaptor uses OAuth and derives its endpoints from `domain`.
+  Align the mock's OpenCRVS surface (and its auth) with the v2 adaptor.
+- **Alternative auth modes.** Several adaptors accept a second credential shape
+  the sandbox doesn't surface yet: DHIS2 personal access token (`pat`),
+  `access_token` on FHIR / http / ODK, CommCare's `ApiKey <user>:<key>` header,
+  and Salesforce's `securityToken`. Model these so both variants of each
+  credential work.
+- **Salesforce plugin.** Listed as *planned* in
+  [Supported systems](#supported-systems) — the mount and credential
+  (`username`/`password`/`securityToken`, plus OAuth) exist on paper, but there
+  is no plugin yet.
+- **Credential value validation (optional).** Auth is presence-checked, never
+  value-checked, so negative-path tests (wrong password, expired or refreshed
+  token) can't be exercised. An opt-in "strict credential" mode would let
+  workflows test their auth-failure handling too.
+
 ## Contributing
 
 - Stack: Node.js 20+, TypeScript (ESM, `NodeNext`), Fastify, Vitest, built with `tsc` to `dist/`. Package manager is pnpm.
