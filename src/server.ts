@@ -71,6 +71,31 @@ export async function registerSystem(
   app.addContentTypeParser('application/xml', { parseAs: 'string' }, rawStringParser);
   app.addContentTypeParser('text/plain', { parseAs: 'string' }, rawStringParser);
 
+  // Real gateways happily accept a POST body even when the client sends an empty
+  // body or omits the Content-Type — but Fastify's defaults answer 400 (empty
+  // JSON body) or 415 (unknown/absent content type). Several OpenFn adaptors do
+  // exactly this: token endpoints get an empty body, and some low-level HTTP
+  // clients POST JSON with no Content-Type header. Make the mock lenient so those
+  // real requests reach the handlers: tolerate an empty application/json body, and
+  // add a catch-all parser that JSON-parses when it can and keeps the raw string
+  // otherwise (an empty body becomes {}).
+  const lenientBody = (
+    _req: unknown,
+    body: string,
+    done: (err: Error | null, body?: any) => void
+  ) => {
+    const text = typeof body === 'string' ? body.trim() : '';
+    if (text === '') return done(null, {});
+    try {
+      done(null, JSON.parse(text));
+    } catch {
+      done(null, body);
+    }
+  };
+  app.removeContentTypeParser('application/json');
+  app.addContentTypeParser('application/json', { parseAs: 'string' }, lenientBody);
+  app.addContentTypeParser('*', { parseAs: 'string' }, lenientBody);
+
   // Parse auth into request.mockAuth on every route (never rejects here)...
   await authPlugin(app);
   // ...then enforce the plugin's auth requirement: systems that declare
