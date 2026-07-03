@@ -1,6 +1,84 @@
 # openfn-mocker
 
-A configurable mock API server that impersonates the external systems OpenFn integrates with — every Digital Public Good (DPG) OpenFn ships an adaptor for (DHIS2, CommCare, OpenMRS, KoboToolbox, Primero, Go.Data, RapidPro, ODK, OpenLMIS, openIMIS, OpenSPP, OpenCRVS, OpenELIS, CHT, OpenHIM, OpenBoxes, iHRIS) plus FHIR and the operational tools around them (generic HTTP, Mailgun, Twilio, Airtable) — so you can develop and test OpenFn workflows end-to-end without touching a production instance. Every OpenFn adaptor reads a base URL from its credential and fires requests at it; openfn-mocker runs a realistic mock of each system, stores writes in memory so a create is readable in a later step, ships seed data so queries work on first boot, and exposes an admin API for inspecting traffic and state. The whole mock listens on **one port** and mounts each system under a path (`/dhis2`, `/fhir`, ...), so it works behind a single public domain (Railway, Render, Fly, etc.). Point your credential's URL field at `http://localhost:<port>/<system>` and your workflow runs against a fake-but-faithful API.
+**A single fake-but-faithful API server for every system OpenFn integrates with, so you can build and test workflows without touching production.**
+
+## What it does
+
+- **Mocks 20+ systems OpenFn integrates with** — DHIS2, OpenCRVS, FHIR, CommCare, and [many more](#supported-systems) — with the real envelope shapes, status codes, and ID formats, so responses are structurally indistinguishable from the live system.
+- **Point-and-run** — every adaptor reads a base URL from its credential; set that URL to `http://localhost:<port>/<system>` (any username/token works) and your workflow runs against the mock.
+- **Stateful in memory** — a record you create is readable in a later step, and ships with seed data so queries work on first boot. State resets on restart.
+- **One port, one domain** — every system mounts under a path (`/dhis2`, `/opencrvs`, `/fhir`, ...) on a single shared port, so it deploys behind one public domain (Railway, Render, Fly, ...) with no wildcard DNS.
+- **Tunable realism** — dial in per-system [latency, error rates, and rate limits](#simulating-stochastic-behavior), and generate [datasets](#seed-datasets) flavoured for a specific country or program.
+
+## Key use cases
+
+- **Develop workflows offline** — build and iterate on an OpenFn job without credentials for, or network access to, a live instance. The seed data is there on first boot.
+- **Deterministic CI** — run integration tests against a stable, in-memory backend that resets on restart, so a test never depends on the state (or uptime) of someone else's DHIS2.
+- **Demos and training** — generate a dataset flavoured for a specific country or program (localized names, real facilities, in-language SMS) and demo an end-to-end flow that looks real. See [Seed datasets](#seed-datasets).
+- **Resilience & load testing** — dial in production-like [latency, error rates, and rate limits](#simulating-stochastic-behavior) per system to prove your workflow's timeout, retry, and backoff paths actually work — including under sustained load.
+- **Multi-system integrations** — exercise a workflow that reads from one system and writes to another (e.g. OpenCRVS → DHIS2) with both mocked on the same port.
+
+## Hello world
+
+A minimal end-to-end run: generate a Rwanda civil-registry dataset, then mock **DHIS2** and **OpenCRVS** together with realistic, stochastic response times.
+
+**1. Describe the dataset** in a generation config (`rwanda.yaml`):
+
+```yaml
+name: rwanda-civil-registry
+description: >
+  A civil-registration demo set in Rwanda. Citizens and staff have Rwandan
+  (Kinyarwanda) names; facilities are real Rwandan provinces, districts, and
+  sectors. Birth and death events are registered in OpenCRVS and the resulting
+  vital statistics are reported up to DHIS2.
+systems:
+  dhis2:
+    description: Org-unit hierarchy country -> province -> district -> sector using real Rwandan names.
+  opencrvs:
+    description: Birth and death registration events for Rwandan citizens.
+```
+
+**2. Generate the seed data** (needs `ANTHROPIC_API_KEY`; the shipped `default` data is used as the shape to match):
+
+```bash
+export ANTHROPIC_API_KEY=sk-ant-...
+pnpm generate-seed --name rwanda-civil-registry --config rwanda.yaml --systems dhis2,opencrvs
+# add --dry-run first to preview the plan with no API call
+```
+
+**3. Add stochastic response times** so the mocks behave like real, imperfect remotes (`mock.config.yaml`):
+
+```yaml
+port: 4000
+systems:
+  dhis2:
+    enabled: true
+    # ~300ms average with jitter, clamped to [40ms, 2s]
+    latency: { mean_ms: 300, stddev_ms: 120, min_ms: 40, max_ms: 2000 }
+  opencrvs:
+    enabled: true
+    # OpenCRVS is slower and flakier here
+    latency: { mean_ms: 500, stddev_ms: 200, min_ms: 60, max_ms: 3000 }
+    error_rate: 0.05   # 5% of requests get an injected failure
+```
+
+**4. Serve it** and watch the Rwanda-flavoured data come back through the real API envelopes — with a different response time each call:
+
+```bash
+MOCKER_DATASET=rwanda-civil-registry MOCKER_SYSTEMS=dhis2,opencrvs pnpm start &
+
+# DHIS2 org units, now Rwandan provinces/districts:
+curl -s localhost:4000/dhis2/api/organisationUnits | jq '.organisationUnits[].name'
+
+# OpenCRVS registration-office locations:
+curl -s localhost:4000/opencrvs/api/events/locations | jq
+
+# Same request twice — note the stochastic latency:
+curl -o /dev/null -s -w 'first:  %{time_total}s\n' localhost:4000/dhis2/api/organisationUnits
+curl -o /dev/null -s -w 'second: %{time_total}s\n' localhost:4000/dhis2/api/organisationUnits
+```
+
+Point your OpenFn DHIS2 and OpenCRVS credentials at `http://localhost:4000/dhis2` and `http://localhost:4000/opencrvs` (any username/token works) and the workflow runs against this mock. See [Using with OpenFn](#using-with-openfn) for every credential shape.
 
 ## Quick start
 
