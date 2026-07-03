@@ -5,6 +5,7 @@ import type { DataStore } from '../../store.js';
 import { paginate } from '../../engine/response-generator.js';
 import { seed, nowIso } from './seed.js';
 import { usage } from './usage.js';
+import { guide } from './guide.js';
 
 /**
  * RapidPro / TextIt (a messaging Digital Public Good) — Token auth
@@ -49,6 +50,7 @@ const plugin: MockSystemPlugin = {
   },
 
   usage,
+  guide,
 
   async overrides(app: FastifyInstance, store: DataStore, _config: SystemConfig) {
     // --- Contacts ---

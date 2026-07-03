@@ -4,6 +4,7 @@ import type { MockSystemPlugin, SystemConfig } from '../types.js';
 import type { DataStore } from '../../store.js';
 import { seed, LOGIN_TOKEN } from './seed.js';
 import { usage } from './usage.js';
+import { guide } from './guide.js';
 
 /**
  * Go.Data — WHO outbreak investigation platform (a Digital Public Good).
@@ -69,6 +70,7 @@ const plugin: MockSystemPlugin = {
   },
 
   usage,
+  guide,
 
   async overrides(app: FastifyInstance, store: DataStore, _config: SystemConfig) {
     // --- Token exchange (accept any credentials). ---

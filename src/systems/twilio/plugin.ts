@@ -3,6 +3,7 @@ import type { MockSystemPlugin, SystemConfig } from '../types.js';
 import type { DataStore } from '../../store.js';
 import { seed, accountSidFrom, buildMessage, rfc2822, DEFAULT_ACCOUNT_SID } from './seed.js';
 import { usage } from './usage.js';
+import { guide } from './guide.js';
 
 /**
  * Twilio (port 4019). Basic auth (accountSid:authToken) is accept-all. Requests
@@ -54,6 +55,7 @@ const plugin: MockSystemPlugin = {
   },
 
   usage,
+  guide,
 
   async overrides(app: FastifyInstance, store: DataStore, config: SystemConfig) {
     const configuredSid = accountSidFrom(config);

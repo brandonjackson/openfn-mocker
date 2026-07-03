@@ -4,6 +4,7 @@ import type { DataStore } from '../../store.js';
 import { registerFhirRoutes } from '../shared/fhir.js';
 import { seed } from './seed.js';
 import { usage } from './usage.js';
+import { guide } from './guide.js';
 
 /**
  * openIMIS (health-insurance Digital Public Good). The openimis adaptor logs in
@@ -25,6 +26,7 @@ const plugin: MockSystemPlugin = {
   },
 
   usage,
+  guide,
 
   async overrides(app: FastifyInstance, store: DataStore, config: SystemConfig) {
     registerFhirRoutes(app, store, {

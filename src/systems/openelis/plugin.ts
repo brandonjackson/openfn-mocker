@@ -4,6 +4,7 @@ import type { DataStore } from '../../store.js';
 import { registerFhirRoutes } from '../shared/fhir.js';
 import { seed } from './seed.js';
 import { usage } from './usage.js';
+import { guide } from './guide.js';
 
 /**
  * OpenELIS Global (laboratory-information Digital Public Good). OpenELIS Global
@@ -26,6 +27,7 @@ const plugin: MockSystemPlugin = {
   },
 
   usage,
+  guide,
 
   async overrides(app: FastifyInstance, store: DataStore, config: SystemConfig) {
     registerFhirRoutes(app, store, {
