@@ -176,7 +176,7 @@ systems:
     enabled: false
 ```
 
-A system is enabled unless it sets `enabled: false`. Any extra keys in a system block (for example `domain`, `apiPath`, `account_sid`, `base_id`, `version`) are passed straight through to that system's plugin.
+A system is enabled unless it sets `enabled: false`. Any extra keys in a system block (for example `domain`, `apiPath`, `account_sid`, `version`) are passed straight through to that system's plugin.
 
 ### Configuration terms
 
@@ -203,7 +203,6 @@ config are:
 | `fhir` | `variant`, `apiPath` | FHIR release (`r4`) and the sub-path of the FHIR base (empty because `/fhir` is already the base). |
 | `mailgun` | `domain` | Sending domain in `POST /v3/{domain}/messages`. |
 | `twilio` | `account_sid` | Account SID echoed in message/call resources. |
-| `airtable` | `base_id` | Base id in `/{base_id}/{table}` paths. |
 
 The single shared listen `port` is also copied onto every system's config so
 plugins that build self-referential URLs (fhir, openmrs, kobotoolbox, mailgun,
@@ -536,7 +535,6 @@ Every system is mounted at `/<name>` on the shared port. The credential URL fiel
 | ihris | `/ihris` | `baseUrl` | Basic / Bearer | stable |
 | mailgun | `/mailgun` | `baseUrl` | Basic (`api:key`) | stable |
 | twilio | `/twilio` | `baseUrl` | Basic (`sid:token`) | stable |
-| airtable | `/airtable` | `baseUrl` | Bearer | stable |
 
 Root admin routes (`/_admin/systems`, `/_admin/reset-all`) and a `GET /` index live on the shared port. Hitting `GET /` from a browser serves an interactive [API sandbox](#browser-sandbox); API clients get JSON.
 
@@ -544,7 +542,7 @@ Root admin routes (`/_admin/systems`, `/_admin/reset-all`) and a `GET /` index l
 
 The mock never validates the *value* of a credential (any username/password/token works), but it does enforce that one is *present* where the real system requires it. Each plugin declares its own auth policy (`auth` in `MockSystemPlugin`), so this is core behavior, not a global assumption:
 
-- **Systems that require auth** (dhis2, openmrs, commcare, kobotoolbox, primero, mailgun, twilio, airtable) return **401 Unauthorized** — with a matching `WWW-Authenticate` header and `{ "error": "Unauthorized" }` body — when a request arrives with no credentials. Send any `Authorization` header (or api-key header) and the request proceeds.
+- **Systems that require auth** (dhis2, openmrs, commcare, kobotoolbox, primero, mailgun, twilio) return **401 Unauthorized** — with a matching `WWW-Authenticate` header and `{ "error": "Unauthorized" }` body — when a request arrives with no credentials. Send any `Authorization` header (or api-key header) and the request proceeds.
 - **Systems where auth is optional or absent** stay accept-all: **FHIR** (auth is none/Bearer) and **http-generic** (arbitrary endpoints) never reject for auth reasons. Not every system needs credentials, so the mock doesn't pretend they do.
 - **Exemptions**: each system's own admin API (`/<system>/_admin/*`) is never gated, and Primero's token-exchange endpoint (`POST /primero/api/v2/tokens`, returns `{ "token": "mock_primero_token" }`) stays open so you can obtain a token before you have one — every other Primero call then requires it.
 
@@ -628,9 +626,6 @@ Create (or edit) the credential for each adaptor and point its URL field at the 
 
 // Twilio
 { "baseUrl": "http://localhost:4000/twilio", "accountSid": "ACtest123456", "authToken": "mock-auth-token" }
-
-// Airtable
-{ "baseUrl": "http://localhost:4000/airtable", "apiKey": "mock-airtable-token", "baseId": "appABC123" }
 ```
 
 Each system implements the API surface its OpenFn adaptor actually calls (see [`openfn/adaptors`](https://github.com/OpenFn/adaptors)) with the real envelope shapes, status codes, and ID formats, so responses are structurally indistinguishable from the live system. Because several adaptors are *generic* clients (they build arbitrary paths rather than exposing one function per endpoint), those mocks cover a correspondingly broad surface:
@@ -641,7 +636,6 @@ Each system implements the API surface its OpenFn adaptor actually calls (see [`
 - **commcare** — the Tastypie `{ meta, objects }` Data API for any v0.5 resource (case/form/user/application/location), the configurable-report endpoint, the OpenRosa receiver, and the Excel/lookup-table bulk-upload endpoints.
 - **kobotoolbox** — `getForms` (`?asset_type=`), `getSubmissions` (`?query=`/`?sort=`), `getDeploymentInfo`, and generic `http.*` asset/data operations (create/update/delete, deploy, bulk data PATCH).
 - **primero** — token exchange, cases, case referrals (`GET/POST/PATCH .../referrals`), and the forms/lookups/locations reference data.
-- **airtable** — Airtable's Web API (used in OpenFn via the generic `http` adaptor): list (GET or `POST .../listRecords`), single/batch create, update, upsert (`performUpsert`), and delete.
 - **godata** — token login (`POST /users/login`), then bare-array list/get/create/update for outbreaks, outbreak-scoped cases and contacts, locations and reference-data, with the `?filter=` Loopback query the `get*`/`upsert*` helpers depend on.
 - **rapidpro** — the `/api/v2` DRF API (`{ next, previous, results }`): `addContact`/`upsertContact` (`POST contacts.json`, dedup on `urn`/`uuid`), `startFlow` (`POST flow_starts.json`), `sendBroadcast` (`POST broadcasts.json`), plus flow/group/field reads.
 - **odk** — ODK Central: session token (`POST /v1/sessions`), `getForms` (`/v1/projects/:id/forms`), and `getSubmissions` via the OData endpoint (`…/forms/{id}.svc/Submissions` → `{ value: [...] }`) with ODK `__id`/`__system` metadata.
@@ -782,7 +776,6 @@ Some systems are custom-shaped on purpose to match reality:
 - FHIR returns searchset Bundles and OperationOutcome errors, with transaction/batch support on `POST /fhir`.
 - Kobotoolbox and Primero use DRF-style `{ count, next, previous, results }` and Primero's `{ data, metadata }` envelopes respectively; Primero nests business fields under `data`.
 - Twilio uses PascalCase form input, snake_case JSON output, and auto-advances message status queued -> sent -> delivered on each read.
-- Airtable nests fields under `fields`, enforces the 10-record batch limit, and returns HTTP 422 on overflow.
 - Go.Data returns bare arrays (no envelope) and takes a JSON Loopback `?filter=` query; cases/contacts are outbreak-scoped under `/outbreaks/:id/...`.
 - RapidPro wraps reads in the DRF `{ next, previous, results }` envelope; posting a contact whose `urn` already exists updates it (200) instead of creating a duplicate (201).
 - ODK Central serves submissions through OData (`{ value: [...] }`) with `__id`/`__system` metadata, not plain REST.

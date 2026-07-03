@@ -25,7 +25,7 @@ const DEFAULT_CONFIG: GenerationConfig = {
     'places (Ngelehun, Bo, Kenema, Makeni, Freetown) recurs across every system: DHIS2 ' +
     'metadata, FHIR clinical resources, CommCare patient cases, OpenMRS records, ' +
     'Kobotoolbox field submissions, Primero child-protection cases, and the Mailgun / ' +
-    'Twilio / Airtable operational tools that support them. Data is synthetic and safe to ' +
+    'Twilio operational tools that support them. Data is synthetic and safe to ' +
     'commit. This is the dataset CI tests run against and the Docker image ships with — ' +
     'keep it legible, stable, and covering every system.',
   systems: {
@@ -39,7 +39,6 @@ const DEFAULT_CONFIG: GenerationConfig = {
     primero: { description: 'Child-protection cases (CP-YYYY-NNN) and incidents (IN-YYYY-NNN).' },
     mailgun: { description: 'Notification-email events and 7-day stats for a sandbox domain.' },
     twilio: { description: 'Appointment/verification SMS messages and a couple of calls.' },
-    airtable: { description: 'A clinic CRM: Contacts and Tasks tables.' },
     godata: { description: 'A COVID-19 outbreak with cases, contacts, locations and reference-data.' },
     rapidpro: { description: 'Contacts, groups, fields and flows for ANC reminder messaging.' },
     odk: { description: 'A project with two forms and OData submissions.' },

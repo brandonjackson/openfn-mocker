@@ -402,82 +402,6 @@ export const SYSTEM_GUIDES: Record<string, SystemGuide> = {
     ],
   },
 
-  airtable: {
-    title: 'Airtable',
-    docs: 'https://docs.openfn.org/adaptors',
-    blurb:
-      "Spreadsheet-style base (Airtable's Web API, reached via OpenFn's generic http adaptor). User fields nest under `fields`; batch writes cap at 10 (11+ returns HTTP 422). Supports POST …/listRecords and PATCH/PUT performUpsert.",
-    auth: 'Bearer',
-    authHeader: 'Bearer mock-airtable-token',
-    credentialField: 'baseUrl',
-    credential: {
-      baseUrl: '{{ORIGIN}}/airtable',
-      apiKey: 'mock-airtable-token',
-      baseId: '{{base_id}}',
-    },
-    vars: { base_id: 'appABC123' },
-    examples: [
-      {
-        method: 'GET',
-        path: '/v0/{{base_id}}/Contacts',
-        label: 'List records (fields nested under `fields`)',
-      },
-      {
-        method: 'GET',
-        path: '/v0/{{base_id}}/Contacts?maxRecords=3&sort[0][field]=Name&sort[0][direction]=asc',
-        label: 'Sort + limit',
-      },
-      {
-        method: 'POST',
-        path: '/v0/{{base_id}}/Contacts/listRecords',
-        label: 'List via POST (params in body)',
-        body: JSON.stringify(
-          { filterByFormula: "{Status} = 'Active'", sort: [{ field: 'Name', direction: 'asc' }] },
-          null,
-          2
-        ),
-      },
-      {
-        method: 'POST',
-        path: '/v0/{{base_id}}/Contacts',
-        label: 'Create a record',
-        body: JSON.stringify(
-          { fields: { Name: 'Sandbox Contact', Email: 'sandbox@example.org', Status: 'Lead' } },
-          null,
-          2
-        ),
-      },
-      {
-        method: 'POST',
-        path: '/v0/{{base_id}}/Contacts',
-        label: 'Batch create (max 10 at once)',
-        body: JSON.stringify(
-          {
-            records: [
-              { fields: { Name: 'Batch One', Status: 'Active' } },
-              { fields: { Name: 'Batch Two', Status: 'Lead' } },
-            ],
-          },
-          null,
-          2
-        ),
-      },
-      {
-        method: 'PATCH',
-        path: '/v0/{{base_id}}/Contacts',
-        label: 'Upsert on a field (performUpsert.fieldsToMergeOn)',
-        body: JSON.stringify(
-          {
-            performUpsert: { fieldsToMergeOn: ['Email'] },
-            records: [{ fields: { Email: 'sandbox@example.org', Status: 'Active' } }],
-          },
-          null,
-          2
-        ),
-      },
-    ],
-  },
-
   mailgun: {
     title: 'Mailgun',
     docs: 'https://docs.openfn.org/adaptors/packages/mailgun-docs',
@@ -923,7 +847,6 @@ const PREFERRED_ORDER = [
   'openlmis',
   'openboxes',
   // Operational tools
-  'airtable',
   'mailgun',
   'twilio',
   'http-generic',
@@ -1337,7 +1260,10 @@ const CLIENT_JS = [
   'if(DATA.systems.length){',
   'nav.appendChild(el("div","nav-group","Systems"));',
   'var s=el("ul","nav-list");',
-  'for(var j=0;j<DATA.systems.length;j++){var sys=DATA.systems[j];var li2=el("li");',
+  // Nav links are sorted alphabetically by title (the content cards keep their
+  // curated order); localeCompare gives a case-insensitive, human-friendly sort.
+  'var navSystems=DATA.systems.slice().sort(function(a,b){return a.title.localeCompare(b.title);});',
+  'for(var j=0;j<navSystems.length;j++){var sys=navSystems[j];var li2=el("li");',
   'var a2=el("a",null,sys.title);a2.href="#sys-"+sys.name;li2.appendChild(a2);s.appendChild(li2);}',
   'nav.appendChild(s);}',
   'return nav;}',

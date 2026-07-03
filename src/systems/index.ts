@@ -8,7 +8,6 @@ import kobotoolbox from './kobotoolbox/plugin.js';
 import primero from './primero/plugin.js';
 import mailgun from './mailgun/plugin.js';
 import twilio from './twilio/plugin.js';
-import airtable from './airtable/plugin.js';
 import godata from './godata/plugin.js';
 import rapidpro from './rapidpro/plugin.js';
 import odk from './odk/plugin.js';
@@ -33,7 +32,6 @@ export const plugins: Record<string, MockSystemPlugin> = {
   primero,
   mailgun,
   twilio,
-  airtable,
   // Additional Digital Public Goods OpenFn has adaptors for.
   godata,
   rapidpro,

@@ -4,7 +4,7 @@ description: "The canonical openfn-mocker scenario: a public-health program in
   and family) and places (Ngelehun, Bo, Kenema, Makeni, Freetown) recurs across
   every system: DHIS2 metadata, FHIR clinical resources, CommCare patient cases,
   OpenMRS records, Kobotoolbox field submissions, Primero child-protection
-  cases, and the Mailgun / Twilio / Airtable operational tools that support
+  cases, and the Mailgun / Twilio operational tools that support
   them. Data is synthetic and safe to commit. This is the dataset CI tests run
   against and the Docker image ships with — keep it legible, stable, and
   covering every system."
@@ -29,8 +29,6 @@ systems:
     description: Notification-email events and 7-day stats for a sandbox domain.
   twilio:
     description: Appointment/verification SMS messages and a couple of calls.
-  airtable:
-    description: "A clinic CRM: Contacts and Tasks tables."
   godata:
     description: A COVID-19 outbreak with cases, contacts, locations and reference-data.
   rapidpro:
