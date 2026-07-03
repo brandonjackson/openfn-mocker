@@ -3,6 +3,7 @@ import type { MockSystemPlugin, SystemConfig } from '../types.js';
 import type { DataStore } from '../../store.js';
 import { loadSpec, parseSpec, type ParsedSpec } from '../../engine/spec-parser.js';
 import { shapeRecord } from '../../engine/response-generator.js';
+import { selfUrlBase } from '../shared/self-url.js';
 import { seed, buildStats, makeEvent, makeMessageId, DEFAULT_DOMAIN } from './seed.js';
 
 /**
@@ -77,11 +78,14 @@ const plugin: MockSystemPlugin = {
 
     // GET /v3/:domain/events — list events with Mailgun paging envelope.
     app.get('/v3/:domain/events', async (req) => {
-      const domain = (req.params as Record<string, any>).domain || configuredDomain;
       const items = store
         .list('events')
         .map((ev) => (eventSchema ? shapeRecord(ev, eventSchema, spec) : ev));
-      const base = `http://localhost:${config.port}/v3/${domain}/events`;
+      // Paging links must point back at this request's public origin (and keep
+      // the mount prefix), not a hard-coded localhost — otherwise a client that
+      // follows next/previous against a deployed instance (Railway, Render, ...)
+      // gets an unreachable URL. selfUrlBase derives it from the request.
+      const base = selfUrlBase(req, config.port);
       return {
         items,
         paging: {
