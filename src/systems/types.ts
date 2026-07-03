@@ -69,11 +69,11 @@ export interface MockSystemPlugin {
   /**
    * Per-adaptor-function usage examples for the sandbox "Usage" tab: the OpenFn
    * job code for each function this adaptor exposes and a link to the API
-   * request it calls. Declared here, next to the spec and credential, so the
-   * plugin fully describes its adaptor; the sandbox renders these and
-   * `pnpm test:usage` runs each snippet against the mock. Omit while a system's
-   * usage examples have not been authored yet — the Usage tab then shows a
-   * "coming soon" placeholder that links to the adaptor docs.
+   * request it calls. Authored in a co-located `usage.ts` (like `seed`) and
+   * imported here, so the plugin stays thin while fully describing its adaptor;
+   * the sandbox renders these and `pnpm test:usage` runs each snippet against
+   * the mock. Omit while a system's usage examples have not been authored yet —
+   * the Usage tab then shows a "coming soon" placeholder that links to the docs.
    */
   usage?: UsageExample[];
   /**

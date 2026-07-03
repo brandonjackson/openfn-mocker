@@ -3,6 +3,7 @@ import type { MockSystemPlugin, SystemConfig } from '../types.js';
 import type { DataStore } from '../../store.js';
 import { registerFhirRoutes } from '../shared/fhir.js';
 import { seed } from './seed.js';
+import { usage } from './usage.js';
 
 /**
  * openIMIS (health-insurance Digital Public Good). The openimis adaptor logs in
@@ -23,16 +24,7 @@ const plugin: MockSystemPlugin = {
     ],
   },
 
-  usage: [
-    { fn: "getFHIR", signature: "getFHIR(path, params, callback = s => s)", description: "Fetch insurees as a FHIR Patient Bundle from OpenIMIS.",
-      code: "getFHIR('Patient');", apiRef: "ex1" },
-    { fn: "getFHIR (by id)", signature: "getFHIR(path, params, callback = s => s)", description: "Fetch a single insuree (FHIR Patient) by its resource id.",
-      code: "getFHIR('Patient/insuree-0001');", apiRef: "ex2" },
-    { fn: "getFHIR (Contract)", signature: "getFHIR(path, params, callback = s => s)", description: "Fetch policies as FHIR Contract resources.",
-      code: "getFHIR('Contract');", apiRef: "ex3" },
-    { fn: "getFHIR (Claim)", signature: "getFHIR(path, params, callback = s => s)", description: "Fetch claims as FHIR Claim resources.",
-      code: "getFHIR('Claim');", apiRef: "ex4" },
-  ],
+  usage,
 
   async overrides(app: FastifyInstance, store: DataStore, config: SystemConfig) {
     registerFhirRoutes(app, store, {

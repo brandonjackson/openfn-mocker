@@ -5,6 +5,7 @@ import { loadSpec, parseSpec, type ParsedSpec } from '../../engine/spec-parser.j
 import { shapeRecord } from '../../engine/response-generator.js';
 import { selfUrlBase } from '../shared/self-url.js';
 import { seed, buildStats, makeEvent, makeMessageId, DEFAULT_DOMAIN } from './seed.js';
+import { usage } from './usage.js';
 
 /**
  * Mailgun (port 4018) — the spec-driven reference plugin. It demonstrates the
@@ -36,10 +37,7 @@ const plugin: MockSystemPlugin = {
     ],
   },
 
-  usage: [
-    { fn: "send", signature: "send(params)", description: "Send an email through Mailgun, optionally attaching a file from a URL or base64.",
-      code: "send({\n  from: 'admin@openfn.org', to: 'jane.doe@example.org', subject: 'Welcome', text: 'Hello there!'\n});", apiRef: "ex0" },
-  ],
+  usage,
 
   async overrides(app: FastifyInstance, store: DataStore, config: SystemConfig) {
     const configuredDomain = (config.domain as string) || DEFAULT_DOMAIN;

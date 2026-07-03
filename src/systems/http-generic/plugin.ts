@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto';
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import type { MockSystemPlugin, SystemConfig } from '../types.js';
 import type { DataStore } from '../../store.js';
+import { usage } from './usage.js';
 
 /**
  * http-generic (port 4014) — a spec-less catch-all. Any path works.
@@ -53,20 +54,7 @@ const plugin: MockSystemPlugin = {
     fields: [{ name: 'baseUrl', role: 'url' }],
   },
 
-  usage: [
-    { fn: "request", signature: "request(method, path, options)", description: "Make an HTTP request with a custom method, path, and options.",
-      code: "request('GET', '/api/v1/referrals', { query: { status: 'open' } });", apiRef: "ex1" },
-    { fn: "get", signature: "get(path, options)", description: "Make a GET request to retrieve data from an endpoint.",
-      code: "get('/api/v1/referrals');", apiRef: "ex1" },
-    { fn: "post", signature: "post(path, data, options)", description: "Make a POST request to create a resource at an endpoint.",
-      code: "post('/api/v1/referrals', { patientId: '123', reason: 'Specialist consult' });", apiRef: "ex0" },
-    { fn: "put", signature: "put(path, data, options)", description: "Make a PUT request to replace a resource at an endpoint.",
-      code: "put('/anything/you/want', { id: 1, status: 'updated' });", apiRef: "ex2" },
-    { fn: "patch", signature: "patch(path, data, options)", description: "Make a PATCH request to partially update a resource at an endpoint.",
-      code: "patch('/anything/you/want', { status: 'closed' });", apiRef: "ex2" },
-    { fn: "del", signature: "del(path, options)", description: "Make a DELETE request to remove a resource at an endpoint.",
-      code: "del('/anything/you/want/123');", apiRef: "ex2" },
-  ],
+  usage,
 
   async overrides(app: FastifyInstance, store: DataStore, _config: SystemConfig) {
     const wildPath = (req: FastifyRequest): string =>
