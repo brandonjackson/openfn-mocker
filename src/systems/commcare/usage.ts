@@ -18,7 +18,7 @@ export const usage: UsageExample[] = [
   { fn: "fetchReportData", signature: "fetchReportData(reportId, params, postUrl)", description: "GET data from a CommCare configurable report and POST the response to another same-origin endpoint.",
     code: "// postUrl must share hostUrl's origin: use a relative path, not an external\n// absolute URL (which the adaptor rejects with BASE_URL_MISMATCH).\nfetchReportData('report-abc', { limit: 10 }, '/a/test-project/api/v0.5/case/');", apiRef: "ex5" },
   { fn: "request", signature: "request(method, path, body, params = {})", description: "Make an arbitrary HTTP request against any CommCare REST API endpoint.",
-    code: "request('GET', '/case', {}, { offset: 0, limit: 20 });", apiRef: "ex0" },
+    code: "// request() takes the full API path (unlike get(), which prefixes the\n// domain-scoped Data API base for you).\nrequest('GET', '/a/test-project/api/v0.5/case', {}, { offset: 0, limit: 20 });", apiRef: "ex0" },
   { fn: "bulk", signature: "bulk(type, data, params)", description: "Bulk-upload case-data or lookup-table records to CommCare as an XLSX import.",
     code: "bulk('case-data', [{ name: 'Jane Doe', phone: '0000000' }], {\n  case_type: 'patient', search_field: 'external_id', create_new_cases: 'on',\n});" },
 ];

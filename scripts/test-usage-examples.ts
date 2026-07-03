@@ -18,8 +18,11 @@
  *   3. writes each usage snippet to a job file, runs it through the real OpenFn
  *      CLI (`openfn <job> -a <adaptor> -s <state> -o <out>`), which
  *      auto-installs the real published adaptor from npm; and
- *   4. verifies the run succeeded — non-zero exit, a thrown/compile error, or a
- *      CLI-reported error (`✗`) all count as a failure.
+ *   4. verifies the run succeeded — a non-zero/killed exit, a thrown/compile
+ *      error, a CLI-reported error marker, or a non-empty `state.errors` in the
+ *      output state all count as a failure (the CLI exits 0 even when a job
+ *      aborts, so the output state is the reliable signal). Each example has a
+ *      short hard timeout so a doomed run fails fast instead of hanging.
  *
  * The mock is reset to pristine seed between examples so each snippet runs
  * independently and the suite is deterministic on re-run.
@@ -46,7 +49,7 @@
  */
 import { spawn, spawnSync } from 'node:child_process';
 import { randomBytes } from 'node:crypto';
-import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -195,12 +198,36 @@ function resolveCli(explicit?: string): CliCmd {
   );
 }
 
+/** Per-example hard cap: fail a hung run fast instead of waiting ~80s (see below). */
+const EXAMPLE_TIMEOUT_MS = 20_000;
+
 interface RunResult {
   system: string;
   fn: string;
   ok: boolean;
   ms: number;
   detail: string;
+}
+
+/**
+ * Error messages the CLI attached to the final state (`state.errors`, keyed by
+ * job id). The CLI exits 0 even when a job aborts, writing the failure here
+ * instead — so this file, not the exit code, is the reliable failure signal.
+ * Returns [] when the output state is missing, unparseable, or error-free.
+ */
+function stateErrors(outPath: string): string[] {
+  try {
+    const state = JSON.parse(readFileSync(outPath, 'utf8'));
+    const errs = state?.errors;
+    if (errs && typeof errs === 'object') {
+      return Object.values(errs).map((e: any) =>
+        e && typeof e.message === 'string' ? e.message : String(e)
+      );
+    }
+  } catch {
+    /* no output file written (e.g. killed run) or unparseable — no state errors */
+  }
+  return [];
 }
 
 /** Run one usage example through the CLI and judge whether it worked. */
@@ -223,7 +250,13 @@ function runExample(
   const started = Date.now();
 
   return new Promise((resolve) => {
+    // `detached` puts the child in its own process group so the timeout can
+    // SIGKILL the whole tree. `npx` spawns the CLI (and the CLI a runtime) as
+    // grandchildren; killing only the direct child would orphan them, and they
+    // keep the stdout pipe open, so `close` wouldn't fire until they self-abort
+    // (~80s) — defeating the timeout.
     const child = spawn(cli.command, args, {
+      detached: true,
       env: { ...process.env, OPENFN_REPO_DIR: repoDir },
     });
     let out = '';
@@ -233,21 +266,46 @@ function runExample(
     child.stdout.on('data', collect);
     child.stderr.on('data', collect);
 
-    // Hard cap per example so a hung connection can't stall the whole suite.
-    const timer = setTimeout(() => child.kill('SIGKILL'), 120_000);
+    // Hard cap per example so a hung run can't stall the whole suite. A doomed
+    // example otherwise sits on a slow client-side timeout (e.g. CommCare's
+    // submitXls/bulk can't send their multipart body — the request never even
+    // reaches the mock, so the adaptor waits ~80s before aborting; see the
+    // README Roadmap). 20s fails those fast while still covering a cold `openfn`
+    // adaptor install on the first run (installs are cached in repoDir after).
+    let timedOut = false;
+    const killTree = () => {
+      // Kill the whole process group (negative pid); fall back to the direct
+      // child if the group is already gone.
+      try {
+        if (child.pid) process.kill(-child.pid, 'SIGKILL');
+      } catch {
+        child.kill('SIGKILL');
+      }
+    };
+    const timer = setTimeout(() => {
+      timedOut = true;
+      killTree();
+    }, EXAMPLE_TIMEOUT_MS);
 
     child.on('close', (code) => {
       clearTimeout(timer);
       writeFileSync(join(dir, `${safe}.log`), out);
-      // A run is a failure if the process errored (non-zero exit: thrown or
-      // compile errors), or the CLI reported an error it caught and attached to
-      // state (its `✗` marker) — the openspp connection/path failures surface
-      // this way even though the process exits 0.
-      const cliError = /✗/.test(out) || /CRITICAL ERROR|Workflow failed/i.test(out);
-      const ok = code === 0 && !cliError;
-      const detail = ok
-        ? firstLine(out.match(/ℹ[^\n]*|[✔√][^\n]*completed[^\n]*/)?.[0] ?? 'ok')
-        : firstLine(out.match(/✗[^\n]*/)?.[0] ?? `exit code ${code}`);
+      // Judge failure from three independent signals, most reliable first:
+      //   1. the CLI wrote a non-empty `state.errors` — it exits 0 even when a
+      //      job aborts, so exit code alone silently passes those runs;
+      //   2. a stdout error marker — the runtime prints `×` (U+00D7), the CLI
+      //      `✗` (U+2717), plus "aborted with error" / "Errors reported";
+      //   3. a non-zero or killed exit (thrown/compile errors, or our timeout).
+      const errs = stateErrors(outPath);
+      const cliError =
+        /[✗×]/.test(out) ||
+        /CRITICAL ERROR|Workflow failed|aborted with error|Errors reported/i.test(out);
+      const ok = code === 0 && !cliError && errs.length === 0;
+      const detail = timedOut
+        ? `timed out after ${EXAMPLE_TIMEOUT_MS / 1000}s`
+        : ok
+          ? firstLine(out.match(/ℹ[^\n]*|[✔√][^\n]*completed[^\n]*/)?.[0] ?? 'ok')
+          : firstLine(errs[0] ?? out.match(/[✗×][^\n]*/)?.[0] ?? `exit code ${code}`);
       resolve({ system: '', fn: ex.fn, ok, ms: Date.now() - started, detail });
     });
     child.on('error', (err) => {
