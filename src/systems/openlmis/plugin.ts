@@ -5,6 +5,7 @@ import type { DataStore } from '../../store.js';
 import { paginate } from '../../engine/response-generator.js';
 import { seed } from './seed.js';
 import { usage } from './usage.js';
+import { guide } from './guide.js';
 
 /**
  * OpenLMIS v3 (logistics-management Digital Public Good). The openlmis adaptor
@@ -55,6 +56,7 @@ const plugin: MockSystemPlugin = {
   },
 
   usage,
+  guide,
 
   async overrides(app: FastifyInstance, store: DataStore, _config: SystemConfig) {
     // --- OAuth2 token (accept any client credentials). ---

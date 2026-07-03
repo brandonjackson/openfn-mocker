@@ -6,6 +6,7 @@ import { shapeRecord } from '../../engine/response-generator.js';
 import { selfUrlBase } from '../shared/self-url.js';
 import { seed, buildStats, makeEvent, makeMessageId, DEFAULT_DOMAIN } from './seed.js';
 import { usage } from './usage.js';
+import { guide } from './guide.js';
 
 /**
  * Mailgun (port 4018) — the spec-driven reference plugin. It demonstrates the
@@ -38,6 +39,7 @@ const plugin: MockSystemPlugin = {
   },
 
   usage,
+  guide,
 
   async overrides(app: FastifyInstance, store: DataStore, config: SystemConfig) {
     const configuredDomain = (config.domain as string) || DEFAULT_DOMAIN;

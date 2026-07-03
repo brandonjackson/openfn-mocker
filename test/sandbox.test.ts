@@ -1,7 +1,7 @@
 import { describe, it, expect, afterAll } from 'vitest';
 import type { FastifyInstance } from 'fastify';
 import { buildServer } from '../src/app.js';
-import { renderSandboxPage, wantsHtml, SYSTEM_GUIDES } from '../src/sandbox.js';
+import { renderSandboxPage, wantsHtml } from '../src/sandbox.js';
 import { plugins } from '../src/systems/index.js';
 import type { MockerConfig } from '../src/config.js';
 
@@ -138,9 +138,10 @@ describe('renderSandboxPage', () => {
   });
 
   it('covers every registered system with a guide', () => {
-    // Guardrail: keep the catalog in step with the plugin registry.
-    for (const key of Object.keys(SYSTEM_GUIDES)) {
-      expect(SYSTEM_GUIDES[key].examples.length).toBeGreaterThan(0);
+    // Guardrail: every plugin ships a co-located guide with runnable examples.
+    for (const key of Object.keys(plugins)) {
+      expect(plugins[key].guide, `${key} is missing a guide`).toBeDefined();
+      expect(plugins[key].guide!.examples.length).toBeGreaterThan(0);
     }
   });
 
@@ -158,8 +159,8 @@ describe('renderSandboxPage', () => {
   });
 
   it('carries an adaptor docs link for every catalogued system', () => {
-    for (const key of Object.keys(SYSTEM_GUIDES)) {
-      expect(SYSTEM_GUIDES[key].docs).toMatch(/^https:\/\/docs\.openfn\.org\//);
+    for (const key of Object.keys(plugins)) {
+      expect(plugins[key].guide!.docs).toMatch(/^https:\/\/docs\.openfn\.org\//);
     }
   });
 

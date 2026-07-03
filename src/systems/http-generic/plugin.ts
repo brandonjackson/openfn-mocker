@@ -3,6 +3,7 @@ import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import type { MockSystemPlugin, SystemConfig } from '../types.js';
 import type { DataStore } from '../../store.js';
 import { usage } from './usage.js';
+import { guide } from './guide.js';
 
 /**
  * http-generic (port 4014) — a spec-less catch-all. Any path works.
@@ -55,6 +56,7 @@ const plugin: MockSystemPlugin = {
   },
 
   usage,
+  guide,
 
   async overrides(app: FastifyInstance, store: DataStore, _config: SystemConfig) {
     const wildPath = (req: FastifyRequest): string =>

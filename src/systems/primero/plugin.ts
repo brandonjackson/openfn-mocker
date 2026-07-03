@@ -4,6 +4,7 @@ import type { MockSystemPlugin, SystemConfig } from '../types.js';
 import type { DataStore } from '../../store.js';
 import { seed, makeDisplayId, makeReferral } from './seed.js';
 import { usage } from './usage.js';
+import { guide } from './guide.js';
 
 /**
  * Primero (port 4017) — child protection case management.
@@ -115,6 +116,7 @@ const plugin: MockSystemPlugin = {
   },
 
   usage,
+  guide,
 
   async overrides(app: FastifyInstance, store: DataStore, _config: SystemConfig) {
     // --- Token exchange: accept ANY body, never validate. ---

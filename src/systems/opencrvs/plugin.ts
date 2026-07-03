@@ -4,6 +4,7 @@ import type { MockSystemPlugin, SystemConfig } from '../types.js';
 import type { DataStore } from '../../store.js';
 import { seed } from './seed.js';
 import { usage } from './usage.js';
+import { guide } from './guide.js';
 
 /**
  * OpenCRVS (civil-registration & vital-statistics Digital Public Good). The
@@ -44,6 +45,7 @@ const plugin: MockSystemPlugin = {
   },
 
   usage,
+  guide,
 
   async overrides(app: FastifyInstance, store: DataStore, _config: SystemConfig) {
     // --- GraphQL (queryEvents / searchEvents) ---

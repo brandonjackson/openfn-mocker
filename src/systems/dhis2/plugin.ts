@@ -3,6 +3,7 @@ import type { MockSystemPlugin, SystemConfig } from '../types.js';
 import type { DataStore } from '../../store.js';
 import { seed, genUid } from './seed.js';
 import { usage } from './usage.js';
+import { guide } from './guide.js';
 
 /**
  * DHIS2 (port 4010, Basic auth, credential field hostUrl).
@@ -182,6 +183,7 @@ const plugin: MockSystemPlugin = {
   },
 
   usage,
+  guide,
 
   async overrides(app: FastifyInstance, store: DataStore, config: SystemConfig) {
     // --- System info ---

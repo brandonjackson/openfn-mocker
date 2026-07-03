@@ -14,6 +14,51 @@ export interface SystemConfig {
   [key: string]: any;
 }
 
+/** A single runnable example request shown under a system (the sandbox "API" tab). */
+export interface SandboxExample {
+  method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+  /** Path relative to the system mount, e.g. '/api/organisationUnits'. */
+  path: string;
+  /** One-line description of what the request demonstrates. */
+  label: string;
+  /** Optional request body, sent verbatim (already formatted). */
+  body?: string;
+  /** Content-Type for the body (default application/json). */
+  contentType?: string;
+  /**
+   * Stable id, unique within the system. Lets a `usage` example link to the
+   * API request its adaptor function calls (the "Run the request" cross-link on
+   * the Usage tab). Optional — omit for examples nothing links to.
+   */
+  id?: string;
+}
+
+/**
+ * Demo content for one system: the prose and runnable examples shown on its
+ * sandbox page. Authored in a co-located `guide.ts` (like `seed` and `usage`)
+ * and imported onto the plugin (see `MockSystemPlugin.guide`). The *credential*
+ * is NOT here — it is declared on the system's plugin (`MockSystemPlugin.credential`)
+ * and read straight from there, so the plugin stays the single source of truth
+ * for its auth.
+ */
+export interface SystemGuide {
+  /** Human-friendly title. */
+  title: string;
+  /** One or two sentences: what the system is + notable quirks. */
+  blurb: string;
+  /** Auth style, shown on the card (e.g. 'Basic', 'Bearer', 'none'). */
+  auth: string;
+  /** Link to this system's OpenFn adaptor documentation. */
+  docs?: string;
+  /**
+   * Defaults for `{{token}}` placeholders used in paths/bodies (e.g.
+   * `{{domain}}`). Overridden by the matching key in the system's live config.
+   */
+  vars?: Record<string, string>;
+  /** Runnable example requests (the "API" tab). */
+  examples: SandboxExample[];
+}
+
 /**
  * One adaptor *function*, shown on a system's sandbox "Usage" tab: the OpenFn
  * job code a user writes to call it, plus a link to the underlying API request
@@ -76,6 +121,14 @@ export interface MockSystemPlugin {
    * the Usage tab then shows a "coming soon" placeholder that links to the docs.
    */
   usage?: UsageExample[];
+  /**
+   * Demo content for the sandbox page: the system's blurb and the runnable
+   * example requests shown on its "API" tab. Authored in a co-located `guide.ts`
+   * (like `seed` and `usage`) and imported here, so the plugin fully describes
+   * everything the sandbox renders for the system while staying thin. Omit for a
+   * system with no authored guide — the sandbox then falls back to a bare card.
+   */
+  guide?: SystemGuide;
   /**
    * Register routes on the Fastify instance. `authPlugin`, admin routes and
    * request logging are already attached by registerSystem before this runs, so

@@ -5,6 +5,7 @@ import type { DataStore } from '../../store.js';
 import { registerCrud } from '../../engine/route-registrar.js';
 import { seed, oid } from './seed.js';
 import { usage } from './usage.js';
+import { guide } from './guide.js';
 
 /**
  * OpenHIM (health-information-mediator Digital Public Good). The openhim adaptor
@@ -34,6 +35,7 @@ const plugin: MockSystemPlugin = {
   },
 
   usage,
+  guide,
 
   async overrides(app: FastifyInstance, store: DataStore, _config: SystemConfig) {
     // POST /chw/encounter — sample mediator route (createEncounter).

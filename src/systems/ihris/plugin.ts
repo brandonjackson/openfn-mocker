@@ -4,6 +4,7 @@ import type { DataStore } from '../../store.js';
 import { registerFhirRoutes } from '../shared/fhir.js';
 import { seed } from './seed.js';
 import { usage } from './usage.js';
+import { guide } from './guide.js';
 
 /**
  * iHRIS (health-workforce Digital Public Good). iHRIS serves a FHIR R4 API under
@@ -26,6 +27,7 @@ const plugin: MockSystemPlugin = {
   },
 
   usage,
+  guide,
 
   async overrides(app: FastifyInstance, store: DataStore, config: SystemConfig) {
     registerFhirRoutes(app, store, {

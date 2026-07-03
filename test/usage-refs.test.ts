@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest';
 import { plugins } from '../src/systems/index.js';
-import { SYSTEM_GUIDES } from '../src/sandbox.js';
 
 /**
  * Usage examples live per-adaptor on the plugin (`MockSystemPlugin.usage`, in each
  * system's usage.ts), but their `apiRef` cross-links to an example on the guide's
- * "API" tab, which lives in SYSTEM_GUIDES. Nothing in the type system ties the two
+ * "API" tab, which lives on the plugin too (`MockSystemPlugin.guide`, in each
+ * system's guide.ts). Nothing in the type system ties the two
  * together, and the end-to-end `pnpm test:usage` that would exercise them is
  * network-gated and not part of this suite. This offline guard catches the common
  * rot — a usage snippet pointing at an example id that doesn't exist (a renamed or
@@ -17,7 +17,7 @@ import { SYSTEM_GUIDES } from '../src/sandbox.js';
 
 /** Valid apiRef targets for a system: explicit ids + positional `ex<index>`. */
 function exampleIds(system: string): Set<string> {
-  const examples = SYSTEM_GUIDES[system]?.examples ?? [];
+  const examples = plugins[system]?.guide?.examples ?? [];
   return new Set(examples.map((ex, i) => ex.id ?? 'ex' + i));
 }
 

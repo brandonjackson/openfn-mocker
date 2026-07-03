@@ -4,6 +4,7 @@ import type { MockSystemPlugin, SystemConfig } from '../types.js';
 import type { DataStore } from '../../store.js';
 import { seed } from './seed.js';
 import { usage } from './usage.js';
+import { guide } from './guide.js';
 
 /**
  * OpenMRS (port 4012) — a REST + FHIR R4 hybrid.
@@ -118,6 +119,7 @@ const plugin: MockSystemPlugin = {
   },
 
   usage,
+  guide,
 
   overrides(app: FastifyInstance, store: DataStore, config: SystemConfig) {
     const port = config.port;

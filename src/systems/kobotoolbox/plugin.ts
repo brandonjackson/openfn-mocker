@@ -5,6 +5,7 @@ import type { DataStore } from '../../store.js';
 import { paginate } from '../../engine/response-generator.js';
 import { seed, assetUrl, makeAssetUid, DEFAULT_PORT } from './seed.js';
 import { usage } from './usage.js';
+import { guide } from './guide.js';
 
 /**
  * KoboToolbox (port 4016) — Token auth ("Authorization: Token xxx"), DRF-style
@@ -124,6 +125,7 @@ const plugin: MockSystemPlugin = {
   },
 
   usage,
+  guide,
 
   async overrides(app: FastifyInstance, store: DataStore, config: SystemConfig) {
     const port = (config.port as number) || DEFAULT_PORT;

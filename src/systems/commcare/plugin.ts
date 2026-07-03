@@ -5,6 +5,7 @@ import type { DataStore } from '../../store.js';
 import { paginate } from '../../engine/response-generator.js';
 import { seed, makeForm, DEFAULT_DOMAIN, DEFAULT_APP_ID } from './seed.js';
 import { usage } from './usage.js';
+import { guide } from './guide.js';
 
 /**
  * CommCare HQ (port 4011). Source system. Domain-scoped v0.5 Data API returning
@@ -80,6 +81,7 @@ const plugin: MockSystemPlugin = {
   },
 
   usage,
+  guide,
 
   async overrides(app: FastifyInstance, store: DataStore, config: SystemConfig) {
     const configuredDomain = (config.domain as string) || DEFAULT_DOMAIN;

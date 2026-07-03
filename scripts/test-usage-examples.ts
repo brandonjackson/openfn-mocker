@@ -53,7 +53,6 @@ import { join } from 'node:path';
 import { createSystemServer } from '../src/server.js';
 import { loadConfig } from '../src/config.js';
 import { plugins } from '../src/systems/index.js';
-import { SYSTEM_GUIDES } from '../src/sandbox.js';
 import type { MockSystemPlugin, SystemConfig, UsageExample } from '../src/systems/types.js';
 import type { CredentialSpec } from '../src/auth.js';
 
@@ -110,7 +109,7 @@ function interpolate(text: string, origin: string, vars: Record<string, string>)
 
 /** Build the `{{token}}` map for a system: guide defaults overridden by live config. */
 function systemVars(system: string, config: SystemConfig): Record<string, string> {
-  const vars: Record<string, string> = { ...(SYSTEM_GUIDES[system]?.vars ?? {}) };
+  const vars: Record<string, string> = { ...(plugins[system]?.guide?.vars ?? {}) };
   for (const [k, v] of Object.entries(config)) {
     if (typeof v === 'string' || typeof v === 'number') vars[k] = String(v);
   }

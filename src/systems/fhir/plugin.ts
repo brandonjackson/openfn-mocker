@@ -4,6 +4,7 @@ import type { MockSystemPlugin, SystemConfig } from '../types.js';
 import type { DataStore } from '../../store.js';
 import { seed, makeMeta, nowIso, DEFAULT_API_PATH, RESOURCE_TYPES } from './seed.js';
 import { usage } from './usage.js';
+import { guide } from './guide.js';
 
 /**
  * FHIR (HAPI R4) — port 4013. Auth is none/Bearer (accept-all, handled by
@@ -112,6 +113,7 @@ const plugin: MockSystemPlugin = {
   },
 
   usage,
+  guide,
 
   async overrides(app: FastifyInstance, store: DataStore, config: SystemConfig) {
     // apiPath may be explicitly empty (""), in which case the FHIR API lives at

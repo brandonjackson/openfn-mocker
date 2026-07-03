@@ -4,6 +4,7 @@ import type { DataStore } from '../../store.js';
 import { registerCrud } from '../../engine/route-registrar.js';
 import { seed, id32 } from './seed.js';
 import { usage } from './usage.js';
+import { guide } from './guide.js';
 
 /**
  * OpenBoxes (supply-chain / inventory Digital Public Good). The openboxes
@@ -39,6 +40,7 @@ const plugin: MockSystemPlugin = {
   },
 
   usage,
+  guide,
 
   async overrides(app: FastifyInstance, store: DataStore, _config: SystemConfig) {
     // POST /api/login — token exchange (accept any credentials).

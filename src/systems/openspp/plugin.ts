@@ -4,6 +4,7 @@ import type { DataStore } from '../../store.js';
 import { parseMethodCall, serializeResponse, serializeFault } from '../shared/xmlrpc.js';
 import { seed, UID } from './seed.js';
 import { usage } from './usage.js';
+import { guide } from './guide.js';
 
 /**
  * OpenSPP (social-protection Digital Public Good, built on Odoo). The openspp
@@ -191,6 +192,7 @@ const plugin: MockSystemPlugin = {
   },
 
   usage,
+  guide,
 
   async overrides(app: FastifyInstance, store: DataStore, _config: SystemConfig) {
     const xml = (reply: FastifyReply) => reply.type('text/xml; charset=utf-8');
