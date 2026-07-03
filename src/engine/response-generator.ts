@@ -1,10 +1,5 @@
 import type { ParsedSpec } from './spec-parser.js';
 
-/** Convert an OpenAPI path to a Fastify path: '/v3/{domain}/messages' -> '/v3/:domain/messages'. */
-export function toFastifyPath(openApiPath: string): string {
-  return openApiPath.replace(/\{([^}]+)\}/g, ':$1');
-}
-
 function deref(schema: any, spec?: ParsedSpec): any {
   if (schema && typeof schema === 'object' && typeof schema.$ref === 'string') {
     return spec ? spec.deref(schema) : {};

@@ -16,7 +16,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:usage": "tsx scripts/test-usage-examples.ts",
-    "audit:adaptors": "tsx scripts/audit-adaptor-coverage.ts"
+    "audit:adaptors": "tsx scripts/audit-adaptor-coverage.ts",
+    "readme": "tsx scripts/generate-readme.ts",
+    "readme:check": "tsx scripts/generate-readme.ts --check"
   },
   "engines": {
     "node": ">=20"

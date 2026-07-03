@@ -40,7 +40,15 @@ export async function buildServer(
   for (const [name, sysConfig] of Object.entries(config.systems)) {
     if (!sysConfig.enabled) continue;
     const plugin = plugins[name];
-    if (!plugin) continue; // e.g. salesforce placeholder — enabled but unimplemented
+    if (!plugin) {
+      // An enabled block with no registered plugin is a typo'd name or an
+      // unimplemented placeholder — say so instead of silently not mounting.
+      app.log.warn(
+        `config enables system "${name}" but no plugin is registered under that name; skipping ` +
+          `(known systems: ${Object.keys(plugins).join(', ')})`
+      );
+      continue;
+    }
     const mountPath = `/${name}`;
 
     // Seed from the active dataset: `default` uses the plugin's built-in seed,
