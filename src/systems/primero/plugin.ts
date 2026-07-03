@@ -221,7 +221,12 @@ const plugin: MockSystemPlugin = {
 
     // POST /api/v2/cases/referrals — bulk referral (createReferrals). Body:
     // { data: { ids: [caseId,...], transitioned_to, notes } }. Static
-    // 'referrals' wins over the :id param for this 4-segment path.
+    // 'referrals' wins over the :id param for this 4-segment path. Unlike the
+    // other endpoints here, the real API's bulk-referral response nests its
+    // confirmation message under `data.body` (not the created records) — the
+    // createReferrals adaptor function reads `resp.data.body` directly. (This
+    // shape still can't satisfy the stock adaptor end to end: see the
+    // README Roadmap's "Primero createReferrals adaptor bug" entry.)
     app.post('/api/v2/cases/referrals', async (req, reply) => {
       const data = extractData(req.body);
       const ids: any[] = Array.isArray(data.ids) ? data.ids : [];
@@ -236,7 +241,7 @@ const plugin: MockSystemPlugin = {
         return ref;
       });
       reply.code(200);
-      return { data: created };
+      return { data: { body: `${created.length} referral(s) created successfully.` } };
     });
 
     // PATCH /api/v2/cases/:caseId/referrals/:id — update a single referral.
