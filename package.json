@@ -15,7 +15,8 @@
     "snapshot-default": "tsx src/generate/snapshot.ts",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:usage": "tsx scripts/test-usage-examples.ts"
+    "test:usage": "tsx scripts/test-usage-examples.ts",
+    "audit:adaptors": "tsx scripts/audit-adaptor-coverage.ts"
   },
   "engines": {
     "node": ">=20"

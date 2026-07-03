@@ -25,4 +25,12 @@ export const usage: UsageExample[] = [
     code: "createEncounter({ patientId: '12345', encounterType: 'home-visit' });", apiRef: "ex4" },
   { fn: "http.request", signature: "http.request(method, path, body, options = {})", description: "Make a general-purpose HTTP request with any method to OpenHIM.",
     code: "http.request('GET', '/transactions');", apiRef: "ex2" },
+  { fn: "http.get", signature: "http.get(path, options = {})", description: "Make a GET request to any OpenHIM Core API path.",
+    code: "http.get('/transactions');", apiRef: "ex2" },
+  { fn: "http.post", signature: "http.post(path, body, options = {})", description: "Make a POST request to any OpenHIM Core API path.",
+    code: "http.post('/clients', { clientID: 'mock-client', name: 'Mock Client', roles: ['test'] });" },
+  { fn: "http.put", signature: "http.put(path, body, options = {})", description: "Make a PUT request to replace an OpenHIM record.",
+    code: "http.put('/channels/6368616e2d63687700000000', { name: 'Updated Channel', urlPattern: '^/updated$', methods: ['GET', 'POST'] });" },
+  { fn: "http._delete", signature: "http._delete(path, options = {})", description: "Make a DELETE request to remove an OpenHIM record.",
+    code: "http._delete('/tasks/7461736b2d31000000000000');" },
 ];

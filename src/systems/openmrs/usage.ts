@@ -21,6 +21,8 @@ export const usage: UsageExample[] = [
     code: "http.get('/ws/rest/v1/patient', { query: { v: 'ref', limit: 5 } });", apiRef: "ex3" },
   { fn: "http.post", signature: "http.post(path, data, options = {})", description: "Send a raw POST request with a JSON payload to an OpenMRS REST path.",
     code: "http.post('/ws/rest/v1/patient', {\n  person: { gender: 'M', birthdate: '1985-02-20', names: [{ givenName: 'Mohamed', familyName: 'Sesay' }] },\n});", apiRef: "ex7" },
+  { fn: "http.put", signature: "http.put(path, data, options = {})", description: "Send a raw PUT request to fully replace an OpenMRS REST record.",
+    code: "http.put('/ws/rest/v1/person/3cad37ad-984d-4c65-a019-3eb120c9c373', { gender: 'M' });" },
   { fn: "http.request", signature: "http.request(method, path, options = {})", description: "Send an HTTP request with any method to an OpenMRS REST path.",
     code: "http.request('GET', '/ws/rest/v1/provider', { query: { limit: 10 } });", apiRef: "ex4" },
   { fn: "fhir.get", signature: "fhir.get(path, query, callback)", description: "Query the OpenMRS FHIR R4 module for resources like Patient or Observation.",

@@ -21,4 +21,12 @@ export const usage: UsageExample[] = [
     code: "tracker.import('CREATE_AND_UPDATE', {\n  events: [{ program: 'IpHINAT79UW', programStage: 'A03MvHHogjR', orgUnit: 'DiszpKrYNg8', status: 'COMPLETED' }]\n});", apiRef: "ex5" },
   { fn: "tracker.export", signature: "tracker.export(path, query?, options?)", description: "Export tracker data (events, enrollments, trackedEntities) from /api/tracker.",
     code: "tracker.export('events', { orgUnit: 'DiszpKrYNg8', program: 'IpHINAT79UW' });", apiRef: "ex6" },
+  { fn: "http.get", signature: "http.get(path, options?)", description: "Raw GET request to any DHIS2 endpoint (path is prefixed with /api/).",
+    code: "http.get('organisationUnits');" },
+  { fn: "http.post", signature: "http.post(path, data, options?)", description: "Raw POST request to any DHIS2 endpoint, e.g. the tracker import API.",
+    code: "http.post('tracker', {\n  events: [{ program: 'IpHINAT79UW', orgUnit: 'DiszpKrYNg8', status: 'COMPLETED' }]\n});" },
+  { fn: "http.patch", signature: "http.patch(resourceType, path, data, options?)", description: "Raw PATCH request to partially update a DHIS2 resource by id.",
+    code: "http.patch('dataElements', 'fbfJHSPpUQD', { name: 'ANC 1st visit (updated)' });" },
+  { fn: "http.request", signature: "http.request(method, path, options?)", description: "Raw HTTP request to any DHIS2 endpoint with an explicit method.",
+    code: "http.request('GET', 'organisationUnits');" },
 ];

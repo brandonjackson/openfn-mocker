@@ -30,6 +30,16 @@ const plugin: MockSystemPlugin = {
   guide,
 
   async overrides(app: FastifyInstance, store: DataStore, config: SystemConfig) {
+    // The ihris adaptor performs a session login before every request: it POSTs
+    // { username, password } to /auth/login and reads the auth cookie from the
+    // response's set-cookie header (splitting on ';'), throwing if absent. Serve
+    // it with a 2xx and a single Set-Cookie so authorize() succeeds.
+    app.post('/auth/login', async (_req, reply) => {
+      reply.header('set-cookie', 'ihris-session=mock_session_token; Path=/; HttpOnly');
+      reply.code(200);
+      return { success: true };
+    });
+
     registerFhirRoutes(app, store, {
       apiSeg: API_SEG,
       resourceTypes: ['Practitioner', 'PractitionerRole', 'Organization', 'Location', 'HealthcareService'],

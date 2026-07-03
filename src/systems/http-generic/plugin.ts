@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
+import type { FastifyInstance, FastifyRequest } from 'fastify';
 import type { MockSystemPlugin, SystemConfig } from '../types.js';
 import type { DataStore } from '../../store.js';
 import { usage } from './usage.js';
@@ -115,29 +115,34 @@ const plugin: MockSystemPlugin = {
       return record;
     });
 
-    // PATCH /* -> shallow update.
-    app.patch('/*', async (req, reply: FastifyReply) => {
+    // PATCH /* -> shallow update, or create-then-update if the record is absent.
+    // This mock is permissive: any path works, so a PATCH to an unseeded path
+    // upserts rather than 404s (a fresh record is created and the patch applied).
+    app.patch('/*', async (req) => {
       const path = wildPath(req);
       const { parent, id } = parentAndId(path);
-      const updated = store.update(parent, id, {
+      const patch = {
         ...objectBase(req.body),
         _updatedAt: new Date().toISOString(),
-      });
-      if (updated === undefined) {
-        reply.code(404);
-        return { error: 'not found', path: '/' + path };
-      }
-      return updated;
+      };
+      const updated = store.update(parent, id, patch);
+      if (updated !== undefined) return updated;
+      const record = {
+        ...patch,
+        id,
+        _createdAt: new Date().toISOString(),
+        _mock: mockEcho(req, path),
+      };
+      store.create(parent, id, record);
+      return record;
     });
 
-    // DELETE /* -> destroy.
-    app.delete('/*', async (req, reply: FastifyReply) => {
+    // DELETE /* -> destroy. Idempotent: deleting an absent record still 200s,
+    // matching this mock's "any path works" philosophy.
+    app.delete('/*', async (req) => {
       const path = wildPath(req);
       const { parent, id } = parentAndId(path);
-      if (!store.destroy(parent, id)) {
-        reply.code(404);
-        return { error: 'not found', path: '/' + path };
-      }
+      store.destroy(parent, id);
       return { deleted: [id] };
     });
   },

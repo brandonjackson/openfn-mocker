@@ -857,6 +857,26 @@ on demand or in a network-enabled CI job. Adaptors that can't yet be driven
 against the mock (see the Roadmap below) show up here as failures — that is the
 empirical check behind those gaps.
 
+## Auditing adaptor-function coverage
+
+`pnpm test:usage` proves the examples a system *has* actually run; `pnpm
+audit:adaptors` proves a system has an example for *every* function its adaptor
+exposes. It derives each adaptor's API-calling surface straight from the
+**published package on npm** — the public `operations` in its `ast.json` plus
+the members of the API-calling namespaces it re-exports (`http`, `fhir`,
+`tracker`; the pure `util`/`common` helpers that never touch the API are
+excluded) — and diffs that against the `fn` names declared in each
+`usage.ts`. It exits non-zero on any gap, so it can gate CI, and it tracks the
+real adaptors automatically: release a new adaptor version that adds a function
+and the audit flags the missing mock example on the next run.
+
+```bash
+pnpm audit:adaptors                       # audit every system (human-readable)
+pnpm audit:adaptors -- --system dhis2      # just one (comma-separated for more)
+pnpm audit:adaptors -- --json              # machine-readable report
+pnpm audit:adaptors -- --all               # also print each adaptor's full surface
+```
+
 ## Roadmap
 
 The mock covers the request/response surface each adaptor calls, but a few
@@ -866,13 +886,15 @@ a workaround (`pnpm test:usage` is how these surface — see
 are the known gaps to close so every adaptor works against the mock out of the
 box:
 
-- **OAuth flows.** OpenCRVS (`clientId`/`clientSecret`) and OpenLMIS (OAuth2
-  password grant) authenticate by exchanging client credentials for an access
-  token. The [sandbox](#browser-sandbox) now *suggests* the right client
-  credentials, but the mock doesn't serve the matching token handshake, so the
-  stock adaptors can't complete OAuth against it. Add real `/token`-style
-  endpoints (and honour an `access_token` a credential may already carry) so the
-  OAuth adaptors run unmodified.
+- **OpenCRVS OAuth + multi-host.** OpenCRVS authenticates by exchanging
+  `clientId`/`clientSecret` for an access token, and the v2 adaptor derives
+  per-service hosts from `domain` (e.g. `auth.<domain>`, `register.<domain>`),
+  which can't resolve against a single-origin mock — so `pnpm test:usage`
+  reports its examples as `getaddrinfo ENOTFOUND auth.<host>`. Aligning the
+  mock with the v2 adaptor needs a token handshake plus a way to collapse those
+  hosts onto one origin. (OpenLMIS's OAuth2 handshake, previously listed here,
+  now runs end to end: the mock serves its `/api/oauth/token` and the
+  reference-data routes the adaptor calls.)
 - **CommCare bulk uploads (`submitXls` / `bulk`).** These upload a spreadsheet as
   `multipart/form-data` built from a `FormData`/`Blob`. The stock adaptor sends it
   through `@openfn/language-common`'s low-level undici `request`, which (unlike

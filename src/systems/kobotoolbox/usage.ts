@@ -19,6 +19,8 @@ export const usage: UsageExample[] = [
     code: "http.get('assets/aHousehold01Q1');", apiRef: "ex1" },
   { fn: "http.post", signature: "http.post(path, data, options = {})", description: "Make a POST request to submit survey data to a KoboToolbox endpoint.",
     code: "http.post('assets/aHousehold01Q1/submissions/', {\n  household_head_name: 'Fatu Conteh', water_source: 'borehole'\n});", apiRef: "ex5" },
+  { fn: "http.put", signature: "http.put(path, data, options = {})", description: "Make a PUT request to a KoboToolbox endpoint, e.g. to redeploy a form.",
+    code: "http.put('assets/aHousehold01Q1/deployment/', {});" },
   { fn: "http.request", signature: "http.request(method, path, options = {})", description: "Make an HTTP request with any method to a KoboToolbox endpoint.",
     code: "http.request('PATCH', 'assets/aHousehold01Q1/data/bulk/', {\n  data: { submission_ids: [12001], data: { water_source: 'piped' } }\n});" },
 ];

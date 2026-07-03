@@ -17,10 +17,13 @@ interface PatientSeed {
   birthdate: string;
   city: string;
   country: string;
+  /** Optional pinned uuids so the update/destroy usage examples resolve in pristine seed. */
+  personUuid?: string;
+  patientUuid?: string;
 }
 
 const PATIENTS: PatientSeed[] = [
-  { mrn: 'MRN-001', given: 'Jane', family: 'Doe', gender: 'F', birthdate: '1996-03-15', city: 'Ngelehun', country: 'Sierra Leone' },
+  { mrn: 'MRN-001', given: 'Jane', family: 'Doe', gender: 'F', birthdate: '1996-03-15', city: 'Ngelehun', country: 'Sierra Leone', personUuid: '3cad37ad-984d-4c65-a019-3eb120c9c373', patientUuid: '1fdaa696-e759-4a7d-a066-f1ae557c151b' },
   { mrn: 'MRN-002', given: 'John', family: 'Smith', gender: 'M', birthdate: '1985-07-22', city: 'Bo', country: 'Sierra Leone' },
   { mrn: 'MRN-003', given: 'Aminata', family: 'Kamara', gender: 'F', birthdate: '2001-11-02', city: 'Kenema', country: 'Sierra Leone' },
   { mrn: 'MRN-004', given: 'Mohamed', family: 'Bangura', gender: 'M', birthdate: '1978-01-30', city: 'Makeni', country: 'Sierra Leone' },
@@ -105,8 +108,8 @@ export function seed(store: DataStore, _config: SystemConfig): void {
   // Patients (REST) + matching person records + matching FHIR Patients.
   const patientRefs: Array<{ uuid: string; display: string }> = [];
   PATIENTS.forEach((p) => {
-    const personUuid = randomUUID();
-    const patientUuid = randomUUID();
+    const personUuid = p.personUuid ?? randomUUID();
+    const patientUuid = p.patientUuid ?? randomUUID();
     const fullName = `${p.given} ${p.family}`;
 
     const person = {

@@ -17,4 +17,12 @@ export const usage: UsageExample[] = [
     code: "submitBirthNotification({\n  'child.name': { firstname: 'Test', surname: 'Baby' },\n  'child.gender': 'female',\n});", apiRef: "ex2" },
   { fn: "getLocations", signature: "getLocations(options?)", description: "Fetch the list of locations from the country-config host.",
     code: "getLocations();", apiRef: "ex3" },
+  { fn: "createDocumentEntry", signature: "createDocumentEntry(resource, fullUrl?)", description: "Wrap a FHIR resource into a document-bundle entry with a generated UUID fullUrl (pure builder, no HTTP).",
+    code: "createDocumentEntry({ resourceType: 'Patient', name: [{ given: ['John'] }] });" },
+  { fn: "createBirthNotification", signature: "createBirthNotification(body)", description: "POST a FHIR bundle of document entries to the country-config birth-notification hook.",
+    code: "createBirthNotification([\n  { fullUrl: 'urn:uuid:mother', resource: { resourceType: 'Patient', name: [{ family: ['Smith'] }] } },\n]);" },
+  { fn: "http.post", signature: "http.post(path, body, options)", description: "Make a raw POST request to any OpenCRVS events REST endpoint.",
+    code: "http.post('/api/events/events', {});" },
+  { fn: "http.request", signature: "http.request(method, path, body, options?)", description: "Make a raw HTTP request with any method to an OpenCRVS events REST endpoint.",
+    code: "http.request('GET', '/api/events/events');" },
 ];
