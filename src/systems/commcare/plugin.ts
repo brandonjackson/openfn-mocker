@@ -66,6 +66,17 @@ const plugin: MockSystemPlugin = {
   specFile: 'commcare.schema.json',
   // CommCare accepts HTTP Basic or an `Authorization: ApiKey <user>:<key>` header.
   auth: { required: true, schemes: ['basic', 'apikey'] },
+  credential: {
+    type: 'userpass',
+    authHeader: { scheme: 'basic', userField: 'username', passField: 'password' },
+    fields: [
+      { name: 'hostUrl', role: 'url' },
+      { name: 'domain', role: 'static', value: '{{domain}}' },
+      { name: 'appId', role: 'static', value: 'abc123' },
+      { name: 'username', role: 'email', value: 'user@test.com' },
+      { name: 'password', role: 'secret', secret: { charset: 'alnum', length: 16 } },
+    ],
+  },
 
   async overrides(app: FastifyInstance, store: DataStore, config: SystemConfig) {
     const configuredDomain = (config.domain as string) || DEFAULT_DOMAIN;

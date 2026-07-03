@@ -168,6 +168,17 @@ const plugin: MockSystemPlugin = {
   specFile: 'dhis2.openapi.json',
   // DHIS2 uses HTTP Basic auth; reject requests with no credentials.
   auth: { required: true, schemes: ['basic'] },
+  // OpenFn credential shape (what a user pastes into OpenFn); the sandbox reads
+  // this to visualise + generate suggestions. The mock validates presence, not value.
+  credential: {
+    type: 'userpass',
+    authHeader: { scheme: 'basic', userField: 'username', passField: 'password' },
+    fields: [
+      { name: 'hostUrl', role: 'url' },
+      { name: 'username', role: 'username', value: 'admin' },
+      { name: 'password', role: 'secret', secret: { charset: 'alnum', length: 16 } },
+    ],
+  },
 
   async overrides(app: FastifyInstance, store: DataStore, config: SystemConfig) {
     // --- System info ---

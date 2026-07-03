@@ -14,6 +14,14 @@ const API_SEG = '/api/api_fhir_r4';
 
 const plugin: MockSystemPlugin = {
   name: 'openimis',
+  credential: {
+    type: 'userpass',
+    fields: [
+      { name: 'baseUrl', role: 'url' },
+      { name: 'username', role: 'username', value: 'Admin' },
+      { name: 'password', role: 'secret', secret: { charset: 'alnum', length: 16 } },
+    ],
+  },
 
   async overrides(app: FastifyInstance, store: DataStore, config: SystemConfig) {
     registerFhirRoutes(app, store, {

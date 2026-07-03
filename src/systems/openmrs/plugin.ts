@@ -106,6 +106,15 @@ const plugin: MockSystemPlugin = {
   specFile: 'openmrs.schema.json',
   // OpenMRS uses HTTP Basic auth; reject requests with no credentials.
   auth: { required: true, schemes: ['basic'] },
+  credential: {
+    type: 'userpass',
+    authHeader: { scheme: 'basic', userField: 'username', passField: 'password' },
+    fields: [
+      { name: 'instanceUrl', role: 'url' },
+      { name: 'username', role: 'username', value: 'admin' },
+      { name: 'password', role: 'secret', secret: { charset: 'alnum', length: 16 } },
+    ],
+  },
 
   overrides(app: FastifyInstance, store: DataStore, config: SystemConfig) {
     const port = config.port;

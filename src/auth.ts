@@ -38,6 +38,96 @@ export interface AuthRequirement {
   exemptPaths?: string[];
 }
 
+/* -------------------------------------------------------------------------- */
+/* Credential shape                                                           */
+/*                                                                            */
+/* `AuthRequirement` says whether the *mock* rejects anonymous requests.      */
+/* `CredentialSpec` is the companion: it describes the OpenFn credential a    */
+/* user pastes into OpenFn to reach this system — the field names (matching   */
+/* the adaptor's configuration-schema.json), which fields are secrets, and    */
+/* how to shape a generated suggestion for each. It is declared per-plugin    */
+/* (see `MockSystemPlugin.credential`) so the plugin is the single source of  */
+/* truth for its auth; the browser sandbox only *reads* it to visualise the   */
+/* credential and generate ready-to-paste suggestions.                        */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * The kind of credential a system expects, used to label it in the UI and to
+ * decide what to suggest. Derived from the adaptor's real credential fields:
+ *  - `userpass`  username/email + password (Basic-style login)
+ *  - `apikey`    an API key / token / auth-token secret (no user login)
+ *  - `oauth`     OAuth client credentials (clientId + clientSecret)
+ *  - `none`      no credential needed (open systems: FHIR, generic http)
+ */
+export type CredentialType = 'userpass' | 'apikey' | 'oauth' | 'none';
+
+/** How a single credential field is treated by the sandbox. */
+export type CredentialFieldRole =
+  | 'url' // the mock origin + mount path; the adaptor targets this. Value is filled in by the sandbox.
+  | 'static' // a fixed, non-secret config value (domain, appId, apiVersion, database, …).
+  | 'username' // an identifier the user picks; suggested, not generated as a secret.
+  | 'email' // like `username`, but email-shaped.
+  | 'secret'; // a secret (password / api key / token / client secret) — generated as a suggestion.
+
+/** How to shape a generated secret suggestion for a `secret` field. */
+export interface CredentialSecretShape {
+  /** Character set of the random body (default `alnum`). */
+  charset?: 'hex' | 'alnum';
+  /** Number of random characters in the body (default 16). */
+  length?: number;
+  /** Literal prefix prepended to the generated body (e.g. `key-` for Mailgun). */
+  prefix?: string;
+}
+
+/** One field of an OpenFn credential. `name` matches the adaptor schema exactly. */
+export interface CredentialFieldSpec {
+  /** Exact field name as it appears in the OpenFn credential (case-sensitive). */
+  name: string;
+  role: CredentialFieldRole;
+  /**
+   * Literal value for `url`/`static`/`username`/`email` fields. May contain
+   * `{{ORIGIN}}` (resolved in the browser) and `{{token}}` placeholders
+   * (resolved from the system config, e.g. `{{domain}}`). A `url` field may omit
+   * this — the sandbox fills it with the mock origin + mount path. Ignored for
+   * `secret` fields, which are generated per `secret`.
+   */
+  value?: string;
+  /** For `role: 'secret'` — how to shape the generated suggestion. */
+  secret?: CredentialSecretShape;
+}
+
+/**
+ * How the sandbox builds an `Authorization` header for the live example
+ * requests it fires at this system. Present only for systems whose mock
+ * enforces auth; the mock validates presence, not value, so the exact value
+ * never matters — this just keeps the header shape realistic and consistent
+ * with the displayed credential.
+ */
+export interface AuthHeaderSpec {
+  scheme: 'basic' | 'bearer' | 'token';
+  /** Basic: a fixed username literal (e.g. Mailgun's `api`). */
+  user?: string;
+  /** Basic: credential field to use as the username. */
+  userField?: string;
+  /** Basic: credential field to use as the password/secret. */
+  passField?: string;
+  /** Bearer/Token: a fixed token value (e.g. Primero's exchanged token). */
+  value?: string;
+}
+
+/**
+ * The OpenFn credential a system expects, declared on its plugin. Lets the
+ * sandbox render the credential, classify it (username/password vs API key vs
+ * OAuth), and generate ready-to-paste suggestions — all from one place.
+ */
+export interface CredentialSpec {
+  type: CredentialType;
+  /** Credential fields in display order (include the `url` field). */
+  fields: CredentialFieldSpec[];
+  /** How to authenticate the sandbox's live example requests (auth-required systems only). */
+  authHeader?: AuthHeaderSpec;
+}
+
 function headerValue(headers: Record<string, any>, name: string): string | undefined {
   const v = headers[name] ?? headers[name.toLowerCase()];
   if (v === undefined || v === null) return undefined;

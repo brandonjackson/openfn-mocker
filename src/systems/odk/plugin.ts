@@ -26,6 +26,14 @@ function submissionRows(store: DataStore, formId: string): any[] {
 
 const plugin: MockSystemPlugin = {
   name: 'odk',
+  credential: {
+    type: 'userpass',
+    fields: [
+      { name: 'baseUrl', role: 'url' },
+      { name: 'email', role: 'email', value: 'fieldworker@example.org' },
+      { name: 'password', role: 'secret', secret: { charset: 'alnum', length: 16 } },
+    ],
+  },
 
   async overrides(app: FastifyInstance, store: DataStore, config: SystemConfig) {
     const origin = `http://localhost:${config.port}`;

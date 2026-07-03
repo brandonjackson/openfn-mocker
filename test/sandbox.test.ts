@@ -186,6 +186,71 @@ describe('renderSandboxPage', () => {
   });
 });
 
+describe('sandbox credential (sourced from the plugin, generated in the browser)', () => {
+  it('embeds the plugin credential fields and type, not a hardcoded secret', () => {
+    const html = renderSandboxPage([{ name: 'dhis2', mountPath: '/dhis2' }]);
+    expect(html).toContain('"type":"userpass"');
+    expect(html).toContain('"name":"hostUrl"');
+    expect(html).toContain('"name":"username"');
+    expect(html).toContain('"name":"password"');
+    // Password is a secret with a generation shape, not a baked-in value.
+    expect(html).toContain('"role":"secret"');
+    expect(html).not.toContain('"password":"mock"');
+    // The URL field points at the mount; {{ORIGIN}} is resolved in the browser.
+    expect(html).toContain('{{ORIGIN}}/dhis2');
+  });
+
+  it('ships the client-side credential generator + Regenerate control', () => {
+    const html = renderSandboxPage([{ name: 'dhis2', mountPath: '/dhis2' }]);
+    expect(html).toContain('function genSecret(');
+    expect(html).toContain('function resolveCredValues(');
+    expect(html).toContain('function buildAuthHeader(');
+    expect(html).toContain('Regenerate');
+    expect(html).toContain('function credTypeLabel(');
+  });
+
+  it('surfaces whether the mock enforces auth (PR #10 per-plugin policy)', () => {
+    const dhis2 = renderSandboxPage([{ name: 'dhis2', mountPath: '/dhis2' }]);
+    expect(dhis2).toContain('"authRequired":true');
+    const fhir = renderSandboxPage([{ name: 'fhir', mountPath: '/fhir' }]);
+    expect(fhir).toContain('"authRequired":false');
+  });
+
+  it('uses the real KoboToolbox credential shape (username/password), not the old apiToken guess', () => {
+    const html = renderSandboxPage([{ name: 'kobotoolbox', mountPath: '/kobotoolbox' }]);
+    expect(html).toContain('"name":"baseUrl"');
+    expect(html).toContain('"name":"username"');
+    expect(html).toContain('"name":"apiVersion"');
+    expect(html).not.toContain('apiToken');
+    expect(html).not.toContain('baseURL');
+  });
+
+  it('renders OpenCRVS as OAuth client credentials, not a bearer token', () => {
+    const html = renderSandboxPage([{ name: 'opencrvs', mountPath: '/opencrvs' }]);
+    expect(html).toContain('"type":"oauth"');
+    expect(html).toContain('"name":"clientId"');
+    expect(html).toContain('"name":"clientSecret"');
+    expect(html).not.toContain('mock-opencrvs-token');
+  });
+
+  it('keeps Twilio identifiers static so the mock paths resolve, generating only the secret', () => {
+    const html = renderSandboxPage([
+      { name: 'twilio', mountPath: '/twilio', config: { account_sid: 'ACtest123456' } },
+    ]);
+    expect(html).toContain('"name":"accountSid"');
+    expect(html).toContain('"name":"authToken"');
+    // accountSid is a static value (used to build /Accounts/<sid>/… paths), authToken is generated.
+    expect(html).toContain('ACtest123456');
+    expect(html).not.toContain('mock-auth-token');
+  });
+
+  it('falls back to a bare url credential for a system with no plugin/guide', () => {
+    const html = renderSandboxPage([{ name: 'mystery', mountPath: '/mystery' }]);
+    expect(html).toContain('"type":"none"');
+    expect(html).toContain('{{ORIGIN}}/mystery');
+  });
+});
+
 describe('wantsHtml', () => {
   it('is true only when text/html is present', () => {
     expect(wantsHtml('text/html,application/xhtml+xml')).toBe(true);

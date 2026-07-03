@@ -111,6 +111,16 @@ const plugin: MockSystemPlugin = {
   specFile: 'kobotoolbox.schema.json',
   // KoboToolbox authenticates with `Authorization: Token <apiToken>`.
   auth: { required: true, schemes: ['token'] },
+  credential: {
+    type: 'userpass',
+    authHeader: { scheme: 'basic', userField: 'username', passField: 'password' },
+    fields: [
+      { name: 'baseUrl', role: 'url' },
+      { name: 'username', role: 'username', value: 'mocker' },
+      { name: 'password', role: 'secret', secret: { charset: 'alnum', length: 16 } },
+      { name: 'apiVersion', role: 'static', value: 'v2' },
+    ],
+  },
 
   async overrides(app: FastifyInstance, store: DataStore, config: SystemConfig) {
     const port = (config.port as number) || DEFAULT_PORT;

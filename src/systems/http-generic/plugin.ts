@@ -48,6 +48,10 @@ const plugin: MockSystemPlugin = {
   // The generic http adaptor talks to arbitrary endpoints with arbitrary (or no)
   // auth, so this catch-all never requires credentials.
   auth: { required: false },
+  credential: {
+    type: 'none',
+    fields: [{ name: 'baseUrl', role: 'url' }],
+  },
 
   async overrides(app: FastifyInstance, store: DataStore, _config: SystemConfig) {
     const wildPath = (req: FastifyRequest): string =>

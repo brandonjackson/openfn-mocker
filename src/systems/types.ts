@@ -1,6 +1,6 @@
 import type { FastifyInstance } from 'fastify';
 import type { DataStore } from '../store.js';
-import type { AuthRequirement } from '../auth.js';
+import type { AuthRequirement, CredentialSpec } from '../auth.js';
 
 /**
  * Per-system runtime configuration. `port` is the single shared listen port
@@ -34,6 +34,15 @@ export interface MockSystemPlugin {
    * with no credentials; the mock still never validates the credential's value.
    */
   auth?: AuthRequirement;
+  /**
+   * The OpenFn credential a user pastes into OpenFn to reach this system: its
+   * field names (matching the adaptor's configuration-schema.json), which fields
+   * are secrets, and how to shape a generated suggestion for each. The browser
+   * sandbox reads this to visualise the credential, label it (username/password
+   * vs API key vs OAuth), and generate ready-to-paste suggestions. Omit for a
+   * system with no meaningful credential.
+   */
+  credential?: CredentialSpec;
   /**
    * Register routes on the Fastify instance. `authPlugin`, admin routes and
    * request logging are already attached by registerSystem before this runs, so

@@ -28,6 +28,14 @@ function makeRecord(body: any): Record<string, any> {
 
 const plugin: MockSystemPlugin = {
   name: 'openboxes',
+  credential: {
+    type: 'userpass',
+    fields: [
+      { name: 'baseUrl', role: 'url' },
+      { name: 'username', role: 'username', value: 'admin' },
+      { name: 'password', role: 'secret', secret: { charset: 'alnum', length: 16 } },
+    ],
+  },
 
   async overrides(app: FastifyInstance, store: DataStore, _config: SystemConfig) {
     // POST /api/login — token exchange (accept any credentials).

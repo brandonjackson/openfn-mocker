@@ -129,6 +129,15 @@ function executeKw(store: DataStore, params: any[]): any {
 
 const plugin: MockSystemPlugin = {
   name: 'openspp',
+  credential: {
+    type: 'userpass',
+    fields: [
+      { name: 'baseUrl', role: 'url' },
+      { name: 'database', role: 'static', value: 'openspp' },
+      { name: 'username', role: 'username', value: 'admin' },
+      { name: 'password', role: 'secret', secret: { charset: 'alnum', length: 16 } },
+    ],
+  },
 
   async overrides(app: FastifyInstance, store: DataStore, _config: SystemConfig) {
     const xml = (reply: FastifyReply) => reply.type('text/xml; charset=utf-8');
