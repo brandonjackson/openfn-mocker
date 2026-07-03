@@ -1,13 +1,13 @@
 {
   "events": {
-    "6491b13828834eba9c34fc1110891741": {
-      "id": "6491b13828834eba9c34fc1110891741",
+    "728dcb0bbc9446c9a0f695c17479ba4b": {
+      "id": "728dcb0bbc9446c9a0f695c17479ba4b",
       "event": "accepted",
-      "timestamp": 1783014536.259,
+      "timestamp": 1783065535.389,
       "recipient": "jane.doe@example.org",
       "message": {
         "headers": {
-          "message-id": "20260702174856.d1d650.37662508@sandbox-test.mailgun.org",
+          "message-id": "20260703075855.44b4c9.ccaa477d@sandbox-test.mailgun.org",
           "from": "Mailgun Sandbox <postmaster@sandbox-test.mailgun.org>",
           "to": "jane.doe@example.org",
           "subject": "Notification #1"
@@ -19,14 +19,14 @@
         "description": ""
       }
     },
-    "262198e434ed440abe98edc22b481573": {
-      "id": "262198e434ed440abe98edc22b481573",
+    "47b71c87e0f5440ea95d2f3c816664e5": {
+      "id": "47b71c87e0f5440ea95d2f3c816664e5",
       "event": "delivered",
-      "timestamp": 1783010936.259,
+      "timestamp": 1783061935.389,
       "recipient": "john.smith@example.org",
       "message": {
         "headers": {
-          "message-id": "20260702174856.635772.ce9c626f@sandbox-test.mailgun.org",
+          "message-id": "20260703075855.fa566f.80697a8a@sandbox-test.mailgun.org",
           "from": "Mailgun Sandbox <postmaster@sandbox-test.mailgun.org>",
           "to": "john.smith@example.org",
           "subject": "Notification #2"
@@ -38,14 +38,14 @@
         "description": ""
       }
     },
-    "e1f36ca124ba441ca8a4cd158271d25b": {
-      "id": "e1f36ca124ba441ca8a4cd158271d25b",
+    "1fcfd8c73a094ea9a15544fcc69e3460": {
+      "id": "1fcfd8c73a094ea9a15544fcc69e3460",
       "event": "opened",
-      "timestamp": 1783007336.259,
+      "timestamp": 1783058335.389,
       "recipient": "clinic@example.org",
       "message": {
         "headers": {
-          "message-id": "20260702174856.a01337.27f1e931@sandbox-test.mailgun.org",
+          "message-id": "20260703075855.b3ca98.532d8a0c@sandbox-test.mailgun.org",
           "from": "Mailgun Sandbox <postmaster@sandbox-test.mailgun.org>",
           "to": "clinic@example.org",
           "subject": "Notification #3"
@@ -57,14 +57,14 @@
         "description": ""
       }
     },
-    "1f82a4f2660349e0b73947e05a314e9b": {
-      "id": "1f82a4f2660349e0b73947e05a314e9b",
+    "5aed33bdea9b47f3b28fecd166158fc3": {
+      "id": "5aed33bdea9b47f3b28fecd166158fc3",
       "event": "delivered",
-      "timestamp": 1783003736.259,
+      "timestamp": 1783054735.389,
       "recipient": "jane.doe@example.org",
       "message": {
         "headers": {
-          "message-id": "20260702174856.0a4dee.ec7a43be@sandbox-test.mailgun.org",
+          "message-id": "20260703075855.fecaae.7a28eb53@sandbox-test.mailgun.org",
           "from": "Mailgun Sandbox <postmaster@sandbox-test.mailgun.org>",
           "to": "jane.doe@example.org",
           "subject": "Notification #4"
@@ -76,14 +76,14 @@
         "description": ""
       }
     },
-    "2a7058c667aa47f0b3fca14a99d7ec8b": {
-      "id": "2a7058c667aa47f0b3fca14a99d7ec8b",
+    "955c4b9c57104e56ba92377f57dc684c": {
+      "id": "955c4b9c57104e56ba92377f57dc684c",
       "event": "bounced",
-      "timestamp": 1783000136.259,
+      "timestamp": 1783051135.389,
       "recipient": "john.smith@example.org",
       "message": {
         "headers": {
-          "message-id": "20260702174856.96a655.a44a73fb@sandbox-test.mailgun.org",
+          "message-id": "20260703075855.673387.8725afc8@sandbox-test.mailgun.org",
           "from": "Mailgun Sandbox <postmaster@sandbox-test.mailgun.org>",
           "to": "john.smith@example.org",
           "subject": "Notification #5"
@@ -95,14 +95,14 @@
         "description": "The email account that you tried to reach does not exist."
       }
     },
-    "359d6b20064945e196b92a5ac6e1d189": {
-      "id": "359d6b20064945e196b92a5ac6e1d189",
+    "a5163554f0124c529ff5ec352f5fee82": {
+      "id": "a5163554f0124c529ff5ec352f5fee82",
       "event": "delivered",
-      "timestamp": 1782996536.259,
+      "timestamp": 1783047535.389,
       "recipient": "clinic@example.org",
       "message": {
         "headers": {
-          "message-id": "20260702174856.657398.e870af67@sandbox-test.mailgun.org",
+          "message-id": "20260703075855.d93146.fddd1d34@sandbox-test.mailgun.org",
           "from": "Mailgun Sandbox <postmaster@sandbox-test.mailgun.org>",
           "to": "clinic@example.org",
           "subject": "Notification #6"
@@ -114,14 +114,14 @@
         "description": ""
       }
     },
-    "717660f96eb348c0b6333417510bb62c": {
-      "id": "717660f96eb348c0b6333417510bb62c",
+    "ad89569c24904d7f96557b8f9d75f5f2": {
+      "id": "ad89569c24904d7f96557b8f9d75f5f2",
       "event": "opened",
-      "timestamp": 1782992936.259,
+      "timestamp": 1783043935.389,
       "recipient": "jane.doe@example.org",
       "message": {
         "headers": {
-          "message-id": "20260702174856.e3194d.233fc8f2@sandbox-test.mailgun.org",
+          "message-id": "20260703075855.040f5f.248a3088@sandbox-test.mailgun.org",
           "from": "Mailgun Sandbox <postmaster@sandbox-test.mailgun.org>",
           "to": "jane.doe@example.org",
           "subject": "Notification #7"
@@ -133,14 +133,14 @@
         "description": ""
       }
     },
-    "73a151d5a0fb4a359ef8db2952c97d57": {
-      "id": "73a151d5a0fb4a359ef8db2952c97d57",
+    "f08589d339334989ad25e952872fe25f": {
+      "id": "f08589d339334989ad25e952872fe25f",
       "event": "clicked",
-      "timestamp": 1782989336.259,
+      "timestamp": 1783040335.389,
       "recipient": "john.smith@example.org",
       "message": {
         "headers": {
-          "message-id": "20260702174856.c8ad11.874fd0ea@sandbox-test.mailgun.org",
+          "message-id": "20260703075855.eec690.070f4c6e@sandbox-test.mailgun.org",
           "from": "Mailgun Sandbox <postmaster@sandbox-test.mailgun.org>",
           "to": "john.smith@example.org",
           "subject": "Notification #8"
@@ -152,14 +152,14 @@
         "description": ""
       }
     },
-    "a070dac8a60f4a72bb3217aad8676662": {
-      "id": "a070dac8a60f4a72bb3217aad8676662",
+    "fcb336a443524f06b9dedb00e1150ad3": {
+      "id": "fcb336a443524f06b9dedb00e1150ad3",
       "event": "delivered",
-      "timestamp": 1782985736.259,
+      "timestamp": 1783036735.389,
       "recipient": "clinic@example.org",
       "message": {
         "headers": {
-          "message-id": "20260702174856.4c656d.2b689bb2@sandbox-test.mailgun.org",
+          "message-id": "20260703075855.9eb081.04dcc890@sandbox-test.mailgun.org",
           "from": "Mailgun Sandbox <postmaster@sandbox-test.mailgun.org>",
           "to": "clinic@example.org",
           "subject": "Notification #9"
@@ -171,14 +171,14 @@
         "description": ""
       }
     },
-    "6f48f57533144ddab70c990784562e33": {
-      "id": "6f48f57533144ddab70c990784562e33",
+    "256abdecff6148ebbf92368967985e99": {
+      "id": "256abdecff6148ebbf92368967985e99",
       "event": "complained",
-      "timestamp": 1782982136.259,
+      "timestamp": 1783033135.389,
       "recipient": "jane.doe@example.org",
       "message": {
         "headers": {
-          "message-id": "20260702174856.410919.f5d8e46c@sandbox-test.mailgun.org",
+          "message-id": "20260703075855.77679c.b6309015@sandbox-test.mailgun.org",
           "from": "Mailgun Sandbox <postmaster@sandbox-test.mailgun.org>",
           "to": "jane.doe@example.org",
           "subject": "Notification #10"
@@ -193,12 +193,12 @@
   },
   "stats": {
     "total": {
-      "start": "Thu, 25 Jun 2026 17:48:56 GMT",
-      "end": "Thu, 02 Jul 2026 17:48:56 GMT",
+      "start": "Fri, 26 Jun 2026 07:58:55 GMT",
+      "end": "Fri, 03 Jul 2026 07:58:55 GMT",
       "resolution": "day",
       "stats": [
         {
-          "time": "Fri, 26 Jun 2026 17:48:56 GMT",
+          "time": "Sat, 27 Jun 2026 07:58:55 GMT",
           "accepted": {
             "outgoing": 12,
             "incoming": 0,
@@ -222,7 +222,7 @@
           }
         },
         {
-          "time": "Sat, 27 Jun 2026 17:48:56 GMT",
+          "time": "Sun, 28 Jun 2026 07:58:55 GMT",
           "accepted": {
             "outgoing": 12,
             "incoming": 0,
@@ -246,7 +246,7 @@
           }
         },
         {
-          "time": "Sun, 28 Jun 2026 17:48:56 GMT",
+          "time": "Mon, 29 Jun 2026 07:58:55 GMT",
           "accepted": {
             "outgoing": 12,
             "incoming": 0,
@@ -270,7 +270,7 @@
           }
         },
         {
-          "time": "Mon, 29 Jun 2026 17:48:56 GMT",
+          "time": "Tue, 30 Jun 2026 07:58:55 GMT",
           "accepted": {
             "outgoing": 12,
             "incoming": 0,
@@ -294,7 +294,7 @@
           }
         },
         {
-          "time": "Tue, 30 Jun 2026 17:48:56 GMT",
+          "time": "Wed, 01 Jul 2026 07:58:55 GMT",
           "accepted": {
             "outgoing": 12,
             "incoming": 0,
@@ -318,7 +318,7 @@
           }
         },
         {
-          "time": "Wed, 01 Jul 2026 17:48:56 GMT",
+          "time": "Thu, 02 Jul 2026 07:58:55 GMT",
           "accepted": {
             "outgoing": 12,
             "incoming": 0,
@@ -342,7 +342,7 @@
           }
         },
         {
-          "time": "Thu, 02 Jul 2026 17:48:56 GMT",
+          "time": "Fri, 03 Jul 2026 07:58:55 GMT",
           "accepted": {
             "outgoing": 12,
             "incoming": 0,

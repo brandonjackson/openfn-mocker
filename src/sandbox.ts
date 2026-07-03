@@ -544,16 +544,364 @@ export const SYSTEM_GUIDES: Record<string, SystemGuide> = {
       { method: 'GET', path: '/anything/you/want', label: 'Any path returns a mock echo' },
     ],
   },
+
+  godata: {
+    title: 'Go.Data',
+    docs: 'https://docs.openfn.org/adaptors/packages/godata-docs',
+    blurb:
+      'WHO outbreak investigation platform. Token login via POST /users/login; list endpoints return bare arrays and a ?filter= JSON Loopback query looks records up. Outbreaks, cases, contacts, locations and reference-data are all served.',
+    auth: 'Token via POST /users/login',
+    credentialField: 'apiUrl',
+    credential: { apiUrl: '{{ORIGIN}}/godata', email: 'api@who.int', password: 'mock' },
+    examples: [
+      {
+        method: 'POST',
+        path: '/users/login',
+        label: 'Login: returns { id: <token> }',
+        body: JSON.stringify({ email: 'api@who.int', password: 'mock' }, null, 2),
+      },
+      { method: 'GET', path: '/outbreaks', label: 'List outbreaks (bare array)' },
+      { method: 'GET', path: '/outbreaks/ob-sl-covid19/cases', label: 'Cases for an outbreak' },
+      {
+        method: 'GET',
+        path: '/outbreaks/ob-sl-covid19/cases?filter=%7B%22where%22%3A%7B%22firstName%22%3A%22Jane%22%7D%7D',
+        label: 'Filter cases (?filter= Loopback where)',
+      },
+      { method: 'GET', path: '/locations', label: 'Location tree' },
+      {
+        method: 'POST',
+        path: '/outbreaks/ob-sl-covid19/cases',
+        label: 'Create a case (upsertCase)',
+        body: JSON.stringify({ firstName: 'Sandbox', lastName: 'Case', gender: 'LNG_REFERENCE_DATA_CATEGORY_GENDER_FEMALE' }, null, 2),
+      },
+    ],
+  },
+
+  rapidpro: {
+    title: 'RapidPro / TextIt',
+    docs: 'https://docs.openfn.org/adaptors/packages/rapidpro-docs',
+    blurb:
+      'Messaging & flow automation. Token auth over /api/v2 with .json suffixes and DRF { next, previous, results } envelopes. addContact/upsertContact, startFlow and sendBroadcast are covered; posting a contact whose urn already exists updates it.',
+    auth: 'Token',
+    credentialField: 'host',
+    credential: { host: '{{ORIGIN}}/rapidpro', token: 'mock-rapidpro-token' },
+    examples: [
+      { method: 'GET', path: '/api/v2/contacts.json', label: 'List contacts (DRF envelope)' },
+      {
+        method: 'POST',
+        path: '/api/v2/contacts.json',
+        label: 'Add / upsert a contact (dedup on urn)',
+        body: JSON.stringify({ name: 'Sandbox Contact', urns: ['tel:+23276123456'], fields: { district: 'Bo' } }, null, 2),
+      },
+      {
+        method: 'POST',
+        path: '/api/v2/flow_starts.json',
+        label: 'Start a flow (startFlow)',
+        body: JSON.stringify({ flow: 'flow-0001-anc-reminder', groups: ['grp-0001-anc'] }, null, 2),
+      },
+      {
+        method: 'POST',
+        path: '/api/v2/broadcasts.json',
+        label: 'Send a broadcast (sendBroadcast)',
+        body: JSON.stringify({ urns: ['tel:+23276000001'], text: 'Your appointment is tomorrow' }, null, 2),
+      },
+      { method: 'GET', path: '/api/v2/flows.json', label: 'List flows' },
+    ],
+  },
+
+  odk: {
+    title: 'ODK Central',
+    docs: 'https://docs.openfn.org/adaptors/packages/odk-docs',
+    blurb:
+      'Open Data Kit data collection. Session-token auth; projects and forms are REST arrays and submissions come through the OData endpoint (…/forms/{id}.svc/Submissions) as { value: [...] } with ODK __id / __system metadata.',
+    auth: 'Session token (POST /v1/sessions)',
+    credentialField: 'baseURL',
+    credential: { baseURL: '{{ORIGIN}}/odk', email: 'fieldworker@example.org', password: 'mock' },
+    examples: [
+      {
+        method: 'POST',
+        path: '/v1/sessions',
+        label: 'Create a session token',
+        body: JSON.stringify({ email: 'fieldworker@example.org', password: 'mock' }, null, 2),
+      },
+      { method: 'GET', path: '/v1/projects', label: 'List projects' },
+      { method: 'GET', path: '/v1/projects/1/forms', label: 'Forms for a project (getForms)' },
+      {
+        method: 'GET',
+        path: '/v1/projects/1/forms/household-survey.svc/Submissions',
+        label: 'Submissions (OData, getSubmissions)',
+      },
+      {
+        method: 'POST',
+        path: '/v1/projects/1/forms/household-survey.svc/Submissions',
+        label: 'Add a submission',
+        body: JSON.stringify({ head_name: 'Sandbox Household', household_size: 3, district: 'Bo' }, null, 2),
+      },
+    ],
+  },
+
+  openlmis: {
+    title: 'OpenLMIS',
+    docs: 'https://docs.openfn.org/adaptors/packages/openlmis-docs',
+    blurb:
+      'Logistics management (v3). OAuth2 token via POST /api/oauth/token; reference-data + requisition lists use the Spring Data { content, totalElements, totalPages, … } page envelope. Facilities, orderables, programs and requisitions are served.',
+    auth: 'OAuth2 (POST /api/oauth/token)',
+    credentialField: 'hostUrl',
+    credential: { hostUrl: '{{ORIGIN}}/openlmis', username: 'admin', password: 'mock' },
+    examples: [
+      { method: 'POST', path: '/api/oauth/token?grant_type=client_credentials', label: 'Get an access token' },
+      { method: 'GET', path: '/api/facilities', label: 'Facilities (Spring page envelope)' },
+      { method: 'GET', path: '/api/orderables', label: 'Products / orderables' },
+      { method: 'GET', path: '/api/requisitions', label: 'Requisitions' },
+      {
+        method: 'POST',
+        path: '/api/requisitions/initiate?program=10845cb9-d365-4aaa-badd-b4fa39c6a26a&facility=a6799d64-d10d-4011-b8c2-0e4d4a3f0001',
+        label: 'Initiate a requisition',
+      },
+    ],
+  },
+
+  openimis: {
+    title: 'openIMIS',
+    docs: 'https://docs.openfn.org/adaptors/packages/openimis-docs',
+    blurb:
+      'Health-insurance management via a FHIR R4 API (api_fhir_r4). Login at POST /api/api_fhir_r4/login/ returns a bearer token; insurees are Patients, policies are Contracts and benefits are Coverages/Claims, all returned as searchset Bundles.',
+    auth: 'Token (POST …/login/)',
+    credentialField: 'baseUrl',
+    credential: { baseUrl: '{{ORIGIN}}/openimis', username: 'Admin', password: 'mock' },
+    examples: [
+      {
+        method: 'POST',
+        path: '/api/api_fhir_r4/login/',
+        label: 'Login: returns { token }',
+        body: JSON.stringify({ username: 'Admin', password: 'mock' }, null, 2),
+      },
+      { method: 'GET', path: '/api/api_fhir_r4/Patient', label: 'Insurees as FHIR Patients (Bundle)' },
+      { method: 'GET', path: '/api/api_fhir_r4/Patient/insuree-0001', label: 'Read one insuree' },
+      { method: 'GET', path: '/api/api_fhir_r4/Contract', label: 'Policies (Contracts)' },
+      { method: 'GET', path: '/api/api_fhir_r4/Claim', label: 'Claims' },
+    ],
+  },
+
+  openspp: {
+    title: 'OpenSPP',
+    docs: 'https://docs.openfn.org/adaptors/packages/openspp-docs',
+    blurb:
+      'Social-protection registry built on Odoo. The adaptor speaks Odoo XML-RPC (/xmlrpc/2/common + /xmlrpc/2/object): individuals and group households live in res.partner, with g2p.program enrolments and spp.area/spp.service.point. Requests and responses are XML — use the request console with Content-Type text/xml.',
+    auth: 'Odoo authenticate (XML-RPC)',
+    credentialField: 'baseUrl',
+    credential: { baseUrl: '{{ORIGIN}}/openspp', db: 'openspp', username: 'admin', password: 'mock' },
+    examples: [
+      {
+        method: 'POST',
+        path: '/xmlrpc/2/common',
+        label: 'authenticate → uid (XML-RPC)',
+        contentType: XML,
+        body:
+          '<?xml version="1.0"?><methodCall><methodName>authenticate</methodName><params>' +
+          '<param><value><string>openspp</string></value></param>' +
+          '<param><value><string>admin</string></value></param>' +
+          '<param><value><string>mock</string></value></param>' +
+          '<param><value><struct></struct></value></param></params></methodCall>',
+      },
+      {
+        method: 'POST',
+        path: '/xmlrpc/2/object',
+        label: 'search_read households (res.partner where is_group=true)',
+        contentType: XML,
+        body:
+          '<?xml version="1.0"?><methodCall><methodName>execute_kw</methodName><params>' +
+          '<param><value><string>openspp</string></value></param>' +
+          '<param><value><int>2</int></value></param>' +
+          '<param><value><string>mock</string></value></param>' +
+          '<param><value><string>res.partner</string></value></param>' +
+          '<param><value><string>search_read</string></value></param>' +
+          '<param><value><array><data><value><array><data>' +
+          '<value><array><data><value><string>is_group</string></value>' +
+          '<value><string>=</string></value><value><boolean>1</boolean></value>' +
+          '</data></array></value></data></array></value></data></array></value></param>' +
+          '<param><value><struct><member><name>fields</name><value><array><data>' +
+          '<value><string>name</string></value><value><string>kind</string></value>' +
+          '</data></array></value></member></struct></value></param></params></methodCall>',
+      },
+    ],
+  },
+
+  opencrvs: {
+    title: 'OpenCRVS',
+    docs: 'https://docs.openfn.org/adaptors/packages/opencrvs-docs',
+    blurb:
+      'Civil registration & vital statistics. A GraphQL search API (queryEvents → { data: { searchEvents } }) sits alongside the events REST API: POST /api/events/events creates an event, …/notify advances it, and /api/events/locations lists places.',
+    auth: 'Bearer JWT',
+    credentialField: 'url',
+    credential: { url: '{{ORIGIN}}/opencrvs', token: 'mock-opencrvs-token' },
+    examples: [
+      {
+        method: 'POST',
+        path: '/graphql',
+        label: 'searchEvents (queryEvents)',
+        body: JSON.stringify({ query: 'query { searchEvents { totalItems results { id type } } }' }, null, 2),
+      },
+      { method: 'GET', path: '/api/events/events', label: 'List registration events' },
+      {
+        method: 'POST',
+        path: '/api/events/events',
+        label: 'Create an event (createEvent)',
+        body: JSON.stringify({ type: 'v2.birth', transactionId: 'sandbox-txn-1' }, null, 2),
+      },
+      { method: 'GET', path: '/api/events/locations', label: 'Location list' },
+    ],
+  },
+
+  openelis: {
+    title: 'OpenELIS Global',
+    docs: 'https://docs.openfn.org/adaptors/packages/openelis-docs',
+    blurb:
+      'Laboratory information system (OpenELIS Global 2.x) exposed as FHIR R4 under /fhir. Lab work is modelled as ServiceRequests (orders), Specimens, Observations (results) and DiagnosticReports, all tied to a Patient and returned as searchset Bundles.',
+    auth: 'Basic / Bearer',
+    credentialField: 'baseUrl',
+    credential: { baseUrl: '{{ORIGIN}}/openelis', username: 'admin', password: 'mock' },
+    examples: [
+      { method: 'GET', path: '/fhir/ServiceRequest', label: 'Lab orders (ServiceRequest Bundle)' },
+      { method: 'GET', path: '/fhir/DiagnosticReport/report-0001', label: 'A diagnostic report + results' },
+      { method: 'GET', path: '/fhir/Observation', label: 'Result Observations' },
+      {
+        method: 'POST',
+        path: '/fhir/ServiceRequest',
+        label: 'Create a lab order',
+        body: JSON.stringify({ resourceType: 'ServiceRequest', status: 'active', intent: 'order', subject: { reference: 'Patient/pat-0001' } }, null, 2),
+      },
+    ],
+  },
+
+  cht: {
+    title: 'CHT (Community Health Toolkit)',
+    docs: 'https://docs.openfn.org/adaptors/packages/cht-docs',
+    blurb:
+      'Medic Community Health Toolkit on CouchDB. Create contacts via the Medic REST API (/api/v1/people, /api/v1/places), read/write raw docs and _bulk_docs on /medic, follow the _changes feed, and read/update app settings.',
+    auth: 'Basic',
+    credentialField: 'baseUrl',
+    credential: { baseUrl: '{{ORIGIN}}/cht', username: 'medic', password: 'mock' },
+    examples: [
+      {
+        method: 'POST',
+        path: '/api/v1/people',
+        label: 'Create a person (returns { id, rev })',
+        body: JSON.stringify({ name: 'Sandbox CHW', role: 'chw', phone: '+23276123456' }, null, 2),
+      },
+      { method: 'GET', path: '/medic/_changes', label: 'CouchDB changes feed' },
+      { method: 'GET', path: '/medic/person-patient-0001', label: 'Read a doc by _id' },
+      {
+        method: 'POST',
+        path: '/medic/_bulk_docs',
+        label: 'Bulk write docs',
+        body: JSON.stringify({ docs: [{ type: 'person', name: 'Bulk One' }] }, null, 2),
+      },
+      { method: 'GET', path: '/api/v2/export/contacts', label: 'Export contacts' },
+    ],
+  },
+
+  openhim: {
+    title: 'OpenHIM',
+    docs: 'https://docs.openfn.org/adaptors/packages/openhim-docs',
+    blurb:
+      'Health information mediator (OpenHIE). Manages the OpenHIM Core API — channels, clients, tasks and (read-only) transactions as Mongo docs keyed by a 24-hex _id — plus a sample /chw/encounter mediator route. List endpoints return bare arrays.',
+    auth: 'OpenHIM header auth',
+    credentialField: 'apiURL',
+    credential: { apiURL: '{{ORIGIN}}/openhim', username: 'root@openhim.org', password: 'mock' },
+    examples: [
+      { method: 'GET', path: '/channels', label: 'List channels' },
+      { method: 'GET', path: '/clients', label: 'List clients' },
+      { method: 'GET', path: '/transactions', label: 'List transactions (read-only)' },
+      {
+        method: 'POST',
+        path: '/clients',
+        label: 'Register a client',
+        body: JSON.stringify({ clientID: 'sandbox', name: 'Sandbox Client', roles: ['chw'] }, null, 2),
+      },
+      {
+        method: 'POST',
+        path: '/chw/encounter',
+        label: 'Post a CHW encounter (createEncounter)',
+        body: JSON.stringify({ patient: 'Jane Doe', observations: [{ code: 'temp', value: 37.2 }] }, null, 2),
+      },
+    ],
+  },
+
+  openboxes: {
+    title: 'OpenBoxes',
+    docs: 'https://docs.openfn.org/adaptors/packages/openboxes-docs',
+    blurb:
+      "Supply-chain & inventory management. Token login at POST /api/login; every payload nests under a `data` key and ids are 32-char hex. Products, locations and stock movements (with line items) are served.",
+    auth: 'Token (POST /api/login)',
+    credentialField: 'baseUrl',
+    credential: { baseUrl: '{{ORIGIN}}/openboxes', username: 'admin', password: 'mock' },
+    examples: [
+      {
+        method: 'POST',
+        path: '/api/login',
+        label: 'Login: returns { data: { token } }',
+        body: JSON.stringify({ username: 'admin', password: 'mock' }, null, 2),
+      },
+      { method: 'GET', path: '/api/products', label: 'Products ({ data: [...] })' },
+      { method: 'GET', path: '/api/locations', label: 'Depots & wards' },
+      { method: 'GET', path: '/api/stockMovements', label: 'Stock movements' },
+      {
+        method: 'POST',
+        path: '/api/products',
+        label: 'Create a product',
+        body: JSON.stringify({ productCode: 'SANDBOX-001', name: 'Sandbox Product', unitOfMeasure: 'EA' }, null, 2),
+      },
+    ],
+  },
+
+  ihris: {
+    title: 'iHRIS',
+    docs: 'https://docs.openfn.org/adaptors/packages/ihris-docs',
+    blurb:
+      'Health-workforce information system exposed as FHIR R4 under /fhir. The workforce is modelled as Practitioners, PractitionerRoles, Organizations and Locations returned as searchset Bundles.',
+    auth: 'Basic / Bearer',
+    credentialField: 'baseUrl',
+    credential: { baseUrl: '{{ORIGIN}}/ihris', username: 'admin', password: 'mock' },
+    examples: [
+      { method: 'GET', path: '/fhir/Practitioner', label: 'Health workforce (Practitioner Bundle)' },
+      { method: 'GET', path: '/fhir/Practitioner?name=Sesay', label: 'Search practitioners by name' },
+      { method: 'GET', path: '/fhir/PractitionerRole/role-prac-0001', label: 'A practitioner role' },
+      {
+        method: 'POST',
+        path: '/fhir/Practitioner',
+        label: 'Add a practitioner',
+        body: JSON.stringify({ resourceType: 'Practitioner', name: [{ family: 'Sandbox', given: ['New'] }], gender: 'female' }, null, 2),
+      },
+    ],
+  },
 };
 
 /** Preferred display order; anything else falls in after, alphabetically. */
 const PREFERRED_ORDER = [
+  // Health & clinical DPGs
   'dhis2',
   'fhir',
   'openmrs',
+  'openimis',
+  'openelis',
+  'ihris',
+  'openhim',
+  // Community health & case management
   'commcare',
-  'kobotoolbox',
+  'cht',
   'primero',
+  'godata',
+  // Data collection & messaging
+  'kobotoolbox',
+  'odk',
+  'rapidpro',
+  // Registries & supply chain
+  'opencrvs',
+  'openspp',
+  'openlmis',
+  'openboxes',
+  // Operational tools
   'airtable',
   'mailgun',
   'twilio',

@@ -1,0 +1,113 @@
+{
+  "groups": {
+    "grp-0001-anc": {
+      "uuid": "grp-0001-anc",
+      "name": "ANC Mothers",
+      "query": null,
+      "status": "ready",
+      "count": 2
+    },
+    "grp-0002-chw": {
+      "uuid": "grp-0002-chw",
+      "name": "Community Health Workers",
+      "query": null,
+      "status": "ready",
+      "count": 1
+    }
+  },
+  "fields": {
+    "district": {
+      "key": "district",
+      "name": "District",
+      "type": "text",
+      "label": "District"
+    },
+    "edd": {
+      "key": "edd",
+      "name": "Expected Delivery Date",
+      "type": "datetime",
+      "label": "EDD"
+    }
+  },
+  "flows": {
+    "flow-0001-anc-reminder": {
+      "uuid": "flow-0001-anc-reminder",
+      "name": "ANC Appointment Reminder",
+      "type": "message",
+      "archived": false,
+      "expires": 10080
+    },
+    "flow-0002-registration": {
+      "uuid": "flow-0002-registration",
+      "name": "Patient Registration",
+      "type": "message",
+      "archived": false,
+      "expires": 10080
+    }
+  },
+  "contacts": {
+    "5d7e25d6-d0df-494e-b277-bce511ac847e": {
+      "uuid": "5d7e25d6-d0df-494e-b277-bce511ac847e",
+      "name": "Jane Doe",
+      "language": "eng",
+      "urns": [
+        "tel:+23276000001"
+      ],
+      "groups": [
+        {
+          "uuid": "grp-0001-anc",
+          "name": "ANC Mothers"
+        }
+      ],
+      "fields": {
+        "district": "Bo"
+      },
+      "blocked": false,
+      "stopped": false,
+      "created_on": "2026-07-03T07:58:55.402Z",
+      "modified_on": "2026-07-03T07:58:55.402Z"
+    },
+    "0aa65123-6946-4c02-b277-46c31a50b743": {
+      "uuid": "0aa65123-6946-4c02-b277-46c31a50b743",
+      "name": "Amina Kamara",
+      "language": "eng",
+      "urns": [
+        "tel:+23276000002"
+      ],
+      "groups": [
+        {
+          "uuid": "grp-0001-anc",
+          "name": "ANC Mothers"
+        }
+      ],
+      "fields": {
+        "district": "Kenema"
+      },
+      "blocked": false,
+      "stopped": false,
+      "created_on": "2026-07-03T07:58:55.402Z",
+      "modified_on": "2026-07-03T07:58:55.402Z"
+    },
+    "82ea08a9-a136-4ab8-b358-d43eeca45174": {
+      "uuid": "82ea08a9-a136-4ab8-b358-d43eeca45174",
+      "name": "Mohamed Sesay",
+      "language": "eng",
+      "urns": [
+        "tel:+23276000003"
+      ],
+      "groups": [
+        {
+          "uuid": "grp-0002-chw",
+          "name": "Community Health Workers"
+        }
+      ],
+      "fields": {
+        "district": "Makeni"
+      },
+      "blocked": false,
+      "stopped": false,
+      "created_on": "2026-07-03T07:58:55.402Z",
+      "modified_on": "2026-07-03T07:58:55.402Z"
+    }
+  }
+}

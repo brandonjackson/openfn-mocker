@@ -1,6 +1,6 @@
 # openfn-mocker
 
-A configurable mock API server that impersonates the external systems OpenFn integrates with (DHIS2, CommCare, OpenMRS, FHIR, generic HTTP, Kobotoolbox, Primero, Mailgun, Twilio, Airtable) so you can develop and test OpenFn workflows end-to-end without touching a production instance. Every OpenFn adaptor reads a base URL from its credential and fires requests at it; openfn-mocker runs a realistic mock of each system, stores writes in memory so a create is readable in a later step, ships seed data so queries work on first boot, and exposes an admin API for inspecting traffic and state. The whole mock listens on **one port** and mounts each system under a path (`/dhis2`, `/fhir`, ...), so it works behind a single public domain (Railway, Render, Fly, etc.). Point your credential's URL field at `http://localhost:<port>/<system>` and your workflow runs against a fake-but-faithful API.
+A configurable mock API server that impersonates the external systems OpenFn integrates with — every Digital Public Good (DPG) OpenFn ships an adaptor for (DHIS2, CommCare, OpenMRS, KoboToolbox, Primero, Go.Data, RapidPro, ODK, OpenLMIS, openIMIS, OpenSPP, OpenCRVS, OpenELIS, CHT, OpenHIM, OpenBoxes, iHRIS) plus FHIR and the operational tools around them (generic HTTP, Mailgun, Twilio, Airtable) — so you can develop and test OpenFn workflows end-to-end without touching a production instance. Every OpenFn adaptor reads a base URL from its credential and fires requests at it; openfn-mocker runs a realistic mock of each system, stores writes in memory so a create is readable in a later step, ships seed data so queries work on first boot, and exposes an admin API for inspecting traffic and state. The whole mock listens on **one port** and mounts each system under a path (`/dhis2`, `/fhir`, ...), so it works behind a single public domain (Railway, Render, Fly, etc.). Point your credential's URL field at `http://localhost:<port>/<system>` and your workflow runs against a fake-but-faithful API.
 
 ## Quick start
 
@@ -426,7 +426,7 @@ curl -s localhost:4000/fhir/Patient | jq '.entry[].resource.name'
 The default dataset and the dataset loader are covered by the test suite:
 
 ```bash
-pnpm test            # 121 tests, including test/datasets.test.ts
+pnpm test            # full suite, including test/datasets.test.ts
 pnpm snapshot-default # regenerate datasets/default/ from the seed files
 ```
 
@@ -444,6 +444,18 @@ Every system is mounted at `/<name>` on the shared port. The credential URL fiel
 | salesforce | `/salesforce` | — | — | planned |
 | kobotoolbox | `/kobotoolbox` | `baseURL` | Token | stable |
 | primero | `/primero` | `baseUrl` | Token via `POST /api/v2/tokens` | stable |
+| godata | `/godata` | `apiUrl` | Token via `POST /users/login` | stable |
+| rapidpro | `/rapidpro` | `host` | Token | stable |
+| odk | `/odk` | `baseURL` | Session token via `POST /v1/sessions` | stable |
+| openlmis | `/openlmis` | `hostUrl` | OAuth2 via `POST /api/oauth/token` | stable |
+| openimis | `/openimis` | `baseUrl` | Token via `POST /api/api_fhir_r4/login/` | stable |
+| openspp | `/openspp` | `baseUrl` | Odoo XML-RPC authenticate | stable |
+| opencrvs | `/opencrvs` | `url` | Bearer JWT | stable |
+| openelis | `/openelis` | `baseUrl` | Basic / Bearer | stable |
+| cht | `/cht` | `baseUrl` | Basic | stable |
+| openhim | `/openhim` | `apiURL` | OpenHIM header auth | stable |
+| openboxes | `/openboxes` | `baseUrl` | Token via `POST /api/login` | stable |
+| ihris | `/ihris` | `baseUrl` | Basic / Bearer | stable |
 | mailgun | `/mailgun` | `baseUrl` | Basic (`api:key`) | stable |
 | twilio | `/twilio` | `baseUrl` | Basic (`sid:token`) | stable |
 | airtable | `/airtable` | `baseUrl` | Bearer | stable |
@@ -480,6 +492,42 @@ Create (or edit) the credential for each adaptor and point its URL field at the 
 // Primero
 { "baseUrl": "http://localhost:4000/primero", "username": "primero", "password": "mock" }
 
+// Go.Data
+{ "apiUrl": "http://localhost:4000/godata", "email": "api@who.int", "password": "mock" }
+
+// RapidPro / TextIt
+{ "host": "http://localhost:4000/rapidpro", "token": "mock-rapidpro-token", "apiVersion": "v2" }
+
+// ODK Central
+{ "baseURL": "http://localhost:4000/odk", "email": "fieldworker@example.org", "password": "mock" }
+
+// OpenLMIS
+{ "hostUrl": "http://localhost:4000/openlmis", "username": "admin", "password": "mock" }
+
+// openIMIS
+{ "baseUrl": "http://localhost:4000/openimis", "username": "Admin", "password": "mock" }
+
+// OpenSPP  (Odoo XML-RPC)
+{ "baseUrl": "http://localhost:4000/openspp", "db": "openspp", "username": "admin", "password": "mock" }
+
+// OpenCRVS
+{ "url": "http://localhost:4000/opencrvs", "token": "mock-opencrvs-token" }
+
+// OpenELIS Global
+{ "baseUrl": "http://localhost:4000/openelis", "username": "admin", "password": "mock" }
+
+// CHT (Community Health Toolkit)
+{ "baseUrl": "http://localhost:4000/cht", "username": "medic", "password": "mock" }
+
+// OpenHIM
+{ "apiURL": "http://localhost:4000/openhim", "username": "root@openhim.org", "password": "mock" }
+
+// OpenBoxes
+{ "baseUrl": "http://localhost:4000/openboxes", "username": "admin", "password": "mock" }
+
+// iHRIS
+{ "baseUrl": "http://localhost:4000/ihris", "username": "admin", "password": "mock" }
+
 // Mailgun
 { "baseUrl": "http://localhost:4000/mailgun", "domain": "sandbox-test.mailgun.org", "apiKey": "mock-api-key" }
 
@@ -499,6 +547,18 @@ Each system implements the API surface its OpenFn adaptor actually calls (see [`
 - **kobotoolbox** — `getForms` (`?asset_type=`), `getSubmissions` (`?query=`/`?sort=`), `getDeploymentInfo`, and generic `http.*` asset/data operations (create/update/delete, deploy, bulk data PATCH).
 - **primero** — token exchange, cases, case referrals (`GET/POST/PATCH .../referrals`), and the forms/lookups/locations reference data.
 - **airtable** — Airtable's Web API (used in OpenFn via the generic `http` adaptor): list (GET or `POST .../listRecords`), single/batch create, update, upsert (`performUpsert`), and delete.
+- **godata** — token login (`POST /users/login`), then bare-array list/get/create/update for outbreaks, outbreak-scoped cases and contacts, locations and reference-data, with the `?filter=` Loopback query the `get*`/`upsert*` helpers depend on.
+- **rapidpro** — the `/api/v2` DRF API (`{ next, previous, results }`): `addContact`/`upsertContact` (`POST contacts.json`, dedup on `urn`/`uuid`), `startFlow` (`POST flow_starts.json`), `sendBroadcast` (`POST broadcasts.json`), plus flow/group/field reads.
+- **odk** — ODK Central: session token (`POST /v1/sessions`), `getForms` (`/v1/projects/:id/forms`), and `getSubmissions` via the OData endpoint (`…/forms/{id}.svc/Submissions` → `{ value: [...] }`) with ODK `__id`/`__system` metadata.
+- **openlmis** — OpenLMIS v3: OAuth2 token (`POST /api/oauth/token`) and the Spring Data `{ content, totalElements, … }` page envelope for facilities, orderables, programs and requisitions (including `POST /api/requisitions/initiate`).
+- **openimis** — the `api_fhir_r4` FHIR server: token login (`POST /api/api_fhir_r4/login/`) then FHIR reads/writes where insurees are Patients, policies are Contracts and benefits are Coverages/Claims.
+- **openspp** — the Odoo XML-RPC external API the `odoo-await`-based adaptor calls: `authenticate`/`version` on `/xmlrpc/2/common` and `execute_kw` (`search_read`/`search`/`read`/`create`/`write`/`unlink`) on `/xmlrpc/2/object`, over `res.partner`, `g2p.program`, `spp.area`, `spp.service.point` and the membership models.
+- **opencrvs** — the GraphQL search API (`POST /graphql` → `{ data: { searchEvents } }`) alongside the events REST API (`POST /api/events/events`, `…/:id/notify`, `GET /api/events/locations`) and the `/notification` country-config hook.
+- **openelis** — OpenELIS Global's FHIR R4 lab API under `/fhir`: ServiceRequests (orders), Specimens, Observations (results) and DiagnosticReports tied to a Patient.
+- **cht** — the Medic REST API (`POST /api/v1/people`, `/api/v1/places`, `GET`/`PUT /api/v1/settings`, `/api/v2/export/*`) and the underlying CouchDB (`/medic/:id`, `POST /medic/_bulk_docs`, `GET /medic/_changes`).
+- **openhim** — the OpenHIM Core API: channels, clients, tasks and (read-only) transactions as Mongo docs keyed by a 24-hex `_id`, plus a sample `/chw/encounter` mediator route.
+- **openboxes** — the OpenBoxes REST API under `/api` with token login (`POST /api/login`) and the `{ data: … }` envelope for products, locations and stock movements (with line items).
+- **ihris** — the iHRIS FHIR R4 workforce API under `/fhir`: Practitioners, PractitionerRoles, Organizations and Locations.
 - **twilio / mailgun** — the single send operation each adaptor exposes (`POST .../Messages.json`, `POST /v3/{domain}/messages`), plus extra read endpoints (Twilio messages/calls, Mailgun events/stats) for convenience.
 - **http-generic** — a spec-less catch-all that answers any method/path, matching the generic `http` (`common`) adaptor.
 
@@ -625,6 +685,15 @@ Some systems are custom-shaped on purpose to match reality:
 - Kobotoolbox and Primero use DRF-style `{ count, next, previous, results }` and Primero's `{ data, metadata }` envelopes respectively; Primero nests business fields under `data`.
 - Twilio uses PascalCase form input, snake_case JSON output, and auto-advances message status queued -> sent -> delivered on each read.
 - Airtable nests fields under `fields`, enforces the 10-record batch limit, and returns HTTP 422 on overflow.
+- Go.Data returns bare arrays (no envelope) and takes a JSON Loopback `?filter=` query; cases/contacts are outbreak-scoped under `/outbreaks/:id/...`.
+- RapidPro wraps reads in the DRF `{ next, previous, results }` envelope; posting a contact whose `urn` already exists updates it (200) instead of creating a duplicate (201).
+- ODK Central serves submissions through OData (`{ value: [...] }`) with `__id`/`__system` metadata, not plain REST.
+- OpenLMIS paginates with the Spring Data `{ content, totalElements, totalPages, number, size }` page envelope.
+- openIMIS, OpenELIS and iHRIS are FHIR R4 servers (searchset Bundles, `/metadata` CapabilityStatement, transaction Bundles) sharing one engine helper; openIMIS lives under `/api/api_fhir_r4`, the other two under `/fhir`.
+- OpenSPP is Odoo XML-RPC: requests/responses are XML `methodCall`/`methodResponse` documents, records carry integer ids, and many2one fields are `[id, label]` pairs.
+- OpenCRVS answers the same events over two shapes — a GraphQL `searchEvents` result and the REST events API — and advances an event's status through `create` -> `notify`.
+- CHT returns CouchDB write acks (`{ ok, id, rev }`), a `_changes` feed filterable by `?since=`, and `_bulk_docs` batch writes.
+- OpenHIM records are Mongo docs keyed by a 24-hex `_id`; OpenBoxes nests every payload under a `data` key with 32-hex ids.
 
 ## Contributing
 

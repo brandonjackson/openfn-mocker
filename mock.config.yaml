@@ -70,3 +70,40 @@ systems:
   airtable:
     enabled: true
     base_id: appABC123
+
+  # --- Additional Digital Public Goods OpenFn has adaptors for ---
+  godata:
+    enabled: true
+
+  rapidpro:
+    enabled: true
+
+  odk:
+    enabled: true
+
+  openlmis:
+    enabled: true
+
+  openimis:
+    enabled: true
+
+  openspp:
+    enabled: true
+
+  opencrvs:
+    enabled: true
+
+  openelis:
+    enabled: true
+
+  cht:
+    enabled: true
+
+  openhim:
+    enabled: true
+
+  openboxes:
+    enabled: true
+
+  ihris:
+    enabled: true
