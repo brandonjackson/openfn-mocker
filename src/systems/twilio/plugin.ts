@@ -2,6 +2,7 @@ import type { FastifyInstance, FastifyRequest } from 'fastify';
 import type { MockSystemPlugin, SystemConfig } from '../types.js';
 import type { DataStore } from '../../store.js';
 import { seed, accountSidFrom, buildMessage, rfc2822, DEFAULT_ACCOUNT_SID } from './seed.js';
+import { usage } from './usage.js';
 
 /**
  * Twilio (port 4019). Basic auth (accountSid:authToken) is accept-all. Requests
@@ -52,10 +53,7 @@ const plugin: MockSystemPlugin = {
     ],
   },
 
-  usage: [
-    { fn: "sendSMS", signature: "sendSMS(params)", description: "Sends an SMS message from a Twilio number to another phone number.",
-      code: "sendSMS({\n  body: 'Hello from OpenFn',\n  from: '+15005550006',\n  to: '+23276000000',\n});", apiRef: "ex0" },
-  ],
+  usage,
 
   async overrides(app: FastifyInstance, store: DataStore, config: SystemConfig) {
     const configuredSid = accountSidFrom(config);

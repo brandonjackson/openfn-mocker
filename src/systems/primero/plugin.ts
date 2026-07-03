@@ -3,6 +3,7 @@ import type { FastifyInstance, FastifyRequest } from 'fastify';
 import type { MockSystemPlugin, SystemConfig } from '../types.js';
 import type { DataStore } from '../../store.js';
 import { seed, makeDisplayId, makeReferral } from './seed.js';
+import { usage } from './usage.js';
 
 /**
  * Primero (port 4017) — child protection case management.
@@ -113,28 +114,7 @@ const plugin: MockSystemPlugin = {
     ],
   },
 
-  usage: [
-    { fn: "getCases", signature: "getCases(query, options, callback?)", description: "Fetch cases from Primero, optionally filtered by query params.",
-      code: "getCases({ remote: true, sex: 'female' });", apiRef: "ex1" },
-    { fn: "createCase", signature: "createCase(params, callback?)", description: "Create a new case; the server assigns a CP-YYYY-NNN display id.",
-      code: "createCase({ data: { age: 16, sex: 'female', name: 'Edwine Edgemont' } });", apiRef: "ex6" },
-    { fn: "updateCase", signature: "updateCase(id, params, callback?)", description: "Update an existing case by id; subforms merge.",
-      code: "updateCase('CP-2026-014', { data: { age: 17 } });" },
-    { fn: "upsertCase", signature: "upsertCase(params, callback?)", description: "Create or update a case, matched by one or more external id fields.",
-      code: "upsertCase({\n  externalIds: ['case_id'],\n  data: { case_id: 'CP-2026-041', age: 20, status: 'open' },\n});" },
-    { fn: "getReferrals", signature: "getReferrals(params, callback?)", description: "Fetch referrals for one case, looked up by record id or case id.",
-      code: "getReferrals({ id: 'CP-2026-014' });" },
-    { fn: "createReferrals", signature: "createReferrals(params, callback?)", description: "Bulk-refer one or more cases to a single user.",
-      code: "createReferrals({\n  data: { ids: ['CP-2026-014'], transitioned_to: 'primero_cp' },\n});" },
-    { fn: "updateReferral", signature: "updateReferral(params, callback?)", description: "Update a single referral on a case, looked up by record/case id.",
-      code: "updateReferral({ caseId: 'CP-2026-014', id: 'referral-1', data: { notes: 'Updated' } });" },
-    { fn: "getForms", signature: "getForms(query, callback?)", description: "Fetch form definitions accessible to the user, optionally by module.",
-      code: "getForms({ module_id: 'primeromodule-cp' });", apiRef: "ex3" },
-    { fn: "getLookups", signature: "getLookups(query, callback?)", description: "Fetch a paginated list of lookup values.",
-      code: "getLookups({ per: 50, page: 1 });", apiRef: "ex4" },
-    { fn: "getLocations", signature: "getLocations(query, callback?)", description: "Fetch a paginated location hierarchy.",
-      code: "getLocations({ page: 1, per: 20 });", apiRef: "ex5" },
-  ],
+  usage,
 
   async overrides(app: FastifyInstance, store: DataStore, _config: SystemConfig) {
     // --- Token exchange: accept ANY body, never validate. ---
