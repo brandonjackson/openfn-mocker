@@ -10,19 +10,65 @@ import { seed, UID } from './seed.js';
  * endpoints:
  *   POST /xmlrpc/2/common — `version` and `authenticate` (returns a uid int).
  *   POST /xmlrpc/2/object — `execute_kw(db, uid, pw, model, method, args, kwargs)`
- *     with method in { search_read, search, read, create, write, unlink }.
+ *     with method in { search_read, search, search_count, read, create, write,
+ *     unlink, fields_get }.
  *
  * Records live in store collections keyed by the Odoo model name (res.partner,
  * g2p.program, spp.area, ...). Domains are applied with the common Odoo
- * operators; requests and responses are XML, so this plugin parses/serializes
- * XML-RPC by hand (see ../shared/xmlrpc). Auth is accept-all.
+ * operators and support dotted relational paths (e.g. `partner_id.spp_id`,
+ * `group.spp_id`) by following many2one links between models — the openspp
+ * adaptor searches enrolment/membership models by a field on the related
+ * registrant, which this mock resolves the same way Odoo does. Requests and
+ * responses are XML, so this plugin parses/serializes XML-RPC by hand (see
+ * ../shared/xmlrpc). Auth is accept-all.
+ *
+ * Together these cover the full openspp adaptor surface: createGroup /
+ * createIndividual / updateGroup / updateIndividual / getGroup / getIndividual /
+ * getGroupMembers / searchGroup / searchIndividual / addToGroup /
+ * removeFromGroup / getProgram / getPrograms / enroll / unenroll /
+ * getEnrolledPrograms / getServicePoint / searchServicePoint / getArea /
+ * searchArea.
  */
 
+/**
+ * Odoo relational (many2one) fields, keyed by model then field name, mapping to
+ * the target model. Used to resolve dotted domain paths like
+ * `partner_id.spp_id` or `group.spp_id`: the openspp adaptor searches
+ * membership/enrolment models by a field on the *related* registrant, which
+ * Odoo resolves by walking the relation. The mock follows the same links.
+ */
+const RELATIONS: Record<string, Record<string, string>> = {
+  'res.partner': { area_id: 'spp.area', parent_id: 'res.partner' },
+  'g2p.program_membership': { partner_id: 'res.partner', program_id: 'g2p.program' },
+  'g2p.group.membership': { group: 'res.partner', individual: 'res.partner', kind: 'g2p.group.membership.kind' },
+  'spp.service.point': { area_id: 'spp.area' },
+  'spp.area': { parent_id: 'spp.area' },
+};
+
+/**
+ * Resolve a (possibly dotted) domain field against a record, following Odoo
+ * relations. `spp_id` -> record.spp_id; `partner_id.spp_id` -> follow the
+ * many2one `partner_id` to its res.partner, then read that record's `spp_id`.
+ */
+function resolveFieldValue(store: DataStore, model: string, record: any, field: string): any {
+  if (!record) return undefined;
+  const dot = field.indexOf('.');
+  if (dot === -1) return record[field];
+  const head = field.slice(0, dot);
+  const rest = field.slice(dot + 1);
+  let ref = record[head];
+  // Odoo many2one values are [id, label]; follow the id to the related record.
+  if (Array.isArray(ref)) ref = ref[0];
+  const targetModel = RELATIONS[model]?.[head];
+  if (targetModel == null || ref == null) return undefined;
+  return resolveFieldValue(store, targetModel, store.get(targetModel, String(ref)), rest);
+}
+
 /** Apply one Odoo domain condition [field, op, value] to a record. */
-function matchCondition(record: any, cond: any[]): boolean {
+function matchCondition(store: DataStore, model: string, record: any, cond: any[]): boolean {
   if (!Array.isArray(cond) || cond.length < 3) return true;
   const [field, op, value] = cond;
-  let actual = record[field];
+  let actual = resolveFieldValue(store, model, record, field);
   // Odoo many2one fields are stored as [id, label]; compare against the id.
   if (Array.isArray(actual)) actual = actual[0];
   switch (op) {
@@ -55,10 +101,10 @@ function matchCondition(record: any, cond: any[]): boolean {
 }
 
 /** Filter records by an Odoo domain (logical operators '&' '|' '!' are ANDed). */
-function applyDomain(records: any[], domain: any): any[] {
+function applyDomain(store: DataStore, model: string, records: any[], domain: any): any[] {
   if (!Array.isArray(domain) || domain.length === 0) return records;
   const conditions = domain.filter((d) => Array.isArray(d));
-  return records.filter((r) => conditions.every((c) => matchCondition(r, c)));
+  return records.filter((r) => conditions.every((c) => matchCondition(store, model, r, c)));
 }
 
 /** Project a record down to the requested fields (id always included). */
@@ -85,7 +131,7 @@ function executeKw(store: DataStore, params: any[]): any {
   switch (method) {
     case 'search_read': {
       const domain = args[0] ?? kwargs.domain ?? [];
-      let records = applyDomain(store.list(model), domain);
+      let records = applyDomain(store, model, store.list(model), domain);
       const offset = Number(kwargs.offset ?? 0) || 0;
       const limit = kwargs.limit != null ? Number(kwargs.limit) : undefined;
       if (offset) records = records.slice(offset);
@@ -94,7 +140,11 @@ function executeKw(store: DataStore, params: any[]): any {
     }
     case 'search': {
       const domain = args[0] ?? kwargs.domain ?? [];
-      return applyDomain(store.list(model), domain).map((r) => Number(r.id));
+      return applyDomain(store, model, store.list(model), domain).map((r) => Number(r.id));
+    }
+    case 'search_count': {
+      const domain = args[0] ?? kwargs.domain ?? [];
+      return applyDomain(store, model, store.list(model), domain).length;
     }
     case 'read': {
       const ids: any[] = Array.isArray(args[0]) ? args[0] : [args[0]];
