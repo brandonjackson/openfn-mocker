@@ -45,6 +45,9 @@ function toRecord(body: any, req: FastifyRequest, path: string): Record<string, 
 
 const plugin: MockSystemPlugin = {
   name: 'http-generic',
+  // The generic http adaptor talks to arbitrary endpoints with arbitrary (or no)
+  // auth, so this catch-all never requires credentials.
+  auth: { required: false },
 
   async overrides(app: FastifyInstance, store: DataStore, _config: SystemConfig) {
     const wildPath = (req: FastifyRequest): string =>

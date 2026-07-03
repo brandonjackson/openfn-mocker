@@ -450,9 +450,26 @@ Every system is mounted at `/<name>` on the shared port. The credential URL fiel
 
 Root admin routes (`/_admin/systems`, `/_admin/reset-all`) and a `GET /` index live on the shared port. Hitting `GET /` from a browser serves an interactive [API sandbox](#browser-sandbox); API clients get JSON.
 
-### Auth is accept-all
+### Auth: presence-checked, value-ignored
 
-In v1 the server never rejects a request for auth reasons. It parses the `Authorization` header for logging only (recording `{ type, username | token | key }`) and always proceeds. Primero has a real token-exchange endpoint (`POST /primero/api/v2/tokens` returns `{ "token": "mock_primero_token" }`), but subsequent calls are still accept-all. Data is stored in memory and resets on restart (or via the admin reset endpoints).
+The mock never validates the *value* of a credential (any username/password/token works), but it does enforce that one is *present* where the real system requires it. Each plugin declares its own auth policy (`auth` in `MockSystemPlugin`), so this is core behavior, not a global assumption:
+
+- **Systems that require auth** (dhis2, openmrs, commcare, kobotoolbox, primero, mailgun, twilio, airtable) return **401 Unauthorized** — with a matching `WWW-Authenticate` header and `{ "error": "Unauthorized" }` body — when a request arrives with no credentials. Send any `Authorization` header (or api-key header) and the request proceeds.
+- **Systems where auth is optional or absent** stay accept-all: **FHIR** (auth is none/Bearer) and **http-generic** (arbitrary endpoints) never reject for auth reasons. Not every system needs credentials, so the mock doesn't pretend they do.
+- **Exemptions**: each system's own admin API (`/<system>/_admin/*`) is never gated, and Primero's token-exchange endpoint (`POST /primero/api/v2/tokens`, returns `{ "token": "mock_primero_token" }`) stays open so you can obtain a token before you have one — every other Primero call then requires it.
+
+The `Authorization` header is still parsed for logging/inspection (recording `{ type, username | token | key }` on `request.mockAuth`). Data is stored in memory and resets on restart (or via the admin reset endpoints).
+
+A system's auth policy lives on its plugin:
+
+```ts
+const plugin: MockSystemPlugin = {
+  name: 'mysystem',
+  // Reject anonymous requests; the value is never validated.
+  auth: { required: true, schemes: ['basic'] },
+  // ...or omit `auth` (or set { required: false }) to stay accept-all.
+};
+```
 
 ## Using with OpenFn
 
@@ -545,6 +562,9 @@ Systems are spec-driven. Each is backed by an OpenAPI or JSON-schema document in
    const plugin: MockSystemPlugin = {
      name: 'mysystem',
      specFile: 'mysystem.openapi.json', // optional
+     // Auth policy (optional). Omit or use { required: false } for open systems;
+     // { required: true, schemes: [...] } returns 401 when no credential is sent.
+     auth: { required: true, schemes: ['basic'] },
      seed,                               // populates the store at boot / reset
      overrides(app, store, config) {
        // Register custom / non-CRUD routes on `app` here. The system is mounted

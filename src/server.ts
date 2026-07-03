@@ -2,7 +2,7 @@ import Fastify, { type FastifyInstance } from 'fastify';
 import formbody from '@fastify/formbody';
 import { DataStore } from './store.js';
 import { RequestLog, summarizeBody, makeLogLevel } from './logger.js';
-import { authPlugin } from './auth.js';
+import { authPlugin, enforceAuth } from './auth.js';
 import { registerBehavior } from './behavior.js';
 import { registerAdminRoutes } from './admin.js';
 import type { MockSystemPlugin, SystemConfig } from './systems/types.js';
@@ -38,7 +38,8 @@ export const fastifyServerOptions = {
  * systems under different prefixes on one app never collides. Wires:
  *  - JSON (built-in) + form-urlencoded (@fastify/formbody) body parsing
  *  - text/xml, application/xml, text/plain -> raw string body (passthrough)
- *  - authPlugin (accept-all; sets request.mockAuth)
+ *  - authPlugin (sets request.mockAuth) + enforceAuth (401 when the plugin
+ *    declares auth.required and no credentials are sent; open systems unaffected)
  *  - onResponse request logging into a RequestLog ring buffer
  *  - /_admin routes (relative to the instance, so /<prefix>/_admin/* when prefixed)
  *  - plugin.overrides(app, store, config), then plugin.seed(store, config)
@@ -69,8 +70,13 @@ export async function registerSystem(
   app.addContentTypeParser('application/xml', { parseAs: 'string' }, rawStringParser);
   app.addContentTypeParser('text/plain', { parseAs: 'string' }, rawStringParser);
 
-  // Accept-all auth, applied directly so it covers every route on this instance.
+  // Parse auth into request.mockAuth on every route (never rejects here)...
   await authPlugin(app);
+  // ...then enforce the plugin's auth requirement: systems that declare
+  // `auth.required` return 401 when no credentials are sent, while open systems
+  // (no declaration, or required:false) stay accept-all. Runs after authPlugin
+  // so request.mockAuth is populated; admin routes and exemptPaths are skipped.
+  enforceAuth(app, plugin.auth, { system: plugin.name, mountPath });
 
   // Optional stochastic behavior (latency + error injection) from the system's
   // config block. No-ops when the config leaves the knobs at their defaults.
@@ -105,16 +111,47 @@ export async function registerSystem(
   return { store, requestLog };
 }
 
+/** A default Authorization header value matching a system's first accepted scheme. */
+function defaultAuthHeader(plugin: MockSystemPlugin): string {
+  const scheme = plugin.auth?.schemes?.[0] ?? 'basic';
+  switch (scheme) {
+    case 'bearer':
+      return 'Bearer mock-token';
+    case 'token':
+      return 'Token mock-token';
+    case 'apikey':
+      return 'ApiKey mock:mock-key';
+    case 'basic':
+    default:
+      return 'Basic ' + Buffer.from('mock:mock').toString('base64');
+  }
+}
+
+/** Does an inject-options object already carry an auth credential? */
+function injectHasAuth(headers: Record<string, any> | undefined): boolean {
+  if (!headers) return false;
+  const lower = Object.keys(headers).map((k) => k.toLowerCase());
+  return ['authorization', 'apikey', 'x-api-key', 'api_key', 'api-key'].some((h) =>
+    lower.includes(h)
+  );
+}
+
 /**
  * Build (but do not listen) a standalone Fastify server for a single mock
  * system with routes at the instance root (no prefix). Used by the test suite;
  * the running server (src/index.ts) instead mounts every system onto one shared
  * app via `registerSystem` with a `/<name>` prefix.
+ *
+ * By default, when the plugin requires auth, `app.inject` is wrapped to attach a
+ * default credential to any request that doesn't already send one — so tests
+ * that don't care about auth exercise the authorized path without boilerplate,
+ * while the real enforcement code still runs. Pass `{ autoAuth: false }` to turn
+ * this off and drive the 401 path directly (see test/auth.test.ts).
  */
 export async function createSystemServer(
   plugin: MockSystemPlugin,
   config: SystemConfig,
-  opts: { logLevel?: string }
+  opts: { logLevel?: string; autoAuth?: boolean }
 ): Promise<{ app: FastifyInstance; store: DataStore; requestLog: RequestLog }> {
   const app = Fastify({
     logger: { level: makeLogLevel(opts.logLevel) },
@@ -122,5 +159,22 @@ export async function createSystemServer(
   });
 
   const { store, requestLog } = await registerSystem(app, plugin, config);
+
+  const autoAuth = opts.autoAuth ?? true;
+  if (autoAuth && plugin.auth?.required) {
+    const header = defaultAuthHeader(plugin);
+    const rawInject = app.inject.bind(app);
+    // Only string-URL and options-object call shapes are used in the suite.
+    (app as any).inject = (arg?: any) => {
+      if (typeof arg === 'string') {
+        return rawInject({ url: arg, headers: { authorization: header } });
+      }
+      if (arg && typeof arg === 'object' && !injectHasAuth(arg.headers)) {
+        return rawInject({ ...arg, headers: { ...arg.headers, authorization: header } });
+      }
+      return rawInject(arg);
+    };
+  }
+
   return { app, store, requestLog };
 }

@@ -1,5 +1,6 @@
 import type { FastifyInstance } from 'fastify';
 import type { DataStore } from '../store.js';
+import type { AuthRequirement } from '../auth.js';
 
 /**
  * Per-system runtime configuration. `port` is the single shared listen port
@@ -24,6 +25,15 @@ export interface MockSystemPlugin {
   name: string;
   /** Filename in specs/ (omit for spec-less catch-all systems like http-generic). */
   specFile?: string;
+  /**
+   * How this system treats authentication. Enforced automatically by
+   * registerSystem (via `enforceAuth`) before any route runs. Omit — or set
+   * `{ required: false }` — for systems that accept unauthenticated requests
+   * (e.g. generic http, or FHIR where auth is optional). Set
+   * `{ required: true, schemes: [...] }` for systems that must reject requests
+   * with no credentials; the mock still never validates the credential's value.
+   */
+  auth?: AuthRequirement;
   /**
    * Register routes on the Fastify instance. `authPlugin`, admin routes and
    * request logging are already attached by registerSystem before this runs, so

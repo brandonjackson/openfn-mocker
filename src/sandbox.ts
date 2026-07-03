@@ -34,8 +34,16 @@ export interface SystemGuide {
   title: string;
   /** One or two sentences: what the system is + notable quirks. */
   blurb: string;
-  /** Auth style, for display only (the mock is accept-all). */
+  /** Auth style, shown on the card (e.g. 'Basic', 'Bearer', 'none'). */
   auth: string;
+  /**
+   * Authorization header the sandbox sends on every request to this system.
+   * Present only for systems whose mock requires credentials (see the plugin's
+   * `auth.required`); omit for open systems (FHIR, generic http). The value is
+   * built from the example credential below — the mock validates presence, not
+   * the value, so any correctly-shaped header works.
+   */
+  authHeader?: string;
   /** OpenFn credential URL field (e.g. hostUrl). */
   credentialField: string;
   /** Link to this system's OpenFn adaptor documentation. */
@@ -54,6 +62,11 @@ export interface SystemGuide {
 const FORM = 'application/x-www-form-urlencoded';
 const XML = 'text/xml';
 
+/** Build a `Basic <base64 user:pass>` Authorization header value. */
+function basic(user: string, pass: string): string {
+  return 'Basic ' + Buffer.from(`${user}:${pass}`).toString('base64');
+}
+
 /**
  * Curated capabilities per system, keyed by system name (== registry / mount
  * key). Paths are relative to the system mount; renderSandboxPage prepends the
@@ -67,6 +80,7 @@ export const SYSTEM_GUIDES: Record<string, SystemGuide> = {
     blurb:
       'Aggregate + tracker health data. List responses carry a pager and a resource-typed array; writes return an ImportSummary envelope. The generic adaptor is fully covered: the new /api/tracker API, /api/analytics, /api/schemas, and CRUD for any resource (with an optional /api/{version}/ segment).',
     auth: 'Basic',
+    authHeader: basic('admin', 'mock'),
     credentialField: 'hostUrl',
     credential: { hostUrl: '{{ORIGIN}}/dhis2', username: 'admin', password: 'mock' },
     examples: [
@@ -192,6 +206,7 @@ export const SYSTEM_GUIDES: Record<string, SystemGuide> = {
     blurb:
       'Medical record system exposed as a generic REST API ({ results, links }) and a FHIR R4 module. Any resource name works (with subresources like patient/{uuid}/identifier), updates POST to the uuid, and the same seeded patients appear in both representations.',
     auth: 'Basic',
+    authHeader: basic('admin', 'mock'),
     credentialField: 'instanceUrl',
     credential: { instanceUrl: '{{ORIGIN}}/openmrs', username: 'admin', password: 'mock' },
     examples: [
@@ -246,6 +261,7 @@ export const SYSTEM_GUIDES: Record<string, SystemGuide> = {
     blurb:
       'Mobile data collection. The domain-scoped Data API returns Tastypie { meta, objects } envelopes for any resource (case, form, user, application, location); configurable reports and the OpenRosa form receiver are also served.',
     auth: 'Basic / apiKey header',
+    authHeader: basic('user@test.com', 'mock'),
     credentialField: 'hostURL',
     credential: {
       hostURL: '{{ORIGIN}}/commcare',
@@ -300,6 +316,7 @@ export const SYSTEM_GUIDES: Record<string, SystemGuide> = {
     blurb:
       'Survey platform. Assets (forms) and their submissions use DRF { count, next, previous, results } envelopes; submission counts are live. getForms, getSubmissions (?query=/?sort=), getDeploymentInfo and generic http.* asset/data operations are all covered.',
     auth: 'Token',
+    authHeader: 'Token mock-kobo-token',
     credentialField: 'baseURL',
     credential: { baseURL: '{{ORIGIN}}/kobotoolbox', apiToken: 'mock-kobo-token' },
     examples: [
@@ -348,6 +365,7 @@ export const SYSTEM_GUIDES: Record<string, SystemGuide> = {
     blurb:
       'Child-protection case management. Business fields nest under `data`; lists use { data, metadata }. POST /api/v2/tokens exchanges a bearer token. Cases, case referrals, and the forms/lookups/locations reference data are all served.',
     auth: 'Token via POST /api/v2/tokens',
+    authHeader: 'Bearer mock_primero_token',
     credentialField: 'baseUrl',
     credential: { baseUrl: '{{ORIGIN}}/primero', username: 'primero', password: 'mock' },
     examples: [
@@ -390,6 +408,7 @@ export const SYSTEM_GUIDES: Record<string, SystemGuide> = {
     blurb:
       "Spreadsheet-style base (Airtable's Web API, reached via OpenFn's generic http adaptor). User fields nest under `fields`; batch writes cap at 10 (11+ returns HTTP 422). Supports POST …/listRecords and PATCH/PUT performUpsert.",
     auth: 'Bearer',
+    authHeader: 'Bearer mock-airtable-token',
     credentialField: 'baseUrl',
     credential: {
       baseUrl: '{{ORIGIN}}/airtable',
@@ -465,6 +484,7 @@ export const SYSTEM_GUIDES: Record<string, SystemGuide> = {
     blurb:
       'Transactional email. Sending an email also synthesizes a delivered event so it shows up in the events feed.',
     auth: 'Basic (api:key)',
+    authHeader: basic('api', 'mock-api-key'),
     credentialField: 'baseUrl',
     credential: {
       baseUrl: '{{ORIGIN}}/mailgun',
@@ -493,6 +513,7 @@ export const SYSTEM_GUIDES: Record<string, SystemGuide> = {
     blurb:
       'SMS + voice. Form-encoded PascalCase input, snake_case JSON output. Reading a single message auto-advances its status queued to sent to delivered.',
     auth: 'Basic (sid:token)',
+    authHeader: basic('ACtest123456', 'mock-auth-token'),
     credentialField: 'baseUrl',
     credential: {
       baseUrl: '{{ORIGIN}}/twilio',
@@ -638,6 +659,7 @@ export function renderSandboxPage(
       title: guide.title,
       blurb: guide.blurb,
       auth: guide.auth,
+      authHeader: guide.authHeader,
       credentialField: guide.credentialField,
       docs: guide.docs,
       credential: guide.credential,
@@ -837,8 +859,11 @@ const CLIENT_JS = [
   'function pretty(text,ctype){if(ctype&&ctype.indexOf("json")===-1){return text;}',
   'try{return JSON.stringify(JSON.parse(text),null,2);}catch(e){return text;}}',
   // Perform a request and render into a response container.
-  'function send(method,path,contentType,body,respEl,btn){',
+  'function send(method,path,contentType,body,respEl,btn,authHeader){',
   'var opts={method:method,headers:{}};',
+  // Auth-required systems get their credential header; the mock checks presence,
+  // not the value. Open systems (fhir, http-generic) pass no header.
+  'if(authHeader){opts.headers["Authorization"]=authHeader;}',
   'if(method!=="GET"&&method!=="HEAD"&&body!=null&&body!==""){',
   'opts.headers["Content-Type"]=contentType||"application/json";opts.body=body;}',
   'var t0=(window.performance&&performance.now)?performance.now():Date.now();',
@@ -886,7 +911,7 @@ const CLIENT_JS = [
   'sec.scrollIntoView({behavior:"smooth",block:"start"});};',
   'return sec;}',
   // A single example row (editable path + body, inline response).
-  'function buildExample(ex){',
+  'function buildExample(ex,authHeader){',
   'var wrap=el("div","ex");',
   'var head=el("div","ex-head");',
   'head.appendChild(el("span","m "+ex.method,ex.method));',
@@ -899,7 +924,7 @@ const CLIENT_JS = [
   'if(ex.body!=null){body=el("textarea");body.value=ex.body;wrap.appendChild(body);}',
   'var resp=el("div","resp");wrap.appendChild(resp);',
   'run.addEventListener("click",function(){',
-  'send(ex.method,path.value,ex.contentType,body?body.value:null,resp,run);});',
+  'send(ex.method,path.value,ex.contentType,body?body.value:null,resp,run,authHeader);});',
   'return wrap;}',
   // One system card.
   'function buildSystem(sys){',
@@ -918,7 +943,9 @@ const CLIENT_JS = [
   '", and name it e.g. ",codeEl("mocker-"+sys.name),"."]));',
   'steps.appendChild(rich("li",null,[el("span","step-h","Point it at this mock"),',
   '"Under ",bold("Credential environments"),", set ",bold(sys.credentialField)," to ",',
-  'codeEl(ORIGIN+sys.mountPath),". Any ",bold("auth")," value works \\u2014 it is only logged. ",',
+  'codeEl(ORIGIN+sys.mountPath),". ",(sys.authHeader?',
+  '"This system requires credentials, but any value works \\u2014 the mock checks they are present, never that they are valid. ":',
+  '"No auth is required for this system. "),',
   '"Copy the full credential below."]));',
   'steps.appendChild(rich("li",null,[el("span","step-h","Grant access & attach"),',
   '"Under ",bold("Projects access")," add your project, save, then select the credential on the workflow step."]));',
@@ -942,7 +969,7 @@ const CLIENT_JS = [
   'copy.textContent="Copied";setTimeout(function(){copy.textContent="Copy";},1200);});}});',
   'card.appendChild(cred);',
   // Examples.
-  'for(var i=0;i<sys.examples.length;i++){card.appendChild(buildExample(sys.examples[i]));}',
+  'for(var i=0;i<sys.examples.length;i++){card.appendChild(buildExample(sys.examples[i],sys.authHeader));}',
   // Admin quick links (route through the top console).
   'var admin=el("div","admin-links");',
   'admin.appendChild(el("span","dim","admin:"));',

@@ -23,6 +23,8 @@ function firstRecipient(to: any): string | undefined {
 const plugin: MockSystemPlugin = {
   name: 'mailgun',
   specFile: 'mailgun.openapi.json',
+  // Mailgun uses HTTP Basic auth (`api:<key>`); reject requests with no credentials.
+  auth: { required: true, schemes: ['basic'] },
 
   async overrides(app: FastifyInstance, store: DataStore, config: SystemConfig) {
     const configuredDomain = (config.domain as string) || DEFAULT_DOMAIN;
