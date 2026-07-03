@@ -1,0 +1,93 @@
+{
+  "channels": {
+    "6368616e2d63687700000000": {
+      "_id": "6368616e2d63687700000000",
+      "name": "CHW Encounters",
+      "urlPattern": "^/chw/.*$",
+      "methods": [
+        "POST"
+      ],
+      "type": "http",
+      "status": "enabled",
+      "allow": [
+        "chw"
+      ]
+    },
+    "6368616e2d64686973320000": {
+      "_id": "6368616e2d64686973320000",
+      "name": "DHIS2 Reporting",
+      "urlPattern": "^/dhis2/.*$",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "type": "http",
+      "status": "enabled",
+      "allow": [
+        "reporter"
+      ]
+    }
+  },
+  "clients": {
+    "636c69656e742d6368770000": {
+      "_id": "636c69656e742d6368770000",
+      "clientID": "chw",
+      "name": "CHW Mobile App",
+      "roles": [
+        "chw"
+      ],
+      "organization": "MoHS"
+    },
+    "636c69656e742d7265700000": {
+      "_id": "636c69656e742d7265700000",
+      "clientID": "reporter",
+      "name": "Facility Reporter",
+      "roles": [
+        "reporter"
+      ],
+      "organization": "MoHS"
+    }
+  },
+  "tasks": {
+    "7461736b2d31000000000000": {
+      "_id": "7461736b2d31000000000000",
+      "status": "Completed",
+      "remainingTransactions": 0,
+      "totalTransactions": 5,
+      "user": "root@openhim.org",
+      "created": "2024-03-01T10:00:00.000Z"
+    }
+  },
+  "transactions": {
+    "74786e2d3100000000000000": {
+      "_id": "74786e2d3100000000000000",
+      "clientID": "636c69656e742d6368770000",
+      "channelID": "6368616e2d63687700000000",
+      "status": "Successful",
+      "request": {
+        "path": "/chw/encounter",
+        "method": "POST",
+        "timestamp": "2024-03-01T10:05:00.000Z"
+      },
+      "response": {
+        "status": 201,
+        "timestamp": "2024-03-01T10:05:01.000Z"
+      }
+    },
+    "74786e2d3200000000000000": {
+      "_id": "74786e2d3200000000000000",
+      "clientID": "636c69656e742d7265700000",
+      "channelID": "6368616e2d64686973320000",
+      "status": "Successful",
+      "request": {
+        "path": "/dhis2/api/dataValueSets",
+        "method": "POST",
+        "timestamp": "2024-03-02T08:00:00.000Z"
+      },
+      "response": {
+        "status": 200,
+        "timestamp": "2024-03-02T08:00:02.000Z"
+      }
+    }
+  }
+}

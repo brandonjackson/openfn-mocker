@@ -40,6 +40,18 @@ const DEFAULT_CONFIG: GenerationConfig = {
     mailgun: { description: 'Notification-email events and 7-day stats for a sandbox domain.' },
     twilio: { description: 'Appointment/verification SMS messages and a couple of calls.' },
     airtable: { description: 'A clinic CRM: Contacts and Tasks tables.' },
+    godata: { description: 'A COVID-19 outbreak with cases, contacts, locations and reference-data.' },
+    rapidpro: { description: 'Contacts, groups, fields and flows for ANC reminder messaging.' },
+    odk: { description: 'A project with two forms and OData submissions.' },
+    openlmis: { description: 'Programs, facilities, orderables and a requisition (v3).' },
+    openimis: { description: 'Insurees (FHIR Patients), policies (Contracts) and Coverages/Claims.' },
+    openspp: { description: 'Odoo res.partner households/individuals, g2p.program enrolments, spp areas.' },
+    opencrvs: { description: 'Birth/death registration events and a location tree.' },
+    openelis: { description: 'FHIR lab orders, specimens, observations and diagnostic reports.' },
+    cht: { description: 'CouchDB contact hierarchy, a pregnancy report and app settings.' },
+    openhim: { description: 'OpenHIM channels, clients, tasks and transactions.' },
+    openboxes: { description: 'Depots, products and a stock movement.' },
+    ihris: { description: 'FHIR health-workforce Practitioners, roles, org and location.' },
   },
 };
 

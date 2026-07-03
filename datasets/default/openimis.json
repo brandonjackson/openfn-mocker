@@ -1,0 +1,130 @@
+{
+  "Patient": {
+    "insuree-0001": {
+      "resourceType": "Patient",
+      "id": "insuree-0001",
+      "identifier": [
+        {
+          "type": {
+            "coding": [
+              {
+                "system": "https://openimis.github.io/openimis_fhir_r4_ig/CodeSystem/patient-identifier",
+                "code": "Code"
+              }
+            ]
+          },
+          "value": "070707070"
+        }
+      ],
+      "name": [
+        {
+          "use": "official",
+          "family": "Doe",
+          "given": [
+            "Jane"
+          ]
+        }
+      ],
+      "gender": "female",
+      "birthDate": "1990-04-12",
+      "address": [
+        {
+          "district": "Bo",
+          "state": "Southern",
+          "country": "SL"
+        }
+      ]
+    },
+    "insuree-0002": {
+      "resourceType": "Patient",
+      "id": "insuree-0002",
+      "identifier": [
+        {
+          "value": "080808080"
+        }
+      ],
+      "name": [
+        {
+          "use": "official",
+          "family": "Kamara",
+          "given": [
+            "Amina"
+          ]
+        }
+      ],
+      "gender": "female",
+      "birthDate": "1985-09-30",
+      "address": [
+        {
+          "district": "Kenema",
+          "state": "Eastern",
+          "country": "SL"
+        }
+      ]
+    }
+  },
+  "Contract": {
+    "policy-0001": {
+      "resourceType": "Contract",
+      "id": "policy-0001",
+      "status": "executed",
+      "subject": [
+        {
+          "reference": "Patient/insuree-0001"
+        }
+      ],
+      "term": [
+        {
+          "asset": [
+            {
+              "scope": {
+                "text": "Basic Package"
+              }
+            }
+          ]
+        }
+      ],
+      "author": {
+        "reference": "Organization/hf-ngelehun"
+      }
+    }
+  },
+  "Coverage": {
+    "coverage-0001": {
+      "resourceType": "Coverage",
+      "id": "coverage-0001",
+      "status": "active",
+      "beneficiary": {
+        "reference": "Patient/insuree-0001"
+      },
+      "payor": [
+        {
+          "reference": "Organization/openimis"
+        }
+      ],
+      "period": {
+        "start": "2024-01-01",
+        "end": "2024-12-31"
+      }
+    }
+  },
+  "Claim": {
+    "claim-0001": {
+      "resourceType": "Claim",
+      "id": "claim-0001",
+      "status": "active",
+      "use": "claim",
+      "patient": {
+        "reference": "Patient/insuree-0001"
+      },
+      "created": "2024-03-15",
+      "provider": {
+        "reference": "Organization/hf-ngelehun"
+      },
+      "total": {
+        "value": 25,
+        "currency": "USD"
+      }
+    }
+  }
+}

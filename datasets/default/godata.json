@@ -1,0 +1,112 @@
+{
+  "outbreaks": {
+    "ob-sl-covid19": {
+      "id": "ob-sl-covid19",
+      "name": "COVID-19 Sierra Leone",
+      "disease": "covid-19",
+      "countries": [
+        {
+          "id": "LOC-SL"
+        }
+      ],
+      "startDate": "2021-01-01T00:00:00.000Z",
+      "description": "National COVID-19 outbreak investigation.",
+      "caseIdMask": "CASE-9999",
+      "contactIdMask": "CONT-9999"
+    }
+  },
+  "cases": {
+    "case-0001": {
+      "id": "case-0001",
+      "firstName": "Jane",
+      "lastName": "Doe",
+      "gender": "LNG_REFERENCE_DATA_CATEGORY_GENDER_FEMALE",
+      "classification": "LNG_REFERENCE_DATA_CATEGORY_CASE_CLASSIFICATION_CONFIRMED",
+      "dateOfReporting": "2021-02-10T00:00:00.000Z",
+      "visualId": "CASE-0001",
+      "outbreakId": "ob-sl-covid19"
+    },
+    "case-0002": {
+      "id": "case-0002",
+      "firstName": "John",
+      "lastName": "Smith",
+      "gender": "LNG_REFERENCE_DATA_CATEGORY_GENDER_MALE",
+      "classification": "LNG_REFERENCE_DATA_CATEGORY_CASE_CLASSIFICATION_PROBABLE",
+      "dateOfReporting": "2021-02-12T00:00:00.000Z",
+      "visualId": "CASE-0002",
+      "outbreakId": "ob-sl-covid19"
+    },
+    "case-0003": {
+      "id": "case-0003",
+      "firstName": "Amina",
+      "lastName": "Kamara",
+      "gender": "LNG_REFERENCE_DATA_CATEGORY_GENDER_FEMALE",
+      "classification": "LNG_REFERENCE_DATA_CATEGORY_CASE_CLASSIFICATION_CONFIRMED",
+      "dateOfReporting": "2021-02-15T00:00:00.000Z",
+      "visualId": "CASE-0003",
+      "outbreakId": "ob-sl-covid19"
+    }
+  },
+  "contacts": {
+    "cont-0001": {
+      "id": "cont-0001",
+      "firstName": "Mohamed",
+      "lastName": "Kamara",
+      "gender": "LNG_REFERENCE_DATA_CATEGORY_GENDER_MALE",
+      "dateOfReporting": "2021-02-16T00:00:00.000Z",
+      "visualId": "CONT-0001",
+      "riskLevel": "LNG_REFERENCE_DATA_CATEGORY_RISK_LEVEL_HIGH",
+      "outbreakId": "ob-sl-covid19"
+    },
+    "cont-0002": {
+      "id": "cont-0002",
+      "firstName": "Fatmata",
+      "lastName": "Sesay",
+      "gender": "LNG_REFERENCE_DATA_CATEGORY_GENDER_FEMALE",
+      "dateOfReporting": "2021-02-17T00:00:00.000Z",
+      "visualId": "CONT-0002",
+      "riskLevel": "LNG_REFERENCE_DATA_CATEGORY_RISK_LEVEL_MEDIUM",
+      "outbreakId": "ob-sl-covid19"
+    }
+  },
+  "locations": {
+    "LOC-SL": {
+      "id": "LOC-SL",
+      "name": "Sierra Leone",
+      "parentLocationId": null,
+      "geographicalLevelId": "LNG_REFERENCE_DATA_CATEGORY_LOCATION_GEOGRAPHICAL_LEVEL_ADMIN_LEVEL_0"
+    },
+    "LOC-BO": {
+      "id": "LOC-BO",
+      "name": "Bo District",
+      "parentLocationId": "LOC-SL",
+      "geographicalLevelId": "LNG_REFERENCE_DATA_CATEGORY_LOCATION_GEOGRAPHICAL_LEVEL_ADMIN_LEVEL_1"
+    },
+    "LOC-NGELEHUN": {
+      "id": "LOC-NGELEHUN",
+      "name": "Ngelehun",
+      "parentLocationId": "LOC-BO",
+      "geographicalLevelId": "LNG_REFERENCE_DATA_CATEGORY_LOCATION_GEOGRAPHICAL_LEVEL_ADMIN_LEVEL_2"
+    }
+  },
+  "referenceData": {
+    "LNG_REFERENCE_DATA_CATEGORY_CASE_CLASSIFICATION_CONFIRMED": {
+      "id": "LNG_REFERENCE_DATA_CATEGORY_CASE_CLASSIFICATION_CONFIRMED",
+      "categoryId": "LNG_REFERENCE_DATA_CATEGORY_CASE_CLASSIFICATION",
+      "value": "Confirmed",
+      "active": true
+    },
+    "LNG_REFERENCE_DATA_CATEGORY_CASE_CLASSIFICATION_PROBABLE": {
+      "id": "LNG_REFERENCE_DATA_CATEGORY_CASE_CLASSIFICATION_PROBABLE",
+      "categoryId": "LNG_REFERENCE_DATA_CATEGORY_CASE_CLASSIFICATION",
+      "value": "Probable",
+      "active": true
+    },
+    "LNG_REFERENCE_DATA_CATEGORY_RISK_LEVEL_HIGH": {
+      "id": "LNG_REFERENCE_DATA_CATEGORY_RISK_LEVEL_HIGH",
+      "categoryId": "LNG_REFERENCE_DATA_CATEGORY_RISK_LEVEL",
+      "value": "High",
+      "active": true
+    }
+  }
+}

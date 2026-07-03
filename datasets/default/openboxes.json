@@ -1,0 +1,85 @@
+{
+  "locations": {
+    "6c6f632d6465706f742d626f00000000": {
+      "id": "6c6f632d6465706f742d626f00000000",
+      "name": "Bo District Medical Store",
+      "locationType": {
+        "name": "Depot"
+      },
+      "active": true
+    },
+    "6c6f632d6e67656c6568756e00000000": {
+      "id": "6c6f632d6e67656c6568756e00000000",
+      "name": "Ngelehun CHC",
+      "locationType": {
+        "name": "Ward"
+      },
+      "active": true
+    }
+  },
+  "products": {
+    "70726f642d6163740000000000000000": {
+      "id": "70726f642d6163740000000000000000",
+      "productCode": "MAL-ACT-001",
+      "name": "Artemether/Lumefantrine 20/120mg",
+      "category": {
+        "name": "Antimalarials"
+      },
+      "unitOfMeasure": "EA",
+      "active": true
+    },
+    "70726f642d6f72730000000000000000": {
+      "id": "70726f642d6f72730000000000000000",
+      "productCode": "ORS-001",
+      "name": "Oral Rehydration Salts",
+      "category": {
+        "name": "Essential Medicines"
+      },
+      "unitOfMeasure": "EA",
+      "active": true
+    },
+    "70726f642d7264740000000000000000": {
+      "id": "70726f642d7264740000000000000000",
+      "productCode": "MAL-RDT-001",
+      "name": "Malaria Rapid Diagnostic Test",
+      "category": {
+        "name": "Diagnostics"
+      },
+      "unitOfMeasure": "EA",
+      "active": true
+    }
+  },
+  "stockMovements": {
+    "736d2d30303031000000000000000000": {
+      "id": "736d2d30303031000000000000000000",
+      "name": "SL-2024-0001",
+      "identifier": "SL-2024-0001",
+      "origin": {
+        "id": "6c6f632d6465706f742d626f00000000",
+        "name": "Bo District Medical Store"
+      },
+      "destination": {
+        "id": "6c6f632d6e67656c6568756e00000000",
+        "name": "Ngelehun CHC"
+      },
+      "dateRequested": "2024-03-10",
+      "statusCode": "DISPATCHED",
+      "lineItems": [
+        {
+          "product": {
+            "productCode": "MAL-ACT-001"
+          },
+          "quantityRequested": 500,
+          "quantityShipped": 500
+        },
+        {
+          "product": {
+            "productCode": "MAL-RDT-001"
+          },
+          "quantityRequested": 300,
+          "quantityShipped": 300
+        }
+      ]
+    }
+  }
+}

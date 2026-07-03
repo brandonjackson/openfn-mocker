@@ -1,0 +1,86 @@
+{
+  "projects": {
+    "1": {
+      "id": 1,
+      "name": "Sierra Leone Health Survey",
+      "archived": false,
+      "keyId": null,
+      "createdAt": "2023-01-10T09:00:00.000Z",
+      "updatedAt": null
+    }
+  },
+  "forms": {
+    "1/household-survey": {
+      "projectId": 1,
+      "xmlFormId": "household-survey",
+      "name": "Household Survey",
+      "version": "1",
+      "state": "open",
+      "submissions": 2,
+      "hash": null,
+      "enketoId": null,
+      "createdAt": "2023-01-11T10:00:00.000Z",
+      "updatedAt": null,
+      "publishedAt": "2023-01-11T10:05:00.000Z"
+    },
+    "1/clinic-visit": {
+      "projectId": 1,
+      "xmlFormId": "clinic-visit",
+      "name": "Clinic Visit",
+      "version": "2",
+      "state": "open",
+      "submissions": 1,
+      "hash": null,
+      "enketoId": null,
+      "createdAt": "2023-01-11T10:00:00.000Z",
+      "updatedAt": null,
+      "publishedAt": "2023-01-11T10:05:00.000Z"
+    }
+  },
+  "submissions": {
+    "uuid:sub-0001": {
+      "__id": "uuid:sub-0001",
+      "__system": {
+        "submissionDate": "2023-02-01T08:30:00.000Z",
+        "submitterId": "5",
+        "submitterName": "fieldworker",
+        "reviewState": null,
+        "deviceId": "collect:mock"
+      },
+      "_formId": "household-survey",
+      "head_name": "Jane Doe",
+      "household_size": 4,
+      "district": "Bo",
+      "water_source": "borehole"
+    },
+    "uuid:sub-0002": {
+      "__id": "uuid:sub-0002",
+      "__system": {
+        "submissionDate": "2023-02-01T08:30:00.000Z",
+        "submitterId": "5",
+        "submitterName": "fieldworker",
+        "reviewState": null,
+        "deviceId": "collect:mock"
+      },
+      "_formId": "household-survey",
+      "head_name": "Amina Kamara",
+      "household_size": 6,
+      "district": "Kenema",
+      "water_source": "well"
+    },
+    "uuid:sub-0003": {
+      "__id": "uuid:sub-0003",
+      "__system": {
+        "submissionDate": "2023-02-01T08:30:00.000Z",
+        "submitterId": "5",
+        "submitterName": "fieldworker",
+        "reviewState": null,
+        "deviceId": "collect:mock"
+      },
+      "_formId": "clinic-visit",
+      "patient_name": "John Smith",
+      "visit_reason": "antenatal",
+      "facility": "Ngelehun CHC"
+    }
+  }
+}

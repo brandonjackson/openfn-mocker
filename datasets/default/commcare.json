@@ -3,12 +3,12 @@
     "case-0001": {
       "case_id": "case-0001",
       "case_type": "patient",
-      "date_opened": "2026-06-27T17:48:56.244Z",
-      "date_modified": "2026-07-02T17:48:56.244Z",
+      "date_opened": "2026-06-28T07:58:55.369Z",
+      "date_modified": "2026-07-03T07:58:55.369Z",
       "closed": false,
       "owner_id": "owner-clinic-001",
       "user_id": "user-fieldworker-01",
-      "server_date_modified": "2026-07-02T17:48:56.244Z",
+      "server_date_modified": "2026-07-03T07:58:55.369Z",
       "indices": {},
       "xform_ids": [],
       "properties": {
@@ -27,12 +27,12 @@
     "case-0002": {
       "case_id": "case-0002",
       "case_type": "patient",
-      "date_opened": "2026-06-28T17:48:56.244Z",
-      "date_modified": "2026-07-02T17:48:56.244Z",
+      "date_opened": "2026-06-29T07:58:55.369Z",
+      "date_modified": "2026-07-03T07:58:55.369Z",
       "closed": false,
       "owner_id": "owner-clinic-001",
       "user_id": "user-fieldworker-01",
-      "server_date_modified": "2026-07-02T17:48:56.244Z",
+      "server_date_modified": "2026-07-03T07:58:55.369Z",
       "indices": {},
       "xform_ids": [],
       "properties": {
@@ -51,12 +51,12 @@
     "case-0003": {
       "case_id": "case-0003",
       "case_type": "patient",
-      "date_opened": "2026-06-29T17:48:56.244Z",
-      "date_modified": "2026-07-02T17:48:56.244Z",
+      "date_opened": "2026-06-30T07:58:55.369Z",
+      "date_modified": "2026-07-03T07:58:55.369Z",
       "closed": false,
       "owner_id": "owner-clinic-002",
       "user_id": "user-fieldworker-01",
-      "server_date_modified": "2026-07-02T17:48:56.244Z",
+      "server_date_modified": "2026-07-03T07:58:55.369Z",
       "indices": {},
       "xform_ids": [],
       "properties": {
@@ -75,12 +75,12 @@
     "case-0004": {
       "case_id": "case-0004",
       "case_type": "patient",
-      "date_opened": "2026-06-30T17:48:56.244Z",
-      "date_modified": "2026-07-02T17:48:56.244Z",
+      "date_opened": "2026-07-01T07:58:55.369Z",
+      "date_modified": "2026-07-03T07:58:55.369Z",
       "closed": false,
       "owner_id": "owner-clinic-002",
       "user_id": "user-fieldworker-01",
-      "server_date_modified": "2026-07-02T17:48:56.244Z",
+      "server_date_modified": "2026-07-03T07:58:55.369Z",
       "indices": {},
       "xform_ids": [],
       "properties": {
@@ -99,12 +99,12 @@
     "case-0005": {
       "case_id": "case-0005",
       "case_type": "patient",
-      "date_opened": "2026-07-01T17:48:56.244Z",
-      "date_modified": "2026-07-02T17:48:56.244Z",
+      "date_opened": "2026-07-02T07:58:55.369Z",
+      "date_modified": "2026-07-03T07:58:55.369Z",
       "closed": false,
       "owner_id": "owner-clinic-001",
       "user_id": "user-fieldworker-01",
-      "server_date_modified": "2026-07-02T17:48:56.244Z",
+      "server_date_modified": "2026-07-03T07:58:55.369Z",
       "indices": {},
       "xform_ids": [],
       "properties": {
@@ -126,7 +126,7 @@
       "id": "form-0001",
       "domain": "test-project",
       "app_id": "app-001",
-      "received_on": "2026-07-02T14:48:56.244Z",
+      "received_on": "2026-07-03T04:58:55.369Z",
       "form": {
         "@xmlns": "http://openrosa.org/formdesigner/PATIENT-REG-FORM",
         "@name": "Patient Registration",
@@ -137,15 +137,15 @@
           "instanceID": "uuid:form-0001",
           "userID": "user-fieldworker-01",
           "deviceID": "commcare-mock",
-          "timeStart": "2026-07-02T14:48:56.244Z",
-          "timeEnd": "2026-07-02T14:48:56.244Z",
+          "timeStart": "2026-07-03T04:58:55.369Z",
+          "timeEnd": "2026-07-03T04:58:55.369Z",
           "appVersion": "CommCare Mock 2.53"
         }
       },
       "metadata": {
         "instanceID": "uuid:form-0001",
         "userID": "user-fieldworker-01",
-        "timeEnd": "2026-07-02T14:48:56.244Z",
+        "timeEnd": "2026-07-03T04:58:55.369Z",
         "deviceID": "commcare-mock"
       }
     },
@@ -153,7 +153,7 @@
       "id": "form-0002",
       "domain": "test-project",
       "app_id": "app-001",
-      "received_on": "2026-07-02T15:48:56.244Z",
+      "received_on": "2026-07-03T05:58:55.369Z",
       "form": {
         "@xmlns": "http://openrosa.org/formdesigner/PATIENT-REG-FORM",
         "@name": "Patient Registration",
@@ -164,15 +164,15 @@
           "instanceID": "uuid:form-0002",
           "userID": "user-fieldworker-01",
           "deviceID": "commcare-mock",
-          "timeStart": "2026-07-02T15:48:56.244Z",
-          "timeEnd": "2026-07-02T15:48:56.244Z",
+          "timeStart": "2026-07-03T05:58:55.369Z",
+          "timeEnd": "2026-07-03T05:58:55.369Z",
           "appVersion": "CommCare Mock 2.53"
         }
       },
       "metadata": {
         "instanceID": "uuid:form-0002",
         "userID": "user-fieldworker-01",
-        "timeEnd": "2026-07-02T15:48:56.244Z",
+        "timeEnd": "2026-07-03T05:58:55.369Z",
         "deviceID": "commcare-mock"
       }
     },
@@ -180,7 +180,7 @@
       "id": "form-0003",
       "domain": "test-project",
       "app_id": "app-001",
-      "received_on": "2026-07-02T16:48:56.244Z",
+      "received_on": "2026-07-03T06:58:55.369Z",
       "form": {
         "@xmlns": "http://openrosa.org/formdesigner/PATIENT-REG-FORM",
         "@name": "Patient Registration",
@@ -191,15 +191,15 @@
           "instanceID": "uuid:form-0003",
           "userID": "user-fieldworker-01",
           "deviceID": "commcare-mock",
-          "timeStart": "2026-07-02T16:48:56.244Z",
-          "timeEnd": "2026-07-02T16:48:56.244Z",
+          "timeStart": "2026-07-03T06:58:55.369Z",
+          "timeEnd": "2026-07-03T06:58:55.369Z",
           "appVersion": "CommCare Mock 2.53"
         }
       },
       "metadata": {
         "instanceID": "uuid:form-0003",
         "userID": "user-fieldworker-01",
-        "timeEnd": "2026-07-02T16:48:56.244Z",
+        "timeEnd": "2026-07-03T06:58:55.369Z",
         "deviceID": "commcare-mock"
       }
     }

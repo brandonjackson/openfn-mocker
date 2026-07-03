@@ -1,0 +1,164 @@
+{
+  "Organization": {
+    "org-moh": {
+      "resourceType": "Organization",
+      "id": "org-moh",
+      "name": "Ministry of Health and Sanitation",
+      "type": [
+        {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/organization-type",
+              "code": "govt"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "Location": {
+    "loc-ngelehun": {
+      "resourceType": "Location",
+      "id": "loc-ngelehun",
+      "name": "Ngelehun CHC",
+      "status": "active",
+      "managingOrganization": {
+        "reference": "Organization/org-moh"
+      },
+      "address": {
+        "district": "Bo",
+        "country": "SL"
+      }
+    }
+  },
+  "Practitioner": {
+    "prac-0001": {
+      "resourceType": "Practitioner",
+      "id": "prac-0001",
+      "active": true,
+      "name": [
+        {
+          "use": "official",
+          "family": "Kamara",
+          "given": [
+            "Aminata"
+          ]
+        }
+      ],
+      "gender": "female"
+    },
+    "prac-0002": {
+      "resourceType": "Practitioner",
+      "id": "prac-0002",
+      "active": true,
+      "name": [
+        {
+          "use": "official",
+          "family": "Sesay",
+          "given": [
+            "Ibrahim"
+          ]
+        }
+      ],
+      "gender": "male"
+    },
+    "prac-0003": {
+      "resourceType": "Practitioner",
+      "id": "prac-0003",
+      "active": true,
+      "name": [
+        {
+          "use": "official",
+          "family": "Bangura",
+          "given": [
+            "Fatmata"
+          ]
+        }
+      ],
+      "gender": "female"
+    }
+  },
+  "PractitionerRole": {
+    "role-prac-0001": {
+      "resourceType": "PractitionerRole",
+      "id": "role-prac-0001",
+      "active": true,
+      "practitioner": {
+        "reference": "Practitioner/prac-0001"
+      },
+      "organization": {
+        "reference": "Organization/org-moh"
+      },
+      "location": [
+        {
+          "reference": "Location/loc-ngelehun"
+        }
+      ],
+      "code": [
+        {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "nurse",
+              "display": "Nurse"
+            }
+          ]
+        }
+      ]
+    },
+    "role-prac-0002": {
+      "resourceType": "PractitionerRole",
+      "id": "role-prac-0002",
+      "active": true,
+      "practitioner": {
+        "reference": "Practitioner/prac-0002"
+      },
+      "organization": {
+        "reference": "Organization/org-moh"
+      },
+      "location": [
+        {
+          "reference": "Location/loc-ngelehun"
+        }
+      ],
+      "code": [
+        {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "doctor",
+              "display": "Medical Doctor"
+            }
+          ]
+        }
+      ]
+    },
+    "role-prac-0003": {
+      "resourceType": "PractitionerRole",
+      "id": "role-prac-0003",
+      "active": true,
+      "practitioner": {
+        "reference": "Practitioner/prac-0003"
+      },
+      "organization": {
+        "reference": "Organization/org-moh"
+      },
+      "location": [
+        {
+          "reference": "Location/loc-ngelehun"
+        }
+      ],
+      "code": [
+        {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "chw",
+              "display": "Community Health Worker"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
