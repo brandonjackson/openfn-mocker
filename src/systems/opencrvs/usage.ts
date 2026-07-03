@@ -18,7 +18,7 @@ export const usage: UsageExample[] = [
   { fn: "getLocations", signature: "getLocations(options?)", description: "Fetch the list of locations from the country-config host.",
     code: "getLocations();", apiRef: "ex3" },
   { fn: "createDocumentEntry", signature: "createDocumentEntry(resource, fullUrl?)", description: "Wrap a FHIR resource into a document-bundle entry with a generated UUID fullUrl (pure builder, no HTTP).",
-    code: "createDocumentEntry({ resourceType: 'Patient', name: [{ given: ['John'] }] });" },
+    code: "fn(state => {\n  const entry = createDocumentEntry({ resourceType: 'Patient', name: [{ given: ['John'] }] });\n  console.log(entry);\n  return state;\n});" },
   { fn: "createBirthNotification", signature: "createBirthNotification(body)", description: "POST a FHIR bundle of document entries to the country-config birth-notification hook.",
     code: "createBirthNotification([\n  { fullUrl: 'urn:uuid:mother', resource: { resourceType: 'Patient', name: [{ family: ['Smith'] }] } },\n]);" },
   { fn: "http.post", signature: "http.post(path, body, options)", description: "Make a raw POST request to any OpenCRVS events REST endpoint.",

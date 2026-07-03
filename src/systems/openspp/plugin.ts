@@ -158,7 +158,14 @@ function executeKw(store: DataStore, params: any[]): any {
     case 'create': {
       const values = args[0] && typeof args[0] === 'object' ? args[0] : {};
       const id = nextId(store, model);
-      store.create(model, String(id), { id, ...values });
+      const record: Record<string, any> = { id, ...values };
+      // Odoo auto-assigns spp_id from an ir.sequence on create; the adaptor's
+      // createGroup/createIndividual immediately read it back, so a created
+      // registrant needs one even when the caller didn't supply it.
+      if (model === 'res.partner' && record.spp_id == null) {
+        record.spp_id = `${record.is_group ? 'GRP' : 'IND'}_${String(id).padStart(6, '0')}`;
+      }
+      store.create(model, String(id), record);
       return id;
     }
     case 'write': {
