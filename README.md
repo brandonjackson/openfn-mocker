@@ -820,12 +820,49 @@ Some systems are custom-shaped on purpose to match reality:
 - CHT returns CouchDB write acks (`{ ok, id, rev }`), a `_changes` feed filterable by `?since=`, and `_bulk_docs` batch writes.
 - OpenHIM records are Mongo docs keyed by a 24-hex `_id`; OpenBoxes nests every payload under a `data` key with 32-hex ids.
 
+## Testing usage examples end to end
+
+Each system's [sandbox](#browser-sandbox) **Usage** tab ships the exact OpenFn
+job code for every adaptor function it documents (e.g. `getIndividual('IND_AMINA001')`).
+`pnpm test:usage` proves those snippets actually run: it downloads the real
+[OpenFn CLI](https://www.npmjs.com/package/@openfn/cli) and the real published
+adaptor from npm, drops each snippet into a job, runs it against the mock, and
+checks it succeeds — a true end-to-end test through the same adaptor a user
+runs, not a stub.
+
+```bash
+npm i -g @openfn/cli          # or let the script fall back to `npx -y @openfn/cli`
+pnpm test:usage               # every system that has usage examples
+pnpm test:usage -- --system openspp   # just one (comma-separated for more)
+pnpm test:usage -- --list             # list discovered examples, run nothing
+pnpm test:usage -- --keep             # keep the generated job/state/log files
+```
+
+For each example the script boots a single-system mock **mounted at the server
+root** on an ephemeral port, resolves the credential the sandbox would generate
+(from the plugin's `credential` spec) into a concrete `state.configuration`
+pointed at that origin, runs `openfn <job> -a <adaptor> -s <state>`, and resets
+the mock to pristine seed between examples. Mounting at the root (rather than
+`/<system>`) matters for adaptors that build their client from host + port and
+ignore the URL path — openspp's `odoo-await`, for one, hardcodes `/xmlrpc/2/...`
+and would otherwise never reach a `/openspp`-prefixed mount. A run fails if the
+CLI exits non-zero or reports an error (its `✗` marker).
+
+The systems under test are discovered automatically from the `usage` blocks in
+`src/sandbox.ts`, so a system is covered the moment it gains usage examples.
+Because it spawns real subprocesses and hits npm, it is **not** part of
+`pnpm test`; run it on demand or in a network-enabled CI job. Adaptors that
+can't yet be driven against the mock (see the Roadmap below) show up here as
+failures — that is the empirical check behind those gaps.
+
 ## Roadmap
 
 The mock covers the request/response surface each adaptor calls, but a few
 systems can't yet be driven **end to end** by their stock OpenFn adaptor without
-a workaround. These are the known gaps to close so every adaptor works against
-the mock out of the box:
+a workaround (`pnpm test:usage` is how these surface — see
+[Testing usage examples end to end](#testing-usage-examples-end-to-end)). These
+are the known gaps to close so every adaptor works against the mock out of the
+box:
 
 - **OAuth flows.** OpenCRVS (`clientId`/`clientSecret`) and OpenLMIS (OAuth2
   password grant) authenticate by exchanging client credentials for an access
@@ -861,5 +898,6 @@ the mock out of the box:
 - Stack: Node.js 20+, TypeScript (ESM, `NodeNext`), Fastify, Vitest, built with `tsc` to `dist/`. Package manager is pnpm.
 - IDs use Node's built-in `crypto.randomUUID()` (or a system-specific format where the real API differs).
 - Before opening a PR: `pnpm build` must exit clean and `pnpm test` must pass. Add tests for any new endpoint or system.
+- When you add usage examples to a system's `usage` block, run [`pnpm test:usage`](#testing-usage-examples-end-to-end) to confirm the snippets actually run through the real adaptor against the mock.
 - Keep plugins thin and specs faithful. Match real field names, envelopes, and status codes. Prefer building a focused subset spec over vendoring a multi-megabyte one.
 - Please do not commit secrets or real PII; seed data should be synthetic.
