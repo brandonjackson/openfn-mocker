@@ -62,6 +62,8 @@ function compareValues(a: any, b: any): number {
 const plugin: MockSystemPlugin = {
   name: 'airtable',
   specFile: 'airtable.schema.json',
+  // Airtable authenticates with `Authorization: Bearer <apiKey>`.
+  auth: { required: true, schemes: ['bearer'] },
 
   async overrides(app: FastifyInstance, store: DataStore, config: SystemConfig) {
     // baseId default (routes are param-based; this is only a documented default).

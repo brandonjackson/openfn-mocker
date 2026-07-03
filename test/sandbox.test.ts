@@ -71,9 +71,28 @@ describe('root index content negotiation', () => {
   it('a sandbox example actually runs against the live mock', async () => {
     const app = await boot();
     // Mirrors the DHIS2 "org-unit hierarchy" example path shown in the sandbox.
-    const res = await app.inject({ method: 'GET', url: '/dhis2/api/organisationUnits' });
+    // DHIS2 requires auth, so the sandbox sends the credential's Basic header.
+    const res = await app.inject({
+      method: 'GET',
+      url: '/dhis2/api/organisationUnits',
+      headers: { authorization: 'Basic ' + Buffer.from('admin:mock').toString('base64') },
+    });
     expect(res.statusCode).toBe(200);
     expect(res.json().organisationUnits.length).toBeGreaterThan(0);
+  });
+
+  it('rejects an auth-required system with 401 when no credentials are sent', async () => {
+    const app = await boot();
+    const res = await app.inject({ method: 'GET', url: '/dhis2/api/organisationUnits' });
+    expect(res.statusCode).toBe(401);
+    expect(res.headers['www-authenticate']).toContain('Basic');
+    expect(res.json().error).toBe('Unauthorized');
+  });
+
+  it('leaves open systems (fhir) reachable without credentials', async () => {
+    const app = await boot();
+    const res = await app.inject({ method: 'GET', url: '/fhir/Patient' });
+    expect(res.statusCode).toBe(200);
   });
 });
 
