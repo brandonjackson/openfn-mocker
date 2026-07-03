@@ -873,6 +873,14 @@ box:
   stock adaptors can't complete OAuth against it. Add real `/token`-style
   endpoints (and honour an `access_token` a credential may already carry) so the
   OAuth adaptors run unmodified.
+- **CommCare bulk uploads (`submitXls` / `bulk`).** These upload a spreadsheet as
+  `multipart/form-data` built from a `FormData`/`Blob`. The stock adaptor sends it
+  through `@openfn/language-common`'s low-level undici `request`, which (unlike
+  `fetch`) doesn't serialize a `FormData` body — the request never leaves the
+  client, so it stalls on a client-side timeout (~80s) and aborts with `Client
+  Timeout`. The mock itself handles a correctly-serialized multipart POST fine;
+  the fix is upstream in the adaptor's multipart send path. Until then these two
+  examples fail fast in `pnpm test:usage`.
 - **Base-URL override for Twilio & Mailgun.** Their real credential schemas have
   **no URL field** — the adaptors always call `api.twilio.com` /
   `api.mailgun.net`. The mock adds a `baseUrl` for convenience, but the stock
