@@ -1,10 +1,11 @@
 /**
  * End-to-end test for the sandbox "Usage" examples.
  *
- * Every system's Usage tab (see `SystemGuide.usage` in src/sandbox.ts) ships a
- * set of adaptor-function snippets — the exact OpenFn job code a user would
- * write, e.g. `getIndividual('IND_AMINA001')`. This script proves those
- * snippets actually run: for each system that has usage examples, it
+ * Every system's Usage tab (see `MockSystemPlugin.usage`, authored per adaptor
+ * next to its seed data) ships a set of adaptor-function snippets — the exact
+ * OpenFn job code a user would write, e.g. `getIndividual('IND_AMINA001')`. This
+ * script proves those snippets actually run: for each system that has usage
+ * examples, it
  *
  *   1. boots a single-system mock mounted at the server ROOT on an ephemeral
  *      port (via `createSystemServer` + a real `listen`), so an adaptor that
@@ -52,8 +53,8 @@ import { join } from 'node:path';
 import { createSystemServer } from '../src/server.js';
 import { loadConfig } from '../src/config.js';
 import { plugins } from '../src/systems/index.js';
-import { SYSTEM_GUIDES, type UsageExample } from '../src/sandbox.js';
-import type { MockSystemPlugin, SystemConfig } from '../src/systems/types.js';
+import { SYSTEM_GUIDES } from '../src/sandbox.js';
+import type { MockSystemPlugin, SystemConfig, UsageExample } from '../src/systems/types.js';
 import type { CredentialSpec } from '../src/auth.js';
 
 /* -------------------------------------------------------------------------- */
@@ -68,6 +69,13 @@ const ADAPTOR_NAMES: Record<string, string> = {
 };
 
 const adaptorFor = (system: string): string => ADAPTOR_NAMES[system] ?? system;
+
+/**
+ * A system's usage examples, read from its plugin (`MockSystemPlugin.usage`) —
+ * the single source of truth the sandbox renders too, so the systems under test
+ * stay in lockstep with what the Usage tab documents.
+ */
+const usageFor = (system: string): UsageExample[] => plugins[system]?.usage ?? [];
 
 interface Args {
   systems?: string[];
@@ -268,8 +276,8 @@ async function main(): Promise<void> {
   const args = parseArgs(process.argv.slice(2));
 
   // Discover every system that has authored usage examples AND a live plugin.
-  const discovered = Object.keys(SYSTEM_GUIDES)
-    .filter((name) => (SYSTEM_GUIDES[name].usage?.length ?? 0) > 0 && plugins[name])
+  const discovered = Object.keys(plugins)
+    .filter((name) => usageFor(name).length > 0)
     .sort();
   const targets = args.systems ? discovered.filter((s) => args.systems!.includes(s)) : discovered;
 
@@ -288,7 +296,7 @@ async function main(): Promise<void> {
 
   if (args.list) {
     for (const system of targets) {
-      const usage = SYSTEM_GUIDES[system].usage ?? [];
+      const usage = usageFor(system);
       console.log(`\n${system}  (adaptor: ${adaptorFor(system)})  — ${usage.length} example(s)`);
       for (const u of usage) console.log(`  • ${u.fn.padEnd(22)} ${u.code}`);
     }
@@ -309,7 +317,7 @@ async function main(): Promise<void> {
 
   for (const system of targets) {
     const plugin = plugins[system];
-    const usage = SYSTEM_GUIDES[system].usage ?? [];
+    const usage = usageFor(system);
     const adaptor = adaptorFor(system);
     const dir = join(workDir, system);
     mkdirSync(dir, { recursive: true });

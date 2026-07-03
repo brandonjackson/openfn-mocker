@@ -15,6 +15,29 @@ export interface SystemConfig {
 }
 
 /**
+ * One adaptor *function*, shown on a system's sandbox "Usage" tab: the OpenFn
+ * job code a user writes to call it, plus a link to the underlying API request
+ * it fires (the matching `SandboxExample.id` on the guide). This is what turns
+ * the sandbox from "here are the endpoints" into "here is how each adaptor
+ * function maps onto them". Declared per adaptor on its plugin (see
+ * `MockSystemPlugin.usage`), the same way the spec and credential are — so the
+ * plugin stays the single source of truth for everything about the adaptor, and
+ * `pnpm test:usage` can drive these snippets end to end through the real adaptor.
+ */
+export interface UsageExample {
+  /** Adaptor function name, e.g. 'getGroup'. */
+  fn: string;
+  /** Full call signature, e.g. 'getGroup(sppId, callback?)'. */
+  signature: string;
+  /** One line: what the function does. */
+  description: string;
+  /** Example OpenFn job code (a short, self-contained snippet). */
+  code: string;
+  /** id of the SandboxExample this function exercises, for the API cross-link. */
+  apiRef?: string;
+}
+
+/**
  * A mock system plugin. Plugins are THIN: they declare identity + spec file,
  * register any custom / non-CRUD routes in `overrides`, and load seed data in
  * `seed`. The engine (route-registrar, response-generator, spec-parser) does
@@ -43,6 +66,16 @@ export interface MockSystemPlugin {
    * system with no meaningful credential.
    */
   credential?: CredentialSpec;
+  /**
+   * Per-adaptor-function usage examples for the sandbox "Usage" tab: the OpenFn
+   * job code for each function this adaptor exposes and a link to the API
+   * request it calls. Declared here, next to the spec and credential, so the
+   * plugin fully describes its adaptor; the sandbox renders these and
+   * `pnpm test:usage` runs each snippet against the mock. Omit while a system's
+   * usage examples have not been authored yet — the Usage tab then shows a
+   * "coming soon" placeholder that links to the adaptor docs.
+   */
+  usage?: UsageExample[];
   /**
    * Register routes on the Fastify instance. `authPlugin`, admin routes and
    * request logging are already attached by registerSystem before this runs, so
