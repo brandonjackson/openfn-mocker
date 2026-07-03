@@ -10,12 +10,14 @@ export interface MockerConfig {
   /** Which seed dataset to load at boot (folder under datasets/). Default `default`. */
   dataset: string;
   /**
-   * Optional top-level defaults for stochastic behavior (latency + error_rate).
-   * Copied onto every system that does not set its own, so you can slow down or
-   * flake out the whole mock in one place. A per-system block overrides it.
+   * Optional top-level defaults for stochastic behavior (latency + error_rate +
+   * rate_limit). Copied onto every system that does not set its own, so you can
+   * slow down, flake out, or throttle the whole mock in one place. A per-system
+   * block overrides it.
    */
   latency?: Record<string, any>;
   error_rate?: number;
+  rate_limit?: Record<string, any>;
   systems: Record<string, SystemConfig & { enabled: boolean }>;
 }
 
@@ -46,6 +48,7 @@ export function loadConfig(path?: string): MockerConfig {
     dataset: typeof raw.dataset === 'string' && raw.dataset.trim() ? raw.dataset.trim() : DEFAULT_DATASET,
     latency: raw.latency && typeof raw.latency === 'object' ? raw.latency : undefined,
     error_rate: raw.error_rate !== undefined ? Number(raw.error_rate) : undefined,
+    rate_limit: raw.rate_limit && typeof raw.rate_limit === 'object' ? raw.rate_limit : undefined,
     systems: {},
   };
 
@@ -74,6 +77,7 @@ export function loadConfig(path?: string): MockerConfig {
     if (config.error_rate !== undefined && sys.error_rate === undefined) {
       sys.error_rate = config.error_rate;
     }
+    if (config.rate_limit) sys.rate_limit = { ...config.rate_limit, ...(sys.rate_limit ?? {}) };
   }
 
   return config;

@@ -1,7 +1,7 @@
 import { describe, it, expect, afterAll } from 'vitest';
 import type { FastifyInstance } from 'fastify';
 import { createSystemServer } from '../src/server.js';
-import { resolveBehavior, sampleDelayMs } from '../src/behavior.js';
+import { resolveBehavior, sampleDelayMs, makeRateLimiter } from '../src/behavior.js';
 import httpGeneric from '../src/systems/http-generic/plugin.js';
 
 const openServers: FastifyInstance[] = [];
@@ -32,6 +32,48 @@ describe('behavior config resolution', () => {
   it('ensures max is never below min', () => {
     const b = resolveBehavior({ latency: { min_ms: 500, max_ms: 100 } });
     expect(b.max).toBeGreaterThanOrEqual(b.min);
+  });
+});
+
+describe('rate_limit config resolution', () => {
+  it('defaults to no limit', () => {
+    expect(resolveBehavior(undefined).rateLimitMax).toBe(0);
+    expect(resolveBehavior({}).rateLimitMax).toBe(0);
+  });
+
+  it('resolves the ceiling, window, and status with sane defaults', () => {
+    const b = resolveBehavior({ rate_limit: { max: 20 } });
+    expect(b.rateLimitMax).toBe(20);
+    expect(b.rateLimitWindowMs).toBe(1000);
+    expect(b.rateLimitStatus).toBe(429);
+  });
+});
+
+describe('makeRateLimiter', () => {
+  it('is a no-op when no limit is configured', () => {
+    const over = makeRateLimiter(resolveBehavior({}));
+    for (let i = 0; i < 100; i++) expect(over(1000 + i)).toBe(false);
+  });
+
+  it('rejects requests past the threshold within a window', () => {
+    const b = resolveBehavior({ rate_limit: { max: 3, window_ms: 1000 } });
+    const over = makeRateLimiter(b);
+    expect(over(0)).toBe(false); // 1
+    expect(over(10)).toBe(false); // 2
+    expect(over(20)).toBe(false); // 3
+    expect(over(30)).toBe(true); // 4 — over the limit
+    expect(over(40)).toBe(true);
+  });
+
+  it('resets the count at the next window boundary', () => {
+    const b = resolveBehavior({ rate_limit: { max: 2, window_ms: 1000 } });
+    const over = makeRateLimiter(b);
+    expect(over(0)).toBe(false);
+    expect(over(100)).toBe(false);
+    expect(over(200)).toBe(true); // over limit in window 1
+    expect(over(1100)).toBe(false); // new window, count reset
+    expect(over(1200)).toBe(false);
+    expect(over(1300)).toBe(true);
   });
 });
 
@@ -81,6 +123,28 @@ describe('behavior applied to a running system', () => {
     const res = await app.inject({ method: 'GET', url: '/_admin/status' });
     expect(res.statusCode).toBe(200);
     expect(Date.now() - start).toBeLessThan(200);
+  });
+
+  it('throttles with 429 once the rate limit is exceeded', async () => {
+    const app = await boot({ rate_limit: { max: 5, window_ms: 60_000 } });
+    const statuses: number[] = [];
+    for (let i = 0; i < 10; i++) {
+      const res = await app.inject({ method: 'GET', url: '/anything' });
+      statuses.push(res.statusCode);
+    }
+    // First 5 within budget, the rest throttled in the same window.
+    expect(statuses.slice(0, 5)).toEqual([200, 200, 200, 200, 200]);
+    expect(statuses.slice(5)).toEqual([429, 429, 429, 429, 429]);
+    const last = await app.inject({ method: 'GET', url: '/anything' });
+    expect(last.json()).toMatchObject({ error: 'rate_limited', injected: true });
+  });
+
+  it('never rate-limits the admin API', async () => {
+    const app = await boot({ rate_limit: { max: 1, window_ms: 60_000 } });
+    for (let i = 0; i < 10; i++) {
+      const res = await app.inject({ method: 'GET', url: '/_admin/status' });
+      expect(res.statusCode).toBe(200);
+    }
   });
 
   it('is a no-op when no knobs are set', async () => {
