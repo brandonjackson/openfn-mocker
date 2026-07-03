@@ -8,6 +8,51 @@ function firstHeaderValue(value: string | string[] | undefined): string | undefi
   return first || undefined;
 }
 
+/** True when this request reached us through a reverse proxy (Railway, Render, ...). */
+export function isProxied(req: FastifyRequest): boolean {
+  return firstHeaderValue(req.headers['x-forwarded-host']) != null;
+}
+
+function escapeRegExp(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/**
+ * Rewrite every internal self-referential URL in `text` so it is reachable from
+ * outside the box.
+ *
+ * Mocks build self-URLs rooted at `http://localhost:<port>` (the only origin
+ * they know at seed/handler time) and, historically, sometimes omitted the
+ * mount prefix (`/dhis2`, `/fhir`, ...). Behind a public proxy both are wrong:
+ * the client gets an unreachable `localhost` URL, possibly without the prefix.
+ * This swaps the internal origin for the request's public origin and inserts
+ * the mount prefix when it is missing — without double-prefixing URLs that
+ * already carry it (e.g. those built from `req.url`).
+ *
+ * Only the exact `internalOrigin` token is matched, so non-URL text is
+ * untouched; it is safe to run over a whole JSON response body or a single
+ * header value.
+ */
+export function rewriteToExternalOrigin(
+  text: string,
+  internalOrigin: string,
+  externalOrigin: string,
+  mountPath: string
+): string {
+  // Capture the path/query that follows the origin, up to a JSON/whitespace
+  // boundary, so we can tell whether the mount prefix is already present.
+  const re = new RegExp(`${escapeRegExp(internalOrigin)}([^"'\\s\\\\]*)`, 'g');
+  return text.replace(re, (_match, rest: string) => {
+    const alreadyPrefixed =
+      !mountPath ||
+      rest === mountPath ||
+      rest.startsWith(`${mountPath}/`) ||
+      rest.startsWith(`${mountPath}?`) ||
+      rest.startsWith(`${mountPath}#`);
+    return `${externalOrigin}${alreadyPrefixed ? '' : mountPath}${rest}`;
+  });
+}
+
 /**
  * The external origin (`scheme://host[:port]`) a request arrived on, as the
  * client sees it.
