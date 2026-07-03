@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { createSystemServer } from '../src/server.js';
+import { buildServer } from '../src/app.js';
 import mailgun from '../src/systems/mailgun/plugin.js';
 
 const config = { port: 0, domain: 'sandbox-test.mailgun.org' };
@@ -66,6 +67,45 @@ describe('mailgun (spec-driven reference)', () => {
     const res = await app.inject({ method: 'GET', url: STATS });
     expect(res.statusCode).toBe(200);
     expect(Array.isArray(res.json().stats)).toBe(true);
+    await app.close();
+  });
+
+  it('paging links echo the public origin from X-Forwarded-* (deployed behind a proxy)', async () => {
+    const { app } = await createSystemServer(mailgun, config, { logLevel: 'silent' });
+    const res = await app.inject({
+      method: 'GET',
+      url: EVENTS,
+      headers: { 'x-forwarded-proto': 'https', 'x-forwarded-host': 'mock.up.railway.app' },
+    });
+    expect(res.statusCode).toBe(200);
+    const { paging } = res.json();
+    for (const link of Object.values(paging) as string[]) {
+      expect(link.startsWith('https://mock.up.railway.app/')).toBe(true);
+      expect(link).not.toContain('localhost');
+    }
+    expect(paging.first).toBe('https://mock.up.railway.app' + EVENTS + '?page=first');
+    await app.close();
+  });
+
+  it('paging links keep the /mailgun mount prefix on the shared server', async () => {
+    const { app } = await buildServer({
+      log_level: 'silent',
+      port: 0,
+      systems: { mailgun: { enabled: true, port: 0, domain: 'sandbox-test.mailgun.org' } },
+    });
+    const res = await app.inject({
+      method: 'GET',
+      url: '/mailgun' + EVENTS,
+      headers: {
+        authorization: 'Basic ' + Buffer.from('api:mock-api-key').toString('base64'),
+        'x-forwarded-proto': 'https',
+        'x-forwarded-host': 'mock.up.railway.app',
+      },
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.json().paging.next).toBe(
+      'https://mock.up.railway.app/mailgun' + EVENTS + '?page=next'
+    );
     await app.close();
   });
 
