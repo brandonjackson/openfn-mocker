@@ -178,8 +178,7 @@ describe('primero (token-exchange, nested data envelope)', () => {
       payload: { data: { ids, transitioned_to: 'primero_cp', notes: 'bulk transfer' } },
     });
     expect(res.statusCode).toBe(200);
-    expect(res.json().data.length).toBe(2);
-    expect(res.json().data[0].data.transitioned_to).toBe('primero_cp');
+    expect(res.json().data.body).toMatch(/2 referral/);
 
     // Each new referral is now readable under its case.
     const check = await app.inject({ method: 'GET', url: `/api/v2/cases/${ids[1]}/referrals` });

@@ -890,6 +890,14 @@ box:
   [Supported systems](#supported-systems) — the mount and credential
   (`username`/`password`/`securityToken`, plus OAuth) exist on paper, but there
   is no plugin yet.
+- **Primero `createReferrals` adaptor bug.** The stock adaptor passes `json: {
+  data }` to `request`, which auto-parses the response body into an object —
+  then the adaptor calls `JSON.parse()` on that already-parsed object anyway,
+  which throws, gets miscaught, and re-wraps the body under a `.body` key. The
+  result is that `resp.data` is `undefined` regardless of what the server
+  returns, so `createReferrals` always throws `Cannot read properties of
+  undefined (reading 'body')` — a bug in `@openfn/language-primero` (confirmed
+  against 4.1.2), not something the mock's response shape can work around.
 - **Credential value validation (optional).** Auth is presence-checked, never
   value-checked, so negative-path tests (wrong password, expired or refreshed
   token) can't be exercised. An opt-in "strict credential" mode would let
