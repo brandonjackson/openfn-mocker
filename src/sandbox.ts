@@ -946,136 +946,210 @@ export function renderSandboxPage(
 /* a template literal, but keeping it plain avoids surprises).        */
 /* ------------------------------------------------------------------ */
 
-/** Inline SVG favicon (indigo rounded square + ring) so the page needs no
- *  external asset and browsers never 404 on /favicon.ico. */
-const FAVICON_B64 =
-  'PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+' +
-  'PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iNyIgZmlsbD0iIzQzMzhjYSIvPjxjaXJjbGUg' +
-  'Y3g9IjE2IiBjeT0iMTYiIHI9IjciIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRo' +
-  'PSIzIi8+PGNpcmNsZSBjeD0iMTYiIGN5PSIxNiIgcj0iMi4yIiBmaWxsPSIjZmZmIi8+PC9zdmc+';
+/**
+ * OpenFn logo mark, cleaned from docs.openfn.org's /img/logo.svg: a black
+ * square with the brand cyan→magenta gradient and the "Fn" letterforms.
+ * Embedded as base64 so the page stays self-contained (no external asset,
+ * no /favicon.ico 404). Reused for both the navbar brand and the favicon.
+ */
+const LOGO_B64 =
+  'PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8v' +
+  'd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2aWV3Qm94PSIxMTYuMDcgLTExMi4yOCA4MDAuMDAgODAwLjAw' +
+  'Ij48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9Im9mZyIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25V' +
+  'c2UiIHgxPSIxMzYuMjE4MDUiIHkxPSI2NjcuNTcyMzMiIHgyPSI4OTUuOTIzOTUiIHkyPSItOTIuMTMz' +
+  'NjE0Ij48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiM4M2Q2ZTIiLz48c3RvcCBvZmZzZXQ9IjEi' +
+  'IHN0b3AtY29sb3I9IiNhZjI3ODMiIHN0b3Atb3BhY2l0eT0iMCIvPjwvbGluZWFyR3JhZGllbnQ+PC9k' +
+  'ZWZzPjxyZWN0IHg9IjEzNi4yMTgwNSIgeT0iLTkyLjEzMzYxNCIgd2lkdGg9Ijc1OS43MDU5MyIgaGVp' +
+  'Z2h0PSI3NTkuNzA1OTMiIGZpbGw9IiNmZmYiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSI0MC4y' +
+  'OTQxIi8+PHJlY3QgeD0iMTM2LjIxODA1IiB5PSItOTIuMTMzNjE0IiB3aWR0aD0iNzU5LjcwNTkzIiBo' +
+  'ZWlnaHQ9Ijc1OS43MDU5MyIgZmlsbD0idXJsKCNvZmcpIiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0' +
+  'aD0iNDAuMjk0MSIvPjxwYXRoIGQ9Im0gMjcxLjY4ODUyLDExOC43Njc0IGggMjA0LjM1MTQ2IHYgNjIu' +
+  'MDkzMTggSCAzNDEuMTk1ODIgViAyNjAuMDk4OSBIIDQ3Mi43OTYzIHYgNjIuMDkzMTkgSCAzNDEuMTk1' +
+  'ODIgdiAxNDUuMDM4NTYgaCAtNjkuNTA3MyB6IiBmaWxsPSIjMDAwIi8+PHBhdGggZD0ibSA2NzUuMTI3' +
+  'NjksMzIyLjE5MjA5IHEgMCwtMTIuOTc0NyAtMy43MDcwNiwtMjEuNzc4OTUgLTMuMjQzNjcsLTguODA0' +
+  'MjYgLTkuMjY3NjQsLTEzLjkwMTQ2IC02LjAyMzk2LC01LjU2MDU5IC0xMy40MzgwNywtNy44Nzc1IC03' +
+  'LjQxNDEyLC0yLjMxNjkxIC0xNS4yOTE2MSwtMi4zMTY5MSAtMjAuMzg4ODEsMCAtMzEuOTczMzYsMTUu' +
+  'NzU0OTkgLTExLjU4NDU1LDE1LjI5MTYxIC0xMS41ODQ1NSwzOS44NTA4NSB2IDEzNS4zMDc1NCBoIC02' +
+  'Ni43MjcgViAyMjkuMDUyMzEgaCA2My45NDY3MSB2IDMxLjA0NjU5IGggMC45MjY3NiBxIDE0LjgyODIz' +
+  'LC0yMS43Nzg5NSAzMi40MzY3NCwtMjkuNjU2NDQgMTcuNjA4NTIsLTcuODc3NSAzNy45OTczMywtNy44' +
+  'Nzc1IDIxLjMxNTU3LDAgMzcuMDcwNTYsNi40ODczNSAxNS43NTQ5OCw2LjQ4NzM1IDI1Ljk0OTM5LDE4' +
+  'LjA3MTkgMTAuNjU3NzgsMTEuMTIxMTcgMTUuMjkxNiwyNi40MTI3NyA1LjA5NzIsMTQuODI4MjIgNS4w' +
+  'OTcyLDMxLjk3MzM2IHYgMTYxLjcyMDMxIGggLTY2LjcyNyB6IiBmaWxsPSIjMDAwIi8+PC9zdmc+';
 
+/** Favicon reuses the OpenFn mark so the browser tab matches the docs. */
+const FAVICON_B64 = LOGO_B64;
+
+// Palette + chrome mirror the OpenFn documentation site (docs.openfn.org, a
+// Docusaurus/infima light theme): azure #2196f3 primary, white navbar + content,
+// a light sidebar with soft-blue active states, a dark-slate footer, the same
+// system-ui / SFMono font stacks, 8px radii and 1px #dadde1 borders. Response
+// bodies stay on a dark code surface, matching the docs' dark Prism code blocks.
 const STYLES = [
-  ':root{--bg:#f5f6f8;--panel:#fff;--ink:#111826;--muted:#5b6472;--border:#e3e7ee;',
-  '--accent:#4338ca;--accent-hover:#3730a3;--accent-soft:#eef2ff;--code:#0f172a;--code-ink:#e2e8f0;',
+  ':root{--bg:#fff;--panel:#fff;--ink:#1c1e21;--muted:#606770;',
+  '--border:#dadde1;--border-soft:#ebedf0;--wash:#f6f7f8;',
+  '--accent:#2196f3;--accent-hover:#0d89ec;--accent-strong:#0a6bb7;--accent-soft:#ebf2fc;',
+  '--code:#282a36;--code-ink:#e6edf3;',
+  '--footer:#303846;--footer-ink:#dfe3ea;--footer-link:#b7c0cf;',
+  '--radius:8px;--navbar-h:60px;--wrap:1120px;--shadow:0 1px 2px 0 rgba(0,0,0,.1);',
+  '--mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;',
   '--get:#0a7d33;--post:#b45309;--put:#6d28d9;--patch:#0369a1;--delete:#b91c1c;--ok:#0a7d33;--err:#b91c1c;}',
   '*{box-sizing:border-box}',
   'html{-webkit-text-size-adjust:100%}',
   'body{margin:0;background:var(--bg);color:var(--ink);',
-  'font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}',
-  'code,pre,.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;}',
+  'font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Ubuntu,Cantarell,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji";}',
+  'code,pre,.mono{font-family:var(--mono);}',
   'a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}',
-  'header.top{background:var(--code);color:#f8fafc;padding:26px 20px;}',
-  '.wrap{max-width:1080px;margin:0 auto;padding:0 20px;}',
-  'header.top .wrap{padding:0}',
-  'header.top h1{margin:0 0 6px;font-size:22px;letter-spacing:-.01em;}',
-  'header.top p{margin:0;color:#c7ccd6;max-width:70ch;}',
-  '.baseurl{margin-top:14px;display:inline-flex;align-items:center;gap:8px;background:#1e293b;',
-  'border:1px solid #33415a;border-radius:8px;padding:7px 11px;font-size:13px;}',
-  '.baseurl b{color:#93c5fd;font-weight:600}',
-  '.baseurl .mono{color:#f1f5f9}',
+  '.wrap{max-width:var(--wrap);margin:0 auto;padding:0 24px;}',
+  // Top navbar: white, sticky, OpenFn logo + wordmark on the left, docs links on
+  // the right — the docs.openfn.org navbar.
+  'header.navbar{position:sticky;top:0;z-index:20;background:#fff;height:var(--navbar-h);',
+  'border-bottom:1px solid var(--border);box-shadow:var(--shadow);}',
+  '.navbar-inner{max-width:var(--wrap);margin:0 auto;height:100%;padding:0 24px;',
+  'display:flex;align-items:center;justify-content:space-between;gap:16px;}',
+  '.brand{display:inline-flex;align-items:center;gap:9px;color:var(--ink);font-weight:700;font-size:19px;letter-spacing:-.01em;}',
+  '.brand:hover{text-decoration:none}',
+  '.brand-logo{width:30px;height:30px;display:block}',
+  '.brand-sep{color:var(--border);font-weight:400}',
+  '.brand-sub{color:var(--muted);font-weight:500;font-size:16px}',
+  '.navbar-links{display:flex;align-items:center;gap:22px;font-size:15px;font-weight:500}',
+  '.navbar-links a{color:var(--ink)}',
+  '.navbar-links a:hover{color:var(--accent);text-decoration:none}',
+  // Hero band under the navbar: page title + intro + base URL chip.
+  '.hero{background:#fff;border-bottom:1px solid var(--border);}',
+  '.hero .wrap{padding:34px 24px 30px}',
+  '.hero h1{margin:0 0 8px;font-size:34px;line-height:1.15;letter-spacing:-.02em;font-weight:800;}',
+  '.hero-lede{margin:0;color:var(--muted);font-size:17px;max-width:72ch;}',
+  '.baseurl{margin-top:18px;display:inline-flex;align-items:center;gap:10px;background:var(--accent-soft);',
+  'border:1px solid #cfe3fb;border-radius:var(--radius);padding:8px 13px;font-size:14px;}',
+  '.baseurl-label{color:var(--accent-strong);font-weight:700;text-transform:uppercase;letter-spacing:.05em;font-size:11px}',
+  '.baseurl .mono{color:var(--ink)}',
   // Two-column layout: sticky left-hand nav + main content column.
-  '.layout{max-width:1080px;margin:0 auto;padding:22px 20px 60px;display:flex;gap:30px;align-items:flex-start;}',
-  '.sidebar{flex:0 0 200px;position:sticky;top:18px;align-self:flex-start;max-height:calc(100vh - 34px);overflow:auto;}',
-  '.sidebar-inner{font-size:14px}',
-  '.nav-group{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:700;margin:16px 0 6px}',
+  '.layout{max-width:var(--wrap);margin:0 auto;padding:26px 24px 60px;display:flex;gap:36px;align-items:flex-start;}',
+  '.sidebar{flex:0 0 220px;position:sticky;top:calc(var(--navbar-h) + 18px);align-self:flex-start;',
+  'max-height:calc(100vh - var(--navbar-h) - 34px);overflow:auto;}',
+  '.sidebar-inner{font-size:14.5px}',
+  '.nav-group{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:700;margin:18px 0 6px;padding:0 10px}',
   '.nav-group:first-child{margin-top:0}',
   '.nav-list{list-style:none;margin:0 0 4px;padding:0}',
-  '.nav-list a{display:block;padding:5px 10px;border-radius:7px;color:var(--ink);border-left:2px solid transparent;line-height:1.35}',
-  '.nav-list a:hover{background:var(--accent-soft);color:var(--accent);text-decoration:none}',
-  '.nav-list a.active{background:var(--accent-soft);color:var(--accent);border-left-color:var(--accent);font-weight:600}',
+  '.nav-list a{display:block;padding:6px 10px;border-radius:var(--radius);color:var(--muted);line-height:1.4}',
+  '.nav-list a:hover{background:var(--wash);color:var(--ink);text-decoration:none}',
+  '.nav-list a.active{background:var(--accent-soft);color:var(--accent);font-weight:600}',
   '.content{flex:1;min-width:0}',
   // Each nav target is its own page: only the active one is shown. Clicking a
   // nav link swaps pages via the hash router (no scrolling animation).
   '.page{display:none}',
   '.page.active{display:block}',
   // Per-system guide block: "Set up the adaptor" steps + "API overview" docs links.
-  '.sys-guide{display:grid;grid-template-columns:1fr 1fr;gap:18px 28px;margin:10px 0 16px;',
-  'padding:14px 16px;background:var(--bg);border:1px solid var(--border);border-radius:10px}',
-  '.sys-guide h4{margin:0 0 10px;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}',
+  '.sys-guide{display:grid;grid-template-columns:1fr 1fr;gap:18px 30px;margin:12px 0 18px;',
+  'padding:18px 20px;background:var(--wash);border:1px solid var(--border-soft);border-radius:var(--radius)}',
+  '.sys-guide h4{margin:0 0 12px;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}',
   '.sys-guide p{margin:0 0 10px;color:var(--muted)}',
-  '.sys-guide code{background:#eef1f5;border:1px solid var(--border);border-radius:5px;padding:1px 5px;',
-  'font-size:12px;color:var(--code);word-break:break-word}',
-  '.steps{margin:0;padding:0;list-style:none;counter-reset:step;font-size:13.5px}',
-  '.steps>li{position:relative;padding:0 0 12px 34px;color:var(--muted)}',
+  '.sys-guide code{background:#fff;border:1px solid var(--border);border-radius:5px;padding:1px 5px;',
+  'font-size:12.5px;color:var(--ink);word-break:break-word}',
+  '.steps{margin:0;padding:0;list-style:none;counter-reset:step;font-size:14px}',
+  '.steps>li{position:relative;padding:0 0 14px 36px;color:var(--muted)}',
   '.steps>li:last-child{padding-bottom:0}',
   '.steps>li::before{counter-increment:step;content:counter(step);position:absolute;left:0;top:-1px;',
-  'width:23px;height:23px;border-radius:50%;background:var(--accent-soft);color:var(--accent);',
+  'width:24px;height:24px;border-radius:50%;background:var(--accent-soft);color:var(--accent);',
   'font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center}',
   '.steps .step-h{display:block;color:var(--ink);font-weight:600;margin-bottom:1px}',
-  '.doc-links{list-style:none;margin:0;padding:0;display:grid;gap:7px;font-size:13.5px}',
+  '.doc-links{list-style:none;margin:0;padding:0;display:grid;gap:8px;font-size:14px}',
   '.doc-links a{font-weight:600}',
   '.loading{color:var(--muted)}',
-  'section.console{background:var(--panel);border:1px solid var(--border);border-radius:12px;',
-  'padding:16px;margin-bottom:22px;box-shadow:0 1px 2px rgba(16,24,38,.04);scroll-margin-top:16px;}',
-  'section.console h2,.sys h2{margin:0 0 4px;font-size:14px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);}',
-  '.console .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px;}',
-  '.console select,.console input,.console textarea,.ex input,.ex textarea{font:inherit;color:var(--ink);',
-  'background:#fff;border:1px solid var(--border);border-radius:8px;padding:8px 10px;}',
+  'section.console{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);',
+  'padding:22px 22px 18px;margin-bottom:24px;box-shadow:var(--shadow);}',
+  'section.console h2,.sys h2{margin:0 0 4px;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);}',
+  '.console .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px;}',
+  '.console select,.console input,.console textarea,.ex input,.ex textarea{font:inherit;font-size:14px;color:var(--ink);',
+  'background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:8px 11px;}',
   '.console input.path{flex:1;min-width:220px}',
   '.console select,.ex-method-sel{font-family:inherit;font-weight:600}',
+  'input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}',
   'textarea{width:100%;min-height:96px;resize:vertical;margin-top:8px;line-height:1.5;font-size:13px;}',
   '.ex textarea{min-height:70px}',
-  'button{font:inherit;font-weight:600;cursor:pointer;border:1px solid transparent;border-radius:8px;padding:8px 14px;}',
+  'button{font:inherit;font-weight:600;cursor:pointer;border:1px solid transparent;border-radius:var(--radius);padding:8px 15px;transition:background .15s}',
   'button.run,button.send{background:var(--accent);color:#fff;}',
   'button.run:hover,button.send:hover{background:var(--accent-hover)}',
-  'button.ghost{background:#fff;color:var(--accent);border-color:var(--border);padding:5px 10px;font-size:12px;font-weight:600;}',
-  'button.ghost:hover{background:var(--accent-soft)}',
+  'button.ghost{background:#fff;color:var(--accent);border-color:var(--border);padding:5px 11px;font-size:12.5px;font-weight:600;}',
+  'button.ghost:hover{background:var(--accent-soft);border-color:var(--accent)}',
   'button:disabled{opacity:.55;cursor:progress}',
-  '.sys{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px 16px 6px;',
-  'margin-bottom:16px;box-shadow:0 1px 2px rgba(16,24,38,.04);scroll-margin-top:16px;}',
+  '.sys{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:22px 22px 10px;',
+  'margin-bottom:18px;box-shadow:var(--shadow);}',
   '.sys-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 12px;}',
-  '.sys-head h3{margin:0;font-size:18px;letter-spacing:-.01em}',
-  '.sys-head .mount{font-size:13px;color:var(--accent);background:var(--accent-soft);border-radius:6px;padding:2px 8px}',
+  '.sys-head h3{margin:0;font-size:24px;letter-spacing:-.01em;font-weight:800}',
+  '.sys-head .mount{font-family:var(--mono);font-size:13px;color:var(--accent);background:var(--accent-soft);border-radius:6px;padding:2px 8px}',
   '.sys-head .auth{font-size:12px;color:var(--muted);border:1px solid var(--border);border-radius:6px;padding:2px 8px}',
-  '.blurb{color:var(--muted);margin:8px 0 12px;max-width:80ch}',
-  '.cred{margin:0 0 14px;border:1px solid var(--border);border-radius:8px;overflow:hidden}',
-  '.cred-head{display:flex;justify-content:space-between;align-items:center;background:#fafbfc;',
-  'border-bottom:1px solid var(--border);padding:6px 10px;font-size:12px;color:var(--muted)}',
-  '.cred pre{margin:0;padding:11px 12px;background:var(--code);color:var(--code-ink);',
+  '.blurb{color:var(--muted);margin:10px 0 14px;max-width:80ch}',
+  '.cred{margin:0 0 16px;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}',
+  '.cred-head{display:flex;justify-content:space-between;align-items:center;background:var(--wash);',
+  'border-bottom:1px solid var(--border);padding:7px 12px;font-size:12.5px;color:var(--muted)}',
+  '.cred pre{margin:0;padding:13px 14px;background:var(--code);color:var(--code-ink);',
   'font-size:12.5px;overflow-x:auto}',
-  '.ex{border-top:1px solid var(--border);padding:12px 0}',
+  '.ex{border-top:1px solid var(--border-soft);padding:14px 0}',
   '.ex-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}',
-  '.m{font-size:11px;font-weight:700;letter-spacing:.04em;color:#fff;border-radius:5px;padding:3px 7px;min-width:52px;text-align:center}',
+  '.m{font-size:11px;font-weight:700;letter-spacing:.04em;color:#fff;border-radius:5px;padding:3px 7px;min-width:56px;text-align:center}',
   '.m.GET{background:var(--get)}.m.POST{background:var(--post)}.m.PUT{background:var(--put)}',
   '.m.PATCH{background:var(--patch)}.m.DELETE{background:var(--delete)}',
-  '.ex .path{flex:1;min-width:200px;font-size:13px;color:var(--ink);background:#fafbfc}',
-  '.ex-label{color:var(--muted);font-size:13px;margin:7px 0 0}',
+  '.ex .path{flex:1;min-width:200px;font-size:13px;color:var(--ink);background:var(--wash)}',
+  '.ex-label{color:var(--muted);font-size:13.5px;margin:8px 0 0}',
   '.resp{margin-top:10px;display:none}',
   '.resp.show{display:block}',
   '.resp-meta{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:12.5px;margin-bottom:6px}',
   '.pill{font-weight:700;border-radius:5px;padding:2px 8px;color:#fff}',
   '.pill.ok{background:var(--ok)}.pill.err{background:var(--err)}',
   '.resp-meta .dim{color:var(--muted)}',
-  '.resp pre{margin:0;padding:12px;background:var(--code);color:var(--code-ink);border-radius:8px;',
-  'font-size:12.5px;max-height:360px;overflow:auto;white-space:pre-wrap;word-break:break-word}',
-  '.admin-links{display:flex;gap:8px;flex-wrap:wrap;padding:10px 0 6px;border-top:1px solid var(--border);margin-top:6px}',
-  'footer{color:var(--muted);font-size:13px;text-align:center;padding:0 20px 40px}',
+  '.resp pre{margin:0;padding:13px;background:var(--code);color:var(--code-ink);border-radius:var(--radius);',
+  'font-size:12.5px;max-height:380px;overflow:auto;white-space:pre-wrap;word-break:break-word}',
+  '.admin-links{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:12px 0 8px;border-top:1px solid var(--border-soft);margin-top:8px}',
+  // Footer: OpenFn dark slate with light links.
+  'footer.foot{background:var(--footer);color:var(--footer-ink);padding:32px 24px;margin-top:8px}',
+  'footer.foot .foot-note{margin:0 0 10px;font-size:13.5px;text-align:center}',
+  'footer.foot .foot-links{margin:0;font-size:13.5px;text-align:center}',
+  'footer.foot a{color:var(--footer-link)}footer.foot a:hover{color:#fff}',
   // Stack the sidebar above the content on narrow screens (nav becomes a wrap).
-  '@media(max-width:820px){.layout{flex-direction:column;gap:16px;padding-top:18px}',
+  '@media(max-width:860px){.layout{flex-direction:column;gap:16px;padding-top:20px}',
   '.sidebar{position:static;flex:none;width:100%;max-height:none;overflow:visible;',
-  'border:1px solid var(--border);background:var(--panel);border-radius:12px;padding:12px 14px}',
+  'border:1px solid var(--border);background:#fff;border-radius:var(--radius);padding:14px 16px}',
   '.nav-list{display:flex;flex-wrap:wrap;gap:4px 6px;margin-bottom:2px}',
-  '.nav-list a{border-left:none;padding:4px 9px}',
-  '.nav-group{margin:10px 0 5px}.nav-group:first-child{margin-top:0}}',
-  '@media(max-width:640px){.ex .path{min-width:140px}header.top h1{font-size:19px}.sys-guide{grid-template-columns:1fr;gap:16px}}',
+  '.nav-list a{padding:5px 10px}',
+  '.nav-group{margin:12px 0 6px;padding:0}.nav-group:first-child{margin-top:0}}',
+  '@media(max-width:640px){.ex .path{min-width:140px}.hero h1{font-size:27px}.sys-head h3{font-size:20px}',
+  '.navbar-links{gap:14px}.brand-sub,.brand-sep{display:none}.sys-guide{grid-template-columns:1fr;gap:16px}}',
 ].join('');
 
 const HEADER = [
-  '<header class="top"><div class="wrap">',
-  '<h1>openfn-mocker <span style="opacity:.6;font-weight:500">API sandbox</span></h1>',
-  '<p>A configurable mock of the external systems OpenFn integrates with. Point an OpenFn credential at ',
-  'the base URL below, or try the endpoints live right here in your browser.</p>',
-  '<div class="baseurl"><b>BASE URL</b> <span class="mono" id="base-url"></span></div>',
-  '</div></header>',
+  '<header class="navbar"><div class="navbar-inner">',
+  '<a class="brand" href="#console" aria-label="OpenFn mocker — API sandbox">',
+  '<img class="brand-logo" src="data:image/svg+xml;base64,',
+  LOGO_B64,
+  '" alt="OpenFn" width="30" height="30">',
+  '<span class="brand-name">OpenFn</span>',
+  '<span class="brand-sep">/</span>',
+  '<span class="brand-sub">mocker</span>',
+  '</a>',
+  '<nav class="navbar-links">',
+  '<a href="https://docs.openfn.org/documentation" target="_blank" rel="noopener">Docs</a>',
+  '<a href="https://docs.openfn.org/adaptors" target="_blank" rel="noopener">Adaptors</a>',
+  '<a href="https://github.com/brandonjackson/openfn-mocker" target="_blank" rel="noopener">GitHub</a>',
+  '</nav></div></header>',
+  '<div class="hero"><div class="wrap">',
+  '<h1>API sandbox</h1>',
+  '<p class="hero-lede">A configurable mock of the external systems OpenFn integrates with. ',
+  'Point an OpenFn credential at the base URL below, or try the endpoints live right here in your browser.</p>',
+  '<div class="baseurl"><span class="baseurl-label">Base URL</span> <span class="mono" id="base-url"></span></div>',
+  '</div></div>',
 ].join('');
 
 const FOOTER = [
-  '<footer>Every request runs against the live in-memory mock; data resets on restart or via the reset endpoints.<br>',
+  '<footer class="foot"><div class="wrap">',
+  '<p class="foot-note">Every request runs against the live in-memory mock; data resets on restart or via the reset endpoints.</p>',
+  '<p class="foot-links">',
   '<a href="https://docs.openfn.org/documentation" target="_blank" rel="noopener">OpenFn docs</a> · ',
   '<a href="https://docs.openfn.org/adaptors" target="_blank" rel="noopener">Adaptors reference</a> · ',
   '<a href="https://docs.openfn.org/documentation/build/credentials" target="_blank" rel="noopener">Credentials</a> · ',
   '<a href="/_admin/systems">/_admin/systems</a> · ',
-  '<a href="https://github.com/brandonjackson/openfn-mocker">source</a></footer>',
+  '<a href="https://github.com/brandonjackson/openfn-mocker">source</a>',
+  '</p></div></footer>',
 ].join('');
 
 /*
