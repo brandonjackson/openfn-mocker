@@ -1,0 +1,13 @@
+// Type-check-only pass over everything the repo compiles OR runs via tsx/vitest.
+// `pnpm build` (tsconfig.json) deliberately emits src/ alone; vitest transpiles
+// test files without type-checking them, so without this pass a test importing a
+// removed export only fails at runtime. `pnpm typecheck` closes that gap.
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "rootDir": "."
+  },
+  "include": ["src/**/*", "test/**/*", "scripts/**/*"],
+  "exclude": ["node_modules", "dist"]
+}

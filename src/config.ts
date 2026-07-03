@@ -7,8 +7,12 @@ export interface MockerConfig {
   log_level: string;
   /** Single port the whole mock listens on; every system is path-prefixed under it. */
   port: number;
-  /** Which seed dataset to load at boot (folder under datasets/). Default `default`. */
-  dataset: string;
+  /**
+   * Which seed dataset to load at boot (folder under datasets/). Optional for
+   * callers that build a config by hand (tests); loadConfig always resolves it,
+   * and buildServer falls back to `default` when absent.
+   */
+  dataset?: string;
   /**
    * Optional top-level defaults for stochastic behavior (latency + error_rate +
    * rate_limit). Copied onto every system that does not set its own, so you can

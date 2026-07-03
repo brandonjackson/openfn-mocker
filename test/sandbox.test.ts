@@ -1,7 +1,8 @@
 import { describe, it, expect, afterAll } from 'vitest';
 import type { FastifyInstance } from 'fastify';
 import { buildServer } from '../src/app.js';
-import { renderSandboxPage, wantsHtml, SYSTEM_GUIDES, SYSTEM_USAGE } from '../src/sandbox.js';
+import { renderSandboxPage, wantsHtml, SYSTEM_GUIDES } from '../src/sandbox.js';
+import { plugins } from '../src/systems/index.js';
 import type { MockerConfig } from '../src/config.js';
 
 const config: MockerConfig = {
@@ -267,14 +268,18 @@ describe('usage snippets (copied verbatim into OpenFn jobs)', () => {
 
   it('never hand an adaptor an external absolute URL (BASE_URL_MISMATCH guard)', () => {
     const offenders: string[] = [];
-    for (const [system, examples] of Object.entries(SYSTEM_USAGE)) {
-      for (const ex of examples) {
+    let checked = 0;
+    for (const [system, plugin] of Object.entries(plugins)) {
+      for (const ex of plugin.usage ?? []) {
+        checked++;
         for (const match of (ex.code ?? '').matchAll(ABSOLUTE_URL)) {
           const host = match[1];
           if (!NAMESPACE_HOSTS.has(host)) offenders.push(`${system}/${ex.fn} -> ${host}`);
         }
       }
     }
+    // Guards the guard: zero snippets means the discovery above is vacuous.
+    expect(checked).toBeGreaterThan(0);
     expect(offenders, `external absolute URL(s) in usage snippet(s): ${offenders.join(', ')}`).toEqual([]);
   });
 });
