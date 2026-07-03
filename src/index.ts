@@ -1,5 +1,6 @@
 import { loadConfig } from './config.js';
 import { buildServer, type RunningSystem } from './app.js';
+import { DEFAULT_DATASET } from './datasets.js';
 
 async function main(): Promise<void> {
   const config = loadConfig();
@@ -7,7 +8,7 @@ async function main(): Promise<void> {
 
   await app.listen({ port: config.port, host: '0.0.0.0' });
 
-  printStartupTable(running, config.port, config.dataset);
+  printStartupTable(running, config.port, config.dataset ?? DEFAULT_DATASET);
 
   let closing = false;
   const shutdown = async () => {

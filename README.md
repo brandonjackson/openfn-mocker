@@ -899,7 +899,7 @@ box:
 
 - Stack: Node.js 20+, TypeScript (ESM, `NodeNext`), Fastify, Vitest, built with `tsc` to `dist/`. Package manager is pnpm.
 - IDs use Node's built-in `crypto.randomUUID()` (or a system-specific format where the real API differs).
-- Before opening a PR: `pnpm build` must exit clean and `pnpm test` must pass. Add tests for any new endpoint or system.
+- Before opening a PR: `pnpm build`, `pnpm typecheck`, and `pnpm test` must all pass — CI (`.github/workflows/ci.yml`) runs exactly these on every push to main and every PR. `typecheck` type-checks `test/` and `scripts/` too, which `build` does not. Add tests for any new endpoint or system.
 - When you add usage examples to a system's `usage.ts` (next to its `seed.ts`, so the snippet and the records it reads stay together), run [`pnpm test:usage`](#testing-usage-examples-end-to-end) to confirm the snippets actually run through the real adaptor against the mock.
 - Keep plugins thin and specs faithful. Match real field names, envelopes, and status codes. Prefer building a focused subset spec over vendoring a multi-megabyte one.
 - Please do not commit secrets or real PII; seed data should be synthetic.
