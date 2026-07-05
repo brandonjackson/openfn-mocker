@@ -881,6 +881,14 @@ box:
 - **OpenCRVS API model.** The mock models OpenCRVS's older bearer + REST/GraphQL
   shape; the current adaptor uses OAuth and derives its endpoints from `domain`.
   Align the mock's OpenCRVS surface (and its auth) with the v2 adaptor.
+- **Primero `createReferrals` (upstream adaptor bug).** Every other primero
+  function runs clean against the mock, but `createReferrals` can't: the stock
+  `@openfn/language-primero` sends the request with the `request` lib's `json`
+  option (which already parses the JSON response), then runs the parsed object
+  through its own `tryJson` again, so `resp.data` ends up `undefined` and the
+  adaptor throws — regardless of what the server returns. Not fixable mock-side;
+  needs a fix upstream. Its usage example is omitted until then (the other nine
+  primero functions are covered).
 - **Alternative auth modes.** Several adaptors accept a second credential shape
   the sandbox doesn't surface yet: DHIS2 personal access token (`pat`),
   `access_token` on FHIR / http / ODK, CommCare's `ApiKey <user>:<key>` header,

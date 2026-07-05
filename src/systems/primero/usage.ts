@@ -17,8 +17,9 @@ export const usage: UsageExample[] = [
     code: "upsertCase({\n  externalIds: ['case_id'],\n  data: { case_id: 'CP-2026-041', age: 20, status: 'open' },\n});" },
   { fn: "getReferrals", signature: "getReferrals(params, callback?)", description: "Fetch referrals for one case, looked up by record id or case id.",
     code: "getReferrals({ id: 'CP-2026-014' });" },
-  { fn: "createReferrals", signature: "createReferrals(params, callback?)", description: "Bulk-refer one or more cases to a single user.",
-    code: "createReferrals({\n  data: { ids: ['CP-2026-014'], transitioned_to: 'primero_cp' },\n});" },
+  // NOTE: createReferrals is intentionally omitted — the stock @openfn/language-primero
+  // adaptor can't run it end to end (it double-parses the JSON response, so resp.data is
+  // undefined regardless of what the server returns). Tracked in the README Roadmap.
   { fn: "updateReferral", signature: "updateReferral(params, callback?)", description: "Update a single referral on a case, looked up by record/case id.",
     code: "updateReferral({ caseId: 'CP-2026-014', id: 'referral-1', data: { notes: 'Updated' } });" },
   { fn: "getForms", signature: "getForms(query, callback?)", description: "Fetch form definitions accessible to the user, optionally by module.",
