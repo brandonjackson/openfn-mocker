@@ -42,6 +42,10 @@ function nextStatus(current: string): string | undefined {
 const plugin: MockSystemPlugin = {
   name: 'twilio',
   specFile: 'twilio.openapi.json',
+  // Documented endpoints beyond the modeled routes below (Account, Balance,
+  // call Recordings, ...) are answered from the spec subset by the engine's
+  // spec fallback, tagged fidelity 'spec' in the request log.
+  specFallback: true,
   // Twilio uses HTTP Basic auth (`accountSid:authToken`); reject anonymous requests.
   auth: { required: true, schemes: ['basic'] },
   credential: {

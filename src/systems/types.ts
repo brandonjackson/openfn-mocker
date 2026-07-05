@@ -107,6 +107,16 @@ export interface MockSystemPlugin {
    */
   specFile?: string;
   /**
+   * Opt in to the spec-backed fallback tier: requests no hand-written route
+   * matches are answered from the committed spec subset (`specFile`) with
+   * schema-shaped, store-backed responses (see src/engine/spec-fallback.ts).
+   * Hand-written routes always win — the fallback is the system's not-found
+   * handler — and everything it serves is tagged `fidelity: 'spec'` in the
+   * request log plus an `x-mock-fidelity: spec` response header. Requires
+   * `specFile`; incompatible with a plugin that sets its own not-found handler.
+   */
+  specFallback?: boolean;
+  /**
    * How this system treats authentication. Enforced automatically by
    * registerSystem (via `enforceAuth`) before any route runs. Omit — or set
    * `{ required: false }` — for systems that accept unauthenticated requests

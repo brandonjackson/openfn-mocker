@@ -61,6 +61,12 @@ const plugin: MockSystemPlugin = {
   guide,
 
   async overrides(app: FastifyInstance, store: DataStore, _config: SystemConfig) {
+    // Everything this catch-all serves is echo-grade, not a modeled API shape;
+    // tag it so the request log reports fidelity honestly.
+    app.addHook('onRequest', async (req) => {
+      req.mockFidelity = 'generic';
+    });
+
     const wildPath = (req: FastifyRequest): string =>
       String((req.params as Record<string, any>)['*'] ?? '')
         .replace(/^\/+/, '')

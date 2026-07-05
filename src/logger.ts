@@ -1,3 +1,14 @@
+/**
+ * Which tier of the mock answered a request:
+ *  - 'modeled' — a hand-written route (full semantic fidelity, stateful)
+ *  - 'spec'    — the spec-backed fallback (structurally faithful, schema-shaped)
+ *  - 'generic' — a catch-all echo (liveness only, no fidelity claim)
+ *  - 'none'    — nothing claimed the path (a 404)
+ * Requests that land on 'spec'/'generic' in real usage are exactly the
+ * endpoints worth promoting to hand-modeled routes next.
+ */
+export type Fidelity = 'modeled' | 'spec' | 'generic' | 'none';
+
 /** A single recorded request/response for the /_admin/requests inspector. */
 export interface LoggedRequest {
   /**
@@ -18,6 +29,8 @@ export interface LoggedRequest {
   bodySummary: string;
   /** Truncated summary of the response body. */
   responseSummary: string;
+  /** Which tier of the mock answered (modeled / spec / generic / none). */
+  fidelity: Fidelity;
   timestamp: string;
 }
 

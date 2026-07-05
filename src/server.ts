@@ -1,7 +1,9 @@
 import Fastify, { type FastifyInstance } from 'fastify';
 import formbody from '@fastify/formbody';
 import { DataStore } from './store.js';
-import { RequestLog, summarizeBody, summarizeResponse, makeLogLevel } from './logger.js';
+import { RequestLog, summarizeBody, summarizeResponse, makeLogLevel, type Fidelity } from './logger.js';
+import { loadSpec, parseSpec } from './engine/spec-parser.js';
+import { createSpecFallback } from './engine/spec-fallback.js';
 import { authPlugin, enforceAuth } from './auth.js';
 import { registerBehavior } from './behavior.js';
 import { registerAdminRoutes } from './admin.js';
@@ -138,7 +140,11 @@ export async function registerSystem(
     return payload;
   });
 
-  // Record every response into the ring buffer for /_admin/requests.
+  // Record every response into the ring buffer for /_admin/requests. The
+  // fidelity tag says which tier answered: a hand-written route ('modeled',
+  // the default), the spec fallback ('spec'), a catch-all echo ('generic'), or
+  // nothing ('none' — the request fell through to a 404 handler). Handlers set
+  // request.mockFidelity to claim a tier; routed requests default to 'modeled'.
   app.addHook('onResponse', async (request, reply) => {
     requestLog.record({
       system: plugin.name,
@@ -149,6 +155,7 @@ export async function registerSystem(
       auth: request.mockAuth ?? { type: 'none' },
       bodySummary: summarizeBody(request.body),
       responseSummary: request.logResponseSummary ?? '',
+      fidelity: request.mockFidelity ?? (request.is404 ? 'none' : 'modeled'),
       timestamp: new Date().toISOString(),
     });
   });
@@ -165,6 +172,34 @@ export async function registerSystem(
   });
 
   await plugin.overrides?.(app, store, config);
+
+  // Spec-backed fallback tier: when the plugin opts in (specFallback: true and
+  // a specFile), unrouted requests are matched against the committed OpenAPI
+  // subset and served schema-shaped, store-backed responses. Registered as the
+  // not-found handler, so every hand-written route above shadows it — the spec
+  // extends the modeled surface but can never contradict it. Responses it
+  // serves are tagged (x-mock-fidelity header + request log) so tail traffic
+  // is visible instead of silently wrong.
+  if (plugin.specFallback && plugin.specFile) {
+    const fallback = createSpecFallback(parseSpec(loadSpec(plugin.specFile)), store);
+    app.setNotFoundHandler(async (request, reply) => {
+      const served = fallback(request, mountPath);
+      if (served) {
+        request.mockFidelity = 'spec';
+        reply.header('x-mock-fidelity', 'spec');
+        reply.code(served.statusCode);
+        return served.payload;
+      }
+      request.mockFidelity = 'none';
+      reply.code(404);
+      return {
+        message: `Route ${request.method}:${request.url} not found`,
+        error: 'Not Found',
+        statusCode: 404,
+      };
+    });
+  }
+
   plugin.seed(store, config);
 
   return { store, requestLog };
@@ -242,5 +277,7 @@ declare module 'fastify' {
   interface FastifyRequest {
     /** Truncated response-body summary captured in onSend for the request log. */
     logResponseSummary?: string;
+    /** Fidelity tier claimed by the handler that answered (default 'modeled'). */
+    mockFidelity?: Fidelity;
   }
 }

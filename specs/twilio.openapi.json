@@ -98,6 +98,64 @@
           }
         }
       }
+    },
+    "/2010-04-01/Accounts/{sid}.json": {
+      "get": {
+        "operationId": "fetchAccount",
+        "summary": "Fetch the Account resource",
+        "parameters": [
+          { "name": "sid", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "The account",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Account" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/2010-04-01/Accounts/{sid}/Balance.json": {
+      "get": {
+        "operationId": "fetchBalance",
+        "summary": "Fetch the account's current balance",
+        "parameters": [
+          { "name": "sid", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "The account balance",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Balance" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/2010-04-01/Accounts/{sid}/Calls/{callSid}/Recordings.json": {
+      "get": {
+        "operationId": "listCallRecordings",
+        "summary": "List recordings for a call",
+        "parameters": [
+          { "name": "sid", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "callSid", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paged list of recordings",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/RecordingList" }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -164,6 +222,60 @@
         "type": "object",
         "properties": {
           "calls": { "type": "array", "items": { "$ref": "#/components/schemas/Call" } },
+          "page": { "type": "integer", "example": 0 },
+          "page_size": { "type": "integer", "example": 50 },
+          "start": { "type": "integer", "example": 0 },
+          "end": { "type": "integer", "example": 0 },
+          "uri": { "type": "string" },
+          "first_page_uri": { "type": "string" },
+          "next_page_uri": { "type": ["string", "null"], "example": null },
+          "previous_page_uri": { "type": ["string", "null"], "example": null }
+        }
+      },
+      "Account": {
+        "type": "object",
+        "properties": {
+          "sid": { "type": "string", "example": "ACtest123456" },
+          "owner_account_sid": { "type": "string", "example": "ACtest123456" },
+          "friendly_name": { "type": "string", "example": "OpenFn Mock Account" },
+          "status": { "type": "string", "enum": ["active", "suspended", "closed"], "example": "active" },
+          "type": { "type": "string", "enum": ["Trial", "Full"], "example": "Full" },
+          "auth_token": { "type": "string", "example": "AUTHTOKENREDACTED000000000000000" },
+          "date_created": { "type": "string", "example": "Tue, 01 Jul 2026 12:00:00 +0000" },
+          "date_updated": { "type": "string", "example": "Tue, 01 Jul 2026 12:00:00 +0000" },
+          "uri": { "type": "string", "example": "/2010-04-01/Accounts/ACtest123456.json" }
+        }
+      },
+      "Balance": {
+        "type": "object",
+        "properties": {
+          "account_sid": { "type": "string", "example": "ACtest123456" },
+          "balance": { "type": "string", "example": "12.34" },
+          "currency": { "type": "string", "example": "USD" }
+        }
+      },
+      "Recording": {
+        "type": "object",
+        "properties": {
+          "sid": { "type": "string", "example": "RE00000000000000000000000000000000" },
+          "account_sid": { "type": "string", "example": "ACtest123456" },
+          "call_sid": { "type": "string", "example": "CA00000000000000000000000000000000" },
+          "status": { "type": "string", "enum": ["processing", "completed", "absent", "deleted"], "example": "completed" },
+          "channels": { "type": "integer", "example": 1 },
+          "source": { "type": "string", "example": "RecordVerb" },
+          "duration": { "type": "string", "example": "45" },
+          "price": { "type": ["string", "null"], "example": "-0.0025" },
+          "price_unit": { "type": "string", "example": "USD" },
+          "date_created": { "type": "string", "example": "Tue, 01 Jul 2026 12:00:00 +0000" },
+          "date_updated": { "type": "string", "example": "Tue, 01 Jul 2026 12:00:45 +0000" },
+          "uri": { "type": "string", "example": "/2010-04-01/Accounts/ACtest123456/Calls/CA00000000000000000000000000000000/Recordings/RE00000000000000000000000000000000.json" },
+          "api_version": { "type": "string", "example": "2010-04-01" }
+        }
+      },
+      "RecordingList": {
+        "type": "object",
+        "properties": {
+          "recordings": { "type": "array", "items": { "$ref": "#/components/schemas/Recording" } },
           "page": { "type": "integer", "example": 0 },
           "page_size": { "type": "integer", "example": 50 },
           "start": { "type": "integer", "example": 0 },

@@ -772,7 +772,7 @@ Every system mounts an admin API under its own path at `/<system>/_admin`:
 | Method | Path | Description |
 |--------|------|-------------|
 | GET | `/<system>/_admin/status` | `{ system, mountPath, uptime, recordCounts }`. |
-| GET | `/<system>/_admin/requests` | Last 100 requests for this system, oldest first. Each entry is `{ id, system, method, path, statusCode, durationMs, auth, bodySummary, responseSummary, timestamp }`. |
+| GET | `/<system>/_admin/requests` | Last 100 requests for this system, oldest first. Each entry is `{ id, system, method, path, statusCode, durationMs, auth, bodySummary, responseSummary, fidelity, timestamp }`. `fidelity` says which tier answered: a hand-written route (`modeled`), the spec-backed fallback (`spec`), a catch-all echo (`generic`), or nothing (`none`, a 404). |
 | GET | `/<system>/_admin/store` | Full in-memory store dump. |
 | POST | `/<system>/_admin/reset` | Clear the store and re-seed. |
 | POST | `/<system>/_admin/seed` | Re-seed without clearing. |
@@ -815,6 +815,15 @@ a runtime spec engine:
   of the real APIs, kept for authoring and review (see `specs/README.md`).
   They are not loaded at runtime unless a plugin chooses to (mailgun uses its
   spec for response shaping); a plugin's routes are ordinary Fastify handlers.
+- **The long tail is served by the spec-backed fallback.** A plugin with a
+  generic adaptor (`get(path)` can hit the whole real API) sets
+  `specFallback: true`: documented endpoints its handlers don't model are then
+  answered from its spec subset — schema-shaped, store-backed, with the spec's
+  status codes — instead of 404ing or getting a wrong generalized envelope.
+  Hand-written routes always win. Every response is tagged with the tier that
+  answered it (`fidelity: modeled | spec | generic | none` in the request log),
+  so tail traffic is visible and tells you what to hand-model next. See
+  `docs/decisions/001-long-tail-endpoint-coverage.md`.
 - **Shared helpers do the repetitive parts**: `registerCrud` and `paginate` in
   `src/engine/`, plus `registerFhirRoutes` and the XML-RPC codec in
   `src/systems/shared/` for whole families of systems (openIMIS, OpenELIS and
@@ -868,6 +877,7 @@ interface MockSystemPlugin {
   name: string;                 // stable key, matches the registry + mount path (e.g. 'dhis2')
   adaptorName?: string;         // npm adaptor short name when it differs from `name` (http-generic -> http)
   specFile?: string;            // pointer to a reference spec in specs/ (authoring aid, not runtime config)
+  specFallback?: boolean;       // serve unrouted requests from the spec subset (tagged fidelity 'spec')
   auth?: AuthRequirement;       // whether the mock returns 401 for anonymous requests (presence, not value)
   credential?: CredentialSpec;  // the OpenFn credential shape the sandbox renders + generates suggestions for
   guide?: SystemGuide;          // sandbox blurb + runnable API examples (authored in guide.ts)
