@@ -557,6 +557,26 @@ Every system is mounted at `/<name>` on the shared port. The credential URL fiel
 | openhim | `/openhim` | `apiUrl` | username & password | stable |
 | openboxes | `/openboxes` | `baseUrl` | username & password | stable |
 | ihris | `/ihris` | `baseUrl` | username & password | stable |
+| mpesa | `/mpesa` | `baseUrl` | API key | stable |
+| flutterwave | `/flutterwave` | `baseUrl` | API key | stable |
+| monnify | `/monnify` | `baseUrl` | API key | stable |
+| mtn-momo | `/mtn-momo` | `baseUrl` | API key | stable |
+| erpnext | `/erpnext` | `baseUrl` | API key | stable |
+| odoo | `/odoo` | `baseUrl` | username & password | stable |
+| vtiger | `/vtiger` | `hostUrl` | username & password | stable |
+| maximo | `/maximo` | `baseUrl` | username & password | stable |
+| satusehat | `/satusehat` | `baseUrl` | OAuth client credentials | stable |
+| senaite | `/senaite` | `baseUrl` | username & password | stable |
+| msupply | `/msupply` | `baseUrl` | username & password | stable |
+| ocl | `/ocl` | `baseUrl` | username & password | stable |
+| divoc | `/divoc` | `baseUrl` | API key | stable |
+| lamisplus | `/lamisplus` | `baseUrl` | email & password | stable |
+| et-mfr | `/et-mfr` | `baseUrl` | username & password | stable |
+| resourcemap | `/resourcemap` | `baseUrl` | username & password | stable |
+| ghana-nia | `/ghana-nia` | `baseUrl` | API key | stable |
+| ghana-bdr | `/ghana-bdr` | `baseUrl` | username & password | stable |
+| wigal-sms | `/wigal-sms` | `baseUrl` | API key | stable |
+| progres | `/progres` | `url` | API key | stable |
 | salesforce | `/salesforce` | — | — | planned |
 <!-- END GENERATED: supported-systems -->
 
@@ -651,6 +671,66 @@ Create (or edit) the credential for each adaptor and point its URL field at the 
 
 // iHRIS  (username & password)
 { "baseUrl": "http://localhost:4000/ihris", "username": "admin", "password": "<generated>" }
+
+// Safaricom M-Pesa (Daraja)  (API key)
+{ "baseUrl": "http://localhost:4000/mpesa", "short_code": "600000", "pass_key": "<generated>", "consumer_key": "<generated>", "consumer_secret": "<generated>" }
+
+// Flutterwave  (API key)
+{ "baseUrl": "http://localhost:4000/flutterwave", "secretKey": "<generated>" }
+
+// Monnify  (API key)
+{ "baseUrl": "http://localhost:4000/monnify", "apiKey": "MK_TEST_YRP3AJ7RQ2", "secretKey": "<generated>" }
+
+// MTN Mobile Money (MoMo)  (API key)
+{ "baseUrl": "http://localhost:4000/mtn-momo", "subscription_key": "<generated>", "api_key": "<generated>", "api_user": "0e7c8f3a-9d21-4b6e-8a4f-3c2d1e0f9a8b" }
+
+// ERPNext / Frappe  (API key)
+{ "baseUrl": "http://localhost:4000/erpnext", "apiKey": "<generated>", "apiSecret": "<generated>" }
+
+// Odoo  (username & password)
+{ "baseUrl": "http://localhost:4000/odoo", "username": "admin", "password": "<generated>", "database": "odoo" }
+
+// Vtiger CRM  (username & password)
+{ "hostUrl": "http://localhost:4000/vtiger", "username": "admin", "accessToken": "<generated>" }
+
+// IBM Maximo  (username & password)
+{ "baseUrl": "http://localhost:4000/maximo", "username": "maxadmin", "password": "<generated>" }
+
+// SATUSEHAT  (OAuth client credentials)
+{ "baseUrl": "http://localhost:4000/satusehat", "clientId": "<generated>", "clientSecret": "<generated>" }
+
+// SENAITE LIMS  (username & password)
+{ "baseUrl": "http://localhost:4000/senaite", "username": "admin", "password": "<generated>" }
+
+// mSupply / Open mSupply  (username & password)
+{ "baseUrl": "http://localhost:4000/msupply", "username": "admin", "password": "<generated>" }
+
+// OpenConceptLab (OCL)  (username & password)
+{ "baseUrl": "http://localhost:4000/ocl", "username": "admin", "password": "<generated>" }
+
+// DIVOC  (API key)
+{ "baseUrl": "http://localhost:4000/divoc", "access_token": "<generated>" }
+
+// LAMISPlus  (email & password)
+{ "baseUrl": "http://localhost:4000/lamisplus", "email": "admin@lamisplus.org", "password": "<generated>" }
+
+// Ethiopia MFR  (username & password)
+{ "baseUrl": "http://localhost:4000/et-mfr", "username": "admin", "password": "<generated>" }
+
+// Resource Map  (username & password)
+{ "baseUrl": "http://localhost:4000/resourcemap", "username": "admin", "password": "<generated>" }
+
+// Ghana NIA (National Identification Authority)  (API key)
+{ "baseUrl": "http://localhost:4000/ghana-nia", "merchantKey": "<generated>" }
+
+// Ghana Births & Deaths Registry (BDR)  (username & password)
+{ "baseUrl": "http://localhost:4000/ghana-bdr", "username": "admin", "password": "<generated>" }
+
+// Wigal SMS (Frog API)  (API key)
+{ "baseUrl": "http://localhost:4000/wigal-sms", "username": "openfn", "apiKey": "<generated>" }
+
+// UNHCR proGres v4  (API key)
+{ "url": "http://localhost:4000/progres", "key": "<generated>", "cert": "<generated>", "token": "<generated>" }
 ```
 <!-- END GENERATED: credentials -->
 

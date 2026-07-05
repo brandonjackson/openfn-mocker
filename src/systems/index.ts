@@ -20,6 +20,28 @@ import cht from './cht/plugin.js';
 import openhim from './openhim/plugin.js';
 import openboxes from './openboxes/plugin.js';
 import ihris from './ihris/plugin.js';
+// Popular commercial + DPG systems that expose a configurable base URL, so the
+// real adaptor can be pointed at the mock and driven end to end.
+import mpesa from './mpesa/plugin.js';
+import flutterwave from './flutterwave/plugin.js';
+import monnify from './monnify/plugin.js';
+import mtnMomo from './mtn-momo/plugin.js';
+import erpnext from './erpnext/plugin.js';
+import odoo from './odoo/plugin.js';
+import vtiger from './vtiger/plugin.js';
+import maximo from './maximo/plugin.js';
+import satusehat from './satusehat/plugin.js';
+import senaite from './senaite/plugin.js';
+import msupply from './msupply/plugin.js';
+import ocl from './ocl/plugin.js';
+import divoc from './divoc/plugin.js';
+import lamisplus from './lamisplus/plugin.js';
+import etMfr from './et-mfr/plugin.js';
+import resourcemap from './resourcemap/plugin.js';
+import ghanaNia from './ghana-nia/plugin.js';
+import ghanaBdr from './ghana-bdr/plugin.js';
+import wigalSms from './wigal-sms/plugin.js';
+import progres from './progres/plugin.js';
 
 /** Registry of all mock system plugins, keyed by system name (== config key). */
 export const plugins: Record<string, MockSystemPlugin> = {
@@ -45,4 +67,26 @@ export const plugins: Record<string, MockSystemPlugin> = {
   openhim,
   openboxes,
   ihris,
+  // Popular systems with a configurable base URL (payments, ERP/CRM, health,
+  // registries, gov-ID & messaging) added in the second expansion.
+  mpesa,
+  flutterwave,
+  monnify,
+  'mtn-momo': mtnMomo,
+  erpnext,
+  odoo,
+  vtiger,
+  maximo,
+  satusehat,
+  senaite,
+  msupply,
+  ocl,
+  divoc,
+  lamisplus,
+  'et-mfr': etMfr,
+  resourcemap,
+  'ghana-nia': ghanaNia,
+  'ghana-bdr': ghanaBdr,
+  'wigal-sms': wigalSms,
+  progres,
 };
