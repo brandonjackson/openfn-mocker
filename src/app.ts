@@ -1,7 +1,7 @@
 import Fastify, { type FastifyInstance } from 'fastify';
 import { registerSystem, fastifyServerOptions } from './server.js';
 import { plugins } from './systems/index.js';
-import { makeLogLevel } from './logger.js';
+import { makeLogLevel, type RequestLog } from './logger.js';
 import { renderSandboxPage, wantsHtml } from './sandbox.js';
 import { seedForDataset, DEFAULT_DATASET } from './datasets.js';
 import type { MockerConfig } from './config.js';
@@ -13,6 +13,7 @@ export interface RunningSystem {
   name: string;
   mountPath: string;
   store: DataStore;
+  requestLog: RequestLog;
   plugin: MockSystemPlugin;
   config: SystemConfig;
 }
@@ -60,8 +61,10 @@ export async function buildServer(
 
     await app.register(
       async (instance) => {
-        const { store } = await registerSystem(instance, seededPlugin, sysConfig, { mountPath });
-        running.push({ name, mountPath, store, plugin: seededPlugin, config: sysConfig });
+        const { store, requestLog } = await registerSystem(instance, seededPlugin, sysConfig, {
+          mountPath,
+        });
+        running.push({ name, mountPath, store, requestLog, plugin: seededPlugin, config: sysConfig });
       },
       { prefix: mountPath }
     );
@@ -90,6 +93,21 @@ export async function buildServer(
   app.get('/_admin/systems', async () =>
     running.map((r) => ({ name: r.name, path: r.mountPath, status: 'running' }))
   );
+
+  // Aggregated request log across every mounted system, most-recent FIRST. Each
+  // system keeps its own 100-entry ring buffer (served at /<system>/_admin/requests,
+  // oldest-first); this merges them into one strictly-ordered timeline using the
+  // process-wide sequence id. Powers the sandbox "Request log" view, which polls
+  // it to live-update. `?limit=` caps how many recent entries come back
+  // (default 200); `?system=` narrows to a single system.
+  app.get('/_admin/requests', async (request) => {
+    const q = (request.query ?? {}) as { limit?: string; system?: string };
+    const limit = Math.min(2000, Math.max(1, Number.parseInt(q.limit ?? '', 10) || 200));
+    const source = q.system ? running.filter((r) => r.name === q.system) : running;
+    const all = source.flatMap((r) => r.requestLog.list());
+    all.sort((a, b) => b.id - a.id);
+    return all.slice(0, limit);
+  });
   app.post('/_admin/reset-all', async () => {
     for (const r of running) {
       r.store.reset();

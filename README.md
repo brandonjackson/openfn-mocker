@@ -145,6 +145,14 @@ browser, so you can **Copy** the whole credential straight into OpenFn (hit
 **Regenerate** for a new set). The card also shows whether the mock *enforces*
 the credential (returns `401` when it is missing) or accepts anonymous requests.
 
+**Live request log.** A **Request log** view (in the left-hand nav, next to the
+request console) shows every request the mock has served across all systems,
+newest first, and live-updates as new ones arrive. Type in the search bar to
+filter by method, path, system, status, or body, and click any row to expand the
+captured request and response (auth, request body, response body, status, and
+duration) for troubleshooting a workflow without leaving the browser. It reads
+the aggregated [`GET /_admin/requests`](#admin-api) endpoint.
+
 The root path content-negotiates: browsers (`Accept: text/html`) get the
 sandbox; API clients (`curl`, the OpenFn adaptors) still get the documented
 JSON index, so nothing about programmatic use changes.
@@ -764,7 +772,7 @@ Every system mounts an admin API under its own path at `/<system>/_admin`:
 | Method | Path | Description |
 |--------|------|-------------|
 | GET | `/<system>/_admin/status` | `{ system, mountPath, uptime, recordCounts }`. |
-| GET | `/<system>/_admin/requests` | Last 100 requests (method, path, status, auth, body summary, timestamp). |
+| GET | `/<system>/_admin/requests` | Last 100 requests for this system, oldest first. Each entry is `{ id, system, method, path, statusCode, durationMs, auth, bodySummary, responseSummary, timestamp }`. |
 | GET | `/<system>/_admin/store` | Full in-memory store dump. |
 | POST | `/<system>/_admin/reset` | Clear the store and re-seed. |
 | POST | `/<system>/_admin/seed` | Re-seed without clearing. |
@@ -775,7 +783,10 @@ Root routes on the shared port aggregate across systems:
 |--------|------|-------------|
 | GET | `/` | Browser (`Accept: text/html`): interactive API sandbox. API clients: `{ name, systems: [{ name, path }] }`. |
 | GET | `/_admin/systems` | `[{ name, path, status }]` for every mounted system. |
+| GET | `/_admin/requests` | Recent requests across **all** systems, **most recent first**, merged into one timeline. `?limit=` caps how many come back (default 200, max 2000); `?system=` narrows to one system. Powers the sandbox's live [Request log](#browser-sandbox). |
 | POST | `/_admin/reset-all` | Reset every enabled system's store. |
+
+Every request the mock serves is captured with its response — status code, duration, and a truncated body summary — so the log doubles as a request/response trace for troubleshooting a workflow.
 
 Examples:
 
@@ -783,6 +794,9 @@ Examples:
 curl http://localhost:4000/_admin/systems
 curl http://localhost:4000/dhis2/_admin/status
 curl http://localhost:4000/dhis2/_admin/requests
+# Aggregated, newest-first, across every system:
+curl 'http://localhost:4000/_admin/requests?limit=50'
+curl 'http://localhost:4000/_admin/requests?system=dhis2'
 curl -X POST http://localhost:4000/_admin/reset-all
 ```
 
