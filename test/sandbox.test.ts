@@ -96,7 +96,83 @@ describe('root index content negotiation', () => {
   });
 });
 
+describe('aggregated request log (GET /_admin/requests)', () => {
+  const dhis2Auth = 'Basic ' + Buffer.from('admin:mock').toString('base64');
+
+  it('merges every system into one newest-first timeline, with request+response captured', async () => {
+    const app = await boot();
+    // Fire a spread of requests across systems, in a known order.
+    await app.inject({ method: 'GET', url: '/dhis2/api/organisationUnits', headers: { authorization: dhis2Auth } });
+    await app.inject({ method: 'GET', url: '/fhir/Patient' });
+    await app.inject({ method: 'GET', url: '/dhis2/api/organisationUnits' }); // 401, no auth
+    await app.inject({
+      method: 'POST',
+      url: '/fhir/Patient',
+      headers: { 'content-type': 'application/json' },
+      payload: { resourceType: 'Patient', name: [{ family: 'Logtest' }] },
+    });
+
+    const res = await app.inject({ method: 'GET', url: '/_admin/requests' });
+    expect(res.statusCode).toBe(200);
+    const log = res.json();
+    expect(Array.isArray(log)).toBe(true);
+    expect(log.length).toBeGreaterThanOrEqual(4);
+
+    // Most-recent first: ids strictly descending.
+    for (let i = 1; i < log.length; i++) {
+      expect(log[i - 1].id).toBeGreaterThan(log[i].id);
+    }
+
+    // The last request fired (the POST) is the newest entry.
+    expect(log[0]).toMatchObject({ system: 'fhir', method: 'POST', path: '/fhir/Patient', statusCode: 201 });
+    // Every entry carries the enriched shape.
+    for (const e of log) {
+      expect(e).toHaveProperty('id');
+      expect(e).toHaveProperty('system');
+      expect(e).toHaveProperty('durationMs');
+      expect(e).toHaveProperty('responseSummary');
+      expect(typeof e.durationMs).toBe('number');
+    }
+
+    // The captured response summary reflects what the mock returned.
+    const created = log.find((e: any) => e.method === 'POST');
+    expect(created.responseSummary).toContain('Patient');
+    const unauthorized = log.find((e: any) => e.statusCode === 401);
+    expect(unauthorized.responseSummary).toContain('Unauthorized');
+
+    // More than one system appears in the merged view.
+    expect(new Set(log.map((e: any) => e.system)).size).toBeGreaterThan(1);
+  });
+
+  it('filters by ?system= and caps with ?limit=', async () => {
+    const app = await boot();
+    await app.inject({ method: 'GET', url: '/dhis2/api/organisationUnits', headers: { authorization: dhis2Auth } });
+    await app.inject({ method: 'GET', url: '/fhir/Patient' });
+    await app.inject({ method: 'GET', url: '/fhir/metadata' });
+
+    const fhirOnly = (await app.inject({ method: 'GET', url: '/_admin/requests?system=fhir' })).json();
+    expect(fhirOnly.length).toBeGreaterThan(0);
+    expect(fhirOnly.every((e: any) => e.system === 'fhir')).toBe(true);
+
+    const limited = (await app.inject({ method: 'GET', url: '/_admin/requests?limit=1' })).json();
+    expect(limited.length).toBe(1);
+  });
+});
+
 describe('renderSandboxPage', () => {
+  it('renders a Request log view that polls the aggregated endpoint and lives in the nav', () => {
+    const html = renderSandboxPage([{ name: 'dhis2', mountPath: '/dhis2' }]);
+    // Nav link + page container for the log view.
+    expect(html).toContain('Request log');
+    expect(html).toContain('#requestlog');
+    // The client fetches the aggregated, most-recent-first admin endpoint.
+    expect(html).toContain('/_admin/requests?limit=');
+    // Live polling + search filtering are wired in the client.
+    expect(html).toContain('function fetchLog(');
+    expect(html).toContain('function logMatch(');
+    expect(html).toContain('function buildLogPage(');
+  });
+
   it('prefixes example paths with the mount path', () => {
     const html = renderSandboxPage([{ name: 'dhis2', mountPath: '/dhis2' }]);
     expect(html).toContain('/dhis2/api/organisationUnits');

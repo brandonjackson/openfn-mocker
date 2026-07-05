@@ -1,7 +1,7 @@
 import Fastify, { type FastifyInstance } from 'fastify';
 import formbody from '@fastify/formbody';
 import { DataStore } from './store.js';
-import { RequestLog, summarizeBody, makeLogLevel } from './logger.js';
+import { RequestLog, summarizeBody, summarizeResponse, makeLogLevel } from './logger.js';
 import { authPlugin, enforceAuth } from './auth.js';
 import { registerBehavior } from './behavior.js';
 import { registerAdminRoutes } from './admin.js';
@@ -116,6 +116,13 @@ export async function registerSystem(
   // this never changes behavior when the mock is hit directly.
   const internalOrigin = `http://localhost:${config.port}`;
   app.addHook('onSend', async (request, reply, payload) => {
+    // Stash a truncated response-body summary for the request log; the
+    // onResponse hook that records the entry does not receive the payload.
+    // Captured before self-URL rewriting, which (for a deployed, proxied
+    // instance) only swaps the origin in self-referential URLs — immaterial
+    // to a troubleshooting summary.
+    request.logResponseSummary = summarizeResponse(payload);
+
     if (!isProxied(request)) return payload;
     const origin = externalOrigin(request, config.port);
     if (origin === internalOrigin) return payload;
@@ -134,11 +141,14 @@ export async function registerSystem(
   // Record every response into the ring buffer for /_admin/requests.
   app.addHook('onResponse', async (request, reply) => {
     requestLog.record({
+      system: plugin.name,
       method: request.method,
       path: (request.url ?? '').split('?')[0],
       statusCode: reply.statusCode,
+      durationMs: Math.round(reply.elapsedTime),
       auth: request.mockAuth ?? { type: 'none' },
       bodySummary: summarizeBody(request.body),
+      responseSummary: request.logResponseSummary ?? '',
       timestamp: new Date().toISOString(),
     });
   });
@@ -226,4 +236,11 @@ export async function createSystemServer(
   }
 
   return { app, store, requestLog };
+}
+
+declare module 'fastify' {
+  interface FastifyRequest {
+    /** Truncated response-body summary captured in onSend for the request log. */
+    logResponseSummary?: string;
+  }
 }

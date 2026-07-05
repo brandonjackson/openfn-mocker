@@ -349,7 +349,7 @@ const STYLES = [
   'font-size:12.5px;overflow-x:auto}',
   '.ex{border-top:1px solid var(--border-soft);padding:14px 0}',
   '.ex-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}',
-  '.m{font-size:11px;font-weight:700;letter-spacing:.04em;color:#fff;border-radius:5px;padding:3px 7px;min-width:56px;text-align:center}',
+  '.m{font-size:11px;font-weight:700;letter-spacing:.04em;color:#fff;background:var(--muted);border-radius:5px;padding:3px 7px;min-width:56px;text-align:center}',
   '.m.GET{background:var(--get)}.m.POST{background:var(--post)}.m.PUT{background:var(--put)}',
   '.m.PATCH{background:var(--patch)}.m.DELETE{background:var(--delete)}',
   '.ex .path{flex:1;min-width:200px;font-size:13px;color:var(--ink);background:var(--wash)}',
@@ -384,6 +384,35 @@ const STYLES = [
   'border-radius:var(--radius);font-size:12.5px;overflow-x:auto;white-space:pre-wrap;word-break:break-word}',
   '.use-link{margin-top:10px}',
   '.empty{color:var(--muted);padding:10px 0}',
+  // Request log view: a live-updating, searchable, newest-first table of every
+  // request the mock has served across all systems. Rows collapse/expand to show
+  // the auth, request body and response body captured for troubleshooting.
+  'section.log{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);',
+  'padding:22px 22px 18px;box-shadow:var(--shadow);}',
+  'section.log h2{margin:0 0 4px;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}',
+  '.log-controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:12px 0}',
+  '.log-search{flex:1;min-width:220px}',
+  '.log-statusline{margin-left:auto;white-space:nowrap}',
+  '.log-list{border:1px solid var(--border);border-radius:var(--radius);overflow:auto;max-height:65vh;background:#fff}',
+  '.log-list .empty{padding:16px 14px}',
+  '.log-row{border-bottom:1px solid var(--border-soft)}',
+  '.log-row:last-child{border-bottom:none}',
+  '.log-row-head{display:flex;align-items:center;gap:10px;padding:8px 12px;cursor:pointer}',
+  '.log-row-head:hover{background:var(--wash)}',
+  '.log-tri{color:var(--muted);font-size:10px;flex:none;width:10px;transition:transform .15s}',
+  '.log-row.open .log-tri{transform:rotate(90deg)}',
+  '.log-time{color:var(--muted);font-size:12px;flex:none}',
+  '.log-sys{font-size:12px;color:var(--accent-strong);background:var(--accent-soft);border:1px solid #cfe3fb;',
+  'border-radius:5px;padding:1px 7px;flex:none}',
+  '.log-path{flex:1;min-width:0;font-size:12.5px;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
+  '.log-dur{flex:none;font-size:12px}',
+  '.log-row .pill{flex:none;font-size:12px}',
+  '.log-detail{display:none;padding:4px 12px 14px 32px;background:var(--wash);border-top:1px solid var(--border-soft)}',
+  '.log-row.open .log-detail{display:block}',
+  '.log-f{font-size:13px;color:var(--muted);margin:6px 0}',
+  '.log-f b{color:var(--ink);font-weight:600;margin-right:6px}',
+  '.log-body{margin:4px 0 0;padding:10px 12px;background:var(--code);color:var(--code-ink);border-radius:var(--radius);',
+  'font-size:12.5px;overflow:auto;max-height:280px;white-space:pre-wrap;word-break:break-word}',
   // Footer: OpenFn dark slate with light links.
   'footer.foot{background:var(--footer);color:var(--footer-ink);padding:32px 24px;margin-top:8px}',
   'footer.foot .foot-note{margin:0 0 10px;font-size:13.5px;text-align:center}',
@@ -532,6 +561,99 @@ const CLIENT_JS = [
   // Navigate to the console page (fires the router); if already there just jump up.
   'if(currentId()!=="console"){window.location.hash="#console";}else{window.scrollTo(0,0);}};',
   'return sec;}',
+  // ---- Request log: live, searchable, newest-first view of every request. ----
+  // State is a small module-level object; the page below reads/writes it.
+  'var logState={entries:[],filter:"",live:true,open:{},loading:false};',
+  // HH:MM:SS from an ISO timestamp (falls back to the raw value if unparseable).
+  'function fmtTime(iso){var d=new Date(iso);return isNaN(d.getTime())?String(iso||""):',
+  'd.toTimeString().slice(0,8);}',
+  // Colour a status pill: 2xx/3xx are ok (green), everything else err (red) so
+  // failures jump out — the whole point of a troubleshooting log.
+  'function logStatusClass(code){return code>=200&&code<400?"ok":"err";}',
+  // Compact one-line description of the parsed credential the request carried.
+  'function logAuthLabel(a){if(!a||!a.type||a.type==="none"){return "none";}',
+  'var extra=a.username||a.key||a.token;if(extra&&extra.length>40){extra=extra.slice(0,39)+"\\u2026";}',
+  'return extra?a.type+" ("+extra+")":a.type;}',
+  // Does an entry match the (already lower-cased) search query?
+  'function logMatch(e,q){var hay=(e.method+" "+e.system+" "+e.path+" "+e.statusCode+" "+',
+  '(e.bodySummary||"")+" "+(e.responseSummary||"")+" "+logAuthLabel(e.auth)).toLowerCase();',
+  'return hay.indexOf(q)!==-1;}',
+  // A labelled key/value line inside the expanded detail.
+  'function logField(label,val){return rich("div","log-f",[bold(label),val]);}',
+  // A labelled code block (request/response body) inside the expanded detail.
+  'function logPre(label,text){var w=el("div","log-f");w.appendChild(bold(label));',
+  'w.appendChild(el("pre","log-body",text));return w;}',
+  // One log row: a clickable head (time, method, system, path, status, duration)
+  // over a detail panel that expands in place. Expanded state is keyed by the
+  // entry id so it survives live re-renders.
+  'function buildLogRow(e){var row=el("div","log-row");',
+  'var head=el("div","log-row-head");',
+  'head.appendChild(el("span","log-tri","\\u25B8"));',
+  'head.appendChild(el("span","log-time mono",fmtTime(e.timestamp)));',
+  'head.appendChild(el("span","m "+e.method,e.method));',
+  'head.appendChild(el("span","log-sys",e.system));',
+  'head.appendChild(el("span","log-path mono",e.path));',
+  'head.appendChild(el("span","pill "+logStatusClass(e.statusCode),String(e.statusCode)));',
+  'head.appendChild(el("span","dim log-dur",e.durationMs+" ms"));',
+  'row.appendChild(head);',
+  'var det=el("div","log-detail");',
+  'det.appendChild(logField("Time",new Date(e.timestamp).toLocaleString()));',
+  'det.appendChild(logField("Auth",logAuthLabel(e.auth)));',
+  'if(e.bodySummary){det.appendChild(logPre("Request body",e.bodySummary));}',
+  'det.appendChild(logPre("Response",e.responseSummary||"(empty body)"));',
+  'row.appendChild(det);',
+  'if(logState.open[e.id]){row.className="log-row open";}',
+  'head.addEventListener("click",function(){',
+  'if(row.classList.toggle("open")){logState.open[e.id]=true;}else{delete logState.open[e.id];}});',
+  'return row;}',
+  // Render the (filtered) entries into the list and refresh the status line.
+  // `preserve` keeps the scroll position when newest entries prepend during a
+  // live refresh; a filter change passes false so results start from the top.
+  'function renderLog(preserve){var listEl=document.getElementById("log-list");if(!listEl)return;',
+  'var q=logState.filter.trim().toLowerCase();',
+  'var items=q?logState.entries.filter(function(e){return logMatch(e,q);}):logState.entries;',
+  'var prevTop=listEl.scrollTop,prevH=listEl.scrollHeight;',
+  'listEl.innerHTML="";',
+  'if(!items.length){listEl.appendChild(el("p","empty",logState.entries.length?',
+  '"No requests match your search.":',
+  '"No requests recorded yet. Fire one from the Request console or a system\\u2019s API tab and it will appear here."));}',
+  'else{for(var i=0;i<items.length;i++){listEl.appendChild(buildLogRow(items[i]));}}',
+  'if(preserve&&prevTop>4){listEl.scrollTop=prevTop+(listEl.scrollHeight-prevH);}',
+  'var st=document.getElementById("log-statusline");',
+  'if(st){var total=logState.entries.length;',
+  'var txt=q?items.length+" of "+total+" requests":total+" request"+(total===1?"":"s");',
+  'st.textContent=txt+(logState.live?" \\u00b7 live":" \\u00b7 paused");}}',
+  // Fetch the aggregated log from the root admin endpoint. During a live poll
+  // (`preserve` true) we only re-render when something actually changed, to
+  // avoid churning the list while the user reads it.
+  'function fetchLog(preserve){if(logState.loading)return;logState.loading=true;',
+  'fetch(ORIGIN+"/_admin/requests?limit=300").then(function(r){return r.json();}).then(function(data){',
+  'logState.loading=false;if(!Array.isArray(data)){return;}',
+  'var topId=data.length?data[0].id:0;var prevId=logState.entries.length?logState.entries[0].id:0;',
+  'var changed=topId!==prevId||data.length!==logState.entries.length;',
+  'logState.entries=data;if(changed||!preserve){renderLog(preserve);}',
+  '}).catch(function(){logState.loading=false;',
+  'var st=document.getElementById("log-statusline");if(st){st.textContent="Could not load the request log.";}});}',
+  // The Request log page: search box + live/refresh controls over the list.
+  'function buildLogPage(){var sec=el("section","log page");sec.id="requestlog";',
+  'sec.appendChild(el("h2",null,"Request log"));',
+  'sec.appendChild(el("p","blurb","Every request the mock has served, newest first, across all systems. ',
+  'Live-updates as requests arrive \\u2014 search to filter, click a row to inspect its request and response."));',
+  'var ctrls=el("div","log-controls");',
+  'var search=el("input","path log-search");search.type="text";',
+  'search.placeholder="Search method, path, system, status, or body\\u2026";',
+  'search.addEventListener("input",function(){logState.filter=search.value;renderLog(false);});',
+  'var pause=el("button","ghost","Pause");',
+  'pause.addEventListener("click",function(){logState.live=!logState.live;',
+  'pause.textContent=logState.live?"Pause":"Resume";',
+  'if(logState.live){fetchLog(false);}else{renderLog(false);}});',
+  'var refresh=el("button","ghost","Refresh");',
+  'refresh.addEventListener("click",function(){fetchLog(false);});',
+  'var status=el("span","dim log-statusline");status.id="log-statusline";status.textContent="\\u2026";',
+  'ctrls.appendChild(search);ctrls.appendChild(pause);ctrls.appendChild(refresh);ctrls.appendChild(status);',
+  'sec.appendChild(ctrls);',
+  'var list=el("div","log-list");list.id="log-list";sec.appendChild(list);',
+  'return sec;}',
   // A single example row (editable path + body, inline response).
   // One runnable API example. `sysName` + `ex.id` give it a stable DOM id so a
   // Usage-tab entry can jump to (and flash) the request its function calls.
@@ -670,7 +792,9 @@ const CLIENT_JS = [
   'function buildSidebar(){',
   'var nav=el("nav","sidebar-inner");',
   'var g=el("ul","nav-list");var li=el("li");var a=el("a",null,"Request console");',
-  'a.href="#console";li.appendChild(a);g.appendChild(li);nav.appendChild(g);',
+  'a.href="#console";li.appendChild(a);g.appendChild(li);',
+  'var li0=el("li");var a0=el("a",null,"Request log");a0.href="#requestlog";',
+  'li0.appendChild(a0);g.appendChild(li0);nav.appendChild(g);',
   'if(DATA.systems.length){',
   'nav.appendChild(el("div","nav-group","Systems"));',
   'var s=el("ul","nav-list");',
@@ -693,7 +817,9 @@ const CLIENT_JS = [
   'var links=document.querySelectorAll(".nav-list a");',
   'for(var j=0;j<links.length;j++){var href=links[j].getAttribute("href")||"";',
   'if(href==="#"+id){links[j].classList.add("active");}else{links[j].classList.remove("active");}}',
-  'window.scrollTo(0,0);}',
+  'window.scrollTo(0,0);',
+  // Landing on the log fetches immediately so it is fresh without waiting for a poll.
+  'if(id==="requestlog"){fetchLog(false);}}',
   // Boot.
   'function boot(){',
   'var base=document.getElementById("base-url");if(base)base.textContent=ORIGIN;',
@@ -702,9 +828,13 @@ const CLIENT_JS = [
   'var consolePage=buildConsole();',
   'if(!DATA.systems.length){consolePage.appendChild(el("p","loading","No systems are enabled."));}',
   'app.appendChild(consolePage);',
+  // The request-log page lives right after the console; the router shows one page.
+  'app.appendChild(buildLogPage());',
   // One page per system; the router shows just one at a time.
   'for(var i=0;i<DATA.systems.length;i++){app.appendChild(buildSystem(DATA.systems[i]));}',
   'window.addEventListener("hashchange",showPage);',
+  // Poll the aggregated log while the log page is the active one and live is on.
+  'setInterval(function(){if(logState.live&&currentId()==="requestlog"){fetchLog(true);}},2000);',
   'showPage();}',
   'if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",boot);}else{boot();}',
   '})();',
