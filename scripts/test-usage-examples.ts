@@ -30,9 +30,10 @@
  * The set of systems under test is discovered automatically, so any system that
  * gains a `usage` block is covered without touching this file. Adaptors that
  * can't yet be driven end to end against the mock (the gaps tracked in the
- * README's Roadmap — Twilio/Mailgun ignore the base URL, OAuth systems need a
- * token handshake) will surface here as failures, which is the point: this is
- * the empirical check behind that Roadmap.
+ * README's Roadmap) will surface here as failures, which is the point: this is
+ * the empirical check behind that Roadmap. A few (Mailgun, OpenCRVS) call
+ * hostnames the mock isn't otherwise reachable at; see
+ * `scripts/lib/host-alias-proxy.ts` and the README's "Local network aliasing".
  *
  * Run with `pnpm test:usage` (see package.json). Requires network access (to
  * install the CLI's adaptors from npm) and the `openfn` CLI on PATH, or set
@@ -63,6 +64,7 @@ import { loadConfig } from '../src/config.js';
 import { plugins } from '../src/systems/index.js';
 import { resolveCredentialValues, systemVars } from '../src/credentials.js';
 import type { MockSystemPlugin, SystemConfig, UsageExample } from '../src/systems/types.js';
+import { startAliasProxy } from './lib/host-alias-proxy.js';
 
 /* The CLI expands a short name like `openspp` to `@openfn/language-openspp`
  * and auto-installs it. The mapping lives on each plugin (`adaptorName`,
@@ -112,10 +114,11 @@ function parseArgs(argv: string[]): Args {
 function resolveConfiguration(
   plugin: MockSystemPlugin,
   origin: string,
-  config: SystemConfig
+  config: SystemConfig,
+  hostValue?: string
 ): Record<string, unknown> {
   const vars = { ...systemVars(plugin.guide, config), ORIGIN: origin };
-  return resolveCredentialValues(plugin.credential, { url: origin, vars });
+  return resolveCredentialValues(plugin.credential, { url: origin, hostValue, vars });
 }
 
 /** Boot one system, mounted at the root, on an ephemeral loopback port. */
@@ -147,7 +150,7 @@ async function startSystem(system: string, plugin: MockSystemPlugin) {
   const addr = app.server.address();
   const port = typeof addr === 'object' && addr ? addr.port : 0;
   const origin = `http://127.0.0.1:${port}`;
-  return { app, origin, config };
+  return { app, origin, port, config };
 }
 
 interface CliCmd {
@@ -213,7 +216,8 @@ function runExample(
   ex: UsageExample,
   configuration: Record<string, unknown>,
   dir: string,
-  repoDir: string
+  repoDir: string,
+  extraEnv?: Record<string, string>
 ): Promise<RunResult> {
   const safe = ex.fn.replace(/[^a-zA-Z0-9_-]/g, '_');
   const jobPath = join(dir, `${safe}.js`);
@@ -233,7 +237,7 @@ function runExample(
     // (~80s) — defeating the timeout.
     const child = spawn(cli.command, args, {
       detached: true,
-      env: { ...process.env, OPENFN_REPO_DIR: repoDir },
+      env: { ...process.env, OPENFN_REPO_DIR: repoDir, ...extraEnv },
     });
     let out = '';
     const collect = (buf: Buffer) => {
@@ -421,20 +425,26 @@ async function main(): Promise<void> {
     const dir = join(workDir, system);
     mkdirSync(dir, { recursive: true });
 
-    const { app, origin, config } = await startSystem(system, plugin);
-    const configuration = resolveConfiguration(plugin, origin, config);
+    const { app, origin, port, config } = await startSystem(system, plugin);
+    // Some adaptors (Mailgun, OpenCRVS) call hostnames the mock isn't otherwise
+    // reachable at; see scripts/lib/host-alias-proxy.ts and the README's "Local
+    // network aliasing". Systems without `hostAliases` get `undefined` here and
+    // behave exactly as before.
+    const alias = await startAliasProxy(plugin, port);
+    const configuration = resolveConfiguration(plugin, origin, config, alias?.hostValue);
     console.log(`── ${system} @ ${origin}  (adaptor: ${adaptor}, ${usage.length} example(s))`);
 
     try {
       for (const ex of usage) {
         await resetMock(origin);
-        const r = await runExample(cli, adaptor, ex, configuration, dir, repoDir);
+        const r = await runExample(cli, adaptor, ex, configuration, dir, repoDir, alias?.env);
         r.system = system;
         results.push(r);
         const mark = r.ok ? '✓ PASS' : '✗ FAIL';
         console.log(`   ${mark}  ${ex.fn.padEnd(22)} ${String(r.ms).padStart(5)}ms  ${r.detail}`);
       }
     } finally {
+      await alias?.close();
       await app.close();
     }
   }

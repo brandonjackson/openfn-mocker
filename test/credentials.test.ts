@@ -11,8 +11,10 @@ describe('per-plugin credential spec', () => {
       expect(cred, `${name} should declare a credential`).toBeDefined();
       expect(TYPES).toContain(cred!.type);
       expect(cred!.fields.length, `${name} needs at least one field`).toBeGreaterThan(0);
-      const urlFields = cred!.fields.filter((f) => f.role === 'url');
-      expect(urlFields.length, `${name} needs exactly one url field`).toBe(1);
+      // 'host' is a bare host[:port] variant of 'url' (see CredentialFieldRole)
+      // for adaptors that derive their own per-service hosts from it.
+      const urlFields = cred!.fields.filter((f) => f.role === 'url' || f.role === 'host');
+      expect(urlFields.length, `${name} needs exactly one url/host field`).toBe(1);
     }
   });
 
@@ -22,8 +24,9 @@ describe('per-plugin credential spec', () => {
         if (f.role === 'secret') {
           expect(f.secret, `${name}.${f.name} secret needs a shape`).toBeDefined();
           expect(f.value, `${name}.${f.name} secret must not hardcode a value`).toBeUndefined();
-        } else if (f.role !== 'url') {
-          // url values are filled in by the sandbox from the mount path.
+        } else if (f.role !== 'url' && f.role !== 'host') {
+          // url/host values are filled in by the sandbox from the mount path
+          // (url) or the bare origin (host).
           expect(typeof f.value, `${name}.${f.name} needs a value`).toBe('string');
         }
       }

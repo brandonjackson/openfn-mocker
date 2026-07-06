@@ -56,6 +56,15 @@ export function generateSecret(shape: CredentialSecretShape | undefined): string
 export interface ResolveCredentialValuesOptions {
   /** Value for the credential's `url` field (mock origin, plus mount when prefixed). */
   url: string;
+  /**
+   * Value for the credential's `host` field (bare host[:port], no scheme or
+   * mount path). Defaults to `url` verbatim when omitted, which reproduces the
+   * historical behavior (a scheme/path landing inside a hostname the adaptor
+   * concatenates) — fine for callers that just need a placeholder (doc
+   * generation); a real end-to-end run should pass the actual bare host that
+   * the adaptor's derived per-service hosts need to resolve to.
+   */
+  hostValue?: string;
   /** `{{token}}` vars for non-secret field values (see systemVars). */
   vars?: Record<string, string>;
   /** Secret supplier; defaults to generateSecret. The README generator passes a placeholder. */
@@ -77,6 +86,7 @@ export function resolveCredentialValues(
   const out: Record<string, string> = {};
   for (const f of spec.fields) {
     if (f.role === 'url') out[f.name] = opts.url;
+    else if (f.role === 'host') out[f.name] = opts.hostValue ?? opts.url;
     else if (f.role === 'secret') out[f.name] = secret(f.secret);
     else out[f.name] = interpolate(f.value ?? '', vars);
   }

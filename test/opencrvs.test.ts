@@ -58,4 +58,16 @@ describe('opencrvs', () => {
     expect(res.json().status).toBe('received');
     await app.close();
   });
+
+  it('mints an access token for the OAuth client-credentials exchange', async () => {
+    const { app } = await createSystemServer(opencrvs, config, { logLevel: 'silent' });
+    const res = await app.inject({
+      method: 'POST',
+      url: '/token',
+      payload: { grant_type: 'client_credentials', client_id: 'x', client_secret: 'y' },
+    });
+    expect(res.statusCode).toBe(200);
+    expect(typeof res.json().access_token).toBe('string');
+    await app.close();
+  });
 });
