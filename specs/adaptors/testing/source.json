@@ -1,0 +1,13 @@
+{
+  "adaptor": "testing",
+  "npm": "@openfn/language-testing",
+  "origin": "synthesized",
+  "upstreamFormat": "adaptor-surface",
+  "sources": [
+    "https://cdn.jsdelivr.net/npm/@openfn/language-testing/ast.json",
+    "https://cdn.jsdelivr.net/npm/@openfn/language-testing/types/index.d.ts",
+    "https://github.com/OpenFn/adaptors/tree/main/packages/testing"
+  ],
+  "capturedAt": "2026-07-06",
+  "notes": "Synthesized from adaptor surface; testing is a dev/test harness with no external vendor API. Its real surface is minimal: version() plus fn/combine/log re-exported from @openfn/language-common. Modelled each operation as an httpbin-style endpoint (fn, combine, log, version, get/post echo, status simulation) against a localhost:4010 mock placeholder so the mocker has a concrete surface. Schemas (State, LogRequest, LogEntry, Version, EchoResponse, StatusResponse) are invented; no real endpoints, paths, auth, or field names exist upstream."
+}

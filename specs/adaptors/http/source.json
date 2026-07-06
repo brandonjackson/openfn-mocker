@@ -1,0 +1,12 @@
+{
+  "adaptor": "http",
+  "npm": "@openfn/language-http",
+  "origin": "synthesized",
+  "upstreamFormat": "adaptor-surface",
+  "sources": [
+    "https://cdn.jsdelivr.net/npm/@openfn/language-http/ast.json",
+    "https://cdn.jsdelivr.net/npm/@openfn/language-http/types/index.d.ts"
+  ],
+  "capturedAt": "2026-07-06",
+  "notes": "The http adaptor is a generic REST/HTTP client (request, get, post, put, patch, del, parseXML) with no fixed upstream API. Synthesized a conventional RESTful resource collection (/resources and /resources/{id} with GET/POST/PUT/PATCH/DELETE) so mocker has a reusable Resource shape to seed. Server URL is a mock placeholder; the Resource schema uses additionalProperties because concrete fields depend on whatever API the adaptor is pointed at."
+}

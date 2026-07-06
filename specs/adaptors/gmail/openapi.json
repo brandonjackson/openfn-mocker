@@ -1,0 +1,162 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Gmail API (mock subset)",
+    "version": "v1",
+    "description": "Focused subset of the Gmail REST API used by the OpenFn gmail adaptor. The adaptor calls users.messages.list + users.messages.get (getContentsFromMessages) and users.messages.send (sendMessage) via the googleapis SDK. Converted from the Gmail API v1 Discovery document, covering the messages resource.",
+    "x-openfn-adaptor": "gmail"
+  },
+  "servers": [{ "url": "https://gmail.googleapis.com" }],
+  "paths": {
+    "/gmail/v1/users/{userId}/messages": {
+      "get": {
+        "operationId": "listMessages",
+        "summary": "List messages",
+        "description": "Lists the messages in the user's mailbox, optionally filtered by a Gmail search query.",
+        "parameters": [
+          { "name": "userId", "in": "path", "required": true, "schema": { "type": "string", "default": "me" }, "description": "The user's email address. The special value 'me' can be used to indicate the authenticated user." },
+          { "name": "q", "in": "query", "schema": { "type": "string" }, "description": "Gmail search query, e.g. 'from:someone@example.com is:unread'." },
+          { "name": "maxResults", "in": "query", "schema": { "type": "integer", "format": "int32", "default": 100 } },
+          { "name": "pageToken", "in": "query", "schema": { "type": "string" } },
+          { "name": "labelIds", "in": "query", "schema": { "type": "array", "items": { "type": "string" } } },
+          { "name": "includeSpamTrash", "in": "query", "schema": { "type": "boolean" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of messages",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ListMessagesResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/gmail/v1/users/{userId}/messages/{id}": {
+      "get": {
+        "operationId": "getMessage",
+        "summary": "Get a message",
+        "description": "Gets the specified message.",
+        "parameters": [
+          { "name": "userId", "in": "path", "required": true, "schema": { "type": "string", "default": "me" } },
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" }, "description": "The ID of the message to retrieve." },
+          { "name": "format", "in": "query", "schema": { "type": "string", "enum": ["minimal", "full", "raw", "metadata"], "default": "full" } },
+          { "name": "metadataHeaders", "in": "query", "schema": { "type": "array", "items": { "type": "string" } } }
+        ],
+        "responses": {
+          "200": {
+            "description": "The requested message",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Message" }
+              }
+            }
+          },
+          "404": { "description": "Message not found" }
+        }
+      }
+    },
+    "/gmail/v1/users/{userId}/messages/send": {
+      "post": {
+        "operationId": "sendMessage",
+        "summary": "Send a message",
+        "description": "Sends the specified message to the recipients in the To, Cc, and Bcc headers.",
+        "parameters": [
+          { "name": "userId", "in": "path", "required": true, "schema": { "type": "string", "default": "me" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Message" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The sent message",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Message" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ListMessagesResponse": {
+        "type": "object",
+        "description": "Response from listing messages.",
+        "properties": {
+          "messages": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/MessageRef" }
+          },
+          "nextPageToken": { "type": "string" },
+          "resultSizeEstimate": { "type": "integer", "format": "int64", "example": 42 }
+        }
+      },
+      "MessageRef": {
+        "type": "object",
+        "description": "A reference to a message returned in a list result (id + threadId only).",
+        "properties": {
+          "id": { "type": "string", "example": "18f1a2b3c4d5e6f7" },
+          "threadId": { "type": "string", "example": "18f1a2b3c4d5e6f0" }
+        }
+      },
+      "Message": {
+        "type": "object",
+        "description": "A Gmail message.",
+        "properties": {
+          "id": { "type": "string", "example": "18f1a2b3c4d5e6f7" },
+          "threadId": { "type": "string", "example": "18f1a2b3c4d5e6f0" },
+          "labelIds": { "type": "array", "items": { "type": "string" }, "example": ["INBOX", "UNREAD"] },
+          "snippet": { "type": "string", "example": "Hi there, just following up on the report..." },
+          "historyId": { "type": "string", "example": "123456" },
+          "internalDate": { "type": "string", "description": "Epoch ms as string", "example": "1709641234000" },
+          "sizeEstimate": { "type": "integer", "format": "int32", "example": 4096 },
+          "raw": { "type": "string", "format": "byte", "description": "The entire email message in an RFC 2822 formatted and base64url encoded string. Used when sending." },
+          "payload": { "$ref": "#/components/schemas/MessagePart" }
+        }
+      },
+      "MessagePart": {
+        "type": "object",
+        "description": "A single MIME message part.",
+        "properties": {
+          "partId": { "type": "string", "example": "0" },
+          "mimeType": { "type": "string", "example": "text/plain" },
+          "filename": { "type": "string", "example": "" },
+          "headers": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/MessagePartHeader" }
+          },
+          "body": { "$ref": "#/components/schemas/MessagePartBody" },
+          "parts": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/MessagePart" }
+          }
+        }
+      },
+      "MessagePartHeader": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "example": "From" },
+          "value": { "type": "string", "example": "Someone <someone@example.com>" }
+        }
+      },
+      "MessagePartBody": {
+        "type": "object",
+        "description": "The body of a single MIME message part.",
+        "properties": {
+          "attachmentId": { "type": "string" },
+          "size": { "type": "integer", "format": "int32", "example": 512 },
+          "data": { "type": "string", "format": "byte", "description": "Base64url encoded body data." }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,273 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "ibipimo — mocker seed-data schema",
+    "version": "1.0.0",
+    "description": "Schema for the seed data openfn-mocker needs to impersonate ibipimo. Derived from the adaptor's OpenAPI spec. A seed dump is { collection: { id: record } }; each record validates against its resource schema below.",
+    "x-openfn-adaptor": "ibipimo",
+    "x-derived-from": "openapi.json",
+    "x-captured-at": "2026-07-06"
+  },
+  "x-seed": {
+    "shape": "{ collection: { id: record } }",
+    "collections": {
+      "sites": {
+        "resource": "Site",
+        "schema": {
+          "$ref": "#/components/schemas/Site"
+        }
+      },
+      "submissionResponses": {
+        "resource": "SubmissionResponse",
+        "schema": {
+          "$ref": "#/components/schemas/SubmissionResponse"
+        }
+      },
+      "viralLoadResults": {
+        "resource": "ViralLoadResult",
+        "schema": {
+          "$ref": "#/components/schemas/ViralLoadResult"
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SeedData": {
+        "type": "object",
+        "description": "Full seed dump loaded by mocker: one property per collection.",
+        "properties": {
+          "sites": {
+            "type": "object",
+            "description": "Records keyed by id for the sites collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Site"
+            }
+          },
+          "submissionResponses": {
+            "type": "object",
+            "description": "Records keyed by id for the submissionResponses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/SubmissionResponse"
+            }
+          },
+          "viralLoadResults": {
+            "type": "object",
+            "description": "Records keyed by id for the viralLoadResults collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ViralLoadResult"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "ViralLoadRequest": {
+        "type": "object",
+        "required": [
+          "siteid",
+          "samples"
+        ],
+        "properties": {
+          "siteid": {
+            "type": "string",
+            "example": "77889900"
+          },
+          "samples": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Sample"
+            }
+          }
+        }
+      },
+      "Sample": {
+        "type": "object",
+        "properties": {
+          "sidainfo_uid": {
+            "type": "string",
+            "example": "147460"
+          },
+          "p_code": {
+            "type": "string",
+            "example": "000003"
+          },
+          "p_name": {
+            "type": "string",
+            "example": "Magara"
+          },
+          "p_prename": {
+            "type": "string",
+            "example": "Mahire"
+          },
+          "p_sex": {
+            "type": "string",
+            "enum": [
+              "M",
+              "F"
+            ],
+            "example": "M"
+          },
+          "p_dob": {
+            "type": "string",
+            "format": "date",
+            "example": "1950-01-15"
+          },
+          "sample_uid": {
+            "type": "string",
+            "example": "2026010401"
+          }
+        }
+      },
+      "ResultsRequest": {
+        "type": "object",
+        "required": [
+          "siteid",
+          "sample_uids"
+        ],
+        "properties": {
+          "siteid": {
+            "type": "string",
+            "example": "77889900"
+          },
+          "sample_uids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "2026010401",
+              "IBI-2024-000001"
+            ]
+          }
+        }
+      },
+      "SubmissionResponse": {
+        "type": "object",
+        "properties": {
+          "saved_samples": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "sidainfo_uid": {
+                  "type": "string",
+                  "example": "147460"
+                },
+                "sample_uid": {
+                  "type": "string",
+                  "example": "IBI-2024-000001"
+                }
+              }
+            }
+          },
+          "saved_count": {
+            "type": "integer",
+            "example": 1
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "sidainfo_uid": {
+                  "type": "string"
+                },
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "error_count": {
+            "type": "integer",
+            "example": 0
+          }
+        }
+      },
+      "ResultsResponse": {
+        "type": "object",
+        "properties": {
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ViralLoadResult"
+            }
+          }
+        }
+      },
+      "ViralLoadResult": {
+        "type": "object",
+        "properties": {
+          "sample_uid": {
+            "type": "string",
+            "example": "2026010401"
+          },
+          "sidainfo_uid": {
+            "type": "string",
+            "example": "147460"
+          },
+          "published": {
+            "type": "boolean",
+            "example": true
+          },
+          "result_value": {
+            "type": "string",
+            "example": "< 20 copies/mL"
+          },
+          "result_numeric": {
+            "type": "number",
+            "nullable": true,
+            "example": 0
+          },
+          "log_value": {
+            "type": "number",
+            "nullable": true
+          },
+          "result_date": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-01-10"
+          },
+          "status": {
+            "type": "string",
+            "example": "published"
+          }
+        }
+      },
+      "SampleStatus": {
+        "type": "object",
+        "properties": {
+          "sample_uid": {
+            "type": "string",
+            "example": "2026010401"
+          },
+          "status": {
+            "type": "string",
+            "example": "processing"
+          },
+          "received_date": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      },
+      "Site": {
+        "type": "object",
+        "properties": {
+          "siteid": {
+            "type": "string",
+            "example": "77889900"
+          },
+          "name": {
+            "type": "string",
+            "example": "Bujumbura Central Lab"
+          },
+          "active": {
+            "type": "boolean",
+            "example": true
+          }
+        }
+      }
+    }
+  }
+}

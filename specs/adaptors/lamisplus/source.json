@@ -1,0 +1,13 @@
+{
+  "adaptor": "lamisplus",
+  "npm": "@openfn/language-lamisplus",
+  "origin": "synthesized",
+  "upstreamFormat": "adaptor-surface",
+  "sources": [
+    "https://cdn.jsdelivr.net/npm/@openfn/language-lamisplus/ast.json",
+    "https://cdn.jsdelivr.net/npm/@openfn/language-lamisplus/dist/index.cjs",
+    "https://github.com/OpenFn/adaptors/tree/main/packages/lamisplus"
+  ],
+  "capturedAt": "2026-07-06",
+  "notes": "No official LAMISPlus OpenAPI/Swagger/Postman spec or public API docs could be found (LAMISPlus is a self-hosted Nigerian HIV/health EMR; each deployment configures its own baseUrl). Spec synthesized from the adaptor's compiled source. Two endpoints are called verbatim by the adaptor and are accurate: POST core/api/v1/auth/login (implicit login step, returns accessToken used as a Bearer token) and GET plugin/ehr/api/v1/patient (getPatients; adaptor reads body.data.patients). The adaptor also exposes generic http.get/http.post/http.request helpers that can hit any path on the configured instance. The remaining endpoints and resource shapes (patient create/get-by-id, visit, encounter, biometric) are PLAUSIBLE RECONSTRUCTIONS added to seed representative collections, not verified against a real LAMISPlus instance. Field names, response envelopes, and status codes for the reconstructed endpoints are best-effort guesses. servers[0].url is a placeholder; the real base URL is per-deployment via configuration.baseUrl."
+}

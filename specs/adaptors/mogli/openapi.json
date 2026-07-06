@@ -1,0 +1,80 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Mogli SMS Apex REST API (generated)",
+    "version": "v1",
+    "description": "Focused OpenAPI 3.0.3 for the Mogli SMS Salesforce Apex REST endpoint used by the OpenFn mogli adaptor. Mogli SMS is a managed package installed in a Salesforce org; the adaptor creates and updates SMS records via the custom Apex REST resource /services/apexrest/Mogli_SMS/v1/sms on the org instance URL.",
+    "x-openfn-adaptor": "mogli"
+  },
+  "servers": [{ "url": "https://your-instance.my.salesforce.com" }],
+  "paths": {
+    "/services/apexrest/Mogli_SMS/v1/sms": {
+      "post": {
+        "operationId": "createSMS",
+        "summary": "Create an inbound SMS record",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/SmsInput" } }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The created SMS record",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/SmsResult" } }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "updateSMS",
+        "summary": "Update an existing SMS record",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/SmsUpdateInput" } }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The updated SMS record",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/SmsResult" } }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SmsInput": {
+        "type": "object",
+        "properties": {
+          "sender": { "type": "string", "example": "+15551234567" },
+          "receivedAt": { "type": "string", "format": "date-time" },
+          "message": { "type": "string", "example": "Hello from the field" }
+        }
+      },
+      "SmsUpdateInput": {
+        "type": "object",
+        "properties": {
+          "Id": { "type": "string", "example": "a0B5f000000abcdEAA" },
+          "status": { "type": "string", "example": "Delivered" }
+        }
+      },
+      "SmsResult": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "example": "a0B5f000000abcdEAA" },
+          "success": { "type": "boolean", "example": true },
+          "sender": { "type": "string", "example": "+15551234567" },
+          "message": { "type": "string", "example": "Hello from the field" },
+          "status": { "type": "string", "example": "Received" },
+          "receivedAt": { "type": "string", "format": "date-time" }
+        }
+      }
+    }
+  }
+}

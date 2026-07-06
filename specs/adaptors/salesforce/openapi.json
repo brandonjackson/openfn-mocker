@@ -1,0 +1,590 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Salesforce REST API (OpenFn focused subset)",
+    "version": "1.0.0",
+    "description": "Focused subset of the Salesforce REST API covering the sObject CRUD, upsert, describe, SOQL query and composite (bulk) sObject endpoints used by the OpenFn salesforce adaptor (create, insert, retrieve, update, upsert, destroy, describe, query). Modeled from the official Salesforce REST API Developer Guide. The adaptor talks to Salesforce via jsforce over these REST resources.",
+    "x-openfn-adaptor": "salesforce"
+  },
+  "servers": [
+    { "url": "https://yourInstance.salesforce.com", "description": "Salesforce instance base URL (myDomain / instance host)" }
+  ],
+  "paths": {
+    "/services/data/v{version}/sobjects": {
+      "get": {
+        "operationId": "describeGlobal",
+        "summary": "List available objects (Describe Global)",
+        "description": "Lists the available objects and their metadata for the org. Used by describe() when no sObjectName is provided.",
+        "parameters": [
+          { "$ref": "#/components/parameters/Version" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Describe Global result",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DescribeGlobalResult" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/services/data/v{version}/sobjects/{sObject}/describe": {
+      "get": {
+        "operationId": "describeSObject",
+        "summary": "Describe an sObject",
+        "description": "Completely describes the individual metadata at all levels for the specified object.",
+        "parameters": [
+          { "$ref": "#/components/parameters/Version" },
+          { "$ref": "#/components/parameters/SObject" }
+        ],
+        "responses": {
+          "200": {
+            "description": "sObject describe result",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DescribeSObjectResult" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/services/data/v{version}/sobjects/{sObject}": {
+      "post": {
+        "operationId": "createSObject",
+        "summary": "Create a record",
+        "description": "Creates a new record of the given sObject type. Used by create() / insert().",
+        "parameters": [
+          { "$ref": "#/components/parameters/Version" },
+          { "$ref": "#/components/parameters/SObject" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/SObject" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Record created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/CreateResult" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/services/data/v{version}/sobjects/{sObject}/{id}": {
+      "get": {
+        "operationId": "retrieveSObject",
+        "summary": "Retrieve a record",
+        "description": "Retrieves a record by its ID. Used by retrieve().",
+        "parameters": [
+          { "$ref": "#/components/parameters/Version" },
+          { "$ref": "#/components/parameters/SObject" },
+          { "$ref": "#/components/parameters/RecordId" },
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "description": "Comma-separated list of fields to return.",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Record",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SObject" }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updateSObject",
+        "summary": "Update a record",
+        "description": "Updates the fields of an existing record by ID. Used by update(). Returns 204 No Content on success.",
+        "parameters": [
+          { "$ref": "#/components/parameters/Version" },
+          { "$ref": "#/components/parameters/SObject" },
+          { "$ref": "#/components/parameters/RecordId" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/SObject" }
+            }
+          }
+        },
+        "responses": {
+          "204": { "description": "Record updated (no content)" }
+        }
+      },
+      "delete": {
+        "operationId": "deleteSObject",
+        "summary": "Delete a record",
+        "description": "Deletes a record by ID. Used by destroy(). Returns 204 No Content on success.",
+        "parameters": [
+          { "$ref": "#/components/parameters/Version" },
+          { "$ref": "#/components/parameters/SObject" },
+          { "$ref": "#/components/parameters/RecordId" }
+        ],
+        "responses": {
+          "204": { "description": "Record deleted (no content)" }
+        }
+      }
+    },
+    "/services/data/v{version}/sobjects/{sObject}/{extIdField}/{extId}": {
+      "patch": {
+        "operationId": "upsertSObject",
+        "summary": "Upsert a record by external ID",
+        "description": "Creates a record if no matching external ID exists, otherwise updates the matching record. Used by upsert().",
+        "parameters": [
+          { "$ref": "#/components/parameters/Version" },
+          { "$ref": "#/components/parameters/SObject" },
+          {
+            "name": "extIdField",
+            "in": "path",
+            "required": true,
+            "description": "The external ID field name.",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "extId",
+            "in": "path",
+            "required": true,
+            "description": "The external ID value.",
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/SObject" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Existing record updated",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/UpsertResult" }
+              }
+            }
+          },
+          "201": {
+            "description": "New record created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/UpsertResult" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/services/data/v{version}/query": {
+      "get": {
+        "operationId": "query",
+        "summary": "Run a SOQL query",
+        "description": "Executes a SOQL query and returns matching records. Used by query().",
+        "parameters": [
+          { "$ref": "#/components/parameters/Version" },
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "description": "The SOQL query string.",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Query result",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/QueryResult" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/services/data/v{version}/queryAll": {
+      "get": {
+        "operationId": "queryAll",
+        "summary": "Run a SOQL query including deleted/archived records",
+        "description": "Like query but also returns deleted and archived records.",
+        "parameters": [
+          { "$ref": "#/components/parameters/Version" },
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "description": "The SOQL query string.",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Query result",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/QueryResult" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/services/data/v{version}/query/{queryLocator}": {
+      "get": {
+        "operationId": "queryMore",
+        "summary": "Retrieve the next batch of query results",
+        "description": "Retrieves the next set of records for a query using the nextRecordsUrl / query locator returned by a previous query.",
+        "parameters": [
+          { "$ref": "#/components/parameters/Version" },
+          {
+            "name": "queryLocator",
+            "in": "path",
+            "required": true,
+            "description": "The query locator returned in nextRecordsUrl.",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Query result",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/QueryResult" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/services/data/v{version}/composite/sobjects": {
+      "post": {
+        "operationId": "createSObjectsComposite",
+        "summary": "Create multiple records (composite)",
+        "description": "Creates up to 200 records across one or more sObject types in a single request. Used for bulk create.",
+        "parameters": [
+          { "$ref": "#/components/parameters/Version" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CompositeSObjectCollection" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Per-record save results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/SaveResult" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updateSObjectsComposite",
+        "summary": "Update multiple records (composite)",
+        "description": "Updates up to 200 records in a single request. Used for bulk update.",
+        "parameters": [
+          { "$ref": "#/components/parameters/Version" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CompositeSObjectCollection" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Per-record save results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/SaveResult" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteSObjectsComposite",
+        "summary": "Delete multiple records (composite)",
+        "description": "Deletes up to 200 records by ID in a single request. Used for bulk delete.",
+        "parameters": [
+          { "$ref": "#/components/parameters/Version" },
+          {
+            "name": "ids",
+            "in": "query",
+            "required": true,
+            "description": "Comma-separated list of record IDs to delete.",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "allOrNone",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "boolean", "default": false }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Per-record save results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/SaveResult" }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "Version": {
+        "name": "version",
+        "in": "path",
+        "required": true,
+        "description": "Salesforce API version, e.g. 59.0.",
+        "schema": { "type": "string", "example": "59.0" }
+      },
+      "SObject": {
+        "name": "sObject",
+        "in": "path",
+        "required": true,
+        "description": "The sObject API name, e.g. Account, Contact.",
+        "schema": { "type": "string", "example": "Account" }
+      },
+      "RecordId": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "description": "The 15- or 18-character Salesforce record ID.",
+        "schema": { "type": "string", "example": "0015000000VALDtAAP" }
+      }
+    },
+    "schemas": {
+      "SObject": {
+        "type": "object",
+        "description": "A generic Salesforce record. Field set varies by sObject type. When returned, it includes an 'attributes' member with type and url.",
+        "properties": {
+          "attributes": {
+            "type": "object",
+            "properties": {
+              "type": { "type": "string", "example": "Account" },
+              "url": { "type": "string", "example": "/services/data/v59.0/sobjects/Account/0015000000VALDtAAP" }
+            }
+          },
+          "Id": { "type": "string", "example": "0015000000VALDtAAP" },
+          "Name": { "type": "string", "example": "Acme Corporation" }
+        },
+        "additionalProperties": true
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "statusCode": { "type": "string", "example": "REQUIRED_FIELD_MISSING" },
+          "message": { "type": "string", "example": "Required fields are missing: [Name]" },
+          "fields": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      },
+      "CreateResult": {
+        "type": "object",
+        "description": "Result of creating a single record.",
+        "required": ["id", "success", "errors"],
+        "properties": {
+          "id": { "type": "string", "example": "0015000000VALDtAAP" },
+          "success": { "type": "boolean", "example": true },
+          "errors": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Error" }
+          }
+        }
+      },
+      "UpsertResult": {
+        "type": "object",
+        "description": "Result of an upsert. 'created' is true when a new record was inserted.",
+        "required": ["id", "success", "errors"],
+        "properties": {
+          "id": { "type": "string", "example": "0015000000VALDtAAP" },
+          "success": { "type": "boolean", "example": true },
+          "created": { "type": "boolean", "example": false },
+          "errors": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Error" }
+          }
+        }
+      },
+      "SaveResult": {
+        "type": "object",
+        "description": "Per-record result within a composite sObject collection response.",
+        "properties": {
+          "id": { "type": "string", "example": "0015000000VALDtAAP" },
+          "success": { "type": "boolean", "example": true },
+          "errors": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Error" }
+          }
+        }
+      },
+      "CompositeSObjectCollection": {
+        "type": "object",
+        "description": "Request body for composite sObject create/update.",
+        "required": ["records"],
+        "properties": {
+          "allOrNone": { "type": "boolean", "example": false },
+          "records": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/SObject" }
+          }
+        }
+      },
+      "QueryResult": {
+        "type": "object",
+        "description": "Result of a SOQL query.",
+        "required": ["totalSize", "done", "records"],
+        "properties": {
+          "totalSize": { "type": "integer", "example": 2 },
+          "done": { "type": "boolean", "example": true },
+          "nextRecordsUrl": {
+            "type": "string",
+            "description": "Present when done is false; used to fetch the next batch.",
+            "example": "/services/data/v59.0/query/01g5000000T50h1AAB-2000"
+          },
+          "records": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/SObject" }
+          }
+        }
+      },
+      "DescribeGlobalResult": {
+        "type": "object",
+        "description": "Result of Describe Global (list of objects in the org).",
+        "properties": {
+          "encoding": { "type": "string", "example": "UTF-8" },
+          "maxBatchSize": { "type": "integer", "example": 200 },
+          "sobjects": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/DescribeGlobalSObject" }
+          }
+        }
+      },
+      "DescribeGlobalSObject": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "example": "Account" },
+          "label": { "type": "string", "example": "Account" },
+          "labelPlural": { "type": "string", "example": "Accounts" },
+          "keyPrefix": { "type": "string", "example": "001" },
+          "custom": { "type": "boolean", "example": false },
+          "queryable": { "type": "boolean", "example": true },
+          "createable": { "type": "boolean", "example": true },
+          "updateable": { "type": "boolean", "example": true },
+          "deletable": { "type": "boolean", "example": true },
+          "urls": {
+            "type": "object",
+            "additionalProperties": { "type": "string" }
+          }
+        }
+      },
+      "DescribeSObjectResult": {
+        "type": "object",
+        "description": "Full metadata describing a single sObject type.",
+        "properties": {
+          "name": { "type": "string", "example": "Account" },
+          "label": { "type": "string", "example": "Account" },
+          "labelPlural": { "type": "string", "example": "Accounts" },
+          "keyPrefix": { "type": "string", "example": "001" },
+          "custom": { "type": "boolean", "example": false },
+          "createable": { "type": "boolean", "example": true },
+          "updateable": { "type": "boolean", "example": true },
+          "deletable": { "type": "boolean", "example": true },
+          "queryable": { "type": "boolean", "example": true },
+          "fields": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Field" }
+          },
+          "childRelationships": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ChildRelationship" }
+          },
+          "recordTypeInfos": {
+            "type": "array",
+            "items": { "type": "object", "additionalProperties": true }
+          },
+          "urls": {
+            "type": "object",
+            "additionalProperties": { "type": "string" }
+          }
+        }
+      },
+      "Field": {
+        "type": "object",
+        "description": "Metadata describing a single field on an sObject.",
+        "properties": {
+          "name": { "type": "string", "example": "Name" },
+          "label": { "type": "string", "example": "Account Name" },
+          "type": { "type": "string", "example": "string" },
+          "length": { "type": "integer", "example": 255 },
+          "custom": { "type": "boolean", "example": false },
+          "nillable": { "type": "boolean", "example": false },
+          "createable": { "type": "boolean", "example": true },
+          "updateable": { "type": "boolean", "example": true },
+          "unique": { "type": "boolean", "example": false },
+          "externalId": { "type": "boolean", "example": false },
+          "picklistValues": {
+            "type": "array",
+            "items": { "type": "object", "additionalProperties": true }
+          },
+          "referenceTo": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      },
+      "ChildRelationship": {
+        "type": "object",
+        "properties": {
+          "field": { "type": "string", "example": "AccountId" },
+          "childSObject": { "type": "string", "example": "Contact" },
+          "relationshipName": { "type": "string", "example": "Contacts" },
+          "cascadeDelete": { "type": "boolean", "example": true }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,254 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Google BigQuery API (OpenFn focused subset)",
+    "version": "v2",
+    "description": "Focused subset of the Google BigQuery REST API v2 covering the load-job path the OpenFn bigquery adaptor uses. The adaptor's load() creates a load job (jobs.insert) to import files into a table; also included are jobs.get, tables.get and tabledata.insertAll. Derived from the Google API Discovery document for bigquery v2.",
+    "x-openfn-adaptor": "bigquery"
+  },
+  "servers": [
+    { "url": "https://bigquery.googleapis.com/bigquery/v2" }
+  ],
+  "paths": {
+    "/projects/{projectId}/jobs": {
+      "post": {
+        "operationId": "insertJob",
+        "summary": "Insert a job (used for load jobs)",
+        "parameters": [
+          { "name": "projectId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Job" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The created job",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Job" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects/{projectId}/jobs/{jobId}": {
+      "get": {
+        "operationId": "getJob",
+        "summary": "Get a job",
+        "parameters": [
+          { "name": "projectId", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "jobId", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "location", "in": "query", "required": false, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "The requested job",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Job" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects/{projectId}/datasets/{datasetId}/tables/{tableId}": {
+      "get": {
+        "operationId": "getTable",
+        "summary": "Get a table",
+        "parameters": [
+          { "name": "projectId", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "datasetId", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "tableId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "The requested table",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Table" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects/{projectId}/datasets/{datasetId}/tables/{tableId}/insertAll": {
+      "post": {
+        "operationId": "insertAll",
+        "summary": "Stream data into a table (tabledata.insertAll)",
+        "parameters": [
+          { "name": "projectId", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "datasetId", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "tableId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "kind": { "type": "string", "example": "bigquery#tableDataInsertAllRequest" },
+                  "skipInvalidRows": { "type": "boolean" },
+                  "ignoreUnknownValues": { "type": "boolean" },
+                  "rows": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "insertId": { "type": "string" },
+                        "json": { "type": "object", "additionalProperties": true }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Insert result",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TableDataInsertAllResponse" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ErrorProto": {
+        "type": "object",
+        "properties": {
+          "reason": { "type": "string" },
+          "location": { "type": "string" },
+          "debugInfo": { "type": "string" },
+          "message": { "type": "string" }
+        }
+      },
+      "JobReference": {
+        "type": "object",
+        "properties": {
+          "projectId": { "type": "string" },
+          "jobId": { "type": "string" },
+          "location": { "type": "string" }
+        }
+      },
+      "TableReference": {
+        "type": "object",
+        "properties": {
+          "projectId": { "type": "string" },
+          "datasetId": { "type": "string" },
+          "tableId": { "type": "string" }
+        }
+      },
+      "JobConfigurationLoad": {
+        "type": "object",
+        "properties": {
+          "sourceUris": { "type": "array", "items": { "type": "string" } },
+          "destinationTable": { "$ref": "#/components/schemas/TableReference" },
+          "schema": { "$ref": "#/components/schemas/TableSchema" },
+          "sourceFormat": { "type": "string", "example": "CSV" },
+          "skipLeadingRows": { "type": "integer" },
+          "writeDisposition": { "type": "string", "example": "WRITE_APPEND" },
+          "createDisposition": { "type": "string", "example": "CREATE_IF_NEEDED" },
+          "schemaUpdateOptions": { "type": "array", "items": { "type": "string" } },
+          "autodetect": { "type": "boolean" }
+        }
+      },
+      "JobStatus": {
+        "type": "object",
+        "properties": {
+          "state": { "type": "string", "example": "DONE" },
+          "errorResult": { "$ref": "#/components/schemas/ErrorProto" },
+          "errors": { "type": "array", "items": { "$ref": "#/components/schemas/ErrorProto" } }
+        }
+      },
+      "Job": {
+        "type": "object",
+        "properties": {
+          "kind": { "type": "string", "example": "bigquery#job" },
+          "id": { "type": "string" },
+          "etag": { "type": "string" },
+          "selfLink": { "type": "string" },
+          "jobReference": { "$ref": "#/components/schemas/JobReference" },
+          "configuration": {
+            "type": "object",
+            "properties": {
+              "jobType": { "type": "string", "example": "LOAD" },
+              "load": { "$ref": "#/components/schemas/JobConfigurationLoad" }
+            }
+          },
+          "status": { "$ref": "#/components/schemas/JobStatus" },
+          "statistics": {
+            "type": "object",
+            "properties": {
+              "creationTime": { "type": "string" },
+              "startTime": { "type": "string" },
+              "endTime": { "type": "string" }
+            }
+          }
+        }
+      },
+      "TableFieldSchema": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "type": { "type": "string", "example": "STRING" },
+          "mode": { "type": "string", "example": "NULLABLE" },
+          "description": { "type": "string" }
+        }
+      },
+      "TableSchema": {
+        "type": "object",
+        "properties": {
+          "fields": { "type": "array", "items": { "$ref": "#/components/schemas/TableFieldSchema" } }
+        }
+      },
+      "Table": {
+        "type": "object",
+        "properties": {
+          "kind": { "type": "string", "example": "bigquery#table" },
+          "id": { "type": "string" },
+          "etag": { "type": "string" },
+          "selfLink": { "type": "string" },
+          "tableReference": { "$ref": "#/components/schemas/TableReference" },
+          "schema": { "$ref": "#/components/schemas/TableSchema" },
+          "numRows": { "type": "string" },
+          "numBytes": { "type": "string" },
+          "creationTime": { "type": "string" },
+          "lastModifiedTime": { "type": "string" },
+          "type": { "type": "string", "example": "TABLE" },
+          "location": { "type": "string" }
+        }
+      },
+      "TableDataInsertAllResponse": {
+        "type": "object",
+        "properties": {
+          "kind": { "type": "string", "example": "bigquery#tableDataInsertAllResponse" },
+          "insertErrors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "index": { "type": "integer" },
+                "errors": { "type": "array", "items": { "$ref": "#/components/schemas/ErrorProto" } }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

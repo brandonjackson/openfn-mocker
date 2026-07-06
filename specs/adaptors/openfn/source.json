@@ -1,0 +1,15 @@
+{
+  "adaptor": "openfn",
+  "npm": "@openfn/language-openfn",
+  "origin": "synthesized",
+  "upstreamFormat": "adaptor-surface",
+  "sources": [
+    "https://cdn.jsdelivr.net/npm/@openfn/language-openfn/ast.json",
+    "https://cdn.jsdelivr.net/npm/@openfn/language-openfn/types/index.d.ts",
+    "https://raw.githubusercontent.com/OpenFn/adaptors/main/packages/openfn/README.md",
+    "https://github.com/OpenFn/lightning",
+    "https://docs.openfn.org"
+  ],
+  "capturedAt": "2026-07-06",
+  "notes": "No public vendor OpenAPI exists for the OpenFn platform. The adaptor exposes only generic HTTP operations (request(method, path, options), get(path, options), post(path, data, options)) that target resources relative to /api/ on an OpenFn v1 (Lightning) host; the rest of its surface is common data-mapping helpers (fn, each, field, merge, cursor, etc.) that make no HTTP calls. This spec synthesizes: a generic /api/{path} GET+POST passthrough backing request/get/post, plus concrete Lightning resource endpoints (projects, workflows, jobs, triggers, runs, credentials, dataclips) inferred from the adaptor README/examples (which reference jobs with name/body/trigger_id/project_id and projects) and the OpenFn/Lightning data model. Resource field shapes and example UUIDs are inferred, not captured from a live API, so field-level fidelity is best-effort. 18 operations across 8 resource shapes."
+}

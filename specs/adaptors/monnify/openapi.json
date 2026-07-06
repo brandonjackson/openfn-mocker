@@ -1,0 +1,304 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Monnify API (mock subset)",
+    "version": "1.0.0",
+    "description": "Focused subset of the Monnify payment API used by the OpenFn monnify adaptor's generic get/list/post/request helpers: authentication, transaction search, reserved accounts, and single disbursement transfers. All Monnify responses share a standard envelope (requestSuccessful, responseMessage, responseCode, responseBody).",
+    "x-openfn-adaptor": "monnify"
+  },
+  "servers": [{ "url": "https://sandbox.monnify.com" }],
+  "paths": {
+    "/api/v1/auth/login": {
+      "post": {
+        "operationId": "login",
+        "summary": "Authenticate and obtain an access token",
+        "responses": {
+          "200": {
+            "description": "Access token envelope",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/AuthResponse" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/transactions/search": {
+      "get": {
+        "operationId": "searchTransactions",
+        "summary": "Search collection transactions",
+        "parameters": [
+          { "name": "page", "in": "query", "schema": { "type": "integer" } },
+          { "name": "size", "in": "query", "schema": { "type": "integer" } },
+          { "name": "from", "in": "query", "schema": { "type": "string" } },
+          { "name": "to", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "A page of transactions",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/TransactionPageResponse" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/bank-transfer/reserved-accounts": {
+      "post": {
+        "operationId": "createReservedAccount",
+        "summary": "Reserve an account for a customer",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/ReservedAccountInput" } }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The reserved account envelope",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ReservedAccountResponse" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/bank-transfer/reserved-accounts/{accountReference}": {
+      "get": {
+        "operationId": "getReservedAccount",
+        "summary": "Get reserved account details",
+        "parameters": [
+          { "name": "accountReference", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "The reserved account envelope",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ReservedAccountResponse" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/disbursements/single": {
+      "post": {
+        "operationId": "initiateTransfer",
+        "summary": "Initiate a single disbursement transfer",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/TransferInput" } }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The transfer envelope",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/TransferResponse" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/disbursements/single/transactions": {
+      "get": {
+        "operationId": "getTransferStatus",
+        "summary": "Get the status of a single transfer",
+        "parameters": [
+          { "name": "reference", "in": "query", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "The transfer envelope",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/TransferResponse" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/disbursements/search-transactions": {
+      "get": {
+        "operationId": "searchDisbursements",
+        "summary": "Search disbursement transactions",
+        "parameters": [
+          { "name": "sourceAccountNumber", "in": "query", "schema": { "type": "string" } },
+          { "name": "startDate", "in": "query", "schema": { "type": "string" } },
+          { "name": "endDate", "in": "query", "schema": { "type": "string" } },
+          { "name": "pageNo", "in": "query", "schema": { "type": "integer" } },
+          { "name": "pageSize", "in": "query", "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "A page of disbursement transactions",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/DisbursementPageResponse" } }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "MonnifyEnvelope": {
+        "type": "object",
+        "properties": {
+          "requestSuccessful": { "type": "boolean", "example": true },
+          "responseMessage": { "type": "string", "example": "success" },
+          "responseCode": { "type": "string", "example": "0" }
+        }
+      },
+      "AuthResponse": {
+        "allOf": [
+          { "$ref": "#/components/schemas/MonnifyEnvelope" },
+          {
+            "type": "object",
+            "properties": {
+              "responseBody": {
+                "type": "object",
+                "properties": {
+                  "accessToken": { "type": "string", "example": "eyJhbGciOiJIUzUxMiJ9..." },
+                  "expiresIn": { "type": "integer", "example": 3600 }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "Transaction": {
+        "type": "object",
+        "properties": {
+          "transactionReference": { "type": "string", "example": "MNFY|20250101|000123" },
+          "paymentReference": { "type": "string", "example": "PAY-REF-001" },
+          "amountPaid": { "type": "number", "example": 5000 },
+          "totalPayable": { "type": "number", "example": 5000 },
+          "paymentStatus": { "type": "string", "example": "PAID" },
+          "currencyCode": { "type": "string", "example": "NGN" },
+          "customer": {
+            "type": "object",
+            "properties": {
+              "email": { "type": "string", "example": "customer@example.com" },
+              "name": { "type": "string", "example": "Ada Lovelace" }
+            }
+          },
+          "createdOn": { "type": "string", "format": "date-time" }
+        }
+      },
+      "TransactionPageResponse": {
+        "allOf": [
+          { "$ref": "#/components/schemas/MonnifyEnvelope" },
+          {
+            "type": "object",
+            "properties": {
+              "responseBody": {
+                "type": "object",
+                "properties": {
+                  "content": { "type": "array", "items": { "$ref": "#/components/schemas/Transaction" } },
+                  "totalElements": { "type": "integer", "example": 1 },
+                  "totalPages": { "type": "integer", "example": 1 },
+                  "number": { "type": "integer", "example": 0 }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ReservedAccountInput": {
+        "type": "object",
+        "properties": {
+          "accountReference": { "type": "string", "example": "cust-001-ref" },
+          "accountName": { "type": "string", "example": "Ada Lovelace" },
+          "currencyCode": { "type": "string", "example": "NGN" },
+          "contractCode": { "type": "string", "example": "4934121686" },
+          "customerEmail": { "type": "string", "example": "customer@example.com" },
+          "customerName": { "type": "string", "example": "Ada Lovelace" }
+        }
+      },
+      "ReservedAccount": {
+        "type": "object",
+        "properties": {
+          "accountReference": { "type": "string", "example": "cust-001-ref" },
+          "accountName": { "type": "string", "example": "Ada Lovelace" },
+          "reservationReference": { "type": "string", "example": "RSV-0001" },
+          "currencyCode": { "type": "string", "example": "NGN" },
+          "customerEmail": { "type": "string", "example": "customer@example.com" },
+          "accounts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "bankCode": { "type": "string", "example": "035" },
+                "bankName": { "type": "string", "example": "Wema Bank" },
+                "accountNumber": { "type": "string", "example": "1234567890" }
+              }
+            }
+          }
+        }
+      },
+      "ReservedAccountResponse": {
+        "allOf": [
+          { "$ref": "#/components/schemas/MonnifyEnvelope" },
+          {
+            "type": "object",
+            "properties": {
+              "responseBody": { "$ref": "#/components/schemas/ReservedAccount" }
+            }
+          }
+        ]
+      },
+      "TransferInput": {
+        "type": "object",
+        "properties": {
+          "amount": { "type": "number", "example": 10000 },
+          "reference": { "type": "string", "example": "TRF-REF-001" },
+          "narration": { "type": "string", "example": "Payout" },
+          "destinationBankCode": { "type": "string", "example": "044" },
+          "destinationAccountNumber": { "type": "string", "example": "0035785417" },
+          "currency": { "type": "string", "example": "NGN" },
+          "sourceAccountNumber": { "type": "string", "example": "4864192954" }
+        }
+      },
+      "Transfer": {
+        "type": "object",
+        "properties": {
+          "reference": { "type": "string", "example": "TRF-REF-001" },
+          "amount": { "type": "number", "example": 10000 },
+          "status": { "type": "string", "example": "SUCCESS" },
+          "destinationAccountNumber": { "type": "string", "example": "0035785417" },
+          "destinationBankName": { "type": "string", "example": "Access Bank" },
+          "totalFee": { "type": "number", "example": 10 },
+          "dateCreated": { "type": "string", "format": "date-time" }
+        }
+      },
+      "TransferResponse": {
+        "allOf": [
+          { "$ref": "#/components/schemas/MonnifyEnvelope" },
+          {
+            "type": "object",
+            "properties": {
+              "responseBody": { "$ref": "#/components/schemas/Transfer" }
+            }
+          }
+        ]
+      },
+      "DisbursementPageResponse": {
+        "allOf": [
+          { "$ref": "#/components/schemas/MonnifyEnvelope" },
+          {
+            "type": "object",
+            "properties": {
+              "responseBody": {
+                "type": "object",
+                "properties": {
+                  "content": { "type": "array", "items": { "$ref": "#/components/schemas/Transfer" } },
+                  "totalElements": { "type": "integer", "example": 1 },
+                  "totalPages": { "type": "integer", "example": 1 }
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,186 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "azure-storage — mocker seed-data schema",
+    "version": "1.0.0",
+    "description": "Schema for the seed data openfn-mocker needs to impersonate azure-storage. Derived from the adaptor's OpenAPI spec. A seed dump is { collection: { id: record } }; each record validates against its resource schema below.",
+    "x-openfn-adaptor": "azure-storage",
+    "x-derived-from": "openapi.json",
+    "x-captured-at": "2026-07-06"
+  },
+  "x-seed": {
+    "shape": "{ collection: { id: record } }",
+    "collections": {
+      "blobPropertieses": {
+        "resource": "BlobProperties",
+        "schema": {
+          "$ref": "#/components/schemas/BlobProperties"
+        }
+      },
+      "downloadBlobResults": {
+        "resource": "DownloadBlobResult",
+        "schema": {
+          "$ref": "#/components/schemas/DownloadBlobResult"
+        }
+      },
+      "uploadBlobResults": {
+        "resource": "UploadBlobResult",
+        "schema": {
+          "$ref": "#/components/schemas/UploadBlobResult"
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SeedData": {
+        "type": "object",
+        "description": "Full seed dump loaded by mocker: one property per collection.",
+        "properties": {
+          "blobPropertieses": {
+            "type": "object",
+            "description": "Records keyed by id for the blobPropertieses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/BlobProperties"
+            }
+          },
+          "downloadBlobResults": {
+            "type": "object",
+            "description": "Records keyed by id for the downloadBlobResults collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/DownloadBlobResult"
+            }
+          },
+          "uploadBlobResults": {
+            "type": "object",
+            "description": "Records keyed by id for the uploadBlobResults collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/UploadBlobResult"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "UploadBlobResult": {
+        "type": "object",
+        "properties": {
+          "requestId": {
+            "type": "string"
+          },
+          "etag": {
+            "type": "string"
+          },
+          "lastModified": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "contentMD5": {
+            "type": "string",
+            "nullable": true
+          },
+          "clientRequestId": {
+            "type": "string",
+            "nullable": true
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "version": {
+            "type": "string"
+          },
+          "isServerEncrypted": {
+            "type": "boolean"
+          }
+        }
+      },
+      "DownloadBlobResult": {
+        "type": "object",
+        "properties": {
+          "containerName": {
+            "type": "string"
+          },
+          "blobName": {
+            "type": "string"
+          },
+          "contentType": {
+            "type": "string"
+          },
+          "contentLength": {
+            "type": "integer"
+          },
+          "etag": {
+            "type": "string"
+          },
+          "lastModified": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "content": {
+            "type": "string",
+            "description": "Blob content as string"
+          },
+          "base64": {
+            "type": "string",
+            "description": "Base64 content when downloadAs is base64"
+          }
+        }
+      },
+      "BlobProperties": {
+        "type": "object",
+        "properties": {
+          "blobType": {
+            "type": "string",
+            "example": "BlockBlob"
+          },
+          "contentLength": {
+            "type": "integer"
+          },
+          "contentType": {
+            "type": "string"
+          },
+          "contentEncoding": {
+            "type": "string",
+            "nullable": true
+          },
+          "contentMD5": {
+            "type": "string",
+            "nullable": true
+          },
+          "etag": {
+            "type": "string"
+          },
+          "lastModified": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "createdOn": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "leaseState": {
+            "type": "string",
+            "example": "available"
+          },
+          "leaseStatus": {
+            "type": "string",
+            "example": "unlocked"
+          },
+          "accessTier": {
+            "type": "string",
+            "example": "Hot"
+          },
+          "serverEncrypted": {
+            "type": "boolean"
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

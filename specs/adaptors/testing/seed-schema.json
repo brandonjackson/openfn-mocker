@@ -1,0 +1,230 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "testing — mocker seed-data schema",
+    "version": "1.0.0",
+    "description": "Schema for the seed data openfn-mocker needs to impersonate testing. Derived from the adaptor's OpenAPI spec. A seed dump is { collection: { id: record } }; each record validates against its resource schema below.",
+    "x-openfn-adaptor": "testing",
+    "x-derived-from": "openapi.json",
+    "x-captured-at": "2026-07-06"
+  },
+  "x-seed": {
+    "shape": "{ collection: { id: record } }",
+    "collections": {
+      "echoResponses": {
+        "resource": "EchoResponse",
+        "schema": {
+          "$ref": "#/components/schemas/EchoResponse"
+        }
+      },
+      "logEntries": {
+        "resource": "LogEntry",
+        "schema": {
+          "$ref": "#/components/schemas/LogEntry"
+        }
+      },
+      "states": {
+        "resource": "State",
+        "schema": {
+          "$ref": "#/components/schemas/State"
+        }
+      },
+      "statusResponses": {
+        "resource": "StatusResponse",
+        "schema": {
+          "$ref": "#/components/schemas/StatusResponse"
+        }
+      },
+      "versions": {
+        "resource": "Version",
+        "schema": {
+          "$ref": "#/components/schemas/Version"
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SeedData": {
+        "type": "object",
+        "description": "Full seed dump loaded by mocker: one property per collection.",
+        "properties": {
+          "echoResponses": {
+            "type": "object",
+            "description": "Records keyed by id for the echoResponses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/EchoResponse"
+            }
+          },
+          "logEntries": {
+            "type": "object",
+            "description": "Records keyed by id for the logEntries collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/LogEntry"
+            }
+          },
+          "states": {
+            "type": "object",
+            "description": "Records keyed by id for the states collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/State"
+            }
+          },
+          "statusResponses": {
+            "type": "object",
+            "description": "Records keyed by id for the statusResponses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/StatusResponse"
+            }
+          },
+          "versions": {
+            "type": "object",
+            "description": "Records keyed by id for the versions collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Version"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "State": {
+        "type": "object",
+        "description": "The OpenFn execution state passed between operations. Arbitrary shape; commonly carries data, references, and configuration.",
+        "properties": {
+          "data": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Working data for the step."
+          },
+          "references": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            },
+            "description": "History of prior operation results."
+          },
+          "configuration": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Credential/configuration object."
+          }
+        },
+        "additionalProperties": true
+      },
+      "LogRequest": {
+        "type": "object",
+        "description": "A request to emit a log message.",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "The message to log."
+          },
+          "level": {
+            "type": "string",
+            "enum": [
+              "info",
+              "warn",
+              "error",
+              "debug"
+            ],
+            "default": "info",
+            "description": "Log severity."
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "LogEntry": {
+        "type": "object",
+        "description": "A recorded log entry.",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "level": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "message",
+          "timestamp"
+        ]
+      },
+      "Version": {
+        "type": "object",
+        "description": "Adaptor package version information.",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "@openfn/language-testing"
+          },
+          "version": {
+            "type": "string",
+            "example": "1.0.0"
+          }
+        },
+        "required": [
+          "name",
+          "version"
+        ]
+      },
+      "EchoResponse": {
+        "type": "object",
+        "description": "An httpbin-style echo of the incoming request.",
+        "properties": {
+          "args": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Query string arguments."
+          },
+          "headers": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Request headers."
+          },
+          "origin": {
+            "type": "string",
+            "description": "Client origin IP."
+          },
+          "url": {
+            "type": "string",
+            "description": "The full request URL."
+          },
+          "json": {
+            "type": "object",
+            "additionalProperties": true,
+            "nullable": true,
+            "description": "Parsed JSON body, if any."
+          }
+        }
+      },
+      "StatusResponse": {
+        "type": "object",
+        "description": "Result of a simulated-status request.",
+        "properties": {
+          "status": {
+            "type": "integer",
+            "description": "The simulated HTTP status code."
+          },
+          "description": {
+            "type": "string",
+            "description": "Human-readable status description."
+          }
+        },
+        "required": [
+          "status"
+        ]
+      }
+    }
+  }
+}

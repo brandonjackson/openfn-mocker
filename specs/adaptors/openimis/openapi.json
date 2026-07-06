@@ -1,0 +1,2252 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "openIMIS FHIR R4 API (mock subset)",
+    "version": "R4",
+    "description": "Focused subset of the openIMIS FHIR R4 API (module openimis-be-api_fhir_r4_py) that the OpenFn openimis adaptor calls via getFHIR(path). Covers the health-insurance FHIR resources openIMIS exposes: Patient (insuree), Group (family), Claim/ClaimResponse, Contract (policy) and Coverage, CoverageEligibilityRequest, plus Location, Organization, Practitioner, PractitionerRole, HealthcareService, Medication and Condition. Resource-type GETs return a searchset Bundle; GET by id returns the resource.",
+    "x-openfn-adaptor": "openimis"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8000/api/api_fhir_r4"
+    }
+  ],
+  "paths": {
+    "/login/": {
+      "post": {
+        "operationId": "login",
+        "summary": "Authenticate and obtain a bearer token",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Auth token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Patient/": {
+      "get": {
+        "operationId": "searchPatient",
+        "summary": "Search Patient resources",
+        "parameters": [
+          {
+            "name": "format",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "json"
+            }
+          },
+          {
+            "name": "_count",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Page size"
+          },
+          {
+            "name": "_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bundle of Patient resources",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Bundle"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Patient/{id}/": {
+      "get": {
+        "operationId": "getPatient",
+        "summary": "Get a Patient by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "json"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Patient resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Patient"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationOutcome"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Group/": {
+      "get": {
+        "operationId": "searchGroup",
+        "summary": "Search Group resources",
+        "parameters": [
+          {
+            "name": "format",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "json"
+            }
+          },
+          {
+            "name": "_count",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Page size"
+          },
+          {
+            "name": "_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bundle of Group resources",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Bundle"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Group/{id}/": {
+      "get": {
+        "operationId": "getGroup",
+        "summary": "Get a Group by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "json"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Group resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Group"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationOutcome"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Claim/": {
+      "get": {
+        "operationId": "searchClaim",
+        "summary": "Search Claim resources",
+        "parameters": [
+          {
+            "name": "format",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "json"
+            }
+          },
+          {
+            "name": "_count",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Page size"
+          },
+          {
+            "name": "_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bundle of Claim resources",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Bundle"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Claim/{id}/": {
+      "get": {
+        "operationId": "getClaim",
+        "summary": "Get a Claim by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "json"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Claim resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Claim"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationOutcome"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ClaimResponse/": {
+      "get": {
+        "operationId": "searchClaimResponse",
+        "summary": "Search ClaimResponse resources",
+        "parameters": [
+          {
+            "name": "format",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "json"
+            }
+          },
+          {
+            "name": "_count",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Page size"
+          },
+          {
+            "name": "_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bundle of ClaimResponse resources",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Bundle"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ClaimResponse/{id}/": {
+      "get": {
+        "operationId": "getClaimResponse",
+        "summary": "Get a ClaimResponse by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "json"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ClaimResponse resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClaimResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationOutcome"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Contract/": {
+      "get": {
+        "operationId": "searchContract",
+        "summary": "Search Contract resources",
+        "parameters": [
+          {
+            "name": "format",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "json"
+            }
+          },
+          {
+            "name": "_count",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Page size"
+          },
+          {
+            "name": "_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bundle of Contract resources",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Bundle"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Contract/{id}/": {
+      "get": {
+        "operationId": "getContract",
+        "summary": "Get a Contract by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "json"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Contract resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Contract"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationOutcome"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Coverage/": {
+      "get": {
+        "operationId": "searchCoverage",
+        "summary": "Search Coverage resources",
+        "parameters": [
+          {
+            "name": "format",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "json"
+            }
+          },
+          {
+            "name": "_count",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Page size"
+          },
+          {
+            "name": "_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bundle of Coverage resources",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Bundle"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Coverage/{id}/": {
+      "get": {
+        "operationId": "getCoverage",
+        "summary": "Get a Coverage by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "json"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Coverage resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Coverage"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationOutcome"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/CoverageEligibilityRequest/": {
+      "get": {
+        "operationId": "searchCoverageEligibilityRequest",
+        "summary": "Search CoverageEligibilityRequest resources",
+        "parameters": [
+          {
+            "name": "format",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "json"
+            }
+          },
+          {
+            "name": "_count",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Page size"
+          },
+          {
+            "name": "_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bundle of CoverageEligibilityRequest resources",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Bundle"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/CoverageEligibilityRequest/{id}/": {
+      "get": {
+        "operationId": "getCoverageEligibilityRequest",
+        "summary": "Get a CoverageEligibilityRequest by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "json"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "CoverageEligibilityRequest resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CoverageEligibilityRequest"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationOutcome"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Location/": {
+      "get": {
+        "operationId": "searchLocation",
+        "summary": "Search Location resources",
+        "parameters": [
+          {
+            "name": "format",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "json"
+            }
+          },
+          {
+            "name": "_count",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Page size"
+          },
+          {
+            "name": "_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bundle of Location resources",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Bundle"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Location/{id}/": {
+      "get": {
+        "operationId": "getLocation",
+        "summary": "Get a Location by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "json"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Location resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Location"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationOutcome"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Organization/": {
+      "get": {
+        "operationId": "searchOrganization",
+        "summary": "Search Organization resources",
+        "parameters": [
+          {
+            "name": "format",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "json"
+            }
+          },
+          {
+            "name": "_count",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Page size"
+          },
+          {
+            "name": "_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bundle of Organization resources",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Bundle"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Organization/{id}/": {
+      "get": {
+        "operationId": "getOrganization",
+        "summary": "Get a Organization by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "json"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Organization resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Organization"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationOutcome"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Practitioner/": {
+      "get": {
+        "operationId": "searchPractitioner",
+        "summary": "Search Practitioner resources",
+        "parameters": [
+          {
+            "name": "format",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "json"
+            }
+          },
+          {
+            "name": "_count",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Page size"
+          },
+          {
+            "name": "_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bundle of Practitioner resources",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Bundle"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Practitioner/{id}/": {
+      "get": {
+        "operationId": "getPractitioner",
+        "summary": "Get a Practitioner by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "json"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Practitioner resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Practitioner"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationOutcome"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/PractitionerRole/": {
+      "get": {
+        "operationId": "searchPractitionerRole",
+        "summary": "Search PractitionerRole resources",
+        "parameters": [
+          {
+            "name": "format",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "json"
+            }
+          },
+          {
+            "name": "_count",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Page size"
+          },
+          {
+            "name": "_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bundle of PractitionerRole resources",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Bundle"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/PractitionerRole/{id}/": {
+      "get": {
+        "operationId": "getPractitionerRole",
+        "summary": "Get a PractitionerRole by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "json"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "PractitionerRole resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PractitionerRole"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationOutcome"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/HealthcareService/": {
+      "get": {
+        "operationId": "searchHealthcareService",
+        "summary": "Search HealthcareService resources",
+        "parameters": [
+          {
+            "name": "format",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "json"
+            }
+          },
+          {
+            "name": "_count",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Page size"
+          },
+          {
+            "name": "_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bundle of HealthcareService resources",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Bundle"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/HealthcareService/{id}/": {
+      "get": {
+        "operationId": "getHealthcareService",
+        "summary": "Get a HealthcareService by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "json"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "HealthcareService resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthcareService"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationOutcome"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Medication/": {
+      "get": {
+        "operationId": "searchMedication",
+        "summary": "Search Medication resources",
+        "parameters": [
+          {
+            "name": "format",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "json"
+            }
+          },
+          {
+            "name": "_count",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Page size"
+          },
+          {
+            "name": "_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bundle of Medication resources",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Bundle"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Medication/{id}/": {
+      "get": {
+        "operationId": "getMedication",
+        "summary": "Get a Medication by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "json"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Medication resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Medication"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationOutcome"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Condition/": {
+      "get": {
+        "operationId": "searchCondition",
+        "summary": "Search Condition resources",
+        "parameters": [
+          {
+            "name": "format",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "json"
+            }
+          },
+          {
+            "name": "_count",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Page size"
+          },
+          {
+            "name": "_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bundle of Condition resources",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Bundle"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Condition/{id}/": {
+      "get": {
+        "operationId": "getCondition",
+        "summary": "Get a Condition by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "json"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Condition resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Condition"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationOutcome"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Patient": {
+        "type": "object",
+        "description": "openIMIS FHIR R4 Patient resource.",
+        "properties": {
+          "resourceType": {
+            "type": "string",
+            "enum": [
+              "Patient"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          },
+          "identifier": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "name": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HumanName"
+            }
+          },
+          "gender": {
+            "type": "string",
+            "enum": [
+              "male",
+              "female",
+              "other",
+              "unknown"
+            ]
+          },
+          "birthDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "address": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "telecom": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "resourceType"
+        ]
+      },
+      "Group": {
+        "type": "object",
+        "description": "openIMIS FHIR R4 Group resource.",
+        "properties": {
+          "resourceType": {
+            "type": "string",
+            "enum": [
+              "Group"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          },
+          "identifier": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "type": {
+            "type": "string",
+            "example": "Person"
+          },
+          "actual": {
+            "type": "boolean"
+          },
+          "name": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "integer"
+          },
+          "member": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "entity": {
+                  "$ref": "#/components/schemas/Reference"
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "resourceType"
+        ]
+      },
+      "Claim": {
+        "type": "object",
+        "description": "openIMIS FHIR R4 Claim resource.",
+        "properties": {
+          "resourceType": {
+            "type": "string",
+            "enum": [
+              "Claim"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          },
+          "identifier": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          "status": {
+            "type": "string",
+            "example": "active"
+          },
+          "type": {
+            "$ref": "#/components/schemas/CodeableConcept"
+          },
+          "use": {
+            "type": "string",
+            "example": "claim"
+          },
+          "patient": {
+            "$ref": "#/components/schemas/Reference"
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "provider": {
+            "$ref": "#/components/schemas/Reference"
+          },
+          "total": {
+            "$ref": "#/components/schemas/Money"
+          },
+          "item": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "resourceType"
+        ]
+      },
+      "ClaimResponse": {
+        "type": "object",
+        "description": "openIMIS FHIR R4 ClaimResponse resource.",
+        "properties": {
+          "resourceType": {
+            "type": "string",
+            "enum": [
+              "ClaimResponse"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          },
+          "identifier": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          "status": {
+            "type": "string",
+            "example": "active"
+          },
+          "type": {
+            "$ref": "#/components/schemas/CodeableConcept"
+          },
+          "patient": {
+            "$ref": "#/components/schemas/Reference"
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "request": {
+            "$ref": "#/components/schemas/Reference"
+          },
+          "outcome": {
+            "type": "string",
+            "example": "complete"
+          },
+          "item": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "total": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "amount": {
+                  "$ref": "#/components/schemas/Money"
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "resourceType"
+        ]
+      },
+      "Contract": {
+        "type": "object",
+        "description": "openIMIS FHIR R4 Contract resource.",
+        "properties": {
+          "resourceType": {
+            "type": "string",
+            "enum": [
+              "Contract"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          },
+          "identifier": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          "status": {
+            "type": "string",
+            "example": "executed"
+          },
+          "issued": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "period": {
+            "$ref": "#/components/schemas/Period"
+          },
+          "subject": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Reference"
+            }
+          },
+          "term": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "resourceType"
+        ]
+      },
+      "Coverage": {
+        "type": "object",
+        "description": "openIMIS FHIR R4 Coverage resource.",
+        "properties": {
+          "resourceType": {
+            "type": "string",
+            "enum": [
+              "Coverage"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          },
+          "identifier": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          "status": {
+            "type": "string",
+            "example": "active"
+          },
+          "type": {
+            "$ref": "#/components/schemas/CodeableConcept"
+          },
+          "policyHolder": {
+            "$ref": "#/components/schemas/Reference"
+          },
+          "beneficiary": {
+            "$ref": "#/components/schemas/Reference"
+          },
+          "period": {
+            "$ref": "#/components/schemas/Period"
+          },
+          "payor": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Reference"
+            }
+          },
+          "class": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "resourceType"
+        ]
+      },
+      "CoverageEligibilityRequest": {
+        "type": "object",
+        "description": "openIMIS FHIR R4 CoverageEligibilityRequest resource.",
+        "properties": {
+          "resourceType": {
+            "type": "string",
+            "enum": [
+              "CoverageEligibilityRequest"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          },
+          "identifier": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          "status": {
+            "type": "string",
+            "example": "active"
+          },
+          "purpose": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "patient": {
+            "$ref": "#/components/schemas/Reference"
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "insurer": {
+            "$ref": "#/components/schemas/Reference"
+          },
+          "item": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "resourceType"
+        ]
+      },
+      "Location": {
+        "type": "object",
+        "description": "openIMIS FHIR R4 Location resource.",
+        "properties": {
+          "resourceType": {
+            "type": "string",
+            "enum": [
+              "Location"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          },
+          "identifier": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          "status": {
+            "type": "string",
+            "example": "active"
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CodeableConcept"
+            }
+          },
+          "physicalType": {
+            "$ref": "#/components/schemas/CodeableConcept"
+          },
+          "partOf": {
+            "$ref": "#/components/schemas/Reference"
+          }
+        },
+        "required": [
+          "resourceType"
+        ]
+      },
+      "Organization": {
+        "type": "object",
+        "description": "openIMIS FHIR R4 Organization resource.",
+        "properties": {
+          "resourceType": {
+            "type": "string",
+            "enum": [
+              "Organization"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          },
+          "identifier": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "type": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CodeableConcept"
+            }
+          },
+          "name": {
+            "type": "string"
+          },
+          "telecom": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "address": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "resourceType"
+        ]
+      },
+      "Practitioner": {
+        "type": "object",
+        "description": "openIMIS FHIR R4 Practitioner resource.",
+        "properties": {
+          "resourceType": {
+            "type": "string",
+            "enum": [
+              "Practitioner"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          },
+          "identifier": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "name": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HumanName"
+            }
+          },
+          "telecom": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "qualification": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "resourceType"
+        ]
+      },
+      "PractitionerRole": {
+        "type": "object",
+        "description": "openIMIS FHIR R4 PractitionerRole resource.",
+        "properties": {
+          "resourceType": {
+            "type": "string",
+            "enum": [
+              "PractitionerRole"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          },
+          "identifier": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "practitioner": {
+            "$ref": "#/components/schemas/Reference"
+          },
+          "organization": {
+            "$ref": "#/components/schemas/Reference"
+          },
+          "code": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CodeableConcept"
+            }
+          },
+          "location": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Reference"
+            }
+          }
+        },
+        "required": [
+          "resourceType"
+        ]
+      },
+      "HealthcareService": {
+        "type": "object",
+        "description": "openIMIS FHIR R4 HealthcareService resource.",
+        "properties": {
+          "resourceType": {
+            "type": "string",
+            "enum": [
+              "HealthcareService"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          },
+          "identifier": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "providedBy": {
+            "$ref": "#/components/schemas/Reference"
+          },
+          "type": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CodeableConcept"
+            }
+          },
+          "location": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Reference"
+            }
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "resourceType"
+        ]
+      },
+      "Medication": {
+        "type": "object",
+        "description": "openIMIS FHIR R4 Medication resource.",
+        "properties": {
+          "resourceType": {
+            "type": "string",
+            "enum": [
+              "Medication"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          },
+          "identifier": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          "code": {
+            "$ref": "#/components/schemas/CodeableConcept"
+          },
+          "status": {
+            "type": "string",
+            "example": "active"
+          },
+          "form": {
+            "$ref": "#/components/schemas/CodeableConcept"
+          },
+          "amount": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "resourceType"
+        ]
+      },
+      "Condition": {
+        "type": "object",
+        "description": "openIMIS FHIR R4 Condition resource.",
+        "properties": {
+          "resourceType": {
+            "type": "string",
+            "enum": [
+              "Condition"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          },
+          "identifier": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          "clinicalStatus": {
+            "$ref": "#/components/schemas/CodeableConcept"
+          },
+          "code": {
+            "$ref": "#/components/schemas/CodeableConcept"
+          },
+          "subject": {
+            "$ref": "#/components/schemas/Reference"
+          },
+          "recordedDate": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "resourceType"
+        ]
+      },
+      "Reference": {
+        "type": "object",
+        "properties": {
+          "reference": {
+            "type": "string",
+            "example": "Patient/1"
+          },
+          "type": {
+            "type": "string"
+          },
+          "identifier": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "display": {
+            "type": "string"
+          }
+        }
+      },
+      "Identifier": {
+        "type": "object",
+        "properties": {
+          "use": {
+            "type": "string"
+          },
+          "type": {
+            "$ref": "#/components/schemas/CodeableConcept"
+          },
+          "system": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          }
+        }
+      },
+      "Coding": {
+        "type": "object",
+        "properties": {
+          "system": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "display": {
+            "type": "string"
+          }
+        }
+      },
+      "CodeableConcept": {
+        "type": "object",
+        "properties": {
+          "coding": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Coding"
+            }
+          },
+          "text": {
+            "type": "string"
+          }
+        }
+      },
+      "HumanName": {
+        "type": "object",
+        "properties": {
+          "use": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "family": {
+            "type": "string"
+          },
+          "given": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "Money": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "number"
+          },
+          "currency": {
+            "type": "string",
+            "example": "USD"
+          }
+        }
+      },
+      "Period": {
+        "type": "object",
+        "properties": {
+          "start": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "end": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Meta": {
+        "type": "object",
+        "properties": {
+          "versionId": {
+            "type": "string"
+          },
+          "lastUpdated": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "profile": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "Bundle": {
+        "type": "object",
+        "description": "FHIR searchset Bundle returned for resource-type searches.",
+        "properties": {
+          "resourceType": {
+            "type": "string",
+            "enum": [
+              "Bundle"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          },
+          "type": {
+            "type": "string",
+            "example": "searchset"
+          },
+          "total": {
+            "type": "integer"
+          },
+          "link": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "relation": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "entry": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "fullUrl": {
+                  "type": "string"
+                },
+                "resource": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "resourceType",
+          "type"
+        ]
+      },
+      "OperationOutcome": {
+        "type": "object",
+        "properties": {
+          "resourceType": {
+            "type": "string",
+            "enum": [
+              "OperationOutcome"
+            ]
+          },
+          "issue": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "severity": {
+                  "type": "string"
+                },
+                "code": {
+                  "type": "string"
+                },
+                "diagnostics": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "LoginRequest": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "username",
+          "password"
+        ]
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "JWT bearer token"
+          },
+          "exp": {
+            "type": "integer",
+            "description": "Expiry timestamp"
+          }
+        },
+        "required": [
+          "token"
+        ]
+      }
+    }
+  }
+}

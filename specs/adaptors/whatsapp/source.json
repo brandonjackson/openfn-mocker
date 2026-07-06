@@ -1,0 +1,15 @@
+{
+  "adaptor": "whatsapp",
+  "npm": "@openfn/language-whatsapp",
+  "origin": "generated",
+  "upstreamFormat": "docs",
+  "sources": [
+    "https://cdn.jsdelivr.net/npm/@openfn/language-whatsapp/ast.json",
+    "https://developers.facebook.com/docs/whatsapp/cloud-api/reference/messages",
+    "https://developers.facebook.com/docs/whatsapp/cloud-api/reference/media",
+    "https://developers.facebook.com/documentation/business-messaging/whatsapp/reference/whatsapp-business-phone-number/register-api",
+    "https://developers.facebook.com/documentation/business-messaging/whatsapp/reference/whatsapp-business-phone-number/message-api"
+  ],
+  "capturedAt": "2026-07-06",
+  "notes": "The @openfn/language-whatsapp adaptor exposes a single generic request(method, path, body, options) operation targeting the Meta WhatsApp Business Cloud API (Graph API, graph.facebook.com). Meta does not publish an official OpenAPI 3.x document, so this spec was authored ('generated') from Meta's developer documentation. Covers the endpoints jobs invoke through request(): send message (POST /{phone-number-id}/messages, incl. text/template/media/interactive/location/reaction and mark-as-read), media upload/retrieve/delete (POST /{phone-number-id}/media, GET /{media-id}, DELETE /{media-id}), and phone-number register/deregister. Server pinned to v20.0; adjust the Graph API version to match the connection. Auth is a Bearer access token."
+}

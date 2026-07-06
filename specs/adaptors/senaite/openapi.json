@@ -1,0 +1,516 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "SENAITE JSON API",
+    "version": "1.0.0",
+    "description": "Focused OpenAPI description of the SENAITE LIMS JSON REST API (senaite.jsonapi), as consumed by the OpenFn senaite adaptor. The adaptor exposes a single generic `request(method, path, options)` operation, so this spec documents the underlying senaite.jsonapi routes that requests target (version, catalogs, users, search, resource listing, get-by-uid, create, update and delete). Base route prefix is `@@API/senaite/v1`.",
+    "x-openfn-adaptor": "senaite"
+  },
+  "servers": [
+    {
+      "url": "https://demo.senaite.org/@@API/senaite/v1",
+      "description": "SENAITE JSON API v1 base (public demo instance)"
+    }
+  ],
+  "paths": {
+    "/version": {
+      "get": {
+        "operationId": "getVersion",
+        "summary": "Get API and SENAITE version information",
+        "responses": {
+          "200": {
+            "description": "Version information",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/VersionResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/catalogs": {
+      "get": {
+        "operationId": "listCatalogs",
+        "summary": "List all registered catalogs",
+        "responses": {
+          "200": {
+            "description": "Catalog listing",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/CatalogListResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/catalogs/{catalog_id}": {
+      "get": {
+        "operationId": "getCatalog",
+        "summary": "Get catalog details (indexes, columns, portal_types)",
+        "parameters": [
+          { "$ref": "#/components/parameters/CatalogId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Catalog detail",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/CatalogListResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "operationId": "listUsers",
+        "summary": "List all users",
+        "parameters": [
+          { "$ref": "#/components/parameters/Limit" }
+        ],
+        "responses": {
+          "200": {
+            "description": "User listing",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/UserListResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{username}": {
+      "get": {
+        "operationId": "getUser",
+        "summary": "Get a specific user, or the authenticated user with username `current`",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "path",
+            "required": true,
+            "description": "User id, or the literal `current` for the authenticated user.",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User detail",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/UserListResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/search": {
+      "get": {
+        "operationId": "search",
+        "summary": "Search across indexed content in a catalog",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "description": "Full text search term.",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "catalog",
+            "in": "query",
+            "description": "Target a specific catalog (e.g. senaite_catalog_sample).",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "portal_type",
+            "in": "query",
+            "description": "Filter by portal type (e.g. AnalysisRequest, Client, Sample).",
+            "schema": { "type": "string" }
+          },
+          { "$ref": "#/components/parameters/Complete" },
+          { "$ref": "#/components/parameters/Limit" },
+          { "$ref": "#/components/parameters/SortOn" },
+          { "$ref": "#/components/parameters/SortOrder" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Search results",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/APIResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/{resource}": {
+      "get": {
+        "operationId": "listResource",
+        "summary": "List resources of a given type / catalog route",
+        "description": "Retrieve a paged list of resources for a routed content type or catalog, e.g. `analysisrequest`, `client`, `sample`, `patient`, `contact`.",
+        "parameters": [
+          { "$ref": "#/components/parameters/Resource" },
+          { "$ref": "#/components/parameters/Complete" },
+          { "$ref": "#/components/parameters/Limit" },
+          { "$ref": "#/components/parameters/SortOn" },
+          { "$ref": "#/components/parameters/SortOrder" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paged resource listing",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/APIResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/{resource}/{uid}": {
+      "get": {
+        "operationId": "getResourceByUid",
+        "summary": "Get a single resource by UID",
+        "parameters": [
+          { "$ref": "#/components/parameters/Resource" },
+          { "$ref": "#/components/parameters/Uid" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resource retrieved",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/APIResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/{resource}/create": {
+      "post": {
+        "operationId": "createResource",
+        "summary": "Create a new content object",
+        "parameters": [
+          { "$ref": "#/components/parameters/Resource" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Object created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/APIResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/{resource}/update/{uid}": {
+      "post": {
+        "operationId": "updateResource",
+        "summary": "Update an existing content object by UID",
+        "parameters": [
+          { "$ref": "#/components/parameters/Resource" },
+          { "$ref": "#/components/parameters/Uid" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Object updated",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/APIResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/{resource}/delete/{uid}": {
+      "post": {
+        "operationId": "deleteResource",
+        "summary": "Deactivate / delete a content object by UID",
+        "parameters": [
+          { "$ref": "#/components/parameters/Resource" },
+          { "$ref": "#/components/parameters/Uid" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Object deleted",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/APIResponse" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "Resource": {
+        "name": "resource",
+        "in": "path",
+        "required": true,
+        "description": "Routed content type or catalog resource name (e.g. analysisrequest, client, sample, patient, contact).",
+        "schema": { "type": "string" }
+      },
+      "Uid": {
+        "name": "uid",
+        "in": "path",
+        "required": true,
+        "description": "Unique object identifier (UID).",
+        "schema": { "type": "string" }
+      },
+      "CatalogId": {
+        "name": "catalog_id",
+        "in": "path",
+        "required": true,
+        "description": "Catalog identifier (e.g. senaite_catalog_sample).",
+        "schema": { "type": "string" }
+      },
+      "Complete": {
+        "name": "complete",
+        "in": "query",
+        "description": "Return full object data for each item instead of a summary.",
+        "schema": { "type": "string", "enum": ["yes", "y", "1", "True"] }
+      },
+      "Limit": {
+        "name": "limit",
+        "in": "query",
+        "description": "Maximum number of results per page.",
+        "schema": { "type": "integer", "minimum": 1 }
+      },
+      "SortOn": {
+        "name": "sort_on",
+        "in": "query",
+        "description": "Index name to sort on.",
+        "schema": { "type": "string" }
+      },
+      "SortOrder": {
+        "name": "sort_order",
+        "in": "query",
+        "description": "Sort direction.",
+        "schema": { "type": "string", "enum": ["asc", "desc"] }
+      }
+    },
+    "schemas": {
+      "APIResponse": {
+        "type": "object",
+        "description": "Standard paged JSON API response envelope.",
+        "properties": {
+          "count": { "type": "integer", "description": "Number of items in the current page." },
+          "pagesize": { "type": "integer" },
+          "page": { "type": "integer" },
+          "pages": { "type": "integer" },
+          "_runtime": { "type": "number", "description": "Server processing time in seconds." },
+          "next": { "type": "string", "nullable": true, "description": "URL of the next page." },
+          "previous": { "type": "string", "nullable": true, "description": "URL of the previous page." },
+          "items": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/CatalogItem" }
+          }
+        }
+      },
+      "CatalogItem": {
+        "type": "object",
+        "description": "Generic SENAITE content object summary as returned in items[].",
+        "properties": {
+          "uid": { "type": "string" },
+          "id": { "type": "string" },
+          "portal_type": { "type": "string" },
+          "url": { "type": "string" },
+          "api_url": { "type": "string" },
+          "path": { "type": "string" },
+          "parent_id": { "type": "string" },
+          "parent_uid": { "type": "string" },
+          "parent_path": { "type": "string" },
+          "title": { "type": "string" },
+          "description": { "type": "string" },
+          "created": { "type": "string" },
+          "modified": { "type": "string" },
+          "review_state": { "type": "string" },
+          "tags": { "type": "array", "items": { "type": "string" } }
+        }
+      },
+      "AnalysisRequest": {
+        "type": "object",
+        "description": "A sample / analysis request (portal_type AnalysisRequest).",
+        "allOf": [
+          { "$ref": "#/components/schemas/CatalogItem" },
+          {
+            "type": "object",
+            "properties": {
+              "ClientID": { "type": "string" },
+              "ClientSampleID": { "type": "string" },
+              "SampleTypeTitle": { "type": "string" },
+              "DateSampled": { "type": "string" },
+              "DateReceived": { "type": "string" },
+              "Priority": { "type": "string" },
+              "getClientTitle": { "type": "string" }
+            }
+          }
+        ]
+      },
+      "Client": {
+        "type": "object",
+        "description": "A laboratory client (portal_type Client).",
+        "allOf": [
+          { "$ref": "#/components/schemas/CatalogItem" },
+          {
+            "type": "object",
+            "properties": {
+              "ClientID": { "type": "string" },
+              "Name": { "type": "string" },
+              "EmailAddress": { "type": "string" },
+              "Phone": { "type": "string" },
+              "TaxNumber": { "type": "string" }
+            }
+          }
+        ]
+      },
+      "Sample": {
+        "type": "object",
+        "description": "A sample object (portal_type Sample / AnalysisRequest sample record).",
+        "allOf": [
+          { "$ref": "#/components/schemas/CatalogItem" },
+          {
+            "type": "object",
+            "properties": {
+              "SampleType": { "type": "string" },
+              "SampleTypeTitle": { "type": "string" },
+              "DateSampled": { "type": "string" },
+              "DateReceived": { "type": "string" },
+              "Priority": { "type": "string" }
+            }
+          }
+        ]
+      },
+      "Contact": {
+        "type": "object",
+        "description": "A client contact (portal_type Contact).",
+        "allOf": [
+          { "$ref": "#/components/schemas/CatalogItem" },
+          {
+            "type": "object",
+            "properties": {
+              "Firstname": { "type": "string" },
+              "Surname": { "type": "string" },
+              "EmailAddress": { "type": "string" },
+              "Fullname": { "type": "string" }
+            }
+          }
+        ]
+      },
+      "User": {
+        "type": "object",
+        "description": "A SENAITE user account.",
+        "properties": {
+          "username": { "type": "string" },
+          "userid": { "type": "string" },
+          "email": { "type": "string" },
+          "fullname": { "type": "string" },
+          "roles": { "type": "array", "items": { "type": "string" } },
+          "groups": { "type": "array", "items": { "type": "string" } },
+          "authenticated": { "type": "boolean" },
+          "api_url": { "type": "string" }
+        }
+      },
+      "UserListResponse": {
+        "type": "object",
+        "allOf": [
+          { "$ref": "#/components/schemas/APIResponse" },
+          {
+            "type": "object",
+            "properties": {
+              "items": {
+                "type": "array",
+                "items": { "$ref": "#/components/schemas/User" }
+              }
+            }
+          }
+        ]
+      },
+      "Catalog": {
+        "type": "object",
+        "description": "A registered catalog descriptor.",
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "indexes": { "type": "array", "items": { "type": "string" } },
+          "columns": { "type": "array", "items": { "type": "string" } },
+          "portal_types": { "type": "array", "items": { "type": "string" } }
+        }
+      },
+      "CatalogListResponse": {
+        "type": "object",
+        "allOf": [
+          { "$ref": "#/components/schemas/APIResponse" },
+          {
+            "type": "object",
+            "properties": {
+              "items": {
+                "type": "array",
+                "items": { "$ref": "#/components/schemas/Catalog" }
+              }
+            }
+          }
+        ]
+      },
+      "VersionResponse": {
+        "type": "object",
+        "properties": {
+          "url": { "type": "string" },
+          "version": { "type": "string", "description": "senaite.jsonapi package version." },
+          "api_version": { "type": "string", "description": "API route version (e.g. v1)." },
+          "_runtime": { "type": "number" }
+        }
+      },
+      "CreateRequest": {
+        "type": "object",
+        "description": "Request body for creating a content object.",
+        "required": ["portal_type"],
+        "properties": {
+          "portal_type": { "type": "string", "description": "Type of object to create (e.g. Client, AnalysisRequest)." },
+          "parent_path": { "type": "string", "description": "Path of the target container." },
+          "parent_uid": { "type": "string", "description": "UID of the target container." },
+          "title": { "type": "string" }
+        },
+        "additionalProperties": true
+      },
+      "UpdateRequest": {
+        "type": "object",
+        "description": "Request body for updating a content object. Identify the object by uid (path param), or by path/id, and include fields to change plus an optional workflow transition.",
+        "properties": {
+          "uid": { "type": "string" },
+          "path": { "type": "string" },
+          "id": { "type": "string" },
+          "transition": { "type": "string", "description": "Optional workflow transition to apply." }
+        },
+        "additionalProperties": true
+      }
+    }
+  }
+}

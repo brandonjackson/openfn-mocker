@@ -1,0 +1,13 @@
+{
+  "adaptor": "hubtel",
+  "npm": "@openfn/language-hubtel",
+  "origin": "generated",
+  "upstreamFormat": "docs",
+  "sources": [
+    "https://businessdocs-developers.hubtel.com/docs/api-reference-messaging-1",
+    "https://help.hubtel.com/hubtel-for-developers/sms-api/send-sms-messages-with-quick-send-api",
+    "https://cdn.jsdelivr.net/npm/@openfn/language-hubtel/ast.json"
+  ],
+  "capturedAt": "2026-07-06",
+  "notes": "Hubtel has no public OpenAPI document. Authored a focused OpenAPI 3.0.3 from Hubtel's Quick Send SMS docs. The adaptor's sendSMS posts to /messages/send (confirmed in dist/index.cjs); request() is a generic passthrough not modeled as a distinct path. Success response shape {Status, MessageId, Rate, NetworkId} taken from Hubtel docs. getMessageStatus added as a plausible companion read endpoint to give a reusable resource shape for seeding."
+}

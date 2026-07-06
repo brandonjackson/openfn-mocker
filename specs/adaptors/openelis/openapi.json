@@ -1,0 +1,469 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "OpenELIS Global REST API (mock subset)",
+    "version": "3.2.1",
+    "description": "Focused OpenAPI 3.x subset of the OpenELIS Global v2 REST API, the laboratory information system the OpenFn openelis adaptor integrates with. The adaptor exposes only a generic http namespace (http.get/post/request) and builds every request as {baseUrl}/api/OpenELIS-Global/rest/{path} with HTTP Basic auth. Paths here are documented from the OpenELIS-Global-2 Spring @RestController surface: dashboards, patient search/management, sample orders, results, result validation, and reference dictionaries.",
+    "x-openfn-adaptor": "openelis"
+  },
+  "servers": [{ "url": "https://openelis.example.org/api/OpenELIS-Global" }],
+  "paths": {
+    "/rest/home-dashboard/{listType}": {
+      "get": {
+        "operationId": "getDashboardOrders",
+        "summary": "Get dashboard orders for a tile type",
+        "parameters": [
+          { "name": "listType", "in": "path", "required": true, "schema": { "type": "string", "enum": ["ORDERS_IN_PROGRESS", "ORDERS_READY_FOR_VALIDATION", "ORDERS_COMPLETED_TODAY", "ORDERS_REJECTED_TODAY", "UN_PRINTED_RESULTS", "INCOMING_ORDERS"] }, "example": "ORDERS_IN_PROGRESS" },
+          { "name": "systemUserId", "in": "query", "schema": { "type": "string" } },
+          { "name": "page", "in": "query", "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dashboard orders",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/PatientDashBoardForm" } }
+            }
+          }
+        }
+      }
+    },
+    "/rest/home-dashboard/metrics": {
+      "get": {
+        "operationId": "getDashboardMetrics",
+        "summary": "Get dashboard summary metrics",
+        "responses": {
+          "200": {
+            "description": "Metrics",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/DashboardMetrics" } }
+            }
+          }
+        }
+      }
+    },
+    "/rest/patient-search-results": {
+      "get": {
+        "operationId": "searchPatients",
+        "summary": "Search patients (paged)",
+        "parameters": [
+          { "name": "firstName", "in": "query", "schema": { "type": "string" } },
+          { "name": "lastName", "in": "query", "schema": { "type": "string" } },
+          { "name": "nationalID", "in": "query", "schema": { "type": "string" } },
+          { "name": "labNumber", "in": "query", "schema": { "type": "string" } },
+          { "name": "dateOfBirth", "in": "query", "schema": { "type": "string" } },
+          { "name": "gender", "in": "query", "schema": { "type": "string" } },
+          { "name": "page", "in": "query", "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Patient search results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "patientSearchResults": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/PatientSearchResults" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rest/patient-search": {
+      "get": {
+        "operationId": "searchPatientsBare",
+        "summary": "Search patients (unpaged array)",
+        "parameters": [
+          { "name": "firstName", "in": "query", "schema": { "type": "string" } },
+          { "name": "lastName", "in": "query", "schema": { "type": "string" } },
+          { "name": "nationalID", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Patient array",
+            "content": {
+              "application/json": {
+                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/PatientSearchResults" } }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rest/PatientManagement": {
+      "post": {
+        "operationId": "savePatient",
+        "summary": "Create or update a patient",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/PatientManagementInfo" } }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Saved patient",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/PatientManagementInfo" } }
+            }
+          }
+        }
+      }
+    },
+    "/rest/order/dashboard": {
+      "get": {
+        "operationId": "getOrderDashboard",
+        "summary": "Search/list orders",
+        "parameters": [
+          { "name": "page", "in": "query", "schema": { "type": "integer" } },
+          { "name": "pageSize", "in": "query", "schema": { "type": "integer" } },
+          { "name": "search", "in": "query", "schema": { "type": "string" } },
+          { "name": "status", "in": "query", "schema": { "type": "string" } },
+          { "name": "priority", "in": "query", "schema": { "type": "string" } },
+          { "name": "startDate", "in": "query", "schema": { "type": "string" } },
+          { "name": "endDate", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Orders",
+            "content": {
+              "application/json": {
+                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/OrderDisplayBean" } }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rest/SamplePatientEntry": {
+      "post": {
+        "operationId": "createSampleOrder",
+        "summary": "Create a lab order (sample + patient + tests)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/SamplePatientEntryForm" } }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Created order",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SampleEntryResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rest/accession-results": {
+      "get": {
+        "operationId": "getAccessionResults",
+        "summary": "Get results for an accession",
+        "parameters": [
+          { "name": "accessionNumber", "in": "query", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Accession results",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/AccessionResultsRestResponse" } }
+            }
+          }
+        }
+      }
+    },
+    "/rest/LogbookResults": {
+      "get": {
+        "operationId": "getLogbookResults",
+        "summary": "Get results awaiting entry",
+        "parameters": [
+          { "name": "testSectionId", "in": "query", "schema": { "type": "string" } },
+          { "name": "labNumber", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Logbook results form",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ResultsForm" } }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "saveLogbookResults",
+        "summary": "Save entered results",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/ResultsForm" } }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Save result",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ResultsForm" } }
+            }
+          }
+        }
+      }
+    },
+    "/rest/AccessionValidation": {
+      "get": {
+        "operationId": "getResultsForValidation",
+        "summary": "List results awaiting validation",
+        "parameters": [
+          { "name": "testSectionId", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Validation form",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ResultsForm" } }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "validateResults",
+        "summary": "Submit result validation",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/ResultsForm" } }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Validation result",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ResultsForm" } }
+            }
+          }
+        }
+      }
+    },
+    "/rest/test-list": {
+      "get": {
+        "operationId": "getTestList",
+        "summary": "List tests available to the user",
+        "responses": {
+          "200": {
+            "description": "Tests",
+            "content": {
+              "application/json": {
+                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/IdValuePair" } }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rest/displayList/{listType}": {
+      "get": {
+        "operationId": "getDisplayList",
+        "summary": "Get a dictionary list by type",
+        "parameters": [
+          { "name": "listType", "in": "path", "required": true, "schema": { "type": "string" }, "example": "GENDERS" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dictionary entries",
+            "content": {
+              "application/json": {
+                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/IdValuePair" } }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rest/sample-status-types": {
+      "get": {
+        "operationId": "getSampleStatusTypes",
+        "summary": "List sample status types",
+        "responses": {
+          "200": {
+            "description": "Status types",
+            "content": {
+              "application/json": {
+                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/IdValuePair" } }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "basicAuth": { "type": "http", "scheme": "basic" }
+    },
+    "security": [{ "basicAuth": [] }],
+    "schemas": {
+      "IdValuePair": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "example": "1" },
+          "value": { "type": "string", "example": "Male" }
+        }
+      },
+      "PatientManagementInfo": {
+        "type": "object",
+        "properties": {
+          "patientUpdateStatus": { "type": "string", "enum": ["ADD", "UPDATE", "NO_ACTION"], "example": "ADD" },
+          "patientPK": { "type": "string" },
+          "firstName": { "type": "string", "example": "Jane" },
+          "lastName": { "type": "string", "example": "Doe" },
+          "gender": { "type": "string", "example": "F" },
+          "birthDateForDisplay": { "type": "string", "example": "01/05/1990" },
+          "nationalId": { "type": "string", "example": "NID12345" },
+          "subjectNumber": { "type": "string" },
+          "STnumber": { "type": "string" },
+          "guid": { "type": "string" },
+          "primaryPhone": { "type": "string" },
+          "streetAddress": { "type": "string" },
+          "city": { "type": "string" }
+        }
+      },
+      "PatientSearchResults": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "example": "42" },
+          "GUID": { "type": "string" },
+          "firstName": { "type": "string", "example": "Jane" },
+          "lastName": { "type": "string", "example": "Doe" },
+          "gender": { "type": "string", "example": "F" },
+          "birthdate": { "type": "string", "example": "01/05/1990" },
+          "nationalId": { "type": "string" },
+          "externalId": { "type": "string" },
+          "stNumber": { "type": "string" },
+          "subjectNumber": { "type": "string" },
+          "mothersName": { "type": "string" },
+          "contactPhone": { "type": "string" }
+        }
+      },
+      "OrderDisplayBean": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "priority": { "type": "string", "example": "ROUTINE" },
+          "orderDate": { "type": "string", "example": "2026-07-01" },
+          "patientId": { "type": "string" },
+          "labNumber": { "type": "string", "example": "0000000123" },
+          "testName": { "type": "string" },
+          "testSection": { "type": "string" },
+          "userFirstName": { "type": "string" },
+          "userLastName": { "type": "string" },
+          "countOfOrdersEntered": { "type": "integer" }
+        }
+      },
+      "PatientDashBoardForm": {
+        "type": "object",
+        "properties": {
+          "orderList": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/OrderDisplayBean" }
+          }
+        }
+      },
+      "DashboardMetrics": {
+        "type": "object",
+        "properties": {
+          "ordersInProgress": { "type": "integer", "example": 12 },
+          "ordersReadyForValidation": { "type": "integer", "example": 4 },
+          "ordersCompletedToday": { "type": "integer", "example": 20 },
+          "averageTurnAroundTime": { "type": "number", "example": 3.5 }
+        }
+      },
+      "SampleOrderItem": {
+        "type": "object",
+        "properties": {
+          "labNo": { "type": "string", "example": "0000000123" },
+          "sampleId": { "type": "string" },
+          "receivedDateForDisplay": { "type": "string", "example": "01/07/2026" },
+          "requesterSampleID": { "type": "string" },
+          "priority": { "type": "string", "example": "ROUTINE" },
+          "newSampleType": { "type": "string", "example": "Blood" }
+        }
+      },
+      "SampleEntryResponse": {
+        "type": "object",
+        "properties": {
+          "labNo": { "type": "string", "example": "0000000123" },
+          "accessionNumber": { "type": "string", "example": "0000000123" }
+        },
+        "additionalProperties": true
+      },
+      "SamplePatientEntryForm": {
+        "type": "object",
+        "properties": {
+          "patientProperties": { "$ref": "#/components/schemas/PatientManagementInfo" },
+          "sampleOrderItems": { "$ref": "#/components/schemas/SampleOrderItem" },
+          "sampleXML": { "type": "string", "description": "Encodes the ordered tests/panels" },
+          "patientUpdateStatus": { "type": "string", "example": "ADD" },
+          "useReferral": { "type": "boolean" }
+        }
+      },
+      "TestResultItem": {
+        "type": "object",
+        "properties": {
+          "accessionNumber": { "type": "string", "example": "0000000123" },
+          "sequenceNumber": { "type": "string" },
+          "testId": { "type": "string" },
+          "testName": { "type": "string", "example": "Hemoglobin" },
+          "testMethod": { "type": "string" },
+          "resultValue": { "type": "string", "example": "13.5" },
+          "resultType": { "type": "string", "example": "N" },
+          "unitsOfMeasure": { "type": "string", "example": "g/dL" },
+          "normalRange": { "type": "string", "example": "12.0-16.0" },
+          "testDate": { "type": "string" },
+          "analysisId": { "type": "string" },
+          "analysisStatusId": { "type": "string" },
+          "resultId": { "type": "string" },
+          "patientName": { "type": "string" },
+          "nationalId": { "type": "string" },
+          "technician": { "type": "string" },
+          "note": { "type": "string" },
+          "reportable": { "type": "boolean" },
+          "valid": { "type": "boolean" },
+          "normal": { "type": "boolean" },
+          "referralReasons": { "type": "array", "items": { "$ref": "#/components/schemas/IdValuePair" } },
+          "dictionaryResults": { "type": "array", "items": { "$ref": "#/components/schemas/IdValuePair" } }
+        }
+      },
+      "AccessionResultsRestResponse": {
+        "type": "object",
+        "properties": {
+          "accessionNumber": { "type": "string", "example": "0000000123" },
+          "searchFinished": { "type": "boolean" },
+          "error": { "type": "boolean" },
+          "firstName": { "type": "string" },
+          "lastName": { "type": "string" },
+          "dob": { "type": "string" },
+          "gender": { "type": "string" },
+          "nationalId": { "type": "string" },
+          "subjectNumber": { "type": "string" },
+          "testResult": { "type": "array", "items": { "$ref": "#/components/schemas/TestResultItem" } }
+        }
+      },
+      "ResultsForm": {
+        "type": "object",
+        "properties": {
+          "accessionNumber": { "type": "string" },
+          "currentDate": { "type": "string" },
+          "testSectionId": { "type": "string" },
+          "testResult": { "type": "array", "items": { "$ref": "#/components/schemas/TestResultItem" } },
+          "resultList": { "type": "array", "items": { "$ref": "#/components/schemas/TestResultItem" } }
+        }
+      }
+    }
+  }
+}

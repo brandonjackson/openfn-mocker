@@ -1,0 +1,268 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Microsoft SQL Server API (synthesized)",
+    "version": "1.0.0",
+    "description": "Synthesized OpenAPI surface for the OpenFn mssql adaptor. Microsoft SQL Server is a relational database accessed over the TDS protocol (via the mssql/tedious driver), not a REST API. This spec models the adaptor operations (sql, findValue, insert, insertMany, upsert, upsertIf, upsertMany, describeTable, insertTable, modifyTable) as HTTP endpoints so the mocker can seed and serve representative SQL result and metadata shapes. servers.url is a mock placeholder.",
+    "x-openfn-adaptor": "mssql"
+  },
+  "servers": [
+    { "url": "http://localhost:4010", "description": "Mock server (SQL Server speaks TDS, not REST)" }
+  ],
+  "paths": {
+    "/sql": {
+      "post": {
+        "operationId": "sql",
+        "summary": "Execute a raw SQL statement",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SqlRequest" } } }
+        },
+        "responses": {
+          "200": {
+            "description": "Query result",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/QueryResult" } } }
+          }
+        }
+      }
+    },
+    "/findValue": {
+      "post": {
+        "operationId": "findValue",
+        "summary": "Fetch a single value/uuid given a filter condition",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/FindValueRequest" } } }
+        },
+        "responses": {
+          "200": {
+            "description": "Matched row",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Row" } } }
+          }
+        }
+      }
+    },
+    "/tables/{table}/insert": {
+      "post": {
+        "operationId": "insert",
+        "summary": "Insert a single record",
+        "parameters": [ { "name": "table", "in": "path", "required": true, "schema": { "type": "string" } } ],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Row" } } }
+        },
+        "responses": {
+          "200": {
+            "description": "Insert result",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/MutationResult" } } }
+          }
+        }
+      }
+    },
+    "/tables/{table}/insertMany": {
+      "post": {
+        "operationId": "insertMany",
+        "summary": "Insert many records",
+        "parameters": [ { "name": "table", "in": "path", "required": true, "schema": { "type": "string" } } ],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Row" } } } }
+        },
+        "responses": {
+          "200": {
+            "description": "Bulk insert result",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/MutationResult" } } }
+          }
+        }
+      }
+    },
+    "/tables/{table}/upsert": {
+      "post": {
+        "operationId": "upsert",
+        "summary": "Insert or update a record using SQL MERGE",
+        "parameters": [
+          { "name": "table", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "uuid", "in": "query", "required": true, "schema": { "type": "string" }, "description": "Column used as the match key" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Row" } } }
+        },
+        "responses": {
+          "200": {
+            "description": "Upsert result",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/MutationResult" } } }
+          }
+        }
+      }
+    },
+    "/tables/{table}/upsertIf": {
+      "post": {
+        "operationId": "upsertIf",
+        "summary": "Conditionally insert or update a record",
+        "parameters": [
+          { "name": "table", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "uuid", "in": "query", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "logical": { "type": "boolean", "description": "Guard condition; upsert only runs when true" },
+                  "record": { "$ref": "#/components/schemas/Row" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Conditional upsert result",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/MutationResult" } } }
+          }
+        }
+      }
+    },
+    "/tables/{table}/upsertMany": {
+      "post": {
+        "operationId": "upsertMany",
+        "summary": "Insert or update multiple records",
+        "parameters": [
+          { "name": "table", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "uuid", "in": "query", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Row" } } } }
+        },
+        "responses": {
+          "200": {
+            "description": "Bulk upsert result",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/MutationResult" } } }
+          }
+        }
+      }
+    },
+    "/tables/{table}/describe": {
+      "get": {
+        "operationId": "describeTable",
+        "summary": "List the columns of a table",
+        "parameters": [ { "name": "table", "in": "path", "required": true, "schema": { "type": "string" } } ],
+        "responses": {
+          "200": {
+            "description": "Column definitions",
+            "content": {
+              "application/json": {
+                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/ColumnDefinition" } }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tables/{table}/create": {
+      "post": {
+        "operationId": "insertTable",
+        "summary": "Create a table given an array of columns",
+        "parameters": [ { "name": "table", "in": "path", "required": true, "schema": { "type": "string" } } ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "type": "array", "items": { "$ref": "#/components/schemas/ColumnDefinition" } }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "DDL result",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/MutationResult" } } }
+          }
+        }
+      }
+    },
+    "/tables/{table}/alter": {
+      "post": {
+        "operationId": "modifyTable",
+        "summary": "Alter an existing table",
+        "parameters": [ { "name": "table", "in": "path", "required": true, "schema": { "type": "string" } } ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "type": "array", "items": { "$ref": "#/components/schemas/ColumnDefinition" } }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "DDL result",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/MutationResult" } } }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Row": {
+        "type": "object",
+        "description": "A table row / record. Columns are dynamic; example fields shown.",
+        "additionalProperties": true,
+        "properties": {
+          "id": { "type": "integer", "example": 1 },
+          "name": { "type": "string", "example": "Alice" },
+          "email": { "type": "string", "example": "alice@example.com" }
+        }
+      },
+      "SqlRequest": {
+        "type": "object",
+        "required": ["query"],
+        "properties": {
+          "query": { "type": "string", "example": "SELECT TOP 10 * FROM users" }
+        }
+      },
+      "FindValueRequest": {
+        "type": "object",
+        "required": ["filter"],
+        "properties": {
+          "filter": {
+            "type": "object",
+            "properties": {
+              "uuid": { "type": "string", "example": "email" },
+              "relation": { "type": "string", "example": "users" },
+              "where": { "type": "object", "additionalProperties": true, "example": { "name": "Alice" } }
+            }
+          }
+        }
+      },
+      "ColumnDefinition": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "example": "id" },
+          "type": { "type": "string", "example": "INT" },
+          "nullable": { "type": "boolean", "example": false },
+          "identity": { "type": "boolean", "example": true },
+          "default": { "type": "string", "nullable": true, "example": null }
+        }
+      },
+      "QueryResult": {
+        "type": "object",
+        "properties": {
+          "rows": { "type": "array", "items": { "$ref": "#/components/schemas/Row" } },
+          "rowsAffected": { "type": "array", "items": { "type": "integer" }, "example": [10] }
+        }
+      },
+      "MutationResult": {
+        "type": "object",
+        "properties": {
+          "rowsAffected": { "type": "array", "items": { "type": "integer" }, "example": [1] },
+          "recordset": { "type": "array", "items": { "$ref": "#/components/schemas/Row" } }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "adaptor": "wigal-sms",
+  "npm": "@openfn/language-wigal-sms",
+  "origin": "generated",
+  "upstreamFormat": "docs",
+  "sources": [
+    "https://frogdocs.wigal.com.gh/",
+    "https://frogdocs.wigal.com.gh/send_general.html",
+    "https://frogdocs.wigal.com.gh/send_personalized.html",
+    "https://frogdocs.wigal.com.gh/otp_generate.html",
+    "https://frogdocs.wigal.com.gh/otp_verify.html",
+    "https://frogdocs.wigal.com.gh/get_account_balance.html",
+    "https://frogdocs.wigal.com.gh/history.html",
+    "https://cdn.jsdelivr.net/npm/@openfn/language-wigal-sms/ast.json",
+    "https://cdn.jsdelivr.net/npm/@openfn/language-wigal-sms/types/Adaptor.d.ts"
+  ],
+  "capturedAt": "2026-07-06",
+  "notes": "No official OpenAPI spec published by Wigal. Authored an OpenAPI 3.0.3 description from the Frog vendor documentation (frogdocs.wigal.com.gh). The adaptor itself exposes a single operation, sendSms, which POSTs to /api/v3/sms/send; the spec covers that endpoint plus closely related Frog SMS operations (OTP generate/verify, account balance, message history) that share the same API-KEY/USERNAME header auth. Request/response shapes and example values were taken from the vendor docs; error-response bodies use the shared {status,message} shape documented for each endpoint. Voice and USSD endpoints exist in the vendor docs but were omitted as out of scope for the SMS adaptor and because detailed request/response shapes were not available."
+}

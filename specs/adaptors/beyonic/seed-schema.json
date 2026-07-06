@@ -1,0 +1,375 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "beyonic — mocker seed-data schema",
+    "version": "1.0.0",
+    "description": "Schema for the seed data openfn-mocker needs to impersonate beyonic. Derived from the adaptor's OpenAPI spec. A seed dump is { collection: { id: record } }; each record validates against its resource schema below.",
+    "x-openfn-adaptor": "beyonic",
+    "x-derived-from": "openapi.json",
+    "x-captured-at": "2026-07-06"
+  },
+  "x-seed": {
+    "shape": "{ collection: { id: record } }",
+    "collections": {
+      "collectionRequests": {
+        "resource": "CollectionRequest",
+        "schema": {
+          "$ref": "#/components/schemas/CollectionRequest"
+        }
+      },
+      "contacts": {
+        "resource": "Contact",
+        "schema": {
+          "$ref": "#/components/schemas/Contact"
+        }
+      },
+      "payments": {
+        "resource": "Payment",
+        "schema": {
+          "$ref": "#/components/schemas/Payment"
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SeedData": {
+        "type": "object",
+        "description": "Full seed dump loaded by mocker: one property per collection.",
+        "properties": {
+          "collectionRequests": {
+            "type": "object",
+            "description": "Records keyed by id for the collectionRequests collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/CollectionRequest"
+            }
+          },
+          "contacts": {
+            "type": "object",
+            "description": "Records keyed by id for the contacts collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Contact"
+            }
+          },
+          "payments": {
+            "type": "object",
+            "description": "Records keyed by id for the payments collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Payment"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "PaymentRequest": {
+        "type": "object",
+        "properties": {
+          "phonenumber": {
+            "type": "string",
+            "example": "+256773712831"
+          },
+          "first_name": {
+            "type": "string"
+          },
+          "last_name": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "string",
+            "example": "1200"
+          },
+          "currency": {
+            "type": "string",
+            "example": "UGX"
+          },
+          "description": {
+            "type": "string"
+          },
+          "payment_type": {
+            "type": "string",
+            "example": "money"
+          },
+          "callback_url": {
+            "type": "string"
+          },
+          "send_sms_message": {
+            "type": "boolean"
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "required": [
+          "amount",
+          "currency"
+        ]
+      },
+      "Payment": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "organization": {
+            "type": "integer"
+          },
+          "amount": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "payment_type": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string",
+            "example": "processed"
+          },
+          "start_date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "account": {
+            "type": "integer",
+            "nullable": true
+          },
+          "charged_fee": {
+            "type": "number"
+          },
+          "last_error": {
+            "type": "string",
+            "nullable": true
+          },
+          "remote_transaction_id": {
+            "type": "string",
+            "nullable": true
+          },
+          "send_sms_message": {
+            "type": "boolean"
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": true,
+            "nullable": true
+          },
+          "author": {
+            "type": "integer"
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "modified": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ContactRequest": {
+        "type": "object",
+        "properties": {
+          "first_name": {
+            "type": "string"
+          },
+          "last_name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "phone_number": {
+            "type": "string",
+            "example": "+256773712831"
+          },
+          "type": {
+            "type": "string",
+            "example": "employee"
+          },
+          "status": {
+            "type": "string",
+            "example": "active"
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "required": [
+          "phone_number"
+        ]
+      },
+      "Contact": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "organization": {
+            "type": "integer"
+          },
+          "first_name": {
+            "type": "string"
+          },
+          "last_name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "phone_number": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "phone_is_supported": {
+            "type": "string"
+          },
+          "phone_is_mm_registered": {
+            "type": "string"
+          },
+          "network_name": {
+            "type": "string"
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "author": {
+            "type": "integer"
+          },
+          "modified": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_by": {
+            "type": "integer"
+          }
+        }
+      },
+      "CollectionRequestRequest": {
+        "type": "object",
+        "properties": {
+          "phonenumber": {
+            "type": "string",
+            "example": "+256773712831"
+          },
+          "amount": {
+            "type": "string",
+            "example": "3000"
+          },
+          "currency": {
+            "type": "string",
+            "example": "UGX"
+          },
+          "contact": {
+            "type": "integer",
+            "description": "Contact id"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "send_instructions": {
+            "type": "boolean"
+          },
+          "success_message": {
+            "type": "string"
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "required": [
+          "amount",
+          "currency",
+          "phonenumber"
+        ]
+      },
+      "CollectionRequest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "organization": {
+            "type": "integer"
+          },
+          "amount": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "phonenumber": {
+            "type": "string"
+          },
+          "contact": {
+            "$ref": "#/components/schemas/Contact"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "example": "pending"
+          },
+          "collection": {
+            "type": "integer",
+            "nullable": true
+          },
+          "account": {
+            "type": "integer",
+            "nullable": true
+          },
+          "success_message": {
+            "type": "string"
+          },
+          "instructions": {
+            "type": "string",
+            "nullable": true
+          },
+          "send_instructions": {
+            "type": "boolean"
+          },
+          "error_message": {
+            "type": "string",
+            "nullable": true
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "author": {
+            "type": "integer"
+          },
+          "modified": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_by": {
+            "type": "integer"
+          }
+        }
+      }
+    }
+  }
+}

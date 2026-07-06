@@ -1,0 +1,431 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "lamisplus — mocker seed-data schema",
+    "version": "1.0.0",
+    "description": "Schema for the seed data openfn-mocker needs to impersonate lamisplus. Derived from the adaptor's OpenAPI spec. A seed dump is { collection: { id: record } }; each record validates against its resource schema below.",
+    "x-openfn-adaptor": "lamisplus",
+    "x-derived-from": "openapi.json",
+    "x-captured-at": "2026-07-06"
+  },
+  "x-seed": {
+    "shape": "{ collection: { id: record } }",
+    "collections": {
+      "biometrics": {
+        "resource": "Biometric",
+        "schema": {
+          "$ref": "#/components/schemas/Biometric"
+        }
+      },
+      "encounters": {
+        "resource": "Encounter",
+        "schema": {
+          "$ref": "#/components/schemas/Encounter"
+        }
+      },
+      "loginResponses": {
+        "resource": "LoginResponse",
+        "schema": {
+          "$ref": "#/components/schemas/LoginResponse"
+        }
+      },
+      "patients": {
+        "resource": "Patient",
+        "schema": {
+          "$ref": "#/components/schemas/Patient"
+        }
+      },
+      "patientListResponses": {
+        "resource": "PatientListResponse",
+        "schema": {
+          "$ref": "#/components/schemas/PatientListResponse"
+        }
+      },
+      "visits": {
+        "resource": "Visit",
+        "schema": {
+          "$ref": "#/components/schemas/Visit"
+        }
+      },
+      "visitListResponses": {
+        "resource": "VisitListResponse",
+        "schema": {
+          "$ref": "#/components/schemas/VisitListResponse"
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SeedData": {
+        "type": "object",
+        "description": "Full seed dump loaded by mocker: one property per collection.",
+        "properties": {
+          "biometrics": {
+            "type": "object",
+            "description": "Records keyed by id for the biometrics collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Biometric"
+            }
+          },
+          "encounters": {
+            "type": "object",
+            "description": "Records keyed by id for the encounters collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Encounter"
+            }
+          },
+          "loginResponses": {
+            "type": "object",
+            "description": "Records keyed by id for the loginResponses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/LoginResponse"
+            }
+          },
+          "patients": {
+            "type": "object",
+            "description": "Records keyed by id for the patients collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Patient"
+            }
+          },
+          "patientListResponses": {
+            "type": "object",
+            "description": "Records keyed by id for the patientListResponses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/PatientListResponse"
+            }
+          },
+          "visits": {
+            "type": "object",
+            "description": "Records keyed by id for the visits collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Visit"
+            }
+          },
+          "visitListResponses": {
+            "type": "object",
+            "description": "Records keyed by id for the visitListResponses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/VisitListResponse"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "LoginRequest": {
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string",
+            "format": "password"
+          }
+        }
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "description": "JWT bearer token"
+          },
+          "tokenType": {
+            "type": "string",
+            "example": "Bearer"
+          },
+          "expiresIn": {
+            "type": "integer",
+            "description": "Seconds until token expiry"
+          }
+        }
+      },
+      "Patient": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "uuid": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "hospitalNumber": {
+            "type": "string",
+            "description": "Facility patient/hospital number"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "surname": {
+            "type": "string"
+          },
+          "otherName": {
+            "type": "string",
+            "nullable": true
+          },
+          "sex": {
+            "type": "string",
+            "enum": [
+              "Male",
+              "Female"
+            ]
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "format": "date"
+          },
+          "maritalStatus": {
+            "type": "string",
+            "nullable": true
+          },
+          "phoneNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "address": {
+            "type": "string",
+            "nullable": true
+          },
+          "facilityId": {
+            "type": "integer",
+            "nullable": true
+          },
+          "dateOfRegistration": {
+            "type": "string",
+            "format": "date",
+            "nullable": true
+          },
+          "archived": {
+            "type": "boolean",
+            "default": false
+          }
+        }
+      },
+      "PatientInput": {
+        "type": "object",
+        "required": [
+          "firstName",
+          "surname",
+          "sex",
+          "dateOfBirth"
+        ],
+        "properties": {
+          "hospitalNumber": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "surname": {
+            "type": "string"
+          },
+          "otherName": {
+            "type": "string"
+          },
+          "sex": {
+            "type": "string",
+            "enum": [
+              "Male",
+              "Female"
+            ]
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "format": "date"
+          },
+          "maritalStatus": {
+            "type": "string"
+          },
+          "phoneNumber": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "facilityId": {
+            "type": "integer"
+          }
+        }
+      },
+      "PatientListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "patients": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Patient"
+                }
+              },
+              "totalRecords": {
+                "type": "integer"
+              },
+              "pageSize": {
+                "type": "integer"
+              },
+              "currentPage": {
+                "type": "integer"
+              }
+            }
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "Visit": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "uuid": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "patientId": {
+            "type": "integer"
+          },
+          "visitDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "visitType": {
+            "type": "string",
+            "nullable": true
+          },
+          "facilityId": {
+            "type": "integer",
+            "nullable": true
+          },
+          "checkInDateTime": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "checkOutDateTime": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        }
+      },
+      "VisitInput": {
+        "type": "object",
+        "required": [
+          "patientId",
+          "visitDate"
+        ],
+        "properties": {
+          "patientId": {
+            "type": "integer"
+          },
+          "visitDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "visitType": {
+            "type": "string"
+          },
+          "facilityId": {
+            "type": "integer"
+          }
+        }
+      },
+      "VisitListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "visits": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Visit"
+                }
+              },
+              "totalRecords": {
+                "type": "integer"
+              }
+            }
+          }
+        }
+      },
+      "Encounter": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "uuid": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "visitId": {
+            "type": "integer"
+          },
+          "patientId": {
+            "type": "integer"
+          },
+          "encounterType": {
+            "type": "string",
+            "nullable": true
+          },
+          "encounterDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "formData": {
+            "type": "object",
+            "additionalProperties": true,
+            "nullable": true
+          }
+        }
+      },
+      "Biometric": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "patientId": {
+            "type": "integer"
+          },
+          "biometricType": {
+            "type": "string",
+            "nullable": true
+          },
+          "template": {
+            "type": "string",
+            "description": "Base64-encoded biometric template",
+            "nullable": true
+          },
+          "fingerType": {
+            "type": "string",
+            "nullable": true
+          },
+          "captureDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        }
+      }
+    }
+  }
+}

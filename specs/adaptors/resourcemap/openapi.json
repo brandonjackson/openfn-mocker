@@ -1,0 +1,490 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "InSTEDD Resource Map REST API",
+    "version": "1.0.0",
+    "description": "Focused OpenAPI description of the InSTEDD Resource Map REST API, covering the collections, sites, fields/layers, history and membership endpoints. The @openfn/language-resourcemap adaptor calls POST /api/collections/{collection_id}/sites.json (submitSite); the surrounding endpoints are documented from the vendor REST API wiki to give the mocker realistic seed shapes. All endpoints use HTTP Basic auth (email/password).",
+    "x-openfn-adaptor": "resourcemap"
+  },
+  "servers": [
+    {
+      "url": "https://resourcemap.instedd.org",
+      "description": "InSTEDD-hosted Resource Map instance (baseUrl is configurable per deployment)"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "basicAuth": {
+        "type": "http",
+        "scheme": "basic"
+      }
+    },
+    "schemas": {
+      "Collection": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "example": 303 },
+          "name": { "type": "string", "example": "Health Facilities" },
+          "description": { "type": "string" },
+          "lat": { "type": "number", "format": "double", "nullable": true },
+          "lng": { "type": "number", "format": "double", "nullable": true },
+          "count": { "type": "integer", "description": "Number of sites in the collection" }
+        },
+        "required": ["id", "name"]
+      },
+      "CollectionDetail": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "sites": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Site" }
+          }
+        }
+      },
+      "Site": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "example": 1234 },
+          "uuid": { "type": "string", "example": "b3f4c1a2-7d8e-4f90-9a11-2c3d4e5f6a7b" },
+          "name": { "type": "string", "example": "My Site" },
+          "lat": { "type": "number", "format": "double", "nullable": true, "example": 48.86 },
+          "lng": { "type": "number", "format": "double", "nullable": true, "example": 2.35 },
+          "collection_id": { "type": "integer", "example": 303 },
+          "version": { "type": "integer", "example": 1 },
+          "properties": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Map of field es_code (or code) to value",
+            "example": { "phone": "85512345678", "Comment": "sample" }
+          },
+          "updated_at": { "type": "string", "format": "date-time" },
+          "created_at": { "type": "string", "format": "date-time" }
+        },
+        "required": ["id", "name"]
+      },
+      "SiteInput": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "example": "My Site" },
+          "lat": { "type": "number", "format": "double", "example": 48.86 },
+          "lng": { "type": "number", "format": "double", "example": 2.35 },
+          "lon": { "type": "number", "format": "double", "description": "Alias accepted for longitude", "example": 2.35 },
+          "properties": {
+            "type": "object",
+            "additionalProperties": true,
+            "example": { "phone": "85512345678", "Comment": "sample" }
+          }
+        },
+        "required": ["name"]
+      },
+      "Layer": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "example": 12 },
+          "name": { "type": "string", "example": "Basic info" },
+          "ord": { "type": "integer", "example": 1 },
+          "fields": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Field" }
+          }
+        }
+      },
+      "Field": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "example": 45 },
+          "es_code": { "type": "string", "example": "45" },
+          "code": { "type": "string", "example": "phone" },
+          "name": { "type": "string", "example": "Phone" },
+          "kind": {
+            "type": "string",
+            "description": "Field type",
+            "example": "text",
+            "enum": ["text", "numeric", "yes_no", "select_one", "select_many", "date", "site", "user", "email", "phone", "hierarchy"]
+          },
+          "config": { "type": "object", "additionalProperties": true, "nullable": true }
+        }
+      },
+      "LayerInput": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "example": "Basic info" },
+          "ord": { "type": "integer", "example": 1 },
+          "fields_attributes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "code": { "type": "string" },
+                "name": { "type": "string" },
+                "kind": { "type": "string" },
+                "ord": { "type": "integer" }
+              }
+            }
+          }
+        },
+        "required": ["name"]
+      },
+      "SiteHistory": {
+        "type": "object",
+        "properties": {
+          "version": { "type": "integer", "example": 2 },
+          "name": { "type": "string" },
+          "lat": { "type": "number", "format": "double", "nullable": true },
+          "lng": { "type": "number", "format": "double", "nullable": true },
+          "valid_since": { "type": "string", "format": "date-time" },
+          "valid_to": { "type": "string", "format": "date-time", "nullable": true },
+          "user": { "type": "string", "format": "email", "example": "user@example.org" },
+          "properties": { "type": "object", "additionalProperties": true }
+        }
+      },
+      "Membership": {
+        "type": "object",
+        "properties": {
+          "user_id": { "type": "integer", "example": 7 },
+          "user_display_name": { "type": "string", "example": "Jane Doe" },
+          "admin": { "type": "boolean", "example": false },
+          "layers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "layer_id": { "type": "integer" },
+                "read": { "type": "boolean" },
+                "write": { "type": "boolean" }
+              }
+            }
+          }
+        }
+      },
+      "StatusResponse": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "example": "ok" }
+        }
+      }
+    }
+  },
+  "security": [{ "basicAuth": [] }],
+  "paths": {
+    "/api/collections.json": {
+      "get": {
+        "operationId": "listCollections",
+        "summary": "List all collections the authenticated user can access",
+        "responses": {
+          "200": {
+            "description": "Array of collections",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Collection" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/collections/{id}.json": {
+      "parameters": [
+        { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+      ],
+      "get": {
+        "operationId": "getCollection",
+        "summary": "Get a collection and its sites (supports filter query params)",
+        "parameters": [
+          { "name": "page", "in": "query", "required": false, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Collection detail with nested sites",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/CollectionDetail" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/collections/{id}/count.json": {
+      "parameters": [
+        { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+      ],
+      "get": {
+        "operationId": "getCollectionCount",
+        "summary": "Count the number of sites in a collection",
+        "responses": {
+          "200": {
+            "description": "Site count",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "count": { "type": "integer", "example": 42 } }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/collections/{id}/geo.json": {
+      "parameters": [
+        { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+      ],
+      "get": {
+        "operationId": "getCollectionGeoJson",
+        "summary": "Get collection sites as a GeoJSON FeatureCollection",
+        "responses": {
+          "200": {
+            "description": "GeoJSON FeatureCollection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": { "type": "string", "example": "FeatureCollection" },
+                    "features": {
+                      "type": "array",
+                      "items": { "type": "object", "additionalProperties": true }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/collections/{collection_id}/sites.json": {
+      "parameters": [
+        { "name": "collection_id", "in": "path", "required": true, "schema": { "type": "integer" } }
+      ],
+      "post": {
+        "operationId": "submitSite",
+        "summary": "Create a new site in a collection",
+        "description": "Primary endpoint used by the @openfn/language-resourcemap submitSite operation.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/SiteInput" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created site",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Site" }
+              }
+            }
+          },
+          "200": {
+            "description": "Created site (some deployments return 200)",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Site" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sites/{id}.json": {
+      "parameters": [
+        { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+      ],
+      "get": {
+        "operationId": "getSite",
+        "summary": "Retrieve a single site by id",
+        "responses": {
+          "200": {
+            "description": "Site object",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Site" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sites/{site_id}": {
+      "parameters": [
+        { "name": "site_id", "in": "path", "required": true, "schema": { "type": "integer" } }
+      ],
+      "delete": {
+        "operationId": "deleteSite",
+        "summary": "Delete a site",
+        "responses": {
+          "200": {
+            "description": "Deletion status",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/StatusResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sites/{site_id}/update_property.json": {
+      "parameters": [
+        { "name": "site_id", "in": "path", "required": true, "schema": { "type": "integer" } }
+      ],
+      "post": {
+        "operationId": "updateSiteProperty",
+        "summary": "Update a single property (field) on a site",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "es_code": { "type": "string", "description": "Field id / es_code" },
+                  "value": {}
+                },
+                "required": ["es_code", "value"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated site",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Site" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sites/{site_id}/partial_update.json": {
+      "parameters": [
+        { "name": "site_id", "in": "path", "required": true, "schema": { "type": "integer" } }
+      ],
+      "post": {
+        "operationId": "partialUpdateSite",
+        "summary": "Update multiple properties on a site",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/SiteInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated site",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Site" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/collections/{collection_id}/sites/{site_id}/histories.json": {
+      "parameters": [
+        { "name": "collection_id", "in": "path", "required": true, "schema": { "type": "integer" } },
+        { "name": "site_id", "in": "path", "required": true, "schema": { "type": "integer" } }
+      ],
+      "get": {
+        "operationId": "getSiteHistories",
+        "summary": "Get the version history of a site",
+        "parameters": [
+          { "name": "version", "in": "query", "required": false, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of site history versions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/SiteHistory" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/collections/{collection_id}/layers.json": {
+      "parameters": [
+        { "name": "collection_id", "in": "path", "required": true, "schema": { "type": "integer" } }
+      ],
+      "get": {
+        "operationId": "listCollectionLayers",
+        "summary": "Get the layers and field definitions (metadata) of a collection",
+        "responses": {
+          "200": {
+            "description": "Array of layers with nested fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Layer" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createCollectionLayer",
+        "summary": "Create a new layer in a collection",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/LayerInput" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created layer",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Layer" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/collections/{id}/memberships.json": {
+      "parameters": [
+        { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+      ],
+      "get": {
+        "operationId": "listCollectionMemberships",
+        "summary": "List members of a collection",
+        "responses": {
+          "200": {
+            "description": "Array of memberships",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Membership" }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

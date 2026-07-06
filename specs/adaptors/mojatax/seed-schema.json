@@ -1,0 +1,175 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "mojatax — mocker seed-data schema",
+    "version": "1.0.0",
+    "description": "Schema for the seed data openfn-mocker needs to impersonate mojatax. Derived from the adaptor's OpenAPI spec. A seed dump is { collection: { id: record } }; each record validates against its resource schema below.",
+    "x-openfn-adaptor": "mojatax",
+    "x-derived-from": "openapi.json",
+    "x-captured-at": "2026-07-06"
+  },
+  "x-seed": {
+    "shape": "{ collection: { id: record } }",
+    "collections": {
+      "invoiceItems": {
+        "resource": "InvoiceItem",
+        "schema": {
+          "$ref": "#/components/schemas/InvoiceItem"
+        }
+      },
+      "operationResults": {
+        "resource": "OperationResult",
+        "schema": {
+          "$ref": "#/components/schemas/OperationResult"
+        }
+      },
+      "tokenResponses": {
+        "resource": "TokenResponse",
+        "schema": {
+          "$ref": "#/components/schemas/TokenResponse"
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SeedData": {
+        "type": "object",
+        "description": "Full seed dump loaded by mocker: one property per collection.",
+        "properties": {
+          "invoiceItems": {
+            "type": "object",
+            "description": "Records keyed by id for the invoiceItems collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/InvoiceItem"
+            }
+          },
+          "operationResults": {
+            "type": "object",
+            "description": "Records keyed by id for the operationResults collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/OperationResult"
+            }
+          },
+          "tokenResponses": {
+            "type": "object",
+            "description": "Records keyed by id for the tokenResponses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/TokenResponse"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "TokenResponse": {
+        "type": "object",
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIs..."
+          },
+          "token_type": {
+            "type": "string",
+            "example": "Bearer"
+          },
+          "expires_in": {
+            "type": "integer",
+            "example": 3600
+          }
+        }
+      },
+      "InvoiceInput": {
+        "type": "object",
+        "properties": {
+          "invoice_id": {
+            "type": "string",
+            "example": "PID092"
+          },
+          "customerId": {
+            "type": "string",
+            "example": "102"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InvoiceItem"
+            }
+          }
+        }
+      },
+      "InvoiceItem": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string",
+            "example": "Consultation"
+          },
+          "quantity": {
+            "type": "number",
+            "example": 1
+          },
+          "unitPrice": {
+            "type": "number",
+            "example": 15000
+          },
+          "taxCode": {
+            "type": "string",
+            "example": "A"
+          }
+        }
+      },
+      "Invoice": {
+        "type": "object",
+        "properties": {
+          "invoice_id": {
+            "type": "string",
+            "example": "PID092"
+          },
+          "customerId": {
+            "type": "string",
+            "example": "102"
+          },
+          "status": {
+            "type": "string",
+            "example": "ISSUED"
+          },
+          "receiptNumber": {
+            "type": "string",
+            "example": "6789012345"
+          },
+          "receiptUrl": {
+            "type": "string",
+            "example": "https://verify.tra.go.tz/6789012345"
+          },
+          "totalAmount": {
+            "type": "number",
+            "example": 15000
+          },
+          "issuedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InvoiceItem"
+            }
+          }
+        }
+      },
+      "OperationResult": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "message": {
+            "type": "string",
+            "example": "Invoice cancelled"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "adaptor": "fhir-fr",
+  "npm": "@openfn/language-fhir-fr",
+  "origin": "generated",
+  "upstreamFormat": "docs",
+  "sources": [
+    "https://github.com/OpenFn/adaptors/tree/main/packages/fhir-fr",
+    "https://hl7.fr/ig/fhir/core/",
+    "https://www.hl7.org/fhir/R4/http.html"
+  ],
+  "capturedAt": "2026-07-06",
+  "notes": "FHIR R4 profile variant targeting French national profiles (FR Core / ANS Interop'Sante). Adaptor mirrors the generic fhir builder pattern over a FHIR R4 REST server. Modelled as standard FHIR R4 REST + transaction Bundle over core resources; FR Core profile constraints are noted but not exhaustively encoded. Server URL is a placeholder."
+}

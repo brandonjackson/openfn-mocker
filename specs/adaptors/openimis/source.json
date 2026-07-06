@@ -1,0 +1,15 @@
+{
+  "adaptor": "openimis",
+  "npm": "@openfn/language-openimis",
+  "origin": "generated",
+  "upstreamFormat": "docs",
+  "sources": [
+    "https://cdn.jsdelivr.net/npm/@openfn/language-openimis/ast.json",
+    "https://github.com/OpenFn/adaptors/tree/main/packages/openimis",
+    "https://github.com/openimis/openimis-be-api_fhir_r4_py",
+    "https://openimis.atlassian.net/wiki/spaces/OP/pages/1233649676/openIMIS+FHIR+R4+Overview+Page",
+    "https://openimis.atlassian.net/wiki/spaces/OP/pages/1814822920/FHIR+R4+Contract"
+  ],
+  "capturedAt": "2026-07-06",
+  "notes": "Adaptor exposes a single generic getFHIR(path, params) operation that GETs {baseUrl}/api/api_fhir_r4/{path} (plus an internal login POST). No machine-readable spec is published upstream, so this OpenAPI doc was authored by hand from the openIMIS FHIR R4 module docs and source. Covers 14 FHIR resources with search (Bundle) + read-by-id operations plus login = 29 ops. FHIR resource schemas are focused/simplified (not the full HL7 R4 element set). openIMIS also supports POST/PUT/DELETE on these resources, but the adaptor only issues GET, so only read operations are modelled."
+}

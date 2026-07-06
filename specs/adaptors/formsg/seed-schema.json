@@ -1,0 +1,209 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "formsg — mocker seed-data schema",
+    "version": "1.0.0",
+    "description": "Schema for the seed data openfn-mocker needs to impersonate formsg. Derived from the adaptor's OpenAPI spec. A seed dump is { collection: { id: record } }; each record validates against its resource schema below.",
+    "x-openfn-adaptor": "formsg",
+    "x-derived-from": "openapi.json",
+    "x-captured-at": "2026-07-06"
+  },
+  "x-seed": {
+    "shape": "{ collection: { id: record } }",
+    "collections": {
+      "decryptedSubmissions": {
+        "resource": "DecryptedSubmission",
+        "schema": {
+          "$ref": "#/components/schemas/DecryptedSubmission"
+        }
+      },
+      "webhookVerificationResults": {
+        "resource": "WebhookVerificationResult",
+        "schema": {
+          "$ref": "#/components/schemas/WebhookVerificationResult"
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SeedData": {
+        "type": "object",
+        "description": "Full seed dump loaded by mocker: one property per collection.",
+        "properties": {
+          "decryptedSubmissions": {
+            "type": "object",
+            "description": "Records keyed by id for the decryptedSubmissions collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/DecryptedSubmission"
+            }
+          },
+          "webhookVerificationResults": {
+            "type": "object",
+            "description": "Records keyed by id for the webhookVerificationResults collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/WebhookVerificationResult"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "EncryptedSubmission": {
+        "type": "object",
+        "description": "The webhook payload FormSG POSTs to your endpoint (state.data).",
+        "properties": {
+          "formId": {
+            "type": "string"
+          },
+          "submissionId": {
+            "type": "string"
+          },
+          "encryptedContent": {
+            "type": "string",
+            "description": "Encrypted responses, base64 nonce:ciphertext"
+          },
+          "verifiedContent": {
+            "type": "string",
+            "nullable": true
+          },
+          "version": {
+            "type": "integer"
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "attachmentDownloadUrls": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "format": "uri"
+            }
+          }
+        },
+        "required": [
+          "formId",
+          "submissionId",
+          "encryptedContent"
+        ]
+      },
+      "FormResponse": {
+        "type": "object",
+        "description": "A single decrypted form field response.",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "question": {
+            "type": "string"
+          },
+          "fieldType": {
+            "type": "string",
+            "enum": [
+              "textfield",
+              "textarea",
+              "dropdown",
+              "radiobutton",
+              "checkbox",
+              "email",
+              "mobile",
+              "number",
+              "date",
+              "rating",
+              "attachment",
+              "table",
+              "section"
+            ]
+          },
+          "answer": {
+            "type": "string"
+          },
+          "answerArray": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "isVisible": {
+            "type": "boolean"
+          }
+        }
+      },
+      "DecryptedSubmission": {
+        "type": "object",
+        "description": "Output of decryptSubmission / processWebhook.",
+        "properties": {
+          "submissionId": {
+            "type": "string"
+          },
+          "responses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FormResponse"
+            }
+          },
+          "verified": {
+            "type": "object",
+            "nullable": true,
+            "additionalProperties": true
+          },
+          "attachments": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "properties": {
+                "filename": {
+                  "type": "string"
+                },
+                "content": {
+                  "type": "string",
+                  "description": "Decrypted attachment bytes (base64)"
+                }
+              }
+            }
+          }
+        }
+      },
+      "WebhookVerificationResult": {
+        "type": "object",
+        "description": "Output of verifyWebhook: whether the X-FormSG-Signature header is authentic.",
+        "properties": {
+          "verified": {
+            "type": "boolean"
+          },
+          "epoch": {
+            "type": "integer"
+          },
+          "submissionId": {
+            "type": "string"
+          },
+          "formId": {
+            "type": "string"
+          }
+        }
+      },
+      "DecryptRequest": {
+        "type": "object",
+        "properties": {
+          "submissionData": {
+            "$ref": "#/components/schemas/EncryptedSubmission"
+          },
+          "options": {
+            "type": "object",
+            "properties": {
+              "verifySignature": {
+                "type": "boolean"
+              },
+              "signatureHeader": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "required": [
+          "submissionData"
+        ]
+      }
+    }
+  }
+}

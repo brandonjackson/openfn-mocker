@@ -1,0 +1,507 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "mtn-momo — mocker seed-data schema",
+    "version": "1.0.0",
+    "description": "Schema for the seed data openfn-mocker needs to impersonate mtn-momo. Derived from the adaptor's OpenAPI spec. A seed dump is { collection: { id: record } }; each record validates against its resource schema below.",
+    "x-openfn-adaptor": "mtn-momo",
+    "x-derived-from": "openapi.json",
+    "x-captured-at": "2026-07-06"
+  },
+  "x-seed": {
+    "shape": "{ collection: { id: record } }",
+    "collections": {
+      "accessTokens": {
+        "resource": "AccessToken",
+        "schema": {
+          "$ref": "#/components/schemas/AccessToken"
+        }
+      },
+      "accountBalances": {
+        "resource": "AccountBalance",
+        "schema": {
+          "$ref": "#/components/schemas/AccountBalance"
+        }
+      },
+      "accountHolderActives": {
+        "resource": "AccountHolderActive",
+        "schema": {
+          "$ref": "#/components/schemas/AccountHolderActive"
+        }
+      },
+      "acknowledgeResponses": {
+        "resource": "AcknowledgeResponse",
+        "schema": {
+          "$ref": "#/components/schemas/AcknowledgeResponse"
+        }
+      },
+      "apiKeys": {
+        "resource": "ApiKey",
+        "schema": {
+          "$ref": "#/components/schemas/ApiKey"
+        }
+      },
+      "apiUsers": {
+        "resource": "ApiUser",
+        "schema": {
+          "$ref": "#/components/schemas/ApiUser"
+        }
+      },
+      "basicUserInfos": {
+        "resource": "BasicUserInfo",
+        "schema": {
+          "$ref": "#/components/schemas/BasicUserInfo"
+        }
+      },
+      "requestToPayResults": {
+        "resource": "RequestToPayResult",
+        "schema": {
+          "$ref": "#/components/schemas/RequestToPayResult"
+        }
+      },
+      "transferResults": {
+        "resource": "TransferResult",
+        "schema": {
+          "$ref": "#/components/schemas/TransferResult"
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SeedData": {
+        "type": "object",
+        "description": "Full seed dump loaded by mocker: one property per collection.",
+        "properties": {
+          "accessTokens": {
+            "type": "object",
+            "description": "Records keyed by id for the accessTokens collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/AccessToken"
+            }
+          },
+          "accountBalances": {
+            "type": "object",
+            "description": "Records keyed by id for the accountBalances collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/AccountBalance"
+            }
+          },
+          "accountHolderActives": {
+            "type": "object",
+            "description": "Records keyed by id for the accountHolderActives collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/AccountHolderActive"
+            }
+          },
+          "acknowledgeResponses": {
+            "type": "object",
+            "description": "Records keyed by id for the acknowledgeResponses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/AcknowledgeResponse"
+            }
+          },
+          "apiKeys": {
+            "type": "object",
+            "description": "Records keyed by id for the apiKeys collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ApiKey"
+            }
+          },
+          "apiUsers": {
+            "type": "object",
+            "description": "Records keyed by id for the apiUsers collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ApiUser"
+            }
+          },
+          "basicUserInfos": {
+            "type": "object",
+            "description": "Records keyed by id for the basicUserInfos collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/BasicUserInfo"
+            }
+          },
+          "requestToPayResults": {
+            "type": "object",
+            "description": "Records keyed by id for the requestToPayResults collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/RequestToPayResult"
+            }
+          },
+          "transferResults": {
+            "type": "object",
+            "description": "Records keyed by id for the transferResults collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/TransferResult"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "Party": {
+        "type": "object",
+        "description": "Identifies an account holder (payer or payee).",
+        "properties": {
+          "partyIdType": {
+            "type": "string",
+            "enum": [
+              "MSISDN",
+              "EMAIL",
+              "PARTY_CODE"
+            ],
+            "example": "MSISDN"
+          },
+          "partyId": {
+            "type": "string",
+            "example": "46733123450"
+          }
+        },
+        "required": [
+          "partyIdType",
+          "partyId"
+        ]
+      },
+      "ApiUserRequest": {
+        "type": "object",
+        "properties": {
+          "providerCallbackHost": {
+            "type": "string",
+            "example": "clinic.example.org"
+          }
+        },
+        "required": [
+          "providerCallbackHost"
+        ]
+      },
+      "ApiUser": {
+        "type": "object",
+        "properties": {
+          "providerCallbackHost": {
+            "type": "string",
+            "example": "clinic.example.org"
+          },
+          "targetEnvironment": {
+            "type": "string",
+            "example": "sandbox"
+          }
+        }
+      },
+      "ApiKey": {
+        "type": "object",
+        "properties": {
+          "apiKey": {
+            "type": "string",
+            "example": "f1db798c98df4bcf83b538175893bbf0"
+          }
+        },
+        "required": [
+          "apiKey"
+        ]
+      },
+      "AccessToken": {
+        "type": "object",
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "example": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9..."
+          },
+          "token_type": {
+            "type": "string",
+            "example": "access_token"
+          },
+          "expires_in": {
+            "type": "integer",
+            "example": 3600
+          }
+        },
+        "required": [
+          "access_token",
+          "token_type",
+          "expires_in"
+        ]
+      },
+      "AcknowledgeResponse": {
+        "type": "object",
+        "description": "Acknowledgement returned for asynchronous operations (201/202) whose real bodies are empty. Modeled here so mocker can return a JSON payload.",
+        "properties": {
+          "referenceId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "example": "ACCEPTED"
+          }
+        }
+      },
+      "RequestToPay": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "string",
+            "example": "100"
+          },
+          "currency": {
+            "type": "string",
+            "example": "EUR"
+          },
+          "externalId": {
+            "type": "string",
+            "example": "6353636"
+          },
+          "payer": {
+            "$ref": "#/components/schemas/Party"
+          },
+          "payerMessage": {
+            "type": "string",
+            "example": "Payment for order 123"
+          },
+          "payeeNote": {
+            "type": "string",
+            "example": "Thank you"
+          }
+        },
+        "required": [
+          "amount",
+          "currency",
+          "externalId",
+          "payer"
+        ]
+      },
+      "RequestToPayResult": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "string",
+            "example": "100"
+          },
+          "currency": {
+            "type": "string",
+            "example": "EUR"
+          },
+          "financialTransactionId": {
+            "type": "string",
+            "example": "23503452"
+          },
+          "externalId": {
+            "type": "string",
+            "example": "6353636"
+          },
+          "payer": {
+            "$ref": "#/components/schemas/Party"
+          },
+          "payerMessage": {
+            "type": "string",
+            "example": "Payment for order 123"
+          },
+          "payeeNote": {
+            "type": "string",
+            "example": "Thank you"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "SUCCESSFUL",
+              "FAILED"
+            ],
+            "example": "SUCCESSFUL"
+          },
+          "reason": {
+            "type": "string",
+            "example": "PAYER_NOT_FOUND"
+          }
+        },
+        "required": [
+          "amount",
+          "currency",
+          "externalId",
+          "payer",
+          "status"
+        ]
+      },
+      "AccountBalance": {
+        "type": "object",
+        "properties": {
+          "availableBalance": {
+            "type": "string",
+            "example": "1200.50"
+          },
+          "currency": {
+            "type": "string",
+            "example": "EUR"
+          }
+        },
+        "required": [
+          "availableBalance",
+          "currency"
+        ]
+      },
+      "AccountHolderActive": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "type": "boolean",
+            "example": true
+          }
+        },
+        "required": [
+          "result"
+        ]
+      },
+      "BasicUserInfo": {
+        "type": "object",
+        "properties": {
+          "given_name": {
+            "type": "string",
+            "example": "Sand"
+          },
+          "family_name": {
+            "type": "string",
+            "example": "Box"
+          },
+          "birthdate": {
+            "type": "string",
+            "example": "1976-08-13"
+          },
+          "locale": {
+            "type": "string",
+            "example": "sv_SE"
+          },
+          "gender": {
+            "type": "string",
+            "example": "MALE"
+          },
+          "status": {
+            "type": "string",
+            "example": "OK"
+          }
+        }
+      },
+      "Invoice": {
+        "type": "object",
+        "properties": {
+          "externalId": {
+            "type": "string",
+            "example": "996b82e6-d498-4c7c-87ee-7b0654350a2c"
+          },
+          "amount": {
+            "type": "string",
+            "example": "100"
+          },
+          "currency": {
+            "type": "string",
+            "example": "EUR"
+          },
+          "validityDuration": {
+            "type": "string",
+            "example": "3600"
+          },
+          "intendedPayer": {
+            "$ref": "#/components/schemas/Party"
+          },
+          "payee": {
+            "$ref": "#/components/schemas/Party"
+          },
+          "description": {
+            "type": "string",
+            "example": "Invoice for services"
+          }
+        },
+        "required": [
+          "externalId",
+          "amount",
+          "currency",
+          "intendedPayer"
+        ]
+      },
+      "Transfer": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "string",
+            "example": "100"
+          },
+          "currency": {
+            "type": "string",
+            "example": "EUR"
+          },
+          "externalId": {
+            "type": "string",
+            "example": "6353636"
+          },
+          "payee": {
+            "$ref": "#/components/schemas/Party"
+          },
+          "payerMessage": {
+            "type": "string",
+            "example": "Salary payment"
+          },
+          "payeeNote": {
+            "type": "string",
+            "example": "March salary"
+          }
+        },
+        "required": [
+          "amount",
+          "currency",
+          "externalId",
+          "payee"
+        ]
+      },
+      "TransferResult": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "string",
+            "example": "100"
+          },
+          "currency": {
+            "type": "string",
+            "example": "EUR"
+          },
+          "financialTransactionId": {
+            "type": "string",
+            "example": "23503452"
+          },
+          "externalId": {
+            "type": "string",
+            "example": "6353636"
+          },
+          "payee": {
+            "$ref": "#/components/schemas/Party"
+          },
+          "payerMessage": {
+            "type": "string",
+            "example": "Salary payment"
+          },
+          "payeeNote": {
+            "type": "string",
+            "example": "March salary"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "SUCCESSFUL",
+              "FAILED"
+            ],
+            "example": "SUCCESSFUL"
+          },
+          "reason": {
+            "type": "string",
+            "example": "PAYEE_NOT_FOUND"
+          }
+        },
+        "required": [
+          "amount",
+          "currency",
+          "externalId",
+          "payee",
+          "status"
+        ]
+      }
+    }
+  }
+}

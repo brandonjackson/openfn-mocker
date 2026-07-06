@@ -1,0 +1,15 @@
+{
+  "adaptor": "senaite",
+  "npm": "@openfn/language-senaite",
+  "origin": "generated",
+  "upstreamFormat": "docs",
+  "sources": [
+    "https://senaitejsonapi.readthedocs.io/en/latest/api.html",
+    "https://senaitejsonapi.readthedocs.io/en/latest/crud.html",
+    "https://github.com/senaite/senaite.jsonapi",
+    "https://cdn.jsdelivr.net/npm/@openfn/language-senaite/ast.json",
+    "https://github.com/OpenFn/adaptors/tree/main/packages/senaite"
+  ],
+  "capturedAt": "2026-07-06",
+  "notes": "The @openfn/language-senaite adaptor exposes only a generic request(method, path, options) operation plus common helpers (fn, fnIf), so there is no vendor machine spec. This OpenAPI 3.0.3 doc was authored by hand from the SENAITE JSON API (senaite.jsonapi) documentation. Covers the routes under the @@API/senaite/v1 base that the adaptor's request() targets: version, catalogs (+ by id), users (+ current / by username), search, generic resource listing, get-by-uid, create, update and delete. Server URL points at the public demo.senaite.org instance; real instances live under a Plone site path such as /senaite/@@API/senaite/v1. All write/get responses share the paged APIResponse envelope (count, page, pages, pagesize, _runtime, next, previous, items[]); resource item shapes (AnalysisRequest, Client, Sample, Contact, User, Catalog) are representative subsets of the many schema fields SENAITE returns and are not exhaustive."
+}

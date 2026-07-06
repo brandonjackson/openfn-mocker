@@ -1,0 +1,204 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Memento Database Cloud API (mock subset)",
+    "version": "v1",
+    "description": "Focused subset of the Memento Database Cloud REST API used by the OpenFn memento adaptor: listing libraries, reading a library and its fields, and listing/reading/creating/updating entries.",
+    "x-openfn-adaptor": "memento"
+  },
+  "servers": [{ "url": "https://api.mementodatabase.com" }],
+  "paths": {
+    "/v1/libraries": {
+      "get": {
+        "operationId": "listLibraries",
+        "summary": "List all libraries",
+        "responses": {
+          "200": {
+            "description": "A list of libraries",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/LibraryList" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/libraries/{libraryId}": {
+      "get": {
+        "operationId": "getLibrary",
+        "summary": "Get a library and its fields",
+        "parameters": [
+          { "name": "libraryId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "A single library including its field definitions",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Library" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/libraries/{libraryId}/entries": {
+      "get": {
+        "operationId": "listEntries",
+        "summary": "List entries in a library",
+        "parameters": [
+          { "name": "libraryId", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "pageSize", "in": "query", "schema": { "type": "integer", "default": 100 } },
+          { "name": "fields", "in": "query", "schema": { "type": "string", "default": "all" } },
+          { "name": "startRevision", "in": "query", "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "A page of entries",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/EntryList" }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createEntry",
+        "summary": "Create an entry",
+        "parameters": [
+          { "name": "libraryId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/EntryInput" } }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The created entry",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Entry" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/libraries/{libraryId}/entries/{entryId}": {
+      "get": {
+        "operationId": "getEntry",
+        "summary": "Get a single entry",
+        "parameters": [
+          { "name": "libraryId", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "entryId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "A single entry",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Entry" }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updateEntry",
+        "summary": "Update an entry",
+        "parameters": [
+          { "name": "libraryId", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "entryId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/EntryInput" } }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The updated entry",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Entry" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "LibraryList": {
+        "type": "object",
+        "properties": {
+          "libraries": { "type": "array", "items": { "$ref": "#/components/schemas/Library" } }
+        }
+      },
+      "Library": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "example": "HyZV7AYk0" },
+          "name": { "type": "string", "example": "Patients" },
+          "owner": { "type": "string" },
+          "createdTime": { "type": "string", "format": "date-time" },
+          "revision": { "type": "integer" },
+          "size": { "type": "integer" },
+          "fields": { "type": "array", "items": { "$ref": "#/components/schemas/Field" } }
+        }
+      },
+      "Field": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "example": 1 },
+          "name": { "type": "string", "example": "Name" },
+          "type": { "type": "string", "example": "text" }
+        }
+      },
+      "EntryList": {
+        "type": "object",
+        "properties": {
+          "entries": { "type": "array", "items": { "$ref": "#/components/schemas/Entry" } }
+        }
+      },
+      "Entry": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "example": "T0xIYmE-V2QoMmRTWF1sVVJUKnU" },
+          "author": { "type": "string" },
+          "createdTime": { "type": "string", "format": "date-time" },
+          "modifiedTime": { "type": "string", "format": "date-time" },
+          "fields": { "type": "array", "items": { "$ref": "#/components/schemas/EntryFieldValue" } }
+        }
+      },
+      "EntryFieldValue": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "example": 1 },
+          "name": { "type": "string", "example": "Name" },
+          "type": { "type": "string", "example": "text" },
+          "value": { "example": "Record 1" }
+        }
+      },
+      "EntryInput": {
+        "type": "object",
+        "properties": {
+          "fields": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "integer" },
+                "value": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,220 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "OpenFn common adaptor (generic HTTP surface)",
+    "version": "1.0.0",
+    "description": "The @openfn/language-common adaptor is OpenFn's shared utility library. It does NOT target a single external vendor API. Instead it provides generic data-manipulation helpers (fn, each, field, dataValue, merge, etc.) and generic HTTP helpers exposed under its `http` namespace (http.get/post/put/patch/delete/request) that target an arbitrary, user-configured baseUrl. This OpenAPI document is a SYNTHESIZED, focused representation of that generic HTTP surface so the mocker has a concrete generic REST resource to serve. It does not describe any real vendor endpoint.",
+    "x-openfn-adaptor": "common"
+  },
+  "servers": [
+    {
+      "url": "https://{baseUrl}",
+      "description": "User-configured base URL. common's http.* helpers issue requests against whatever baseUrl the job supplies; api.example.com is only a placeholder.",
+      "variables": {
+        "baseUrl": {
+          "default": "api.example.com",
+          "description": "Host of the arbitrary API the common http helpers target."
+        }
+      }
+    }
+  ],
+  "paths": {
+    "/resources": {
+      "get": {
+        "operationId": "listResources",
+        "summary": "List resources (generic http.get against a collection).",
+        "responses": {
+          "200": {
+            "description": "A list of resources.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ResourceList" }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createResource",
+        "summary": "Create a resource (generic http.post).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Resource" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The created resource.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Resource" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/resources/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "description": "Identifier of the resource.",
+          "schema": { "type": "string" }
+        }
+      ],
+      "get": {
+        "operationId": "getResource",
+        "summary": "Get a single resource by id (generic http.get).",
+        "responses": {
+          "200": {
+            "description": "The requested resource.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Resource" }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "replaceResource",
+        "summary": "Replace a resource by id (generic http.put).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Resource" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The replaced resource.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Resource" }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updateResource",
+        "summary": "Partially update a resource by id (generic http.patch).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Resource" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The updated resource.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Resource" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteResource",
+        "summary": "Delete a resource by id (generic http.delete).",
+        "responses": {
+          "200": {
+            "description": "The HTTP response wrapper for the delete.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Response" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/request": {
+      "post": {
+        "operationId": "sendRequest",
+        "summary": "Generic request echo (mirrors http.request), returning the common HTTP response wrapper.",
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Resource" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The generic HTTP response wrapper as returned by common's http helpers.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Response" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Resource": {
+        "type": "object",
+        "description": "A generic REST resource: an id plus arbitrary additional fields. common does not fix any vendor schema.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identifier of the resource."
+          }
+        },
+        "required": ["id"],
+        "additionalProperties": true
+      },
+      "ResourceList": {
+        "type": "object",
+        "description": "Envelope for a collection of generic resources.",
+        "properties": {
+          "data": {
+            "type": "array",
+            "description": "The list of resources.",
+            "items": { "$ref": "#/components/schemas/Resource" }
+          },
+          "count": {
+            "type": "integer",
+            "description": "Number of resources returned."
+          }
+        },
+        "required": ["data"]
+      },
+      "Response": {
+        "type": "object",
+        "description": "Generic HTTP response wrapper mirroring what common's http helpers return on state.",
+        "properties": {
+          "body": {
+            "description": "The parsed response body (arbitrary JSON).",
+            "nullable": true
+          },
+          "statusCode": {
+            "type": "integer",
+            "description": "HTTP status code of the response."
+          },
+          "headers": {
+            "type": "object",
+            "description": "Response headers as key/value pairs.",
+            "additionalProperties": { "type": "string" }
+          }
+        },
+        "required": ["body", "statusCode", "headers"]
+      }
+    }
+  }
+}

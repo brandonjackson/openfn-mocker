@@ -1,0 +1,140 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "hubtel — mocker seed-data schema",
+    "version": "1.0.0",
+    "description": "Schema for the seed data openfn-mocker needs to impersonate hubtel. Derived from the adaptor's OpenAPI spec. A seed dump is { collection: { id: record } }; each record validates against its resource schema below.",
+    "x-openfn-adaptor": "hubtel",
+    "x-derived-from": "openapi.json",
+    "x-captured-at": "2026-07-06"
+  },
+  "x-seed": {
+    "shape": "{ collection: { id: record } }",
+    "collections": {
+      "messageResponses": {
+        "resource": "MessageResponse",
+        "schema": {
+          "$ref": "#/components/schemas/MessageResponse"
+        }
+      },
+      "messageStatuses": {
+        "resource": "MessageStatus",
+        "schema": {
+          "$ref": "#/components/schemas/MessageStatus"
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SeedData": {
+        "type": "object",
+        "description": "Full seed dump loaded by mocker: one property per collection.",
+        "properties": {
+          "messageResponses": {
+            "type": "object",
+            "description": "Records keyed by id for the messageResponses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/MessageResponse"
+            }
+          },
+          "messageStatuses": {
+            "type": "object",
+            "description": "Records keyed by id for the messageStatuses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/MessageStatus"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "SendMessageRequest": {
+        "type": "object",
+        "required": [
+          "from",
+          "to",
+          "content"
+        ],
+        "properties": {
+          "from": {
+            "type": "string",
+            "description": "Registered sender ID or short code",
+            "example": "OpenFn-Test-01"
+          },
+          "to": {
+            "type": "string",
+            "description": "Recipient MSISDN in international format",
+            "example": "233538675309"
+          },
+          "content": {
+            "type": "string",
+            "description": "The message text",
+            "example": "hi there, this is OpenFn using the Hubtel adaptor"
+          },
+          "registeredDelivery": {
+            "type": "boolean",
+            "description": "Request a delivery report"
+          }
+        }
+      },
+      "MessageResponse": {
+        "type": "object",
+        "properties": {
+          "Status": {
+            "type": "integer",
+            "description": "0 indicates the message was accepted",
+            "example": 0
+          },
+          "MessageId": {
+            "type": "string",
+            "example": "43cceb19d2a242f58fb338692e12c0bb"
+          },
+          "Rate": {
+            "type": "number",
+            "example": 0
+          },
+          "NetworkId": {
+            "type": "string",
+            "example": "0"
+          }
+        }
+      },
+      "MessageStatus": {
+        "type": "object",
+        "properties": {
+          "MessageId": {
+            "type": "string",
+            "example": "43cceb19d2a242f58fb338692e12c0bb"
+          },
+          "Status": {
+            "type": "string",
+            "example": "Delivered"
+          },
+          "From": {
+            "type": "string",
+            "example": "OpenFn-Test-01"
+          },
+          "To": {
+            "type": "string",
+            "example": "233538675309"
+          },
+          "Content": {
+            "type": "string"
+          },
+          "Rate": {
+            "type": "number",
+            "example": 0.03
+          },
+          "NetworkId": {
+            "type": "string",
+            "example": "62001"
+          },
+          "UpdatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "adaptor": "ghana-bdr",
+  "npm": "@openfn/language-ghana-bdr",
+  "origin": "synthesized",
+  "upstreamFormat": "adaptor-surface",
+  "sources": [
+    "https://cdn.jsdelivr.net/npm/@openfn/language-ghana-bdr/ast.json",
+    "https://cdn.jsdelivr.net/npm/@openfn/language-ghana-bdr/types/index.d.ts",
+    "https://cdn.jsdelivr.net/npm/@openfn/language-ghana-bdr/dist/index.cjs",
+    "https://github.com/OpenFn/adaptors/tree/main/packages/ghana-bdr"
+  ],
+  "capturedAt": "2026-07-06",
+  "notes": "The Ghana Births & Deaths Registry integration (CHIM/Lightwave eTracker, base http://tracker.chimgh.org) is a private government API with no published OpenAPI or vendor docs. Spec synthesized from the adaptor's public operations and the mock client bundled in the adaptor's dist/index.cjs, which contains the real endpoint path (POST /api/notification) and verbatim sample request/response bodies. The generic get/post operations accept arbitrary resource paths; only the birth-notification endpoint is modeled in detail. Field names (including the source's typos like 'bith_attendant') are preserved as they appear in the adaptor."
+}

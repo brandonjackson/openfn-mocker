@@ -1,0 +1,658 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "stripe — mocker seed-data schema",
+    "version": "1.0.0",
+    "description": "Schema for the seed data openfn-mocker needs to impersonate stripe. Derived from the adaptor's OpenAPI spec. A seed dump is { collection: { id: record } }; each record validates against its resource schema below.",
+    "x-openfn-adaptor": "stripe",
+    "x-derived-from": "openapi.json",
+    "x-captured-at": "2026-07-06"
+  },
+  "x-seed": {
+    "shape": "{ collection: { id: record } }",
+    "collections": {
+      "charges": {
+        "resource": "Charge",
+        "schema": {
+          "$ref": "#/components/schemas/Charge"
+        }
+      },
+      "customers": {
+        "resource": "Customer",
+        "schema": {
+          "$ref": "#/components/schemas/Customer"
+        }
+      },
+      "invoices": {
+        "resource": "Invoice",
+        "schema": {
+          "$ref": "#/components/schemas/Invoice"
+        }
+      },
+      "paymentIntents": {
+        "resource": "PaymentIntent",
+        "schema": {
+          "$ref": "#/components/schemas/PaymentIntent"
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SeedData": {
+        "type": "object",
+        "description": "Full seed dump loaded by mocker: one property per collection.",
+        "properties": {
+          "charges": {
+            "type": "object",
+            "description": "Records keyed by id for the charges collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Charge"
+            }
+          },
+          "customers": {
+            "type": "object",
+            "description": "Records keyed by id for the customers collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Customer"
+            }
+          },
+          "invoices": {
+            "type": "object",
+            "description": "Records keyed by id for the invoices collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Invoice"
+            }
+          },
+          "paymentIntents": {
+            "type": "object",
+            "description": "Records keyed by id for the paymentIntents collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/PaymentIntent"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "Customer": {
+        "type": "object",
+        "description": "A Stripe customer object.",
+        "required": [
+          "id",
+          "object"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "cus_SthTl85l20LRJj"
+          },
+          "object": {
+            "type": "string",
+            "enum": [
+              "customer"
+            ]
+          },
+          "address": {
+            "type": "object",
+            "nullable": true
+          },
+          "balance": {
+            "type": "integer"
+          },
+          "created": {
+            "type": "integer",
+            "description": "Time at which the object was created (Unix timestamp)."
+          },
+          "currency": {
+            "type": "string",
+            "nullable": true
+          },
+          "default_source": {
+            "type": "string",
+            "nullable": true
+          },
+          "delinquent": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "invoice_prefix": {
+            "type": "string",
+            "nullable": true
+          },
+          "livemode": {
+            "type": "boolean"
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "phone": {
+            "type": "string",
+            "nullable": true
+          },
+          "shipping": {
+            "type": "object",
+            "nullable": true
+          },
+          "tax_exempt": {
+            "type": "string",
+            "enum": [
+              "none",
+              "exempt",
+              "reverse"
+            ],
+            "nullable": true
+          }
+        }
+      },
+      "CustomerCreateParams": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "CustomerList": {
+        "type": "object",
+        "required": [
+          "object",
+          "data",
+          "has_more",
+          "url"
+        ],
+        "properties": {
+          "object": {
+            "type": "string",
+            "enum": [
+              "list"
+            ]
+          },
+          "url": {
+            "type": "string",
+            "example": "/v1/customers"
+          },
+          "has_more": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Customer"
+            }
+          }
+        }
+      },
+      "Charge": {
+        "type": "object",
+        "description": "A Stripe charge object.",
+        "required": [
+          "id",
+          "object"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "ch_3RxS5EEAUr6ipfDB0aKo3moC"
+          },
+          "object": {
+            "type": "string",
+            "enum": [
+              "charge"
+            ]
+          },
+          "amount": {
+            "type": "integer",
+            "description": "Amount intended to be collected, in the smallest currency unit."
+          },
+          "amount_captured": {
+            "type": "integer"
+          },
+          "amount_refunded": {
+            "type": "integer"
+          },
+          "balance_transaction": {
+            "type": "string",
+            "nullable": true
+          },
+          "captured": {
+            "type": "boolean"
+          },
+          "created": {
+            "type": "integer"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "customer": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "disputed": {
+            "type": "boolean"
+          },
+          "livemode": {
+            "type": "boolean"
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "paid": {
+            "type": "boolean"
+          },
+          "payment_intent": {
+            "type": "string",
+            "nullable": true
+          },
+          "payment_method": {
+            "type": "string",
+            "nullable": true
+          },
+          "receipt_email": {
+            "type": "string",
+            "nullable": true
+          },
+          "receipt_url": {
+            "type": "string",
+            "nullable": true
+          },
+          "refunded": {
+            "type": "boolean"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "succeeded",
+              "pending",
+              "failed"
+            ]
+          }
+        }
+      },
+      "ChargeCreateParams": {
+        "type": "object",
+        "required": [
+          "amount",
+          "currency"
+        ],
+        "properties": {
+          "amount": {
+            "type": "integer"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "customer": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "ChargeList": {
+        "type": "object",
+        "required": [
+          "object",
+          "data",
+          "has_more",
+          "url"
+        ],
+        "properties": {
+          "object": {
+            "type": "string",
+            "enum": [
+              "list"
+            ]
+          },
+          "url": {
+            "type": "string",
+            "example": "/v1/charges"
+          },
+          "has_more": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Charge"
+            }
+          }
+        }
+      },
+      "PaymentIntent": {
+        "type": "object",
+        "description": "A Stripe payment intent object.",
+        "required": [
+          "id",
+          "object"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "pi_3RxS5EEAUr6ipfDB0aKo3moC"
+          },
+          "object": {
+            "type": "string",
+            "enum": [
+              "payment_intent"
+            ]
+          },
+          "amount": {
+            "type": "integer"
+          },
+          "amount_capturable": {
+            "type": "integer"
+          },
+          "amount_received": {
+            "type": "integer"
+          },
+          "canceled_at": {
+            "type": "integer",
+            "nullable": true
+          },
+          "cancellation_reason": {
+            "type": "string",
+            "nullable": true
+          },
+          "capture_method": {
+            "type": "string",
+            "enum": [
+              "automatic",
+              "automatic_async",
+              "manual"
+            ]
+          },
+          "client_secret": {
+            "type": "string",
+            "nullable": true
+          },
+          "confirmation_method": {
+            "type": "string",
+            "enum": [
+              "automatic",
+              "manual"
+            ]
+          },
+          "created": {
+            "type": "integer"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "customer": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "latest_charge": {
+            "type": "string",
+            "nullable": true
+          },
+          "livemode": {
+            "type": "boolean"
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "payment_method": {
+            "type": "string",
+            "nullable": true
+          },
+          "receipt_email": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "requires_payment_method",
+              "requires_confirmation",
+              "requires_action",
+              "processing",
+              "requires_capture",
+              "canceled",
+              "succeeded"
+            ]
+          }
+        }
+      },
+      "PaymentIntentCreateParams": {
+        "type": "object",
+        "required": [
+          "amount",
+          "currency"
+        ],
+        "properties": {
+          "amount": {
+            "type": "integer"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "customer": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "payment_method": {
+            "type": "string"
+          },
+          "confirm": {
+            "type": "boolean"
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "PaymentIntentList": {
+        "type": "object",
+        "required": [
+          "object",
+          "data",
+          "has_more",
+          "url"
+        ],
+        "properties": {
+          "object": {
+            "type": "string",
+            "enum": [
+              "list"
+            ]
+          },
+          "url": {
+            "type": "string",
+            "example": "/v1/payment_intents"
+          },
+          "has_more": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PaymentIntent"
+            }
+          }
+        }
+      },
+      "Invoice": {
+        "type": "object",
+        "description": "A Stripe invoice object.",
+        "required": [
+          "id",
+          "object"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "in_1RxS5EEAUr6ipfDB0aKo3moC"
+          },
+          "object": {
+            "type": "string",
+            "enum": [
+              "invoice"
+            ]
+          },
+          "amount_due": {
+            "type": "integer"
+          },
+          "amount_paid": {
+            "type": "integer"
+          },
+          "amount_remaining": {
+            "type": "integer"
+          },
+          "created": {
+            "type": "integer"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "customer": {
+            "type": "string",
+            "nullable": true
+          },
+          "customer_email": {
+            "type": "string",
+            "nullable": true
+          },
+          "customer_name": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "due_date": {
+            "type": "integer",
+            "nullable": true
+          },
+          "hosted_invoice_url": {
+            "type": "string",
+            "nullable": true
+          },
+          "livemode": {
+            "type": "boolean"
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "number": {
+            "type": "string",
+            "nullable": true
+          },
+          "paid": {
+            "type": "boolean"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "open",
+              "paid",
+              "uncollectible",
+              "void"
+            ],
+            "nullable": true
+          },
+          "subtotal": {
+            "type": "integer"
+          },
+          "total": {
+            "type": "integer"
+          }
+        }
+      },
+      "InvoiceList": {
+        "type": "object",
+        "required": [
+          "object",
+          "data",
+          "has_more",
+          "url"
+        ],
+        "properties": {
+          "object": {
+            "type": "string",
+            "enum": [
+              "list"
+            ]
+          },
+          "url": {
+            "type": "string",
+            "example": "/v1/invoices"
+          },
+          "has_more": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Invoice"
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,302 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "ArcGIS REST API (OpenFn focused subset)",
+    "version": "1.0.0",
+    "description": "Focused OpenAPI description of the Esri ArcGIS REST API surface an OpenFn arcgis job typically uses: token generation, Feature Service layer query and edit operations (addFeatures/updateFeatures/deleteFeatures) and geocoding. The arcgis adaptor exposes only common helpers (fn, http, util), so jobs call these endpoints via generic requests; this spec documents that target API.",
+    "x-openfn-adaptor": "arcgis"
+  },
+  "servers": [
+    { "url": "https://services.arcgis.com" }
+  ],
+  "paths": {
+    "/sharing/rest/generateToken": {
+      "post": {
+        "operationId": "generateToken",
+        "summary": "Generate an access token",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": { "type": "string" },
+                  "password": { "type": "string" },
+                  "referer": { "type": "string" },
+                  "expiration": { "type": "integer" },
+                  "f": { "type": "string", "example": "json" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Token response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TokenResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rest/services/{serviceName}/FeatureServer/{layerId}/query": {
+      "get": {
+        "operationId": "queryFeatures",
+        "summary": "Query features from a feature layer",
+        "parameters": [
+          { "name": "serviceName", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "layerId", "in": "path", "required": true, "schema": { "type": "integer" } },
+          { "name": "where", "in": "query", "required": false, "schema": { "type": "string", "example": "1=1" } },
+          { "name": "outFields", "in": "query", "required": false, "schema": { "type": "string", "example": "*" } },
+          { "name": "returnGeometry", "in": "query", "required": false, "schema": { "type": "boolean" } },
+          { "name": "f", "in": "query", "required": false, "schema": { "type": "string", "example": "json" } },
+          { "name": "token", "in": "query", "required": false, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "A feature set",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/FeatureSet" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rest/services/{serviceName}/FeatureServer/{layerId}/addFeatures": {
+      "post": {
+        "operationId": "addFeatures",
+        "summary": "Add features to a feature layer",
+        "parameters": [
+          { "name": "serviceName", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "layerId", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "features": { "type": "string", "description": "JSON array of features" },
+                  "f": { "type": "string", "example": "json" },
+                  "token": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Edit results",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/EditResultsResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rest/services/{serviceName}/FeatureServer/{layerId}/updateFeatures": {
+      "post": {
+        "operationId": "updateFeatures",
+        "summary": "Update features in a feature layer",
+        "parameters": [
+          { "name": "serviceName", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "layerId", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "features": { "type": "string", "description": "JSON array of features" },
+                  "f": { "type": "string", "example": "json" },
+                  "token": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Edit results",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/EditResultsResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rest/services/{serviceName}/FeatureServer/{layerId}/deleteFeatures": {
+      "post": {
+        "operationId": "deleteFeatures",
+        "summary": "Delete features from a feature layer",
+        "parameters": [
+          { "name": "serviceName", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "layerId", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "objectIds": { "type": "string", "example": "1,2,3" },
+                  "where": { "type": "string" },
+                  "f": { "type": "string", "example": "json" },
+                  "token": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Edit results",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/EditResultsResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/arcgis/rest/services/World/GeocodeServer/findAddressCandidates": {
+      "get": {
+        "operationId": "geocode",
+        "summary": "Find address candidates (geocode)",
+        "parameters": [
+          { "name": "SingleLine", "in": "query", "required": false, "schema": { "type": "string" } },
+          { "name": "outFields", "in": "query", "required": false, "schema": { "type": "string" } },
+          { "name": "f", "in": "query", "required": false, "schema": { "type": "string", "example": "json" } },
+          { "name": "token", "in": "query", "required": false, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Geocode candidates",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/GeocodeResponse" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "TokenResponse": {
+        "type": "object",
+        "properties": {
+          "token": { "type": "string" },
+          "expires": { "type": "integer", "format": "int64" },
+          "ssl": { "type": "boolean" }
+        }
+      },
+      "Geometry": {
+        "type": "object",
+        "properties": {
+          "x": { "type": "number" },
+          "y": { "type": "number" },
+          "spatialReference": {
+            "type": "object",
+            "properties": { "wkid": { "type": "integer", "example": 4326 } }
+          }
+        }
+      },
+      "Feature": {
+        "type": "object",
+        "properties": {
+          "attributes": { "type": "object", "additionalProperties": true },
+          "geometry": { "$ref": "#/components/schemas/Geometry" }
+        }
+      },
+      "Field": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "type": { "type": "string", "example": "esriFieldTypeString" },
+          "alias": { "type": "string" },
+          "length": { "type": "integer" }
+        }
+      },
+      "FeatureSet": {
+        "type": "object",
+        "properties": {
+          "objectIdFieldName": { "type": "string", "example": "OBJECTID" },
+          "geometryType": { "type": "string", "example": "esriGeometryPoint" },
+          "spatialReference": {
+            "type": "object",
+            "properties": { "wkid": { "type": "integer", "example": 4326 } }
+          },
+          "fields": { "type": "array", "items": { "$ref": "#/components/schemas/Field" } },
+          "features": { "type": "array", "items": { "$ref": "#/components/schemas/Feature" } },
+          "exceededTransferLimit": { "type": "boolean" }
+        }
+      },
+      "EditResult": {
+        "type": "object",
+        "properties": {
+          "objectId": { "type": "integer" },
+          "globalId": { "type": "string", "nullable": true },
+          "success": { "type": "boolean" },
+          "error": {
+            "type": "object",
+            "nullable": true,
+            "properties": {
+              "code": { "type": "integer" },
+              "description": { "type": "string" }
+            }
+          }
+        }
+      },
+      "EditResultsResponse": {
+        "type": "object",
+        "properties": {
+          "addResults": { "type": "array", "items": { "$ref": "#/components/schemas/EditResult" } },
+          "updateResults": { "type": "array", "items": { "$ref": "#/components/schemas/EditResult" } },
+          "deleteResults": { "type": "array", "items": { "$ref": "#/components/schemas/EditResult" } }
+        }
+      },
+      "GeocodeCandidate": {
+        "type": "object",
+        "properties": {
+          "address": { "type": "string" },
+          "location": {
+            "type": "object",
+            "properties": {
+              "x": { "type": "number" },
+              "y": { "type": "number" }
+            }
+          },
+          "score": { "type": "number" },
+          "attributes": { "type": "object", "additionalProperties": true }
+        }
+      },
+      "GeocodeResponse": {
+        "type": "object",
+        "properties": {
+          "spatialReference": {
+            "type": "object",
+            "properties": { "wkid": { "type": "integer", "example": 4326 } }
+          },
+          "candidates": { "type": "array", "items": { "$ref": "#/components/schemas/GeocodeCandidate" } }
+        }
+      }
+    }
+  }
+}

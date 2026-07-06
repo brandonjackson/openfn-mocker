@@ -1,0 +1,15 @@
+{
+  "adaptor": "puntosolidario-rd",
+  "npm": "@openfn/language-puntosolidario-rd",
+  "origin": "synthesized",
+  "upstreamFormat": "adaptor-surface",
+  "sources": [
+    "https://cdn.jsdelivr.net/npm/@openfn/language-puntosolidario-rd/ast.json",
+    "https://cdn.jsdelivr.net/npm/@openfn/language-puntosolidario-rd/dist/index.cjs",
+    "https://puntosolidario.gob.do/",
+    "https://adess.gob.do/",
+    "https://www.superate.gob.do/subsidios-sociales/"
+  ],
+  "capturedAt": "2026-07-06",
+  "notes": "Punto Solidario is a Dominican Republic single-window social-subsidy service run by ADESS / Supérate (Gabinete de Coordinación de Políticas Sociales). The adaptor exposes no documented public operations (ast operations[] is empty); it is a thin HTTP client with generic http get/post/request helpers over a configured base URL. No public vendor API/machine spec exists (the platform is government-internal). Synthesized a minimal OpenAPI 3.0 from the adaptor surface, modeling representative beneficiary, subsidy and payment-transaction resources with Spanish field names matching the domain. Server URL, paths and field names are best-effort placeholders."
+}

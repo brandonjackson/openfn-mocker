@@ -1,0 +1,362 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "odk — mocker seed-data schema",
+    "version": "1.0.0",
+    "description": "Schema for the seed data openfn-mocker needs to impersonate odk. Derived from the adaptor's OpenAPI spec. A seed dump is { collection: { id: record } }; each record validates against its resource schema below.",
+    "x-openfn-adaptor": "odk",
+    "x-derived-from": "openapi.json",
+    "x-captured-at": "2026-07-06"
+  },
+  "x-seed": {
+    "shape": "{ collection: { id: record } }",
+    "collections": {
+      "datasets": {
+        "resource": "Dataset",
+        "schema": {
+          "$ref": "#/components/schemas/Dataset"
+        }
+      },
+      "forms": {
+        "resource": "Form",
+        "schema": {
+          "$ref": "#/components/schemas/Form"
+        }
+      },
+      "oDataSubmissions": {
+        "resource": "ODataSubmission",
+        "schema": {
+          "$ref": "#/components/schemas/ODataSubmission"
+        }
+      },
+      "projects": {
+        "resource": "Project",
+        "schema": {
+          "$ref": "#/components/schemas/Project"
+        }
+      },
+      "submissions": {
+        "resource": "Submission",
+        "schema": {
+          "$ref": "#/components/schemas/Submission"
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SeedData": {
+        "type": "object",
+        "description": "Full seed dump loaded by mocker: one property per collection.",
+        "properties": {
+          "datasets": {
+            "type": "object",
+            "description": "Records keyed by id for the datasets collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Dataset"
+            }
+          },
+          "forms": {
+            "type": "object",
+            "description": "Records keyed by id for the forms collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Form"
+            }
+          },
+          "oDataSubmissions": {
+            "type": "object",
+            "description": "Records keyed by id for the oDataSubmissions collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ODataSubmission"
+            }
+          },
+          "projects": {
+            "type": "object",
+            "description": "Records keyed by id for the projects collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Project"
+            }
+          },
+          "submissions": {
+            "type": "object",
+            "description": "Records keyed by id for the submissions collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Submission"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "Project": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 22
+          },
+          "name": {
+            "type": "string",
+            "example": "Health Facility Survey"
+          },
+          "description": {
+            "type": "string"
+          },
+          "keyId": {
+            "type": "integer",
+            "nullable": true
+          },
+          "archived": {
+            "type": "boolean",
+            "nullable": true
+          }
+        }
+      },
+      "Form": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "integer",
+            "example": 22
+          },
+          "xmlFormId": {
+            "type": "string",
+            "example": "patient-follow-up"
+          },
+          "name": {
+            "type": "string",
+            "example": "Patient Follow Up"
+          },
+          "version": {
+            "type": "string",
+            "example": "1"
+          },
+          "enketoId": {
+            "type": "string"
+          },
+          "hash": {
+            "type": "string",
+            "example": "51a93eab3a1974dbffc4c7913fa5a16a"
+          },
+          "keyId": {
+            "type": "integer",
+            "nullable": true
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closing",
+              "closed"
+            ],
+            "example": "open"
+          },
+          "publishedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        }
+      },
+      "Submission": {
+        "type": "object",
+        "properties": {
+          "instanceId": {
+            "type": "string",
+            "example": "uuid:85cb9aff-005e-4edd-9739-dc9c1a829c44"
+          },
+          "submitterId": {
+            "type": "integer",
+            "example": 5
+          },
+          "deviceId": {
+            "type": "string",
+            "nullable": true
+          },
+          "userAgent": {
+            "type": "string",
+            "nullable": true
+          },
+          "reviewState": {
+            "type": "string",
+            "enum": [
+              "null",
+              "received",
+              "hasIssues",
+              "edited",
+              "approved",
+              "rejected"
+            ],
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "deletedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "currentVersion": {
+            "type": "object",
+            "properties": {
+              "instanceId": {
+                "type": "string"
+              },
+              "instanceName": {
+                "type": "string",
+                "nullable": true
+              },
+              "submitterId": {
+                "type": "integer"
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "current": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      },
+      "ODataSubmissions": {
+        "type": "object",
+        "properties": {
+          "@odata.context": {
+            "type": "string",
+            "example": "https://odk-central.example.org/v1/projects/22/forms/patient-follow-up.svc/$metadata#Submissions"
+          },
+          "@odata.count": {
+            "type": "integer",
+            "example": 1
+          },
+          "@odata.nextLink": {
+            "type": "string"
+          },
+          "value": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ODataSubmission"
+            }
+          }
+        }
+      },
+      "ODataSubmission": {
+        "type": "object",
+        "description": "A flattened submission row. __id is the instanceId; __system carries metadata; remaining keys are form instance fields.",
+        "properties": {
+          "__id": {
+            "type": "string",
+            "example": "uuid:85cb9aff-005e-4edd-9739-dc9c1a829c44"
+          },
+          "__system": {
+            "$ref": "#/components/schemas/ODataSystem"
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "instanceID": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "additionalProperties": true
+      },
+      "ODataSystem": {
+        "type": "object",
+        "properties": {
+          "submissionDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "deletedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "submitterId": {
+            "type": "string",
+            "example": "5"
+          },
+          "submitterName": {
+            "type": "string",
+            "example": "Data Collector"
+          },
+          "attachmentsPresent": {
+            "type": "integer",
+            "example": 0
+          },
+          "attachmentsExpected": {
+            "type": "integer",
+            "example": 0
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "reviewState": {
+            "type": "string",
+            "nullable": true
+          },
+          "deviceId": {
+            "type": "string",
+            "nullable": true
+          },
+          "edits": {
+            "type": "integer",
+            "example": 0
+          },
+          "formVersion": {
+            "type": "string",
+            "example": "1"
+          }
+        }
+      },
+      "Dataset": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "people"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "projectId": {
+            "type": "integer",
+            "example": 22
+          },
+          "approvalRequired": {
+            "type": "boolean"
+          },
+          "ownerOnly": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  }
+}

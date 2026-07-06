@@ -1,0 +1,13 @@
+{
+  "adaptor": "minio",
+  "npm": "@openfn/language-minio",
+  "origin": "synthesized",
+  "upstreamFormat": "adaptor-surface",
+  "sources": [
+    "https://cdn.jsdelivr.net/npm/@openfn/language-minio/ast.json",
+    "https://github.com/OpenFn/adaptors/tree/main/packages/minio",
+    "https://min.io/docs/minio/linux/developers/javascript/API.html"
+  ],
+  "capturedAt": "2026-07-06",
+  "notes": "MinIO is an S3-compatible object store, not a REST/JSON API; the adaptor wraps the minio JS client (AWS S3 XML protocol). Synthesized a focused OpenAPI 3.0.3 from the adaptor surface, modelling each operation the adaptor exposes (createBucket, listObjects, getObject, putObject, getObjectTags, setObjectTags) as JSON REST shapes so mocker can seed bucket/object/tag collections. Tag operations placed under /{bucketName}/{objectName}/tagging (S3 uses a ?tagging subresource, which cannot be distinguished by method in OpenAPI paths). Server URL is a MinIO default placeholder."
+}

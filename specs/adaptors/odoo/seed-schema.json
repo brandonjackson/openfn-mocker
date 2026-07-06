@@ -1,0 +1,339 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "odoo — mocker seed-data schema",
+    "version": "1.0.0",
+    "description": "Schema for the seed data openfn-mocker needs to impersonate odoo. Derived from the adaptor's OpenAPI spec. A seed dump is { collection: { id: record } }; each record validates against its resource schema below.",
+    "x-openfn-adaptor": "odoo",
+    "x-derived-from": "openapi.json",
+    "x-captured-at": "2026-07-06"
+  },
+  "x-seed": {
+    "shape": "{ collection: { id: record } }",
+    "collections": {
+      "authenticateResponses": {
+        "resource": "AuthenticateResponse",
+        "schema": {
+          "$ref": "#/components/schemas/AuthenticateResponse"
+        }
+      },
+      "jsonRpcResponses": {
+        "resource": "JsonRpcResponse",
+        "schema": {
+          "$ref": "#/components/schemas/JsonRpcResponse"
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SeedData": {
+        "type": "object",
+        "description": "Full seed dump loaded by mocker: one property per collection.",
+        "properties": {
+          "authenticateResponses": {
+            "type": "object",
+            "description": "Records keyed by id for the authenticateResponses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/AuthenticateResponse"
+            }
+          },
+          "jsonRpcResponses": {
+            "type": "object",
+            "description": "Records keyed by id for the jsonRpcResponses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/JsonRpcResponse"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "AuthenticateRequest": {
+        "type": "object",
+        "required": [
+          "jsonrpc",
+          "method",
+          "params"
+        ],
+        "properties": {
+          "jsonrpc": {
+            "type": "string",
+            "example": "2.0"
+          },
+          "method": {
+            "type": "string",
+            "example": "call"
+          },
+          "params": {
+            "type": "object",
+            "properties": {
+              "db": {
+                "type": "string",
+                "example": "odoo"
+              },
+              "login": {
+                "type": "string",
+                "example": "admin"
+              },
+              "password": {
+                "type": "string",
+                "example": "admin"
+              }
+            }
+          },
+          "id": {
+            "type": "integer",
+            "example": 1
+          }
+        }
+      },
+      "AuthenticateResponse": {
+        "type": "object",
+        "properties": {
+          "jsonrpc": {
+            "type": "string",
+            "example": "2.0"
+          },
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "result": {
+            "type": "object",
+            "properties": {
+              "uid": {
+                "type": "integer",
+                "example": 2
+              },
+              "db": {
+                "type": "string",
+                "example": "odoo"
+              },
+              "username": {
+                "type": "string",
+                "example": "admin"
+              },
+              "name": {
+                "type": "string",
+                "example": "Mitchell Admin"
+              },
+              "server_version": {
+                "type": "string",
+                "example": "16.0"
+              }
+            }
+          }
+        }
+      },
+      "JsonRpcRequest": {
+        "type": "object",
+        "required": [
+          "jsonrpc",
+          "method",
+          "params"
+        ],
+        "properties": {
+          "jsonrpc": {
+            "type": "string",
+            "example": "2.0"
+          },
+          "method": {
+            "type": "string",
+            "example": "call"
+          },
+          "params": {
+            "type": "object",
+            "properties": {
+              "service": {
+                "type": "string",
+                "example": "object"
+              },
+              "method": {
+                "type": "string",
+                "example": "execute_kw"
+              },
+              "args": {
+                "type": "array",
+                "description": "[db, uid, password, model, method, args, kwargs]",
+                "items": {},
+                "example": [
+                  "odoo",
+                  2,
+                  "password",
+                  "res.partner",
+                  "search_read",
+                  [
+                    []
+                  ],
+                  {
+                    "fields": [
+                      "name",
+                      "email"
+                    ],
+                    "limit": 10
+                  }
+                ]
+              }
+            }
+          },
+          "id": {
+            "type": "integer",
+            "example": 2
+          }
+        }
+      },
+      "JsonRpcResponse": {
+        "type": "object",
+        "properties": {
+          "jsonrpc": {
+            "type": "string",
+            "example": "2.0"
+          },
+          "id": {
+            "type": "integer",
+            "example": 2
+          },
+          "result": {
+            "description": "Method result. Type depends on the called model method (id, boolean, or list of records/ids).",
+            "oneOf": [
+              {
+                "type": "integer",
+                "description": "New record id (create)"
+              },
+              {
+                "type": "boolean",
+                "description": "write / unlink success"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                },
+                "description": "search: matching ids"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Record"
+                },
+                "description": "read / search_read: records"
+              }
+            ]
+          },
+          "error": {
+            "$ref": "#/components/schemas/JsonRpcError"
+          }
+        }
+      },
+      "JsonRpcError": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "example": 200
+          },
+          "message": {
+            "type": "string",
+            "example": "Odoo Server Error"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "example": "odoo.exceptions.AccessError"
+              },
+              "message": {
+                "type": "string"
+              },
+              "debug": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "Record": {
+        "type": "object",
+        "description": "A generic Odoo model record. Always includes an integer id; other fields depend on the model and the requested field list.",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 54
+          },
+          "display_name": {
+            "type": "string",
+            "example": "Kool Keith"
+          },
+          "create_date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "write_date": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": true
+      },
+      "Partner": {
+        "type": "object",
+        "description": "res.partner record (a contact/company).",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 54
+          },
+          "name": {
+            "type": "string",
+            "example": "Kool Keith"
+          },
+          "display_name": {
+            "type": "string",
+            "example": "Kool Keith"
+          },
+          "email": {
+            "type": "string",
+            "example": "keith@example.com"
+          },
+          "phone": {
+            "type": "string",
+            "example": "+1 555 0100"
+          },
+          "is_company": {
+            "type": "boolean",
+            "example": false
+          },
+          "customer_rank": {
+            "type": "integer",
+            "example": 1
+          },
+          "supplier_rank": {
+            "type": "integer",
+            "example": 0
+          },
+          "country_id": {
+            "type": "array",
+            "description": "Many2one as [id, display_name]",
+            "items": {},
+            "example": [
+              233,
+              "United States"
+            ]
+          },
+          "city": {
+            "type": "string",
+            "example": "Boston"
+          },
+          "street": {
+            "type": "string"
+          },
+          "active": {
+            "type": "boolean",
+            "example": true
+          }
+        }
+      }
+    }
+  }
+}

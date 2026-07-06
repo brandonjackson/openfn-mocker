@@ -1,0 +1,14 @@
+{
+  "adaptor": "medicmobile",
+  "npm": "@openfn/language-medicmobile",
+  "origin": "generated",
+  "upstreamFormat": "docs",
+  "sources": [
+    "https://cdn.jsdelivr.net/npm/@openfn/language-medicmobile/ast.json",
+    "https://github.com/OpenFn/adaptors/blob/main/packages/medicmobile/src/Adaptor.js",
+    "https://github.com/medic/medic-docs/blob/master/development/db-schema.md",
+    "https://docs.couchdb.org/en/stable/api/database/changes.html"
+  ],
+  "capturedAt": "2026-07-06",
+  "notes": "Medic Mobile / Community Health Toolkit is backed by CouchDB; there is no single vendor OpenAPI spec. Authored a focused OpenAPI 3.0.3 from the CouchDB changes-feed docs, the Medic DB schema, and the adaptor source. Covers the operations the adaptor actually performs: GET /{db}/_changes (confirmed base pattern `${server}/${db}/_changes` in src/Adaptor.js), fetching a document, and POSTing extracted submissions to an inbox endpoint (postUrl). Report/doc shape is a representative Medic data_record. Server URL is a CouchDB default placeholder."
+}

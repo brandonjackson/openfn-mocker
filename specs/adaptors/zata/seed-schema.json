@@ -1,0 +1,973 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "zata — mocker seed-data schema",
+    "version": "1.0.0",
+    "description": "Schema for the seed data openfn-mocker needs to impersonate zata. Derived from the adaptor's OpenAPI spec. A seed dump is { collection: { id: record } }; each record validates against its resource schema below.",
+    "x-openfn-adaptor": "zata",
+    "x-derived-from": "openapi.json",
+    "x-captured-at": "2026-07-06"
+  },
+  "x-seed": {
+    "shape": "{ collection: { id: record } }",
+    "collections": {
+      "authResponses": {
+        "resource": "AuthResponse",
+        "schema": {
+          "$ref": "#/components/schemas/AuthResponse"
+        }
+      },
+      "banks": {
+        "resource": "Bank",
+        "schema": {
+          "$ref": "#/components/schemas/Bank"
+        }
+      },
+      "branches": {
+        "resource": "Branch",
+        "schema": {
+          "$ref": "#/components/schemas/Branch"
+        }
+      },
+      "companies": {
+        "resource": "Company",
+        "schema": {
+          "$ref": "#/components/schemas/Company"
+        }
+      },
+      "expenses": {
+        "resource": "Expense",
+        "schema": {
+          "$ref": "#/components/schemas/Expense"
+        }
+      },
+      "healthStatuses": {
+        "resource": "HealthStatus",
+        "schema": {
+          "$ref": "#/components/schemas/HealthStatus"
+        }
+      },
+      "lookupItems": {
+        "resource": "LookupItem",
+        "schema": {
+          "$ref": "#/components/schemas/LookupItem"
+        }
+      },
+      "parties": {
+        "resource": "Party",
+        "schema": {
+          "$ref": "#/components/schemas/Party"
+        }
+      },
+      "paymentResponses": {
+        "resource": "PaymentResponse",
+        "schema": {
+          "$ref": "#/components/schemas/PaymentResponse"
+        }
+      },
+      "products": {
+        "resource": "Product",
+        "schema": {
+          "$ref": "#/components/schemas/Product"
+        }
+      },
+      "transactionItems": {
+        "resource": "TransactionItem",
+        "schema": {
+          "$ref": "#/components/schemas/TransactionItem"
+        }
+      },
+      "transactionTotalses": {
+        "resource": "TransactionTotals",
+        "schema": {
+          "$ref": "#/components/schemas/TransactionTotals"
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SeedData": {
+        "type": "object",
+        "description": "Full seed dump loaded by mocker: one property per collection.",
+        "properties": {
+          "authResponses": {
+            "type": "object",
+            "description": "Records keyed by id for the authResponses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/AuthResponse"
+            }
+          },
+          "banks": {
+            "type": "object",
+            "description": "Records keyed by id for the banks collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Bank"
+            }
+          },
+          "branches": {
+            "type": "object",
+            "description": "Records keyed by id for the branches collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Branch"
+            }
+          },
+          "companies": {
+            "type": "object",
+            "description": "Records keyed by id for the companies collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Company"
+            }
+          },
+          "expenses": {
+            "type": "object",
+            "description": "Records keyed by id for the expenses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Expense"
+            }
+          },
+          "healthStatuses": {
+            "type": "object",
+            "description": "Records keyed by id for the healthStatuses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/HealthStatus"
+            }
+          },
+          "lookupItems": {
+            "type": "object",
+            "description": "Records keyed by id for the lookupItems collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/LookupItem"
+            }
+          },
+          "parties": {
+            "type": "object",
+            "description": "Records keyed by id for the parties collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Party"
+            }
+          },
+          "paymentResponses": {
+            "type": "object",
+            "description": "Records keyed by id for the paymentResponses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/PaymentResponse"
+            }
+          },
+          "products": {
+            "type": "object",
+            "description": "Records keyed by id for the products collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Product"
+            }
+          },
+          "transactionItems": {
+            "type": "object",
+            "description": "Records keyed by id for the transactionItems collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/TransactionItem"
+            }
+          },
+          "transactionTotalses": {
+            "type": "object",
+            "description": "Records keyed by id for the transactionTotalses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/TransactionTotals"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateAccountRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "LoginRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "AuthResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "token": {
+                "type": "string"
+              },
+              "user": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "phone": {
+            "type": "string"
+          }
+        }
+      },
+      "Company": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "tin": {
+            "type": "string",
+            "description": "Taxpayer Identification Number"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "CompanyInput": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "tin": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "tin"
+        ]
+      },
+      "CompanyResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/Company"
+          }
+        }
+      },
+      "CompanyList": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Company"
+            }
+          }
+        }
+      },
+      "Branch": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "companyId": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          }
+        }
+      },
+      "BranchInput": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "BranchResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/Branch"
+          }
+        }
+      },
+      "BranchList": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Branch"
+            }
+          }
+        }
+      },
+      "Party": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "customer",
+              "supplier"
+            ]
+          },
+          "name": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "tin": {
+            "type": "string"
+          }
+        }
+      },
+      "CustomerInput": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "tin": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "PartyResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/Party"
+          }
+        }
+      },
+      "PartyList": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Party"
+            }
+          }
+        }
+      },
+      "Product": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "productTypeId": {
+            "type": "integer"
+          },
+          "unitPrice": {
+            "type": "number"
+          },
+          "quantity": {
+            "type": "number"
+          },
+          "taxRate": {
+            "type": "number"
+          },
+          "batchNumber": {
+            "type": "string"
+          }
+        }
+      },
+      "ProductInput": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "productTypeId": {
+            "type": "integer"
+          },
+          "unitPrice": {
+            "type": "number"
+          },
+          "quantity": {
+            "type": "number"
+          },
+          "taxRate": {
+            "type": "number"
+          },
+          "batchNumber": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "unitPrice"
+        ]
+      },
+      "ProductResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/Product"
+          }
+        }
+      },
+      "ProductList": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Product"
+            }
+          }
+        }
+      },
+      "QuantityAdjustment": {
+        "type": "object",
+        "properties": {
+          "quantity": {
+            "type": "number"
+          },
+          "description": {
+            "type": "string"
+          },
+          "batchNumber": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "quantity"
+        ]
+      },
+      "LookupItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          }
+        }
+      },
+      "LookupList": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LookupItem"
+            }
+          }
+        }
+      },
+      "TransactionItem": {
+        "type": "object",
+        "properties": {
+          "productID": {
+            "type": "integer"
+          },
+          "units": {
+            "type": "number"
+          },
+          "unitPrice": {
+            "type": "number"
+          },
+          "discountRate": {
+            "type": "number"
+          },
+          "batchNumber": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "productID",
+          "units",
+          "unitPrice"
+        ]
+      },
+      "SaleTransactionInput": {
+        "type": "object",
+        "properties": {
+          "purchaseCode": {
+            "type": "string"
+          },
+          "paymentMethodID": {
+            "type": "integer"
+          },
+          "customerID": {
+            "type": "integer"
+          },
+          "transactionDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "note": {
+            "type": "string"
+          },
+          "customerTIN": {
+            "type": "string"
+          },
+          "customerName": {
+            "type": "string"
+          },
+          "customerPhone": {
+            "type": "string"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TransactionItem"
+            }
+          }
+        },
+        "required": [
+          "items"
+        ]
+      },
+      "Transaction": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "purchaseCode": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "sale",
+              "purchase",
+              "refund",
+              "proforma"
+            ]
+          },
+          "transactionDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "customerName": {
+            "type": "string"
+          },
+          "customerTIN": {
+            "type": "string"
+          },
+          "subtotal": {
+            "type": "number"
+          },
+          "taxTotal": {
+            "type": "number"
+          },
+          "total": {
+            "type": "number"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TransactionItem"
+            }
+          }
+        }
+      },
+      "TransactionResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/Transaction"
+          }
+        }
+      },
+      "TransactionList": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Transaction"
+            }
+          }
+        }
+      },
+      "TransactionTotals": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "subtotal": {
+                "type": "number"
+              },
+              "discountTotal": {
+                "type": "number"
+              },
+              "taxTotal": {
+                "type": "number"
+              },
+              "total": {
+                "type": "number"
+              }
+            }
+          }
+        }
+      },
+      "Expense": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "categoryId": {
+            "type": "integer"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "description": {
+            "type": "string"
+          },
+          "expenseDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "supplierTIN": {
+            "type": "string"
+          }
+        }
+      },
+      "ExpenseInput": {
+        "type": "object",
+        "properties": {
+          "categoryId": {
+            "type": "integer"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "description": {
+            "type": "string"
+          },
+          "expenseDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "supplierTIN": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "amount"
+        ]
+      },
+      "ExpenseResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/Expense"
+          }
+        }
+      },
+      "ExpenseList": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Expense"
+            }
+          }
+        }
+      },
+      "Bank": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "BankList": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Bank"
+            }
+          }
+        }
+      },
+      "DebitInitiateInput": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "number"
+          },
+          "bankCode": {
+            "type": "string"
+          },
+          "accountNumber": {
+            "type": "string"
+          },
+          "narration": {
+            "type": "string"
+          },
+          "reference": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "amount",
+          "accountNumber"
+        ]
+      },
+      "PaymentResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "reference": {
+                "type": "string"
+              },
+              "amount": {
+                "type": "number"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "pending",
+                  "successful",
+                  "failed"
+                ]
+              },
+              "channel": {
+                "type": "string"
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        }
+      },
+      "HealthStatus": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

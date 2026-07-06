@@ -1,0 +1,443 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "OpenAI API (chatgpt adaptor subset)",
+    "version": "2024-10-01",
+    "description": "Focused subset of the OpenAI API used by the OpenFn chatgpt adaptor. The adaptor's `prompt` operation calls POST /chat/completions and `deepResearch` calls POST /responses (via the official openai npm client). This spec also includes commonly-associated read/generation endpoints (models, embeddings, completions) to provide useful seed collections. Subset of OpenAI's official OpenAPI spec.",
+    "x-openfn-adaptor": "chatgpt"
+  },
+  "servers": [{ "url": "https://api.openai.com/v1" }],
+  "paths": {
+    "/chat/completions": {
+      "post": {
+        "operationId": "createChatCompletion",
+        "summary": "Create a chat completion",
+        "description": "Creates a model response for the given chat conversation. Used by the adaptor `prompt(message, options)` operation.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateChatCompletionRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "A chat completion object",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ChatCompletion" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/responses": {
+      "post": {
+        "operationId": "createResponse",
+        "summary": "Create a model response",
+        "description": "Creates a model response using the Responses API. Used by the adaptor `deepResearch(message, options)` operation (default model o3-deep-research with a web_search_preview tool).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateResponseRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "A response object",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Response" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/models": {
+      "get": {
+        "operationId": "listModels",
+        "summary": "List available models",
+        "description": "Lists the currently available models, and provides basic information about each one such as the owner and availability.",
+        "responses": {
+          "200": {
+            "description": "A list of model objects",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ListModelsResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/models/{model}": {
+      "get": {
+        "operationId": "retrieveModel",
+        "summary": "Retrieve a model",
+        "description": "Retrieves a model instance, providing basic information about the model such as the owner and permissioning.",
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the model to use for this request",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A model object",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Model" }
+              }
+            }
+          },
+          "404": { "description": "Model not found" }
+        }
+      }
+    },
+    "/embeddings": {
+      "post": {
+        "operationId": "createEmbedding",
+        "summary": "Create embeddings",
+        "description": "Creates an embedding vector representing the input text.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateEmbeddingRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "An embedding response object",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/CreateEmbeddingResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/completions": {
+      "post": {
+        "operationId": "createCompletion",
+        "summary": "Create a completion (legacy)",
+        "description": "Creates a completion for the provided prompt and parameters. Legacy text completions endpoint.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateCompletionRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "A completion object",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Completion" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ChatCompletionMessage": {
+        "type": "object",
+        "description": "A message in a chat conversation.",
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": ["system", "user", "assistant", "tool", "developer"],
+            "description": "The role of the message author."
+          },
+          "content": {
+            "type": "string",
+            "nullable": true,
+            "description": "The contents of the message."
+          },
+          "refusal": {
+            "type": "string",
+            "nullable": true,
+            "description": "The refusal message generated by the model, if any."
+          }
+        },
+        "required": ["role"]
+      },
+      "CompletionUsage": {
+        "type": "object",
+        "description": "Usage statistics for the completion request.",
+        "properties": {
+          "prompt_tokens": { "type": "integer", "description": "Number of tokens in the prompt." },
+          "completion_tokens": { "type": "integer", "description": "Number of tokens in the generated completion." },
+          "total_tokens": { "type": "integer", "description": "Total number of tokens used in the request (prompt + completion)." }
+        },
+        "required": ["prompt_tokens", "completion_tokens", "total_tokens"]
+      },
+      "CreateChatCompletionRequest": {
+        "type": "object",
+        "description": "Request body for creating a chat completion.",
+        "properties": {
+          "model": {
+            "type": "string",
+            "description": "ID of the model to use. The adaptor defaults to o3-mini-2025-01-31.",
+            "example": "o3-mini-2025-01-31"
+          },
+          "messages": {
+            "type": "array",
+            "description": "A list of messages comprising the conversation so far.",
+            "items": { "$ref": "#/components/schemas/ChatCompletionMessage" }
+          },
+          "temperature": { "type": "number", "nullable": true, "description": "Sampling temperature between 0 and 2." },
+          "top_p": { "type": "number", "nullable": true, "description": "Nucleus sampling probability mass." },
+          "max_completion_tokens": { "type": "integer", "nullable": true, "description": "Upper bound for generated completion tokens." },
+          "reasoning_effort": { "type": "string", "enum": ["low", "medium", "high"], "nullable": true, "description": "Constrains effort on reasoning for reasoning models." },
+          "response_format": { "type": "object", "description": "An object specifying the format the model must output.", "additionalProperties": true },
+          "stream": { "type": "boolean", "nullable": true, "default": false }
+        },
+        "required": ["model", "messages"]
+      },
+      "ChatCompletionChoice": {
+        "type": "object",
+        "description": "A single chat completion choice.",
+        "properties": {
+          "index": { "type": "integer", "description": "The index of the choice in the list of choices." },
+          "message": { "$ref": "#/components/schemas/ChatCompletionMessage" },
+          "finish_reason": {
+            "type": "string",
+            "nullable": true,
+            "enum": ["stop", "length", "tool_calls", "content_filter", "function_call"],
+            "description": "The reason the model stopped generating tokens."
+          },
+          "logprobs": { "type": "object", "nullable": true, "additionalProperties": true }
+        },
+        "required": ["index", "message", "finish_reason"]
+      },
+      "ChatCompletion": {
+        "type": "object",
+        "description": "Represents a chat completion response returned by the model.",
+        "properties": {
+          "id": { "type": "string", "description": "A unique identifier for the chat completion." },
+          "object": { "type": "string", "enum": ["chat.completion"], "description": "The object type." },
+          "created": { "type": "integer", "description": "The Unix timestamp (in seconds) of when the chat completion was created." },
+          "model": { "type": "string", "description": "The model used for the chat completion." },
+          "system_fingerprint": { "type": "string", "nullable": true, "description": "Fingerprint representing the backend configuration." },
+          "choices": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ChatCompletionChoice" }
+          },
+          "usage": { "$ref": "#/components/schemas/CompletionUsage" }
+        },
+        "required": ["id", "object", "created", "model", "choices"]
+      },
+      "CreateResponseRequest": {
+        "type": "object",
+        "description": "Request body for the Responses API.",
+        "properties": {
+          "model": { "type": "string", "description": "Model ID. The adaptor defaults to o3-deep-research.", "example": "o3-deep-research" },
+          "input": {
+            "description": "Text, image, or file inputs to the model. The adaptor passes a string prompt.",
+            "oneOf": [
+              { "type": "string" },
+              { "type": "array", "items": { "type": "object", "additionalProperties": true } }
+            ]
+          },
+          "tools": {
+            "type": "array",
+            "description": "An array of tools the model may call. Defaults to [{ type: 'web_search_preview' }] in the adaptor.",
+            "items": { "type": "object", "additionalProperties": true }
+          },
+          "max_tool_calls": { "type": "integer", "nullable": true, "description": "Maximum number of tool calls allowed." },
+          "instructions": { "type": "string", "nullable": true, "description": "System/developer instructions." }
+        },
+        "required": ["model", "input"]
+      },
+      "ResponseOutputItem": {
+        "type": "object",
+        "description": "An output item produced by the Responses API (message, reasoning, tool call, etc.).",
+        "properties": {
+          "type": { "type": "string", "description": "The type of the output item, e.g. 'message' or 'reasoning'." },
+          "id": { "type": "string" },
+          "status": { "type": "string", "nullable": true },
+          "role": { "type": "string", "nullable": true },
+          "content": {
+            "type": "array",
+            "nullable": true,
+            "items": { "type": "object", "additionalProperties": true }
+          }
+        },
+        "required": ["type"]
+      },
+      "ResponseUsage": {
+        "type": "object",
+        "description": "Token usage details for a Responses API call.",
+        "properties": {
+          "input_tokens": { "type": "integer" },
+          "output_tokens": { "type": "integer" },
+          "total_tokens": { "type": "integer" }
+        },
+        "required": ["input_tokens", "output_tokens", "total_tokens"]
+      },
+      "Response": {
+        "type": "object",
+        "description": "A response object returned by the Responses API.",
+        "properties": {
+          "id": { "type": "string", "description": "Unique identifier for the response." },
+          "object": { "type": "string", "enum": ["response"], "description": "The object type." },
+          "created_at": { "type": "integer", "description": "Unix timestamp (seconds) of when the response was created." },
+          "status": {
+            "type": "string",
+            "enum": ["completed", "failed", "in_progress", "incomplete"],
+            "description": "The status of the response generation."
+          },
+          "model": { "type": "string", "description": "The model used to generate the response." },
+          "output": {
+            "type": "array",
+            "description": "An array of output items generated by the model.",
+            "items": { "$ref": "#/components/schemas/ResponseOutputItem" }
+          },
+          "output_text": { "type": "string", "nullable": true, "description": "SDK-only convenience aggregation of text output." },
+          "error": { "type": "object", "nullable": true, "additionalProperties": true },
+          "usage": { "$ref": "#/components/schemas/ResponseUsage" }
+        },
+        "required": ["id", "object", "created_at", "status", "model", "output"]
+      },
+      "Model": {
+        "type": "object",
+        "description": "Describes an OpenAI model offering that can be used with the API.",
+        "properties": {
+          "id": { "type": "string", "description": "The model identifier." },
+          "object": { "type": "string", "enum": ["model"], "description": "The object type." },
+          "created": { "type": "integer", "description": "The Unix timestamp (in seconds) when the model was created." },
+          "owned_by": { "type": "string", "description": "The organization that owns the model." }
+        },
+        "required": ["id", "object", "created", "owned_by"]
+      },
+      "ListModelsResponse": {
+        "type": "object",
+        "description": "A list of model objects.",
+        "properties": {
+          "object": { "type": "string", "enum": ["list"] },
+          "data": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Model" }
+          }
+        },
+        "required": ["object", "data"]
+      },
+      "CreateEmbeddingRequest": {
+        "type": "object",
+        "description": "Request body for creating embeddings.",
+        "properties": {
+          "model": { "type": "string", "example": "text-embedding-3-small", "description": "ID of the embedding model to use." },
+          "input": {
+            "description": "Input text to embed, as a string or array of strings/tokens.",
+            "oneOf": [
+              { "type": "string" },
+              { "type": "array", "items": { "type": "string" } }
+            ]
+          },
+          "encoding_format": { "type": "string", "enum": ["float", "base64"], "default": "float" },
+          "dimensions": { "type": "integer", "nullable": true }
+        },
+        "required": ["model", "input"]
+      },
+      "Embedding": {
+        "type": "object",
+        "description": "Represents an embedding vector returned by the embeddings endpoint.",
+        "properties": {
+          "index": { "type": "integer", "description": "The index of the embedding in the list." },
+          "object": { "type": "string", "enum": ["embedding"] },
+          "embedding": {
+            "type": "array",
+            "description": "The embedding vector.",
+            "items": { "type": "number" }
+          }
+        },
+        "required": ["index", "object", "embedding"]
+      },
+      "CreateEmbeddingResponse": {
+        "type": "object",
+        "description": "The response from an embeddings request.",
+        "properties": {
+          "object": { "type": "string", "enum": ["list"] },
+          "model": { "type": "string" },
+          "data": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Embedding" }
+          },
+          "usage": {
+            "type": "object",
+            "properties": {
+              "prompt_tokens": { "type": "integer" },
+              "total_tokens": { "type": "integer" }
+            },
+            "required": ["prompt_tokens", "total_tokens"]
+          }
+        },
+        "required": ["object", "model", "data", "usage"]
+      },
+      "CreateCompletionRequest": {
+        "type": "object",
+        "description": "Request body for the legacy completions endpoint.",
+        "properties": {
+          "model": { "type": "string", "example": "gpt-3.5-turbo-instruct" },
+          "prompt": {
+            "oneOf": [
+              { "type": "string" },
+              { "type": "array", "items": { "type": "string" } }
+            ],
+            "description": "The prompt(s) to generate completions for."
+          },
+          "max_tokens": { "type": "integer", "nullable": true, "default": 16 },
+          "temperature": { "type": "number", "nullable": true }
+        },
+        "required": ["model", "prompt"]
+      },
+      "CompletionChoice": {
+        "type": "object",
+        "description": "A single legacy completion choice.",
+        "properties": {
+          "index": { "type": "integer" },
+          "text": { "type": "string" },
+          "finish_reason": {
+            "type": "string",
+            "nullable": true,
+            "enum": ["stop", "length", "content_filter"]
+          },
+          "logprobs": { "type": "object", "nullable": true, "additionalProperties": true }
+        },
+        "required": ["index", "text", "finish_reason"]
+      },
+      "Completion": {
+        "type": "object",
+        "description": "Represents a legacy text completion response returned by the model.",
+        "properties": {
+          "id": { "type": "string" },
+          "object": { "type": "string", "enum": ["text_completion"] },
+          "created": { "type": "integer" },
+          "model": { "type": "string" },
+          "choices": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/CompletionChoice" }
+          },
+          "usage": { "$ref": "#/components/schemas/CompletionUsage" }
+        },
+        "required": ["id", "object", "created", "model", "choices"]
+      }
+    }
+  }
+}

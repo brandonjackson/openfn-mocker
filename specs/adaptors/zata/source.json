@@ -1,0 +1,18 @@
+{
+  "adaptor": "zata",
+  "npm": "@openfn/language-zata",
+  "origin": "generated",
+  "upstreamFormat": "docs",
+  "sources": [
+    "https://cdn.jsdelivr.net/npm/@openfn/language-zata@1.1.2/ast.json",
+    "https://cdn.jsdelivr.net/npm/@openfn/language-zata@1.1.2/types/Adaptor.d.ts",
+    "https://github.com/OpenFn/adaptors/tree/main/packages/zata",
+    "https://docs.zata.rw/",
+    "https://docs.zata.rw/llms.txt",
+    "https://docs.zata.rw/zata-taxes-and-payments-api.md",
+    "https://docs.zata.rw/zata-taxes-and-payments-api/taxes/transaction/post-transaction-sale.md",
+    "https://docs.zata.rw/zata-taxes-and-payments-api/setup-parties/company/get-company.md"
+  ],
+  "capturedAt": "2026-07-06",
+  "notes": "Zata (docs.zata.rw) is an API-first tax compliance, invoicing, inventory, insurance and payments platform for Sub-Saharan Africa, licensed by the Rwanda Revenue Authority and partnered with GTBank Rwanda for ZataPay. It is NOT object storage / 'Zata AI Cloud' (that guess was wrong). The OpenFn adaptor @openfn/language-zata@1.1.2 is a thin generic HTTP wrapper exposing get/post/put/request (per ast.json and types/Adaptor.d.ts); it carries no per-resource helper functions, so exact endpoints come from the JSDoc examples (transaction/sale, company, product/reduce-quantity, data/product-type, test) plus the official Zata docs. Base URL modeled as the documented sandbox host https://sandbox.zata.rw/api/v1 (production host not published in docs; adjust if a prod base URL is confirmed). The docs expose per-endpoint OpenAPI 3.1 fragments but declare all request/response bodies as 'Any type', so component schemas here were authored from the adaptor JSDoc example payloads and resource semantics rather than an authoritative schema. Coverage is a focused ~28 operations across auth, companies/branches, parties, products, lookup data, transactions, expenses, ZataPay payments and health; the full API additionally includes proforma/purchase/refund transactions, insurance/patient (pharma) flows, tax reporting and external-credit payments, which were omitted to keep the spec focused. A live docs MCP server is also available at https://docs.zata.rw/_mcp/server."
+}

@@ -1,0 +1,13 @@
+{
+  "adaptor": "resourcemap",
+  "npm": "@openfn/language-resourcemap",
+  "origin": "generated",
+  "upstreamFormat": "docs",
+  "sources": [
+    "https://github.com/instedd/resourcemap/wiki/REST_API",
+    "https://github.com/OpenFn/adaptors/tree/main/packages/resourcemap",
+    "https://cdn.jsdelivr.net/npm/@openfn/language-resourcemap/ast.json"
+  ],
+  "capturedAt": "2026-07-06",
+  "notes": "No machine-readable spec (OpenAPI/Swagger/Postman) exists for the InSTEDD Resource Map REST API. Authored a focused OpenAPI 3.0.3 by hand from the vendor REST API wiki. The adaptor itself only calls POST /api/collections/{collection_id}/sites.json (the submitSite operation); the other endpoints (collections list/detail/count/geo, single site get/delete/update_property/partial_update, layers/fields, site histories, memberships) are documented from the wiki to provide realistic seed shapes for the mocker. Auth is HTTP Basic (email/password) and baseUrl is per-deployment (default https://resourcemap.instedd.org). Response schemas are approximate: the wiki gives field names but few complete example payloads, so property shapes are inferred."
+}

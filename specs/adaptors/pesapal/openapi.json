@@ -1,0 +1,313 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Pesapal API 3.0 (mock subset)",
+    "version": "3.0",
+    "description": "Focused subset of the Pesapal API 3.0 used by the OpenFn pesapal adaptor. The adaptor exposes generic get()/post()/request() helpers against the Pesapal REST base; this spec models the concrete endpoints those helpers target: authentication (RequestToken), IPN URL registration and listing, order submission, transaction status, refunds and order cancellation.",
+    "x-openfn-adaptor": "pesapal"
+  },
+  "servers": [
+    { "url": "https://pay.pesapal.com/pesapalv3", "description": "Live" },
+    { "url": "https://cybqa.pesapal.com/pesapalv3", "description": "Sandbox" }
+  ],
+  "paths": {
+    "/api/Auth/RequestToken": {
+      "post": {
+        "operationId": "requestToken",
+        "summary": "Request a bearer auth token",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/AuthRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Auth token",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/AuthResponse" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/URLSetup/RegisterIPN": {
+      "post": {
+        "operationId": "registerIPN",
+        "summary": "Register an Instant Payment Notification (IPN) URL",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/IpnRegistrationRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Registered IPN",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/IpnRegistration" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/URLSetup/GetIpnList": {
+      "get": {
+        "operationId": "getIpnList",
+        "summary": "List registered IPN URLs",
+        "responses": {
+          "200": {
+            "description": "Registered IPNs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/IpnRegistration" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Transactions/SubmitOrderRequest": {
+      "post": {
+        "operationId": "submitOrderRequest",
+        "summary": "Submit an order for payment",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/OrderRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Order response with redirect URL",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/OrderResponse" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/Transactions/GetTransactionStatus": {
+      "get": {
+        "operationId": "getTransactionStatus",
+        "summary": "Get the status of a transaction",
+        "parameters": [
+          {
+            "name": "orderTrackingId",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Transaction status",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/TransactionStatus" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/Transactions/RefundRequest": {
+      "post": {
+        "operationId": "refundRequest",
+        "summary": "Request a refund for a confirmed payment",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/RefundRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Refund response",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/RefundResponse" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/Transactions/CancelOrder": {
+      "post": {
+        "operationId": "cancelOrder",
+        "summary": "Cancel a pending order",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CancelOrderRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Cancellation response",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/CancelOrderResponse" } }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AuthRequest": {
+        "type": "object",
+        "required": ["consumer_key", "consumer_secret"],
+        "properties": {
+          "consumer_key": { "type": "string" },
+          "consumer_secret": { "type": "string" }
+        }
+      },
+      "AuthResponse": {
+        "type": "object",
+        "properties": {
+          "token": { "type": "string" },
+          "expiryDate": { "type": "string", "format": "date-time" },
+          "error": { "$ref": "#/components/schemas/PesapalError" },
+          "status": { "type": "string", "example": "200" },
+          "message": { "type": "string" }
+        }
+      },
+      "IpnRegistrationRequest": {
+        "type": "object",
+        "required": ["url", "ipn_notification_type"],
+        "properties": {
+          "url": { "type": "string", "format": "uri" },
+          "ipn_notification_type": { "type": "string", "enum": ["GET", "POST"], "example": "GET" }
+        }
+      },
+      "IpnRegistration": {
+        "type": "object",
+        "properties": {
+          "url": { "type": "string", "format": "uri" },
+          "created_date": { "type": "string", "format": "date-time" },
+          "ipn_id": { "type": "string" },
+          "notification_type": { "type": "integer" },
+          "ipn_notification_type_description": { "type": "string" },
+          "ipn_status": { "type": "integer" },
+          "ipn_status_description": { "type": "string" },
+          "status": { "type": "string", "example": "200" },
+          "error": { "$ref": "#/components/schemas/PesapalError" }
+        }
+      },
+      "BillingAddress": {
+        "type": "object",
+        "properties": {
+          "email_address": { "type": "string" },
+          "phone_number": { "type": "string" },
+          "country_code": { "type": "string" },
+          "first_name": { "type": "string" },
+          "middle_name": { "type": "string" },
+          "last_name": { "type": "string" },
+          "line_1": { "type": "string" },
+          "line_2": { "type": "string" },
+          "city": { "type": "string" },
+          "state": { "type": "string" },
+          "postal_code": { "type": "string" },
+          "zip_code": { "type": "string" }
+        }
+      },
+      "OrderRequest": {
+        "type": "object",
+        "required": ["id", "currency", "amount", "description", "callback_url", "notification_id"],
+        "properties": {
+          "id": { "type": "string", "description": "Unique merchant reference" },
+          "currency": { "type": "string", "example": "KES" },
+          "amount": { "type": "number" },
+          "description": { "type": "string" },
+          "callback_url": { "type": "string", "format": "uri" },
+          "redirect_mode": { "type": "string" },
+          "notification_id": { "type": "string", "description": "The ipn_id from RegisterIPN" },
+          "branch": { "type": "string" },
+          "billing_address": { "$ref": "#/components/schemas/BillingAddress" }
+        }
+      },
+      "OrderResponse": {
+        "type": "object",
+        "properties": {
+          "order_tracking_id": { "type": "string" },
+          "merchant_reference": { "type": "string" },
+          "redirect_url": { "type": "string", "format": "uri" },
+          "error": { "$ref": "#/components/schemas/PesapalError" },
+          "status": { "type": "string", "example": "200" }
+        }
+      },
+      "TransactionStatus": {
+        "type": "object",
+        "properties": {
+          "payment_method": { "type": "string" },
+          "amount": { "type": "number" },
+          "created_date": { "type": "string", "format": "date-time" },
+          "confirmation_code": { "type": "string" },
+          "payment_status_description": { "type": "string", "example": "Completed" },
+          "description": { "type": "string" },
+          "message": { "type": "string" },
+          "payment_account": { "type": "string" },
+          "call_back_url": { "type": "string", "format": "uri" },
+          "status_code": { "type": "integer" },
+          "merchant_reference": { "type": "string" },
+          "payment_status_code": { "type": "string" },
+          "currency": { "type": "string" },
+          "error": { "$ref": "#/components/schemas/PesapalError" },
+          "status": { "type": "string", "example": "200" }
+        }
+      },
+      "RefundRequest": {
+        "type": "object",
+        "required": ["confirmation_code", "amount", "username", "remarks"],
+        "properties": {
+          "confirmation_code": { "type": "string" },
+          "amount": { "type": "number" },
+          "username": { "type": "string" },
+          "remarks": { "type": "string" }
+        }
+      },
+      "RefundResponse": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string" },
+          "message": { "type": "string" }
+        }
+      },
+      "CancelOrderRequest": {
+        "type": "object",
+        "required": ["order_tracking_id"],
+        "properties": {
+          "order_tracking_id": { "type": "string" }
+        }
+      },
+      "CancelOrderResponse": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string" },
+          "message": { "type": "string" }
+        }
+      },
+      "PesapalError": {
+        "type": "object",
+        "nullable": true,
+        "properties": {
+          "error_type": { "type": "string", "nullable": true },
+          "code": { "type": "string", "nullable": true },
+          "message": { "type": "string", "nullable": true },
+          "call_back_url": { "type": "string", "nullable": true }
+        }
+      }
+    }
+  }
+}

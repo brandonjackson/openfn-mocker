@@ -1,0 +1,14 @@
+{
+  "adaptor": "azure-storage",
+  "npm": "@openfn/language-azure-storage",
+  "origin": "generated",
+  "upstreamFormat": "docs",
+  "sources": [
+    "https://learn.microsoft.com/en-us/rest/api/storageservices/put-blob",
+    "https://learn.microsoft.com/en-us/rest/api/storageservices/get-blob",
+    "https://learn.microsoft.com/en-us/rest/api/storageservices/get-blob-properties",
+    "https://cdn.jsdelivr.net/npm/@openfn/language-azure-storage/types/Adaptor.d.ts"
+  ],
+  "capturedAt": "2026-07-06",
+  "notes": "Authored from the Azure Blob Storage REST API docs, covering the three blob operations the adaptor wraps: uploadBlob (Put Blob), downloadBlob (Get Blob), getBlobProperties (Get Blob Properties / HEAD). The adaptor uses the @azure/storage-blob SDK; the real REST responses carry metadata in headers with binary/no bodies, so responses are modelled as JSON objects matching the SDK/adaptor result shapes. Server URL uses the {account}.blob.core.windows.net template."
+}

@@ -1,0 +1,14 @@
+{
+  "adaptor": "chatgpt",
+  "npm": "@openfn/language-chatgpt",
+  "origin": "converted",
+  "upstreamFormat": "openapi-3.1",
+  "sources": [
+    "https://github.com/openai/openai-openapi/blob/master/openapi.yaml",
+    "https://platform.openai.com/docs/api-reference/chat/create",
+    "https://platform.openai.com/docs/api-reference/responses/create",
+    "https://cdn.jsdelivr.net/npm/@openfn/language-chatgpt/ast.json"
+  ],
+  "capturedAt": "2026-07-06",
+  "notes": "Base URL https://api.openai.com/v1. The chatgpt adaptor uses the official `openai` npm client and exposes two operations: `prompt` -> POST /chat/completions (default model o3-mini-2025-01-31) and `deepResearch` -> POST /responses (default model o3-deep-research, tools default [{type:'web_search_preview'}]). Those two endpoints are the operations the adaptor actually calls. GET /models, GET /models/{model}, POST /embeddings and POST /completions are added as commonly-associated OpenAI endpoints to provide useful seed collections; they are not invoked by the adaptor. Focused subset of OpenAI's official OpenAPI 3.1 spec, downconverted to 3.0.3 (nullable used instead of type arrays). Schemas simplified: message content modeled as string (adaptor only sends string content), tools/response_format left as open objects. Verified operation surface against ast.json and the published dist bundle."
+}

@@ -1,0 +1,13 @@
+{
+  "adaptor": "gmail",
+  "npm": "@openfn/language-gmail",
+  "origin": "converted",
+  "upstreamFormat": "google-discovery",
+  "sources": [
+    "https://www.googleapis.com/discovery/v1/apis/gmail/v1/rest",
+    "https://developers.google.com/gmail/api/reference/rest/v1/users.messages",
+    "https://cdn.jsdelivr.net/npm/@openfn/language-gmail/ast.json"
+  ],
+  "capturedAt": "2026-07-06",
+  "notes": "Converted the messages subset of the Gmail API v1 Discovery document. The gmail adaptor uses the googleapis SDK: getContentsFromMessages maps to users.messages.list + users.messages.get, and sendMessage maps to users.messages.send. Only the messages resource (list/get/send) and its Message/MessagePart schemas are modeled; labels, threads, drafts, history, and attachments endpoints are omitted as the adaptor does not call them."
+}

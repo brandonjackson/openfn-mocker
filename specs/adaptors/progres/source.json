@@ -1,0 +1,14 @@
+{
+  "adaptor": "progres",
+  "npm": "@openfn/language-progres",
+  "origin": "synthesized",
+  "upstreamFormat": "adaptor-surface",
+  "sources": [
+    "https://cdn.jsdelivr.net/npm/@openfn/language-progres/ast.json",
+    "https://cdn.jsdelivr.net/npm/@openfn/language-progres/dist/index.cjs",
+    "https://progres.mesrs.dz/",
+    "https://github.com/OpenFn/adaptors/tree/main/packages/progres"
+  ],
+  "capturedAt": "2026-07-06",
+  "notes": "PROGRES is Algeria's national higher-education (MESRS) platform. The adaptor exposes a single operation, postData, doing a mutual-TLS POST (client key+cert via agentOptions) with an Ocp-Apim-Subscription-Key header to an Azure API Management endpoint. No public vendor machine spec or REST docs exist (the platform is access-controlled). Synthesized a minimal OpenAPI 3.0 from the adaptor surface: a generic /data submission endpoint plus representative student/enrollment submission paths and a generic acknowledgement response. Server URL and paths are placeholders; the real target URL is supplied per-call."
+}

@@ -1,0 +1,13 @@
+{
+  "adaptor": "pdfshift",
+  "npm": "@openfn/language-pdfshift",
+  "origin": "found-openapi",
+  "upstreamFormat": "openapi-3.0",
+  "sources": [
+    "https://docs.pdfshift.io/openapi.json",
+    "https://docs.pdfshift.io/api-reference/convert-to-pdf",
+    "https://cdn.jsdelivr.net/npm/@openfn/language-pdfshift/ast.json"
+  ],
+  "capturedAt": "2026-07-06",
+  "notes": "PDFShift publishes an official OpenAPI 3.0.3 document at https://docs.pdfshift.io/openapi.json (server https://api.pdfshift.io/v3). This is a focused subset of it covering the endpoints the adaptor uses: POST /convert/pdf (the adaptor's generatePDF operation; the generic request operation can call any path), plus GET /credits/usage and GET /account. Massaging vs. the upstream doc: added operationIds (upstream has none) and info.x-openfn-adaptor; refactored the inline convert JSON response into a reusable ConversionResult component schema so seed collections can be derived; trimmed the large ConvertForm request body to the primary parameters the adaptor exercises (source, sandbox, encode, filename, plus common formatting fields). The convert endpoint returns a raw binary PDF (application/pdf) by default and a JSON ConversionResult when filename/webhook is used or encode is true. Credits and Account schemas are copied faithfully from the upstream spec. Omitted from this subset: PNG/JPEG/WebP convert endpoints, templates, logs, and invoices (not used by the adaptor)."
+}

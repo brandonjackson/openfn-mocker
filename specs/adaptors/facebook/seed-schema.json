@@ -1,0 +1,121 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "facebook — mocker seed-data schema",
+    "version": "1.0.0",
+    "description": "Schema for the seed data openfn-mocker needs to impersonate facebook. Derived from the adaptor's OpenAPI spec. A seed dump is { collection: { id: record } }; each record validates against its resource schema below.",
+    "x-openfn-adaptor": "facebook",
+    "x-derived-from": "openapi.json",
+    "x-captured-at": "2026-07-06"
+  },
+  "x-seed": {
+    "shape": "{ collection: { id: record } }",
+    "collections": {
+      "sendResponses": {
+        "resource": "SendResponse",
+        "schema": {
+          "$ref": "#/components/schemas/SendResponse"
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SeedData": {
+        "type": "object",
+        "description": "Full seed dump loaded by mocker: one property per collection.",
+        "properties": {
+          "sendResponses": {
+            "type": "object",
+            "description": "Records keyed by id for the sendResponses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/SendResponse"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "SendRequest": {
+        "type": "object",
+        "required": [
+          "recipient",
+          "message"
+        ],
+        "properties": {
+          "messaging_type": {
+            "type": "string",
+            "enum": [
+              "RESPONSE",
+              "UPDATE",
+              "MESSAGE_TAG"
+            ]
+          },
+          "recipient": {
+            "$ref": "#/components/schemas/Recipient"
+          },
+          "message": {
+            "$ref": "#/components/schemas/Message"
+          }
+        }
+      },
+      "Recipient": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Page-scoped recipient ID (PSID)"
+          },
+          "user_ref": {
+            "type": "string"
+          },
+          "phone_number": {
+            "type": "string"
+          }
+        }
+      },
+      "Message": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string"
+          },
+          "attachment": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "image",
+                  "audio",
+                  "video",
+                  "file",
+                  "template"
+                ]
+              },
+              "payload": {
+                "type": "object"
+              }
+            }
+          },
+          "quick_replies": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "SendResponse": {
+        "type": "object",
+        "properties": {
+          "recipient_id": {
+            "type": "string"
+          },
+          "message_id": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

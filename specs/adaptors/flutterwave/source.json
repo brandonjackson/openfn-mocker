@@ -1,0 +1,14 @@
+{
+  "adaptor": "flutterwave",
+  "npm": "@openfn/language-flutterwave",
+  "origin": "generated",
+  "upstreamFormat": "docs",
+  "sources": [
+    "https://developer.flutterwave.com/",
+    "https://developer.flutterwave.com/reference",
+    "https://developer.flutterwave.com/llms.txt",
+    "https://github.com/OpenFn/adaptors/tree/main/packages/flutterwave"
+  ],
+  "capturedAt": "2026-07-06",
+  "notes": "Authored from the Flutterwave v4 (Flutterwave for Business) API docs. Adaptor calls three endpoints confirmed from the compiled dist: POST /customers (createCustomer), POST /payment-methods (createPaymentMethod), POST /charges (initiatePayment). baseUrl is supplied via adaptor configuration; servers[] lists the v4 sandbox and production hosts. GET/list operations added so Customer/PaymentMethod/Charge seed as collections. Responses use the v4 { status, message, data } envelope; field details are representative, not exhaustively validated against the live reference."
+}

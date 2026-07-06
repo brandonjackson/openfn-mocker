@@ -1,0 +1,746 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "cht — mocker seed-data schema",
+    "version": "1.0.0",
+    "description": "Schema for the seed data openfn-mocker needs to impersonate cht. Derived from the adaptor's OpenAPI spec. A seed dump is { collection: { id: record } }; each record validates against its resource schema below.",
+    "x-openfn-adaptor": "cht",
+    "x-derived-from": "openapi.json",
+    "x-captured-at": "2026-07-06"
+  },
+  "x-seed": {
+    "shape": "{ collection: { id: record } }",
+    "collections": {
+      "contacts": {
+        "resource": "Contact",
+        "schema": {
+          "$ref": "#/components/schemas/Contact"
+        }
+      },
+      "contactLists": {
+        "resource": "ContactList",
+        "schema": {
+          "$ref": "#/components/schemas/ContactList"
+        }
+      },
+      "createdContacts": {
+        "resource": "CreatedContact",
+        "schema": {
+          "$ref": "#/components/schemas/CreatedContact"
+        }
+      },
+      "dhisDataValueSets": {
+        "resource": "DhisDataValueSet",
+        "schema": {
+          "$ref": "#/components/schemas/DhisDataValueSet"
+        }
+      },
+      "formLists": {
+        "resource": "FormList",
+        "schema": {
+          "$ref": "#/components/schemas/FormList"
+        }
+      },
+      "monitorings": {
+        "resource": "Monitoring",
+        "schema": {
+          "$ref": "#/components/schemas/Monitoring"
+        }
+      },
+      "persons": {
+        "resource": "Person",
+        "schema": {
+          "$ref": "#/components/schemas/Person"
+        }
+      },
+      "places": {
+        "resource": "Place",
+        "schema": {
+          "$ref": "#/components/schemas/Place"
+        }
+      },
+      "recordSuccesses": {
+        "resource": "RecordSuccess",
+        "schema": {
+          "$ref": "#/components/schemas/RecordSuccess"
+        }
+      },
+      "settingses": {
+        "resource": "Settings",
+        "schema": {
+          "$ref": "#/components/schemas/Settings"
+        }
+      },
+      "settingsUpdateResults": {
+        "resource": "SettingsUpdateResult",
+        "schema": {
+          "$ref": "#/components/schemas/SettingsUpdateResult"
+        }
+      },
+      "userCreateResults": {
+        "resource": "UserCreateResult",
+        "schema": {
+          "$ref": "#/components/schemas/UserCreateResult"
+        }
+      },
+      "userLists": {
+        "resource": "UserList",
+        "schema": {
+          "$ref": "#/components/schemas/UserList"
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SeedData": {
+        "type": "object",
+        "description": "Full seed dump loaded by mocker: one property per collection.",
+        "properties": {
+          "contacts": {
+            "type": "object",
+            "description": "Records keyed by id for the contacts collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Contact"
+            }
+          },
+          "contactLists": {
+            "type": "object",
+            "description": "Records keyed by id for the contactLists collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ContactList"
+            }
+          },
+          "createdContacts": {
+            "type": "object",
+            "description": "Records keyed by id for the createdContacts collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/CreatedContact"
+            }
+          },
+          "dhisDataValueSets": {
+            "type": "object",
+            "description": "Records keyed by id for the dhisDataValueSets collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/DhisDataValueSet"
+            }
+          },
+          "formLists": {
+            "type": "object",
+            "description": "Records keyed by id for the formLists collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/FormList"
+            }
+          },
+          "monitorings": {
+            "type": "object",
+            "description": "Records keyed by id for the monitorings collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Monitoring"
+            }
+          },
+          "persons": {
+            "type": "object",
+            "description": "Records keyed by id for the persons collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Person"
+            }
+          },
+          "places": {
+            "type": "object",
+            "description": "Records keyed by id for the places collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Place"
+            }
+          },
+          "recordSuccesses": {
+            "type": "object",
+            "description": "Records keyed by id for the recordSuccesses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/RecordSuccess"
+            }
+          },
+          "settingses": {
+            "type": "object",
+            "description": "Records keyed by id for the settingses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Settings"
+            }
+          },
+          "settingsUpdateResults": {
+            "type": "object",
+            "description": "Records keyed by id for the settingsUpdateResults collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/SettingsUpdateResult"
+            }
+          },
+          "userCreateResults": {
+            "type": "object",
+            "description": "Records keyed by id for the userCreateResults collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/UserCreateResult"
+            }
+          },
+          "userLists": {
+            "type": "object",
+            "description": "Records keyed by id for the userLists collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/UserList"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "Settings": {
+        "type": "object",
+        "description": "CHT app settings document (opaque configuration object).",
+        "additionalProperties": true,
+        "properties": {
+          "locale": {
+            "type": "string"
+          },
+          "locale_outgoing": {
+            "type": "string"
+          },
+          "roles": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "permissions": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "contact_types": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          }
+        }
+      },
+      "SettingsUpdateResult": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          },
+          "updated": {
+            "type": "boolean",
+            "description": "Whether the settings document was updated."
+          }
+        }
+      },
+      "CreatedContact": {
+        "type": "object",
+        "description": "Result of creating a contact via the legacy people/places endpoints.",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "rev": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "rev"
+        ]
+      },
+      "PersonInput": {
+        "type": "object",
+        "description": "Input for creating a person contact.",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The person's name."
+          },
+          "type": {
+            "type": "string",
+            "default": "person",
+            "description": "contact_type id for the new person."
+          },
+          "contact_type": {
+            "type": "string",
+            "description": "The specific contact type when using configurable hierarchies."
+          },
+          "phone": {
+            "type": "string"
+          },
+          "place": {
+            "type": "string",
+            "description": "Place UUID the person resides in."
+          },
+          "reported_date": {
+            "type": "number",
+            "description": "Timestamp of creation; defaults to now."
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "additionalProperties": true
+      },
+      "Person": {
+        "type": "object",
+        "description": "A person contact record (CouchDB document).",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "_rev": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "example": "contact"
+          },
+          "contact_type": {
+            "type": "string",
+            "example": "patient"
+          },
+          "name": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "date_of_birth": {
+            "type": "string"
+          },
+          "sex": {
+            "type": "string"
+          },
+          "parent": {
+            "$ref": "#/components/schemas/NormalizedParent"
+          },
+          "reported_date": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "_id",
+          "type"
+        ],
+        "additionalProperties": true
+      },
+      "PlaceInput": {
+        "type": "object",
+        "description": "Input for creating a place contact.",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The name of the place."
+          },
+          "type": {
+            "type": "string",
+            "description": "The place type, e.g. clinic, health_center, district_hospital."
+          },
+          "contact_type": {
+            "type": "string"
+          },
+          "parent": {
+            "type": "string",
+            "description": "Parent place UUID."
+          },
+          "contact": {
+            "type": "string",
+            "description": "Contact person UUID."
+          }
+        },
+        "required": [
+          "name",
+          "type"
+        ],
+        "additionalProperties": true
+      },
+      "Place": {
+        "type": "object",
+        "description": "A place contact record (CouchDB document).",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "_rev": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "example": "clinic"
+          },
+          "contact_type": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "parent": {
+            "$ref": "#/components/schemas/NormalizedParent"
+          },
+          "contact": {
+            "$ref": "#/components/schemas/NormalizedParent"
+          },
+          "reported_date": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "_id",
+          "type"
+        ],
+        "additionalProperties": true
+      },
+      "Contact": {
+        "type": "object",
+        "description": "A contact record which may be a person or a place.",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "_rev": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "contact_type": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "parent": {
+            "$ref": "#/components/schemas/NormalizedParent"
+          },
+          "reported_date": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "_id",
+          "type"
+        ],
+        "additionalProperties": true
+      },
+      "NormalizedParent": {
+        "type": "object",
+        "description": "A minified parent lineage reference.",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "parent": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": true
+      },
+      "ContactList": {
+        "type": "array",
+        "description": "A list of contact records (from the export endpoint).",
+        "items": {
+          "$ref": "#/components/schemas/Contact"
+        }
+      },
+      "RecordInput": {
+        "type": "object",
+        "description": "Form field values as properties. Special values reside in _meta.",
+        "properties": {
+          "_meta": {
+            "type": "object",
+            "properties": {
+              "form": {
+                "type": "string",
+                "description": "The form code."
+              },
+              "from": {
+                "type": "string",
+                "description": "Reporting phone number."
+              },
+              "reported_date": {
+                "type": "number"
+              },
+              "locale": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "form"
+            ]
+          }
+        },
+        "additionalProperties": true
+      },
+      "RecordSuccess": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "id": {
+            "type": "string",
+            "description": "The id of the created record."
+          }
+        },
+        "required": [
+          "success",
+          "id"
+        ]
+      },
+      "DhisDataValueSet": {
+        "type": "object",
+        "description": "A DHIS2 dataValueSet payload.",
+        "properties": {
+          "dataSet": {
+            "type": "string"
+          },
+          "completeDate": {
+            "type": "string"
+          },
+          "period": {
+            "type": "string"
+          },
+          "orgUnit": {
+            "type": "string"
+          },
+          "dataValues": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "dataElement": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        },
+        "additionalProperties": true
+      },
+      "Monitoring": {
+        "type": "object",
+        "description": "Instance monitoring metrics.",
+        "properties": {
+          "version": {
+            "type": "object",
+            "properties": {
+              "app": {
+                "type": "string"
+              },
+              "node": {
+                "type": "string"
+              },
+              "couchdb": {
+                "type": "string"
+              }
+            }
+          },
+          "couchdb": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "update_sequence": {
+                  "type": "number"
+                },
+                "doc_count": {
+                  "type": "number"
+                },
+                "doc_del_count": {
+                  "type": "number"
+                },
+                "fragmentation": {
+                  "type": "number"
+                }
+              }
+            }
+          },
+          "date": {
+            "type": "object",
+            "properties": {
+              "current": {
+                "type": "number"
+              },
+              "uptime": {
+                "type": "number"
+              }
+            }
+          },
+          "sentinel": {
+            "type": "object",
+            "properties": {
+              "backlog": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        "additionalProperties": true
+      },
+      "User": {
+        "type": "object",
+        "description": "A CHT user and their profile data.",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "rev": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          },
+          "fullname": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "contact": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "place": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": true
+      },
+      "UserList": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/User"
+        }
+      },
+      "UserInput": {
+        "type": "object",
+        "required": [
+          "username",
+          "roles"
+        ],
+        "properties": {
+          "username": {
+            "type": "string",
+            "description": "Identifier used for authentication."
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "password": {
+            "type": "string",
+            "description": "At least 8 characters; required unless token_login or oidc_username is set."
+          },
+          "phone": {
+            "type": "string"
+          },
+          "fullname": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "place": {
+            "description": "Place identifier or object.",
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "object",
+                "additionalProperties": true
+              }
+            ]
+          },
+          "contact": {
+            "description": "Person identifier or object.",
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "object",
+                "additionalProperties": true
+              }
+            ]
+          },
+          "token_login": {
+            "type": "boolean"
+          }
+        }
+      },
+      "UserCreateResult": {
+        "type": "object",
+        "properties": {
+          "contact": {
+            "$ref": "#/components/schemas/DocRef"
+          },
+          "user-settings": {
+            "$ref": "#/components/schemas/DocRef"
+          },
+          "user": {
+            "$ref": "#/components/schemas/DocRef"
+          }
+        }
+      },
+      "DocRef": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "rev": {
+            "type": "string"
+          }
+        }
+      },
+      "Form": {
+        "type": "object",
+        "description": "A configured form available on the instance.",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "internalId": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "FormList": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Form"
+        }
+      }
+    }
+  }
+}

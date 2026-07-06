@@ -1,0 +1,215 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "ERPNext / Frappe REST API (subset)",
+    "version": "1.0.0",
+    "description": "Focused OpenAPI subset of the ERPNext (Frappe Framework) REST API used by the OpenFn erpnext adaptor: document CRUD over /api/resource/{doctype}, list/filter/paginate, and count via /api/method/frappe.client.get_count. Common doctypes (Customer, Item, Sales Order) are modelled as reusable resource shapes.",
+    "x-openfn-adaptor": "erpnext"
+  },
+  "servers": [{ "url": "https://site.erpnext.com" }],
+  "paths": {
+    "/api/resource/{doctype}": {
+      "get": {
+        "operationId": "getList",
+        "summary": "List documents of a doctype",
+        "parameters": [
+          { "name": "doctype", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "fields", "in": "query", "schema": { "type": "string" }, "description": "JSON array of field names" },
+          { "name": "filters", "in": "query", "schema": { "type": "string" }, "description": "JSON filter expression" },
+          { "name": "limit_page_length", "in": "query", "schema": { "type": "integer" } },
+          { "name": "limit_start", "in": "query", "schema": { "type": "integer" } },
+          { "name": "order_by", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Document list",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DocumentList" }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "create",
+        "summary": "Create a document",
+        "parameters": [
+          { "name": "doctype", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/Document" } }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Created document",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DocumentResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/resource/{doctype}/{name}": {
+      "get": {
+        "operationId": "read",
+        "summary": "Read a document by name",
+        "parameters": [
+          { "name": "doctype", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "name", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Document",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DocumentResponse" }
+              }
+            }
+          },
+          "404": { "description": "Not found" }
+        }
+      },
+      "put": {
+        "operationId": "update",
+        "summary": "Update a document",
+        "parameters": [
+          { "name": "doctype", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "name", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/Document" } }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated document",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DocumentResponse" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteRecord",
+        "summary": "Delete a document",
+        "parameters": [
+          { "name": "doctype", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "name", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Delete confirmation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "message": { "type": "string" } }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/method/frappe.client.get_count": {
+      "get": {
+        "operationId": "getCount",
+        "summary": "Count documents matching filters",
+        "parameters": [
+          { "name": "doctype", "in": "query", "required": true, "schema": { "type": "string" } },
+          { "name": "filters", "in": "query", "schema": { "type": "string" }, "description": "JSON filter expression" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Count result",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/CountResponse" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Document": {
+        "type": "object",
+        "description": "Generic Frappe document. Fields depend on the doctype.",
+        "properties": {
+          "name": { "type": "string" },
+          "doctype": { "type": "string" },
+          "owner": { "type": "string" },
+          "creation": { "type": "string", "format": "date-time" },
+          "modified": { "type": "string", "format": "date-time" }
+        },
+        "additionalProperties": true
+      },
+      "DocumentResponse": {
+        "type": "object",
+        "properties": {
+          "data": { "$ref": "#/components/schemas/Document" }
+        }
+      },
+      "DocumentList": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Document" }
+          }
+        }
+      },
+      "CountResponse": {
+        "type": "object",
+        "properties": {
+          "message": { "type": "integer" }
+        }
+      },
+      "Customer": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "customer_name": { "type": "string" },
+          "customer_type": { "type": "string", "enum": ["Company", "Individual"] },
+          "customer_group": { "type": "string" },
+          "territory": { "type": "string" },
+          "mobile_no": { "type": "string" },
+          "email_id": { "type": "string" }
+        }
+      },
+      "Item": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "item_code": { "type": "string" },
+          "item_name": { "type": "string" },
+          "item_group": { "type": "string" },
+          "stock_uom": { "type": "string" },
+          "standard_rate": { "type": "number" },
+          "description": { "type": "string" }
+        }
+      },
+      "SalesOrder": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "customer": { "type": "string" },
+          "transaction_date": { "type": "string", "format": "date" },
+          "delivery_date": { "type": "string", "format": "date" },
+          "status": { "type": "string" },
+          "grand_total": { "type": "number" }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,232 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "dagu — mocker seed-data schema",
+    "version": "1.0.0",
+    "description": "Schema for the seed data openfn-mocker needs to impersonate dagu. Derived from the adaptor's OpenAPI spec. A seed dump is { collection: { id: record } }; each record validates against its resource schema below.",
+    "x-openfn-adaptor": "dagu",
+    "x-derived-from": "openapi.json",
+    "x-captured-at": "2026-07-06"
+  },
+  "x-seed": {
+    "shape": "{ collection: { id: record } }",
+    "collections": {
+      "dispensingRequests": {
+        "resource": "DispensingRequest",
+        "schema": {
+          "$ref": "#/components/schemas/DispensingRequest"
+        }
+      },
+      "prescriptions": {
+        "resource": "Prescription",
+        "schema": {
+          "$ref": "#/components/schemas/Prescription"
+        }
+      },
+      "stockOutItems": {
+        "resource": "StockOutItem",
+        "schema": {
+          "$ref": "#/components/schemas/StockOutItem"
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SeedData": {
+        "type": "object",
+        "description": "Full seed dump loaded by mocker: one property per collection.",
+        "properties": {
+          "dispensingRequests": {
+            "type": "object",
+            "description": "Records keyed by id for the dispensingRequests collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/DispensingRequest"
+            }
+          },
+          "prescriptions": {
+            "type": "object",
+            "description": "Records keyed by id for the prescriptions collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Prescription"
+            }
+          },
+          "stockOutItems": {
+            "type": "object",
+            "description": "Records keyed by id for the stockOutItems collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/StockOutItem"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "StockOutReport": {
+        "type": "object",
+        "properties": {
+          "generatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StockOutItem"
+            }
+          }
+        }
+      },
+      "StockOutItem": {
+        "type": "object",
+        "properties": {
+          "itemGuid": {
+            "type": "string"
+          },
+          "itemName": {
+            "type": "string"
+          },
+          "unit": {
+            "type": "string"
+          },
+          "onHand": {
+            "type": "integer"
+          },
+          "daysOutOfStock": {
+            "type": "integer"
+          }
+        }
+      },
+      "PrescriptionCheckRequest": {
+        "type": "object",
+        "required": [
+          "prescriptionRowGuid"
+        ],
+        "properties": {
+          "prescriptionRowGuid": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "Prescription": {
+        "type": "object",
+        "properties": {
+          "prescriptionRowGuid": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "patientName": {
+            "type": "string"
+          },
+          "drugName": {
+            "type": "string"
+          },
+          "dose": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "integer"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "Pending",
+              "Dispensed",
+              "Rejected"
+            ]
+          },
+          "prescribedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "DataTableQuery": {
+        "type": "object",
+        "properties": {
+          "start": {
+            "type": "integer"
+          },
+          "length": {
+            "type": "integer"
+          },
+          "draw": {
+            "type": "integer"
+          },
+          "additionalParameters": {
+            "type": "object",
+            "properties": {
+              "filter": {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "PrescriptionHistoryPage": {
+        "type": "object",
+        "properties": {
+          "draw": {
+            "type": "integer"
+          },
+          "recordsTotal": {
+            "type": "integer"
+          },
+          "recordsFiltered": {
+            "type": "integer"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Prescription"
+            }
+          }
+        }
+      },
+      "RequestHistoryQuery": {
+        "type": "object",
+        "properties": {
+          "search": {
+            "type": "object"
+          }
+        }
+      },
+      "DispensingRequestList": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DispensingRequest"
+            }
+          }
+        }
+      },
+      "DispensingRequest": {
+        "type": "object",
+        "properties": {
+          "requestGuid": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "requestNumber": {
+            "type": "string"
+          },
+          "dispensingUnit": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "requestedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    }
+  }
+}

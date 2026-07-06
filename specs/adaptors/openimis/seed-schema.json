@@ -1,0 +1,1063 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "openimis — mocker seed-data schema",
+    "version": "1.0.0",
+    "description": "Schema for the seed data openfn-mocker needs to impersonate openimis. Derived from the adaptor's OpenAPI spec. A seed dump is { collection: { id: record } }; each record validates against its resource schema below.",
+    "x-openfn-adaptor": "openimis",
+    "x-derived-from": "openapi.json",
+    "x-captured-at": "2026-07-06"
+  },
+  "x-seed": {
+    "shape": "{ collection: { id: record } }",
+    "collections": {
+      "bundles": {
+        "resource": "Bundle",
+        "schema": {
+          "$ref": "#/components/schemas/Bundle"
+        }
+      },
+      "codeableConcepts": {
+        "resource": "CodeableConcept",
+        "schema": {
+          "$ref": "#/components/schemas/CodeableConcept"
+        }
+      },
+      "humanNames": {
+        "resource": "HumanName",
+        "schema": {
+          "$ref": "#/components/schemas/HumanName"
+        }
+      },
+      "identifiers": {
+        "resource": "Identifier",
+        "schema": {
+          "$ref": "#/components/schemas/Identifier"
+        }
+      },
+      "loginResponses": {
+        "resource": "LoginResponse",
+        "schema": {
+          "$ref": "#/components/schemas/LoginResponse"
+        }
+      },
+      "references": {
+        "resource": "Reference",
+        "schema": {
+          "$ref": "#/components/schemas/Reference"
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SeedData": {
+        "type": "object",
+        "description": "Full seed dump loaded by mocker: one property per collection.",
+        "properties": {
+          "bundles": {
+            "type": "object",
+            "description": "Records keyed by id for the bundles collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Bundle"
+            }
+          },
+          "codeableConcepts": {
+            "type": "object",
+            "description": "Records keyed by id for the codeableConcepts collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/CodeableConcept"
+            }
+          },
+          "humanNames": {
+            "type": "object",
+            "description": "Records keyed by id for the humanNames collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/HumanName"
+            }
+          },
+          "identifiers": {
+            "type": "object",
+            "description": "Records keyed by id for the identifiers collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          "loginResponses": {
+            "type": "object",
+            "description": "Records keyed by id for the loginResponses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/LoginResponse"
+            }
+          },
+          "references": {
+            "type": "object",
+            "description": "Records keyed by id for the references collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Reference"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "Patient": {
+        "type": "object",
+        "description": "openIMIS FHIR R4 Patient resource.",
+        "properties": {
+          "resourceType": {
+            "type": "string",
+            "enum": [
+              "Patient"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          },
+          "identifier": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "name": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HumanName"
+            }
+          },
+          "gender": {
+            "type": "string",
+            "enum": [
+              "male",
+              "female",
+              "other",
+              "unknown"
+            ]
+          },
+          "birthDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "address": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "telecom": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "resourceType"
+        ]
+      },
+      "Group": {
+        "type": "object",
+        "description": "openIMIS FHIR R4 Group resource.",
+        "properties": {
+          "resourceType": {
+            "type": "string",
+            "enum": [
+              "Group"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          },
+          "identifier": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "type": {
+            "type": "string",
+            "example": "Person"
+          },
+          "actual": {
+            "type": "boolean"
+          },
+          "name": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "integer"
+          },
+          "member": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "entity": {
+                  "$ref": "#/components/schemas/Reference"
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "resourceType"
+        ]
+      },
+      "Claim": {
+        "type": "object",
+        "description": "openIMIS FHIR R4 Claim resource.",
+        "properties": {
+          "resourceType": {
+            "type": "string",
+            "enum": [
+              "Claim"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          },
+          "identifier": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          "status": {
+            "type": "string",
+            "example": "active"
+          },
+          "type": {
+            "$ref": "#/components/schemas/CodeableConcept"
+          },
+          "use": {
+            "type": "string",
+            "example": "claim"
+          },
+          "patient": {
+            "$ref": "#/components/schemas/Reference"
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "provider": {
+            "$ref": "#/components/schemas/Reference"
+          },
+          "total": {
+            "$ref": "#/components/schemas/Money"
+          },
+          "item": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "resourceType"
+        ]
+      },
+      "ClaimResponse": {
+        "type": "object",
+        "description": "openIMIS FHIR R4 ClaimResponse resource.",
+        "properties": {
+          "resourceType": {
+            "type": "string",
+            "enum": [
+              "ClaimResponse"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          },
+          "identifier": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          "status": {
+            "type": "string",
+            "example": "active"
+          },
+          "type": {
+            "$ref": "#/components/schemas/CodeableConcept"
+          },
+          "patient": {
+            "$ref": "#/components/schemas/Reference"
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "request": {
+            "$ref": "#/components/schemas/Reference"
+          },
+          "outcome": {
+            "type": "string",
+            "example": "complete"
+          },
+          "item": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "total": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "amount": {
+                  "$ref": "#/components/schemas/Money"
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "resourceType"
+        ]
+      },
+      "Contract": {
+        "type": "object",
+        "description": "openIMIS FHIR R4 Contract resource.",
+        "properties": {
+          "resourceType": {
+            "type": "string",
+            "enum": [
+              "Contract"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          },
+          "identifier": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          "status": {
+            "type": "string",
+            "example": "executed"
+          },
+          "issued": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "period": {
+            "$ref": "#/components/schemas/Period"
+          },
+          "subject": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Reference"
+            }
+          },
+          "term": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "resourceType"
+        ]
+      },
+      "Coverage": {
+        "type": "object",
+        "description": "openIMIS FHIR R4 Coverage resource.",
+        "properties": {
+          "resourceType": {
+            "type": "string",
+            "enum": [
+              "Coverage"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          },
+          "identifier": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          "status": {
+            "type": "string",
+            "example": "active"
+          },
+          "type": {
+            "$ref": "#/components/schemas/CodeableConcept"
+          },
+          "policyHolder": {
+            "$ref": "#/components/schemas/Reference"
+          },
+          "beneficiary": {
+            "$ref": "#/components/schemas/Reference"
+          },
+          "period": {
+            "$ref": "#/components/schemas/Period"
+          },
+          "payor": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Reference"
+            }
+          },
+          "class": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "resourceType"
+        ]
+      },
+      "CoverageEligibilityRequest": {
+        "type": "object",
+        "description": "openIMIS FHIR R4 CoverageEligibilityRequest resource.",
+        "properties": {
+          "resourceType": {
+            "type": "string",
+            "enum": [
+              "CoverageEligibilityRequest"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          },
+          "identifier": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          "status": {
+            "type": "string",
+            "example": "active"
+          },
+          "purpose": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "patient": {
+            "$ref": "#/components/schemas/Reference"
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "insurer": {
+            "$ref": "#/components/schemas/Reference"
+          },
+          "item": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "resourceType"
+        ]
+      },
+      "Location": {
+        "type": "object",
+        "description": "openIMIS FHIR R4 Location resource.",
+        "properties": {
+          "resourceType": {
+            "type": "string",
+            "enum": [
+              "Location"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          },
+          "identifier": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          "status": {
+            "type": "string",
+            "example": "active"
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CodeableConcept"
+            }
+          },
+          "physicalType": {
+            "$ref": "#/components/schemas/CodeableConcept"
+          },
+          "partOf": {
+            "$ref": "#/components/schemas/Reference"
+          }
+        },
+        "required": [
+          "resourceType"
+        ]
+      },
+      "Organization": {
+        "type": "object",
+        "description": "openIMIS FHIR R4 Organization resource.",
+        "properties": {
+          "resourceType": {
+            "type": "string",
+            "enum": [
+              "Organization"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          },
+          "identifier": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "type": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CodeableConcept"
+            }
+          },
+          "name": {
+            "type": "string"
+          },
+          "telecom": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "address": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "resourceType"
+        ]
+      },
+      "Practitioner": {
+        "type": "object",
+        "description": "openIMIS FHIR R4 Practitioner resource.",
+        "properties": {
+          "resourceType": {
+            "type": "string",
+            "enum": [
+              "Practitioner"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          },
+          "identifier": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "name": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HumanName"
+            }
+          },
+          "telecom": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "qualification": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "resourceType"
+        ]
+      },
+      "PractitionerRole": {
+        "type": "object",
+        "description": "openIMIS FHIR R4 PractitionerRole resource.",
+        "properties": {
+          "resourceType": {
+            "type": "string",
+            "enum": [
+              "PractitionerRole"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          },
+          "identifier": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "practitioner": {
+            "$ref": "#/components/schemas/Reference"
+          },
+          "organization": {
+            "$ref": "#/components/schemas/Reference"
+          },
+          "code": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CodeableConcept"
+            }
+          },
+          "location": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Reference"
+            }
+          }
+        },
+        "required": [
+          "resourceType"
+        ]
+      },
+      "HealthcareService": {
+        "type": "object",
+        "description": "openIMIS FHIR R4 HealthcareService resource.",
+        "properties": {
+          "resourceType": {
+            "type": "string",
+            "enum": [
+              "HealthcareService"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          },
+          "identifier": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "providedBy": {
+            "$ref": "#/components/schemas/Reference"
+          },
+          "type": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CodeableConcept"
+            }
+          },
+          "location": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Reference"
+            }
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "resourceType"
+        ]
+      },
+      "Medication": {
+        "type": "object",
+        "description": "openIMIS FHIR R4 Medication resource.",
+        "properties": {
+          "resourceType": {
+            "type": "string",
+            "enum": [
+              "Medication"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          },
+          "identifier": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          "code": {
+            "$ref": "#/components/schemas/CodeableConcept"
+          },
+          "status": {
+            "type": "string",
+            "example": "active"
+          },
+          "form": {
+            "$ref": "#/components/schemas/CodeableConcept"
+          },
+          "amount": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "resourceType"
+        ]
+      },
+      "Condition": {
+        "type": "object",
+        "description": "openIMIS FHIR R4 Condition resource.",
+        "properties": {
+          "resourceType": {
+            "type": "string",
+            "enum": [
+              "Condition"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          },
+          "identifier": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          "clinicalStatus": {
+            "$ref": "#/components/schemas/CodeableConcept"
+          },
+          "code": {
+            "$ref": "#/components/schemas/CodeableConcept"
+          },
+          "subject": {
+            "$ref": "#/components/schemas/Reference"
+          },
+          "recordedDate": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "resourceType"
+        ]
+      },
+      "Reference": {
+        "type": "object",
+        "properties": {
+          "reference": {
+            "type": "string",
+            "example": "Patient/1"
+          },
+          "type": {
+            "type": "string"
+          },
+          "identifier": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "display": {
+            "type": "string"
+          }
+        }
+      },
+      "Identifier": {
+        "type": "object",
+        "properties": {
+          "use": {
+            "type": "string"
+          },
+          "type": {
+            "$ref": "#/components/schemas/CodeableConcept"
+          },
+          "system": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          }
+        }
+      },
+      "Coding": {
+        "type": "object",
+        "properties": {
+          "system": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "display": {
+            "type": "string"
+          }
+        }
+      },
+      "CodeableConcept": {
+        "type": "object",
+        "properties": {
+          "coding": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Coding"
+            }
+          },
+          "text": {
+            "type": "string"
+          }
+        }
+      },
+      "HumanName": {
+        "type": "object",
+        "properties": {
+          "use": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "family": {
+            "type": "string"
+          },
+          "given": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "Money": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "number"
+          },
+          "currency": {
+            "type": "string",
+            "example": "USD"
+          }
+        }
+      },
+      "Period": {
+        "type": "object",
+        "properties": {
+          "start": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "end": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Meta": {
+        "type": "object",
+        "properties": {
+          "versionId": {
+            "type": "string"
+          },
+          "lastUpdated": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "profile": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "Bundle": {
+        "type": "object",
+        "description": "FHIR searchset Bundle returned for resource-type searches.",
+        "properties": {
+          "resourceType": {
+            "type": "string",
+            "enum": [
+              "Bundle"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          },
+          "type": {
+            "type": "string",
+            "example": "searchset"
+          },
+          "total": {
+            "type": "integer"
+          },
+          "link": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "relation": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "entry": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "fullUrl": {
+                  "type": "string"
+                },
+                "resource": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "resourceType",
+          "type"
+        ]
+      },
+      "OperationOutcome": {
+        "type": "object",
+        "properties": {
+          "resourceType": {
+            "type": "string",
+            "enum": [
+              "OperationOutcome"
+            ]
+          },
+          "issue": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "severity": {
+                  "type": "string"
+                },
+                "code": {
+                  "type": "string"
+                },
+                "diagnostics": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "LoginRequest": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "username",
+          "password"
+        ]
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "JWT bearer token"
+          },
+          "exp": {
+            "type": "integer",
+            "description": "Expiry timestamp"
+          }
+        },
+        "required": [
+          "token"
+        ]
+      }
+    }
+  }
+}

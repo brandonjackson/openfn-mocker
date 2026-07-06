@@ -1,0 +1,157 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "googledrive — mocker seed-data schema",
+    "version": "1.0.0",
+    "description": "Schema for the seed data openfn-mocker needs to impersonate googledrive. Derived from the adaptor's OpenAPI spec. A seed dump is { collection: { id: record } }; each record validates against its resource schema below.",
+    "x-openfn-adaptor": "googledrive",
+    "x-derived-from": "openapi.json",
+    "x-captured-at": "2026-07-06"
+  },
+  "x-seed": {
+    "shape": "{ collection: { id: record } }",
+    "collections": {
+      "files": {
+        "resource": "File",
+        "schema": {
+          "$ref": "#/components/schemas/File"
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SeedData": {
+        "type": "object",
+        "description": "Full seed dump loaded by mocker: one property per collection.",
+        "properties": {
+          "files": {
+            "type": "object",
+            "description": "Records keyed by id for the files collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/File"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "FileList": {
+        "type": "object",
+        "description": "A list of files.",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "example": "drive#fileList"
+          },
+          "nextPageToken": {
+            "type": "string"
+          },
+          "incompleteSearch": {
+            "type": "boolean",
+            "example": false
+          },
+          "files": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/File"
+            }
+          }
+        }
+      },
+      "File": {
+        "type": "object",
+        "description": "The metadata for a Google Drive file.",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "example": "drive#file"
+          },
+          "id": {
+            "type": "string",
+            "example": "1a2B3c4D5e6F7g8H9i0JkLmNoPqRsTuVwX"
+          },
+          "name": {
+            "type": "string",
+            "example": "report.csv"
+          },
+          "mimeType": {
+            "type": "string",
+            "example": "text/csv"
+          },
+          "description": {
+            "type": "string"
+          },
+          "parents": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "0AJk9LmNoPqRsUk9PVA"
+            ]
+          },
+          "webViewLink": {
+            "type": "string",
+            "example": "https://drive.google.com/file/d/1a2B3c4D5e6F7g8H9i0JkLmNoPqRsTuVwX/view"
+          },
+          "webContentLink": {
+            "type": "string"
+          },
+          "iconLink": {
+            "type": "string"
+          },
+          "size": {
+            "type": "string",
+            "description": "Size in bytes, as a string.",
+            "example": "10240"
+          },
+          "createdTime": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2024-03-04T10:00:00.000Z"
+          },
+          "modifiedTime": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2024-03-05T12:30:00.000Z"
+          },
+          "trashed": {
+            "type": "boolean",
+            "example": false
+          },
+          "starred": {
+            "type": "boolean",
+            "example": false
+          },
+          "shared": {
+            "type": "boolean",
+            "example": false
+          },
+          "md5Checksum": {
+            "type": "string"
+          },
+          "owners": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "example": "drive#user"
+                },
+                "displayName": {
+                  "type": "string",
+                  "example": "Ama Mensah"
+                },
+                "emailAddress": {
+                  "type": "string",
+                  "example": "ama@example.org"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

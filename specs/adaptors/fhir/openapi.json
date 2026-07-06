@@ -1,0 +1,394 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "HL7 FHIR R4 REST API (subset)",
+    "version": "4.0.1",
+    "description": "Focused OpenAPI subset of the HL7 FHIR R4 RESTful API used by the OpenFn fhir adaptor (generic post/get/create/createTransactionBundle/getClaim). Models the FHIR resources the adaptor works with: Patient, Observation, Encounter, Claim, and transaction Bundle. Read/create/search interactions follow the standard FHIR REST paradigm.",
+    "x-openfn-adaptor": "fhir"
+  },
+  "servers": [{ "url": "http://hapi.fhir.org/baseR4" }],
+  "paths": {
+    "/": {
+      "post": {
+        "operationId": "createTransactionBundle",
+        "summary": "Submit a transaction/batch Bundle to the base endpoint",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/fhir+json": {
+              "schema": { "$ref": "#/components/schemas/Bundle" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Transaction response Bundle",
+            "content": {
+              "application/fhir+json": {
+                "schema": { "$ref": "#/components/schemas/Bundle" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Patient": {
+      "get": {
+        "operationId": "searchPatients",
+        "summary": "Search patients",
+        "parameters": [
+          { "name": "_count", "in": "query", "schema": { "type": "integer" } },
+          { "name": "_sort", "in": "query", "schema": { "type": "string" } },
+          { "name": "name", "in": "query", "schema": { "type": "string" } },
+          { "name": "identifier", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Search result Bundle",
+            "content": {
+              "application/fhir+json": {
+                "schema": { "$ref": "#/components/schemas/Bundle" }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createPatient",
+        "summary": "Create a Patient",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/fhir+json": {
+              "schema": { "$ref": "#/components/schemas/Patient" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created Patient",
+            "content": {
+              "application/fhir+json": {
+                "schema": { "$ref": "#/components/schemas/Patient" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Patient/{id}": {
+      "get": {
+        "operationId": "getPatient",
+        "summary": "Read a Patient by id",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Patient",
+            "content": {
+              "application/fhir+json": {
+                "schema": { "$ref": "#/components/schemas/Patient" }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/fhir+json": {
+                "schema": { "$ref": "#/components/schemas/OperationOutcome" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Observation": {
+      "get": {
+        "operationId": "searchObservations",
+        "summary": "Search observations",
+        "parameters": [
+          { "name": "patient", "in": "query", "schema": { "type": "string" } },
+          { "name": "code", "in": "query", "schema": { "type": "string" } },
+          { "name": "_count", "in": "query", "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Search result Bundle",
+            "content": {
+              "application/fhir+json": {
+                "schema": { "$ref": "#/components/schemas/Bundle" }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createObservation",
+        "summary": "Create an Observation",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/fhir+json": {
+              "schema": { "$ref": "#/components/schemas/Observation" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created Observation",
+            "content": {
+              "application/fhir+json": {
+                "schema": { "$ref": "#/components/schemas/Observation" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Encounter": {
+      "get": {
+        "operationId": "searchEncounters",
+        "summary": "Search encounters",
+        "parameters": [
+          { "name": "patient", "in": "query", "schema": { "type": "string" } },
+          { "name": "status", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Search result Bundle",
+            "content": {
+              "application/fhir+json": {
+                "schema": { "$ref": "#/components/schemas/Bundle" }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createEncounter",
+        "summary": "Create an Encounter",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/fhir+json": {
+              "schema": { "$ref": "#/components/schemas/Encounter" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created Encounter",
+            "content": {
+              "application/fhir+json": {
+                "schema": { "$ref": "#/components/schemas/Encounter" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Claim": {
+      "get": {
+        "operationId": "getClaim",
+        "summary": "Search claims",
+        "parameters": [
+          { "name": "_include", "in": "query", "schema": { "type": "string" } },
+          { "name": "_sort", "in": "query", "schema": { "type": "string" } },
+          { "name": "_count", "in": "query", "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Search result Bundle",
+            "content": {
+              "application/fhir+json": {
+                "schema": { "$ref": "#/components/schemas/Bundle" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Claim/{id}": {
+      "get": {
+        "operationId": "getClaimById",
+        "summary": "Read a Claim by id",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Claim",
+            "content": {
+              "application/fhir+json": {
+                "schema": { "$ref": "#/components/schemas/Claim" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Patient": {
+        "type": "object",
+        "required": ["resourceType"],
+        "properties": {
+          "resourceType": { "type": "string", "enum": ["Patient"] },
+          "id": { "type": "string" },
+          "identifier": { "type": "array", "items": { "$ref": "#/components/schemas/Identifier" } },
+          "active": { "type": "boolean" },
+          "name": { "type": "array", "items": { "$ref": "#/components/schemas/HumanName" } },
+          "gender": { "type": "string", "enum": ["male", "female", "other", "unknown"] },
+          "birthDate": { "type": "string", "format": "date" },
+          "telecom": { "type": "array", "items": { "type": "object" } },
+          "address": { "type": "array", "items": { "type": "object" } }
+        }
+      },
+      "Observation": {
+        "type": "object",
+        "required": ["resourceType", "status", "code"],
+        "properties": {
+          "resourceType": { "type": "string", "enum": ["Observation"] },
+          "id": { "type": "string" },
+          "status": { "type": "string" },
+          "code": { "$ref": "#/components/schemas/CodeableConcept" },
+          "subject": { "$ref": "#/components/schemas/Reference" },
+          "encounter": { "$ref": "#/components/schemas/Reference" },
+          "effectiveDateTime": { "type": "string", "format": "date-time" },
+          "valueQuantity": {
+            "type": "object",
+            "properties": {
+              "value": { "type": "number" },
+              "unit": { "type": "string" },
+              "system": { "type": "string" },
+              "code": { "type": "string" }
+            }
+          }
+        }
+      },
+      "Encounter": {
+        "type": "object",
+        "required": ["resourceType", "status"],
+        "properties": {
+          "resourceType": { "type": "string", "enum": ["Encounter"] },
+          "id": { "type": "string" },
+          "status": { "type": "string" },
+          "class": { "type": "object" },
+          "subject": { "$ref": "#/components/schemas/Reference" },
+          "period": {
+            "type": "object",
+            "properties": {
+              "start": { "type": "string", "format": "date-time" },
+              "end": { "type": "string", "format": "date-time" }
+            }
+          }
+        }
+      },
+      "Claim": {
+        "type": "object",
+        "required": ["resourceType"],
+        "properties": {
+          "resourceType": { "type": "string", "enum": ["Claim"] },
+          "id": { "type": "string" },
+          "status": { "type": "string" },
+          "type": { "$ref": "#/components/schemas/CodeableConcept" },
+          "use": { "type": "string" },
+          "patient": { "$ref": "#/components/schemas/Reference" },
+          "created": { "type": "string", "format": "date-time" },
+          "provider": { "$ref": "#/components/schemas/Reference" }
+        }
+      },
+      "Bundle": {
+        "type": "object",
+        "required": ["resourceType"],
+        "properties": {
+          "resourceType": { "type": "string", "enum": ["Bundle"] },
+          "id": { "type": "string" },
+          "type": {
+            "type": "string",
+            "enum": ["transaction", "batch", "transaction-response", "batch-response", "searchset", "collection"]
+          },
+          "total": { "type": "integer" },
+          "entry": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/BundleEntry" }
+          }
+        }
+      },
+      "BundleEntry": {
+        "type": "object",
+        "properties": {
+          "fullUrl": { "type": "string" },
+          "resource": { "type": "object" },
+          "request": {
+            "type": "object",
+            "properties": {
+              "method": { "type": "string", "enum": ["GET", "POST", "PUT", "DELETE", "PATCH"] },
+              "url": { "type": "string" }
+            }
+          },
+          "response": { "type": "object" }
+        }
+      },
+      "OperationOutcome": {
+        "type": "object",
+        "properties": {
+          "resourceType": { "type": "string", "enum": ["OperationOutcome"] },
+          "issue": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "severity": { "type": "string" },
+                "code": { "type": "string" },
+                "diagnostics": { "type": "string" }
+              }
+            }
+          }
+        }
+      },
+      "Identifier": {
+        "type": "object",
+        "properties": {
+          "use": { "type": "string" },
+          "system": { "type": "string" },
+          "value": { "type": "string" }
+        }
+      },
+      "HumanName": {
+        "type": "object",
+        "properties": {
+          "use": { "type": "string" },
+          "family": { "type": "string" },
+          "given": { "type": "array", "items": { "type": "string" } }
+        }
+      },
+      "CodeableConcept": {
+        "type": "object",
+        "properties": {
+          "coding": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "system": { "type": "string" },
+                "code": { "type": "string" },
+                "display": { "type": "string" }
+              }
+            }
+          },
+          "text": { "type": "string" }
+        }
+      },
+      "Reference": {
+        "type": "object",
+        "properties": {
+          "reference": { "type": "string" },
+          "display": { "type": "string" }
+        }
+      }
+    }
+  }
+}

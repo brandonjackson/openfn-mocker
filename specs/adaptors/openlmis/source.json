@@ -1,0 +1,16 @@
+{
+  "adaptor": "openlmis",
+  "npm": "@openfn/language-openlmis",
+  "origin": "generated",
+  "upstreamFormat": "docs",
+  "sources": [
+    "https://cdn.jsdelivr.net/npm/@openfn/language-openlmis/ast.json",
+    "https://docs.openlmis.org/en/latest/api/index.html",
+    "https://openlmis.readthedocs.io/en/latest/components/index.html",
+    "https://github.com/OpenLMIS/openlmis-referencedata",
+    "https://github.com/OpenLMIS/openlmis-requisition",
+    "https://github.com/OpenLMIS/openlmis-fulfillment"
+  ],
+  "capturedAt": "2026-07-06",
+  "notes": "The openlmis adaptor is a generic HTTP client (get/post/put/request) whose base URL points at an OpenLMIS v3 gateway (e.g. https://demo.openlmis.org/api); the AST examples reference paths like /supplyLines and /programs. No public OpenAPI/Swagger doc was retrievable (OpenLMIS ships per-service RAML compiled to live Swagger on CI that is not statically hosted), so this is a hand-authored OpenAPI 3.0.3 focused subset covering the most commonly integrated Reference Data resources (facilities, programs, orderables, facilityTypes, geographicZones, processingPeriods, users, supplyLines, supervisoryNodes, lots), Requisition and Fulfillment (orders), and Stock Management (stockCardSummaries, stockEvents). List endpoints use the Spring Data Page wrapper (content + totalElements/totalPages/number/size/first/last); /programs returns a bare array. Field sets are representative, not exhaustive. Server URL is the public demo instance."
+}

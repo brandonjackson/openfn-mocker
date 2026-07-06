@@ -1,0 +1,270 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Asana API (OpenFn focused subset)",
+    "version": "1.0.0",
+    "description": "Focused subset of the official Asana REST API OpenAPI spec covering the tasks, task search and stories endpoints used by the OpenFn asana adaptor (getTask, getTasks, updateTask, createTask, upsertTask, searchTask, createTaskStory).",
+    "x-openfn-adaptor": "asana"
+  },
+  "servers": [
+    { "url": "https://app.asana.com/api/1.0" }
+  ],
+  "paths": {
+    "/tasks": {
+      "post": {
+        "operationId": "createTask",
+        "summary": "Create a task",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": { "data": { "$ref": "#/components/schemas/TaskRequest" } }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Task created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "data": { "$ref": "#/components/schemas/Task" } }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tasks/{task_gid}": {
+      "get": {
+        "operationId": "getTask",
+        "summary": "Get a task",
+        "parameters": [
+          { "name": "task_gid", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "opt_fields", "in": "query", "required": false, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "The requested task",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "data": { "$ref": "#/components/schemas/Task" } }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "updateTask",
+        "summary": "Update a task",
+        "parameters": [
+          { "name": "task_gid", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": { "data": { "$ref": "#/components/schemas/TaskRequest" } }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The updated task",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "data": { "$ref": "#/components/schemas/Task" } }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects/{project_gid}/tasks": {
+      "get": {
+        "operationId": "getTasks",
+        "summary": "Get tasks from a project",
+        "parameters": [
+          { "name": "project_gid", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer" } },
+          { "name": "opt_fields", "in": "query", "required": false, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of tasks",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": { "type": "array", "items": { "$ref": "#/components/schemas/Task" } },
+                    "next_page": { "$ref": "#/components/schemas/NextPage" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/workspaces/{workspace_gid}/tasks/search": {
+      "get": {
+        "operationId": "searchTask",
+        "summary": "Search tasks in a workspace",
+        "parameters": [
+          { "name": "workspace_gid", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "text", "in": "query", "required": false, "schema": { "type": "string" } },
+          { "name": "opt_fields", "in": "query", "required": false, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Matching tasks",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": { "type": "array", "items": { "$ref": "#/components/schemas/Task" } }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tasks/{task_gid}/stories": {
+      "post": {
+        "operationId": "createTaskStory",
+        "summary": "Create a story (comment) on a task",
+        "parameters": [
+          { "name": "task_gid", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": { "data": { "$ref": "#/components/schemas/StoryRequest" } }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Story created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "data": { "$ref": "#/components/schemas/Story" } }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "NextPage": {
+        "type": "object",
+        "nullable": true,
+        "properties": {
+          "offset": { "type": "string" },
+          "path": { "type": "string" },
+          "uri": { "type": "string" }
+        }
+      },
+      "UserCompact": {
+        "type": "object",
+        "properties": {
+          "gid": { "type": "string" },
+          "resource_type": { "type": "string" },
+          "name": { "type": "string" }
+        }
+      },
+      "TaskRequest": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "notes": { "type": "string" },
+          "html_notes": { "type": "string" },
+          "assignee": { "type": "string" },
+          "completed": { "type": "boolean" },
+          "due_at": { "type": "string", "format": "date-time" },
+          "due_on": { "type": "string", "format": "date" },
+          "start_on": { "type": "string", "format": "date" },
+          "external_id": { "type": "string" },
+          "followers": { "type": "array", "items": { "type": "string" } },
+          "projects": { "type": "array", "items": { "type": "string" } },
+          "custom_fields": { "type": "object", "additionalProperties": true },
+          "parent": { "type": "string" }
+        }
+      },
+      "Task": {
+        "type": "object",
+        "properties": {
+          "gid": { "type": "string" },
+          "resource_type": { "type": "string" },
+          "name": { "type": "string" },
+          "notes": { "type": "string" },
+          "html_notes": { "type": "string" },
+          "completed": { "type": "boolean" },
+          "completed_at": { "type": "string", "format": "date-time", "nullable": true },
+          "created_at": { "type": "string", "format": "date-time" },
+          "modified_at": { "type": "string", "format": "date-time" },
+          "due_at": { "type": "string", "format": "date-time", "nullable": true },
+          "due_on": { "type": "string", "format": "date", "nullable": true },
+          "start_on": { "type": "string", "format": "date", "nullable": true },
+          "assignee": { "$ref": "#/components/schemas/UserCompact" },
+          "assignee_status": { "type": "string" },
+          "num_hearts": { "type": "integer" },
+          "hearted": { "type": "boolean" },
+          "custom_fields": { "type": "array", "items": { "type": "object", "additionalProperties": true } },
+          "followers": { "type": "array", "items": { "$ref": "#/components/schemas/UserCompact" } },
+          "projects": { "type": "array", "items": { "type": "object", "additionalProperties": true } },
+          "memberships": { "type": "array", "items": { "type": "object", "additionalProperties": true } }
+        }
+      },
+      "StoryRequest": {
+        "type": "object",
+        "properties": {
+          "text": { "type": "string" },
+          "html_text": { "type": "string" },
+          "is_pinned": { "type": "boolean" }
+        }
+      },
+      "Story": {
+        "type": "object",
+        "properties": {
+          "gid": { "type": "string" },
+          "resource_type": { "type": "string" },
+          "resource_subtype": { "type": "string" },
+          "created_at": { "type": "string", "format": "date-time" },
+          "created_by": { "$ref": "#/components/schemas/UserCompact" },
+          "text": { "type": "string" },
+          "type": { "type": "string" },
+          "hearted": { "type": "boolean" },
+          "num_hearts": { "type": "integer" }
+        }
+      }
+    }
+  }
+}

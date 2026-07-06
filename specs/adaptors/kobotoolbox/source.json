@@ -1,0 +1,13 @@
+{
+  "adaptor": "kobotoolbox",
+  "npm": "@openfn/language-kobotoolbox",
+  "origin": "found-openapi",
+  "upstreamFormat": "openapi-3.1",
+  "sources": [
+    "https://kf.kobotoolbox.org/api/v2/schema/?format=json",
+    "https://cdn.jsdelivr.net/npm/@openfn/language-kobotoolbox/ast.json",
+    "https://github.com/OpenFn/adaptors/tree/main/packages/kobotoolbox"
+  ],
+  "capturedAt": "2026-07-06",
+  "notes": "Verbatim subset of the official KoboToolbox Primary API (KPI /api/v2) OpenAPI 3.0.3 schema published at https://kf.kobotoolbox.org/api/v2/schema/?format=json. Subset to the 8 endpoints the adaptor exercises: getForms -> GET /api/v2/assets/ (asset_type=survey); getSubmissions -> GET /api/v2/assets/{uid}/data/; getDeploymentInfo -> GET /api/v2/assets/{uid}/deployment/; plus generic http.* targets: retrieve asset, retrieve/list submissions, submission validation_status, bulk data PATCH (assets/{uid}/data/bulk/), and assets/metadata. Only application/json content kept (xml/xlsx variants stripped). All response schemas and their transitive component refs retained verbatim (Asset, DataResponse and its supplemental-details tree, PaginatedAssetList, PaginatedDataResponseList, DeploymentResponse, etc.). Server base is the Global instance; the EU instance (https://eu.kobotoolbox.org) shares the same API surface. upstreamFormat noted as openapi-3.1 per allowed enum though the source declares 3.0.3."
+}

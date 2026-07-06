@@ -1,0 +1,13 @@
+{
+  "adaptor": "mysql",
+  "npm": "@openfn/language-mysql",
+  "origin": "synthesized",
+  "upstreamFormat": "adaptor-surface",
+  "sources": [
+    "https://cdn.jsdelivr.net/npm/@openfn/language-mysql/ast.json",
+    "https://github.com/OpenFn/adaptors/tree/main/packages/mysql",
+    "https://www.npmjs.com/package/mysql2"
+  ],
+  "capturedAt": "2026-07-06",
+  "notes": "MySQL is a relational DB accessed over the MySQL wire protocol via the mysql2 driver, not a REST API. Synthesized from the adaptor surface (sql, insert, upsert, upsertMany). Endpoints and servers.url are mock placeholders; MutationResult models the mysql2 OkPacket (affectedRows/insertId/changedRows) and QueryResult models SELECT row arrays for seeding."
+}

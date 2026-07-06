@@ -1,0 +1,291 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "OpenFn SFTP Adaptor (Synthesized)",
+    "version": "1.0.0",
+    "description": "Synthesized OpenAPI document for the @openfn/language-sftp adaptor. SFTP is a file-transfer protocol, not a REST API, so this document does not describe a real HTTP service. Each public adaptor operation (list, getCSV, putCSV, getJSON, normalizeCSVarray) is modelled as a POST path whose request body carries the operation arguments and whose 2xx response reflects the operation return shape. Derived from the adaptor surface (ast.json / type definitions).",
+    "x-openfn-adaptor": "sftp"
+  },
+  "servers": [
+    {
+      "url": "https://sftp.mock.openfn.org",
+      "description": "Mock placeholder base URL — SFTP has no vendor REST API."
+    }
+  ],
+  "paths": {
+    "/list": {
+      "post": {
+        "operationId": "list",
+        "summary": "List files present in a remote directory",
+        "description": "List files present in a directory on the remote SFTP server. Corresponds to the adaptor list(dirPath, filter, callback) operation.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ListRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Directory listing",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DirListing" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getCSV": {
+      "post": {
+        "operationId": "getCSV",
+        "summary": "Fetch a CSV file and parse it to JSON",
+        "description": "Get a CSV from the remote server and return a JSON array of objects, one per row separated by the delimiter. Corresponds to getCSV(filePath, parsingOptions).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/GetCSVRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Parsed CSV rows",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/CSVRows" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/putCSV": {
+      "post": {
+        "operationId": "putCSV",
+        "summary": "Convert JSON to CSV and upload to the remote server",
+        "description": "Convert JSON to CSV and upload the resulting file to the remote SFTP server. Corresponds to putCSV(localFilePath, remoteFilePath, parsingOptions).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/PutCSVRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Upload result",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PutResult" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getJSON": {
+      "post": {
+        "operationId": "getJSON",
+        "summary": "Fetch a JSON file from the remote server",
+        "description": "Fetch a JSON file from the remote SFTP server and return its parsed contents. Corresponds to getJSON(filePath, encoding).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/GetJSONRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Parsed file content",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/FileContent" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/normalizeCSVarray": {
+      "post": {
+        "operationId": "normalizeCSVarray",
+        "summary": "Normalize a JSON array of strings into objects",
+        "description": "Convert a JSON array of strings into a normalized array of objects using csvtojson parsing options. This is a local data transform, modelled here for completeness. Corresponds to normalizeCSVarray(options, callback).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/NormalizeCSVRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Normalized CSV rows",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/CSVRows" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "FileEntry": {
+        "type": "object",
+        "description": "A single entry returned by an SFTP directory listing.",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Entry type: '-' file, 'd' directory, 'l' symlink.",
+            "example": "-"
+          },
+          "name": { "type": "string", "example": "foo.txt" },
+          "size": { "type": "integer", "example": 1024 },
+          "modifyTime": {
+            "type": "integer",
+            "description": "Last modified time in epoch milliseconds.",
+            "example": 1720000000000
+          },
+          "accessTime": {
+            "type": "integer",
+            "description": "Last access time in epoch milliseconds.",
+            "example": 1720000000000
+          },
+          "rights": {
+            "type": "object",
+            "properties": {
+              "user": { "type": "string", "example": "rw" },
+              "group": { "type": "string", "example": "r" },
+              "other": { "type": "string", "example": "r" }
+            }
+          },
+          "owner": { "type": "integer", "example": 1000 },
+          "group": { "type": "integer", "example": 1000 }
+        },
+        "required": ["type", "name", "size"]
+      },
+      "DirListing": {
+        "type": "array",
+        "description": "List of file entries in a remote directory.",
+        "items": { "$ref": "#/components/schemas/FileEntry" }
+      },
+      "CSVRow": {
+        "type": "object",
+        "description": "A single parsed CSV row as a key/value object.",
+        "additionalProperties": { "type": "string" }
+      },
+      "CSVRows": {
+        "type": "array",
+        "description": "Parsed CSV content as an array of row objects.",
+        "items": { "$ref": "#/components/schemas/CSVRow" }
+      },
+      "FileContent": {
+        "type": "object",
+        "description": "Parsed content of a remote file (e.g. a JSON document).",
+        "additionalProperties": true
+      },
+      "PutResult": {
+        "type": "object",
+        "description": "Result of uploading data to the remote server.",
+        "properties": {
+          "remoteFilePath": { "type": "string", "example": "/uploads/out.csv" },
+          "bytesWritten": { "type": "integer", "example": 2048 },
+          "message": {
+            "type": "string",
+            "example": "Uploaded data to /uploads/out.csv"
+          }
+        },
+        "required": ["remoteFilePath"]
+      },
+      "ParsingOptions": {
+        "type": "object",
+        "description": "csvtojson / stream parsing options passed through by the adaptor.",
+        "additionalProperties": true,
+        "properties": {
+          "delimiter": { "type": "string", "example": "," },
+          "noheader": { "type": "boolean", "example": false },
+          "quote": { "type": "string", "example": "\"" }
+        }
+      },
+      "ListRequest": {
+        "type": "object",
+        "description": "Arguments for the list operation.",
+        "properties": {
+          "dirPath": {
+            "type": "string",
+            "description": "Path to remote directory.",
+            "example": "/some/path/"
+          }
+        },
+        "required": ["dirPath"]
+      },
+      "GetCSVRequest": {
+        "type": "object",
+        "description": "Arguments for the getCSV operation.",
+        "properties": {
+          "filePath": {
+            "type": "string",
+            "description": "Path to the remote CSV resource.",
+            "example": "/some/path/data.csv"
+          },
+          "parsingOptions": { "$ref": "#/components/schemas/ParsingOptions" }
+        },
+        "required": ["filePath"]
+      },
+      "PutCSVRequest": {
+        "type": "object",
+        "description": "Arguments for the putCSV operation.",
+        "properties": {
+          "localFilePath": {
+            "type": "string",
+            "description": "Data source for data to copy to the remote server.",
+            "example": "/tmp/data.csv"
+          },
+          "remoteFilePath": {
+            "type": "string",
+            "description": "Path to the remote file to be created on the server.",
+            "example": "/uploads/out.csv"
+          },
+          "parsingOptions": { "$ref": "#/components/schemas/ParsingOptions" }
+        },
+        "required": ["localFilePath", "remoteFilePath"]
+      },
+      "GetJSONRequest": {
+        "type": "object",
+        "description": "Arguments for the getJSON operation.",
+        "properties": {
+          "filePath": {
+            "type": "string",
+            "description": "Path to the remote JSON resource.",
+            "example": "/some/path/data.json"
+          },
+          "encoding": {
+            "type": "string",
+            "description": "Character encoding for the JSON file.",
+            "example": "utf8"
+          }
+        },
+        "required": ["filePath"]
+      },
+      "NormalizeCSVRequest": {
+        "type": "object",
+        "description": "Arguments for the normalizeCSVarray operation.",
+        "properties": {
+          "options": { "$ref": "#/components/schemas/ParsingOptions" }
+        },
+        "required": ["options"]
+      }
+    }
+  }
+}

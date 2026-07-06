@@ -1,0 +1,203 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Microsoft Dynamics 365 / Dataverse Web API (subset)",
+    "version": "9.2",
+    "description": "Focused OpenAPI subset of the Microsoft Dynamics 365 (Dataverse) Web API used by the OpenFn dynamics adaptor. The adaptor performs CRUD against Dataverse entity sets via the OData v4 Web API (createEntity, query, updateEntity, deleteEntity). Modelled with the common accounts and contacts entity sets plus a generic entity-set passthrough.",
+    "x-openfn-adaptor": "dynamics"
+  },
+  "servers": [{ "url": "https://org.api.crm.dynamics.com/api/data/v9.2" }],
+  "paths": {
+    "/accounts": {
+      "get": {
+        "operationId": "queryAccounts",
+        "summary": "Query accounts",
+        "parameters": [
+          { "name": "$select", "in": "query", "schema": { "type": "string" } },
+          { "name": "$filter", "in": "query", "schema": { "type": "string" } },
+          { "name": "$top", "in": "query", "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Account collection",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AccountCollection" }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createAccount",
+        "summary": "Create an account",
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/Account" } }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created account",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Account" } }
+            }
+          }
+        }
+      }
+    },
+    "/accounts({accountid})": {
+      "patch": {
+        "operationId": "updateAccount",
+        "summary": "Update an account",
+        "parameters": [
+          { "name": "accountid", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/Account" } }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated account",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Account" } }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteAccount",
+        "summary": "Delete an account",
+        "parameters": [
+          { "name": "accountid", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "responses": {
+          "204": { "description": "Deleted" }
+        }
+      }
+    },
+    "/contacts": {
+      "get": {
+        "operationId": "queryContacts",
+        "summary": "Query contacts",
+        "parameters": [
+          { "name": "$select", "in": "query", "schema": { "type": "string" } },
+          { "name": "$filter", "in": "query", "schema": { "type": "string" } },
+          { "name": "$top", "in": "query", "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Contact collection",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ContactCollection" }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createContact",
+        "summary": "Create a contact",
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/Contact" } }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created contact",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Contact" } }
+            }
+          }
+        }
+      }
+    },
+    "/contacts({contactid})": {
+      "patch": {
+        "operationId": "updateContact",
+        "summary": "Update a contact",
+        "parameters": [
+          { "name": "contactid", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/Contact" } }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated contact",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Contact" } }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteContact",
+        "summary": "Delete a contact",
+        "parameters": [
+          { "name": "contactid", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "responses": {
+          "204": { "description": "Deleted" }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Account": {
+        "type": "object",
+        "properties": {
+          "accountid": { "type": "string", "format": "uuid" },
+          "name": { "type": "string" },
+          "accountnumber": { "type": "string" },
+          "telephone1": { "type": "string" },
+          "emailaddress1": { "type": "string" },
+          "websiteurl": { "type": "string" },
+          "address1_city": { "type": "string" },
+          "revenue": { "type": "number" },
+          "statecode": { "type": "integer" }
+        }
+      },
+      "AccountCollection": {
+        "type": "object",
+        "properties": {
+          "@odata.context": { "type": "string" },
+          "value": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Account" }
+          }
+        }
+      },
+      "Contact": {
+        "type": "object",
+        "properties": {
+          "contactid": { "type": "string", "format": "uuid" },
+          "firstname": { "type": "string" },
+          "lastname": { "type": "string" },
+          "fullname": { "type": "string" },
+          "emailaddress1": { "type": "string" },
+          "telephone1": { "type": "string" },
+          "jobtitle": { "type": "string" },
+          "parentcustomerid_account@odata.bind": { "type": "string" }
+        }
+      },
+      "ContactCollection": {
+        "type": "object",
+        "properties": {
+          "@odata.context": { "type": "string" },
+          "value": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Contact" }
+          }
+        }
+      }
+    }
+  }
+}

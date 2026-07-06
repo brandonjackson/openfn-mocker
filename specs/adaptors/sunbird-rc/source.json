@@ -1,0 +1,14 @@
+{
+  "adaptor": "sunbird-rc",
+  "npm": "@openfn/language-sunbird-rc",
+  "origin": "found-openapi",
+  "upstreamFormat": "openapi-3.0",
+  "sources": [
+    "https://github.com/Sunbird-RC/sunbird-rc-core/blob/main/api-documentation/issue-api.yaml",
+    "https://cdn.jsdelivr.net/npm/@openfn/language-sunbird-rc/ast.json",
+    "https://rc.sunbird.org/api-reference/credentialling-apis/credential-issuance-apis",
+    "https://github.com/OpenFn/adaptors/tree/main/packages/sunbird-rc"
+  ],
+  "capturedAt": "2026-07-06",
+  "notes": "Credential endpoints (/credentials/issue, /credentials/{id} GET+DELETE, /credentials/search, /credentials/{id}/verify, /credentials/revocation-list) are taken verbatim from the official Sunbird-RC issuance OpenAPI 3.0.1 document (api-documentation/issue-api.yaml), with obvious typos corrected (e.g. 'appliation/json' -> 'application/json') and the adaptor's context/type fields aligned to JSON-LD (@context, type as array). These back getCredential/downloadCredential (same GET /credentials/{id} endpoint, PDF selected via the accept header) and issueCredential. The generic registry entity CRUD/search paths (POST /{entityType}, GET/PUT/DELETE /{entityType}/{entityId}, POST /{entityType}/search) are authored from the Sunbird RC registry API docs to cover the adaptor's generic get/post/put/del operations; the Entity schema is open (additionalProperties) since attributes are schema-driven per entity type. Server URL is a localhost placeholder; the real base is a deployment-specific registry host with an /api/v1 prefix. Upstream declared openapi 3.0.1; served here as 3.0.3. Verify with team owners (product: Brandon's team)."
+}

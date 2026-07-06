@@ -1,0 +1,525 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "OpenFn Collections API",
+    "version": "0.9.3",
+    "description": "Synthesized OpenAPI spec for the OpenFn Collections adaptor (@openfn/language-collections). Collections are an OpenFn-internal, Lightning-hosted key/value store used as a high-performance cache, buffer or storage solution. A collection is a named namespace of key/value items; all values are stored as strings (which typically contain JSON). This spec is derived from the adaptor surface (get/set/remove/each) and the Lightning REST endpoints those operations call. Endpoints are mounted under the Lightning `/collections` base path and authenticated with a Personal Access Token (Bearer). An optional `project_id` query parameter scopes a collection to a specific Lightning project.",
+    "x-openfn-adaptor": "collections"
+  },
+  "servers": [
+    {
+      "url": "https://{host}/collections",
+      "description": "OpenFn Lightning collections endpoint (matches WORKER_COLLECTIONS_URL / collections_endpoint).",
+      "variables": {
+        "host": {
+          "default": "app.openfn.org",
+          "description": "Lightning host serving the collections API."
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "collections",
+      "description": "Manage collections (named key/value namespaces)."
+    },
+    {
+      "name": "items",
+      "description": "Read and write key/value items within a collection."
+    }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "operationId": "listCollections",
+        "summary": "List collections",
+        "description": "List the collections available on the Lightning instance (optionally scoped to a project). Synthesized management endpoint; the adaptor itself always targets a named collection.",
+        "tags": ["collections"],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ProjectId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of collections.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CollectionList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/{name}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/CollectionName"
+        }
+      ],
+      "get": {
+        "operationId": "listCollectionItems",
+        "summary": "List / query items in a collection",
+        "description": "Fetch multiple items from a collection using a key pattern (wildcards, e.g. `2024-01*`) and/or date filters. Results are cursor-paginated: if more items remain, a non-null `cursor` is returned to fetch the next page. This backs the adaptor's `get()` (multi mode) and `each()` streaming operations.",
+        "tags": ["items"],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ProjectId"
+          },
+          {
+            "name": "key",
+            "in": "query",
+            "required": false,
+            "description": "Key or key pattern to match. Supports `*` wildcards (e.g. `2024-01*`). Defaults to `*` (all items).",
+            "schema": {
+              "type": "string",
+              "default": "*"
+            }
+          },
+          {
+            "name": "createdAfter",
+            "in": "query",
+            "required": false,
+            "description": "Only match items created after the end of the given ISO 8601 date.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "createdBefore",
+            "in": "query",
+            "required": false,
+            "description": "Only match items created before the start of the given ISO 8601 date.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Maximum number of items to return in this page.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "description": "Opaque cursor from a previous response, used to resume paging.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A (possibly paginated) page of matching items.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CollectionItemList"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "upsertCollectionItems",
+        "summary": "Upsert (set) one or more items",
+        "description": "Insert or replace one or more key/value items in a collection. If a key already exists, its value is overwritten. Backs the adaptor's `set()` operation, which uploads items in batches. Each item's `value` is a string (typically JSON-encoded).",
+        "tags": ["items"],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ProjectId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpsertRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Upsert result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpsertResult"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "removeCollectionItemsByQuery",
+        "summary": "Remove items by key pattern / query",
+        "description": "Remove multiple items matching a key pattern (wildcards) or date filters. Backs the adaptor's `remove()` operation in multi mode.",
+        "tags": ["items"],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ProjectId"
+          },
+          {
+            "name": "key",
+            "in": "query",
+            "required": false,
+            "description": "Key or key pattern to remove. Supports `*` wildcards. Defaults to `*` (all items).",
+            "schema": {
+              "type": "string",
+              "default": "*"
+            }
+          },
+          {
+            "name": "createdAfter",
+            "in": "query",
+            "required": false,
+            "description": "Only remove items created after the end of the given ISO 8601 date.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "createdBefore",
+            "in": "query",
+            "required": false,
+            "description": "Only remove items created before the start of the given ISO 8601 date.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Delete result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/{name}/{key}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/CollectionName"
+        },
+        {
+          "$ref": "#/components/parameters/ItemKey"
+        }
+      ],
+      "get": {
+        "operationId": "getCollectionItem",
+        "summary": "Get a single item by key",
+        "description": "Fetch a single item by its exact key. Backs the adaptor's `get()` operation in single mode. Returns 204 with an empty body if the key does not exist.",
+        "tags": ["items"],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ProjectId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The matching item.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CollectionItem"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "No item found for the given key."
+          }
+        }
+      },
+      "put": {
+        "operationId": "setCollectionItem",
+        "summary": "Set / replace a single item by key",
+        "description": "Insert or replace the value for a single key. Synthesized convenience over the batch upsert endpoint; the adaptor's `set()` with a static key writes a single-item batch. The `value` is a string (typically JSON-encoded).",
+        "tags": ["items"],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ProjectId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ItemValue"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Upsert result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpsertResult"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "removeCollectionItem",
+        "summary": "Remove a single item by key",
+        "description": "Remove a single item by its exact key. Backs the adaptor's `remove()` operation in single mode.",
+        "tags": ["items"],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ProjectId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Delete result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "OpenFn Personal Access Token (collections_token), sent as `Authorization: Bearer <token>`."
+      }
+    },
+    "parameters": {
+      "CollectionName": {
+        "name": "name",
+        "in": "path",
+        "required": true,
+        "description": "The name of the collection (a key/value namespace).",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "ItemKey": {
+        "name": "key",
+        "in": "path",
+        "required": true,
+        "description": "The exact key of a single item.",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "ProjectId": {
+        "name": "project_id",
+        "in": "query",
+        "required": false,
+        "description": "Optional Lightning project id to disambiguate a collection scoped to a project.",
+        "schema": {
+          "type": "string"
+        }
+      }
+    },
+    "schemas": {
+      "Collection": {
+        "type": "object",
+        "description": "Metadata for a collection (a named key/value namespace).",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Unique name of the collection.",
+            "example": "patients-2024"
+          },
+          "projectId": {
+            "type": "string",
+            "nullable": true,
+            "description": "Lightning project the collection belongs to, if scoped.",
+            "example": "3a1e9c2b-5f47-4d8a-9b2e-1c0f7a6d5e4b"
+          },
+          "itemCount": {
+            "type": "integer",
+            "description": "Number of items currently stored in the collection.",
+            "example": 128
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2024-01-15T08:30:00Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2024-06-01T12:00:00Z"
+          }
+        },
+        "required": ["name"]
+      },
+      "CollectionList": {
+        "type": "object",
+        "description": "A list of collections.",
+        "properties": {
+          "collections": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Collection"
+            }
+          }
+        },
+        "required": ["collections"]
+      },
+      "CollectionItem": {
+        "type": "object",
+        "description": "A single key/value item. The value is stored as a string and typically contains JSON.",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "The item key.",
+            "example": "556e0a62"
+          },
+          "value": {
+            "type": "string",
+            "description": "The item value, stored as a string (usually JSON-encoded).",
+            "example": "{\"name\":\"New York\",\"code\":\"NY\"}"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2024-01-15T08:30:00Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2024-01-15T08:30:00Z"
+          }
+        },
+        "required": ["key", "value"]
+      },
+      "CollectionItemList": {
+        "type": "object",
+        "description": "A cursor-paginated page of items. When `cursor` is non-null, more items remain and it should be passed back to fetch the next page.",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CollectionItem"
+            }
+          },
+          "cursor": {
+            "type": "string",
+            "nullable": true,
+            "description": "Opaque cursor to the next page, or null when the last page has been returned.",
+            "example": "1000"
+          },
+          "count": {
+            "type": "integer",
+            "description": "Number of items returned in this page.",
+            "example": 2
+          }
+        },
+        "required": ["items", "cursor"]
+      },
+      "ItemValue": {
+        "type": "object",
+        "description": "A single item value payload (for setting one key).",
+        "properties": {
+          "value": {
+            "type": "string",
+            "description": "The value to store, as a string (usually JSON-encoded).",
+            "example": "{\"NY\":\"New York\",\"LDN\":\"London\"}"
+          }
+        },
+        "required": ["value"]
+      },
+      "UpsertRequest": {
+        "type": "object",
+        "description": "A batch of key/value items to upsert.",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CollectionItem"
+            }
+          }
+        },
+        "required": ["items"]
+      },
+      "UpsertResult": {
+        "type": "object",
+        "description": "Result of an upsert operation.",
+        "properties": {
+          "upserted": {
+            "type": "integer",
+            "description": "Number of items inserted or replaced.",
+            "example": 3
+          },
+          "errors": {
+            "type": "array",
+            "description": "Any per-item errors reported by the server.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "key": {
+                  "type": "string"
+                },
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "required": ["upserted"]
+      },
+      "DeleteResult": {
+        "type": "object",
+        "description": "Result of a remove operation.",
+        "properties": {
+          "deleted": {
+            "type": "integer",
+            "description": "Number of items removed.",
+            "example": 5
+          },
+          "keys": {
+            "type": "array",
+            "description": "The keys that were removed.",
+            "items": {
+              "type": "string"
+            },
+            "example": ["2024-01-01", "2024-01-02"]
+          }
+        },
+        "required": ["deleted"]
+      }
+    }
+  }
+}

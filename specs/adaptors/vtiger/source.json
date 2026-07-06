@@ -1,0 +1,17 @@
+{
+  "adaptor": "vtiger",
+  "npm": "@openfn/language-vtiger",
+  "origin": "generated",
+  "upstreamFormat": "docs",
+  "sources": [
+    "https://help.vtiger.com/article/147111249-Rest-API-Manual",
+    "https://community.vtiger.com/help/vtigercrm/developers/third-party-app-integration.html",
+    "https://docs.huihoo.com/vtigercrm/help/vtigercrm/developers/third-party-app-integration.html",
+    "https://www.postman.com/vtigercrmdevelopers/vtiger-crm-developers/collection/qsfnbbj/vtiger-crm-cloud-rest-apis",
+    "https://cdn.jsdelivr.net/npm/@openfn/language-vtiger/ast.json",
+    "https://cdn.jsdelivr.net/npm/@openfn/language-vtiger/types/Adaptor.d.ts",
+    "https://cdn.jsdelivr.net/npm/@openfn/language-vtiger/dist/index.cjs"
+  ],
+  "capturedAt": "2026-07-06",
+  "notes": "No official machine-readable spec exists for the Vtiger CRM Webservices API. The API is RPC-style: every call targets a single /webservice.php endpoint and selects an action via an `operation` param (query string for GET, x-www-form-urlencoded body for POST), with all responses wrapped in a {success, result} / {success, error} envelope. This OpenAPI 3.0.3 doc was hand-authored from Vtiger's vendor docs and cross-checked against the adaptor's compiled source. To make the RPC surface mockable, each operation is modelled as a distinct path segment under /webservice.php (these synthetic sub-paths do not literally exist upstream). The @openfn/language-vtiger adaptor itself only defines three operations: login (a getchallenge->login handshake using accessKey = md5(challengeToken + userAccessKey)), listTypes, and a generic postElement({ operation, elementType, element }) that JSON.stringifies the element and can drive create/update/revise/delete. Coverage: getChallenge, login, logout, listTypes, describe, createElement, retrieveElement, updateElement, reviseElement, deleteElement, query, sync (12 operations). Reusable component schemas that seed collections: Element (generic CRM record), Contact, Account, Lead, ModuleType, Field/FieldType, plus result shapes ChallengeResult, LoginResult, ListTypesResult, DescribeResult, DeleteResult, QueryResult, SyncResult and Error. Caveats: response result shapes for logout/listtypes/describe/sync are under-documented by the vendor and were synthesized from typical Vtiger behaviour; the cloud base host pattern (https://{instance}.od1.vtiger.com) is a placeholder since the adaptor accepts an arbitrary hostUrl and appends /webservice.php."
+}

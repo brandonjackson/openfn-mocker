@@ -1,0 +1,649 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "msgraph — mocker seed-data schema",
+    "version": "1.0.0",
+    "description": "Schema for the seed data openfn-mocker needs to impersonate msgraph. Derived from the adaptor's OpenAPI spec. A seed dump is { collection: { id: record } }; each record validates against its resource schema below.",
+    "x-openfn-adaptor": "msgraph",
+    "x-derived-from": "openapi.json",
+    "x-captured-at": "2026-07-06"
+  },
+  "x-seed": {
+    "shape": "{ collection: { id: record } }",
+    "collections": {
+      "applications": {
+        "resource": "Application",
+        "schema": {
+          "$ref": "#/components/schemas/Application"
+        }
+      },
+      "drives": {
+        "resource": "Drive",
+        "schema": {
+          "$ref": "#/components/schemas/Drive"
+        }
+      },
+      "driveItems": {
+        "resource": "DriveItem",
+        "schema": {
+          "$ref": "#/components/schemas/DriveItem"
+        }
+      },
+      "driveItemContents": {
+        "resource": "DriveItemContent",
+        "schema": {
+          "$ref": "#/components/schemas/DriveItemContent"
+        }
+      },
+      "groups": {
+        "resource": "Group",
+        "schema": {
+          "$ref": "#/components/schemas/Group"
+        }
+      },
+      "lists": {
+        "resource": "List",
+        "schema": {
+          "$ref": "#/components/schemas/List"
+        }
+      },
+      "sites": {
+        "resource": "Site",
+        "schema": {
+          "$ref": "#/components/schemas/Site"
+        }
+      },
+      "uploadSessions": {
+        "resource": "UploadSession",
+        "schema": {
+          "$ref": "#/components/schemas/UploadSession"
+        }
+      },
+      "users": {
+        "resource": "User",
+        "schema": {
+          "$ref": "#/components/schemas/User"
+        }
+      },
+      "worksheets": {
+        "resource": "Worksheet",
+        "schema": {
+          "$ref": "#/components/schemas/Worksheet"
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SeedData": {
+        "type": "object",
+        "description": "Full seed dump loaded by mocker: one property per collection.",
+        "properties": {
+          "applications": {
+            "type": "object",
+            "description": "Records keyed by id for the applications collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Application"
+            }
+          },
+          "drives": {
+            "type": "object",
+            "description": "Records keyed by id for the drives collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Drive"
+            }
+          },
+          "driveItems": {
+            "type": "object",
+            "description": "Records keyed by id for the driveItems collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/DriveItem"
+            }
+          },
+          "driveItemContents": {
+            "type": "object",
+            "description": "Records keyed by id for the driveItemContents collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/DriveItemContent"
+            }
+          },
+          "groups": {
+            "type": "object",
+            "description": "Records keyed by id for the groups collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Group"
+            }
+          },
+          "lists": {
+            "type": "object",
+            "description": "Records keyed by id for the lists collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/List"
+            }
+          },
+          "sites": {
+            "type": "object",
+            "description": "Records keyed by id for the sites collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Site"
+            }
+          },
+          "uploadSessions": {
+            "type": "object",
+            "description": "Records keyed by id for the uploadSessions collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/UploadSession"
+            }
+          },
+          "users": {
+            "type": "object",
+            "description": "Records keyed by id for the users collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/User"
+            }
+          },
+          "worksheets": {
+            "type": "object",
+            "description": "Records keyed by id for the worksheets collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Worksheet"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "DriveItemContent": {
+        "type": "object",
+        "description": "JSON representation of a downloaded driveItem's content (mock seed shape; the real endpoint streams application/octet-stream bytes).",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "01ABC..."
+          },
+          "name": {
+            "type": "string",
+            "example": "report.txt"
+          },
+          "contentType": {
+            "type": "string",
+            "example": "text/plain"
+          },
+          "content": {
+            "type": "string",
+            "example": "file body contents"
+          }
+        }
+      },
+      "Identity": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "displayName": {
+            "type": "string"
+          }
+        }
+      },
+      "IdentitySet": {
+        "type": "object",
+        "properties": {
+          "application": {
+            "$ref": "#/components/schemas/Identity"
+          },
+          "device": {
+            "$ref": "#/components/schemas/Identity"
+          },
+          "user": {
+            "$ref": "#/components/schemas/Identity"
+          }
+        }
+      },
+      "ItemReference": {
+        "type": "object",
+        "properties": {
+          "driveId": {
+            "type": "string"
+          },
+          "driveType": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "siteId": {
+            "type": "string"
+          }
+        }
+      },
+      "Hashes": {
+        "type": "object",
+        "properties": {
+          "quickXorHash": {
+            "type": "string"
+          },
+          "sha1Hash": {
+            "type": "string"
+          },
+          "sha256Hash": {
+            "type": "string"
+          }
+        }
+      },
+      "FileFacet": {
+        "type": "object",
+        "properties": {
+          "mimeType": {
+            "type": "string"
+          },
+          "hashes": {
+            "$ref": "#/components/schemas/Hashes"
+          }
+        }
+      },
+      "FolderFacet": {
+        "type": "object",
+        "properties": {
+          "childCount": {
+            "type": "integer"
+          }
+        }
+      },
+      "Quota": {
+        "type": "object",
+        "properties": {
+          "deleted": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "remaining": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "state": {
+            "type": "string"
+          },
+          "total": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "used": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "Drive": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "driveType": {
+            "type": "string",
+            "enum": [
+              "personal",
+              "business",
+              "documentLibrary"
+            ]
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "webUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "createdDateTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastModifiedDateTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "owner": {
+            "$ref": "#/components/schemas/IdentitySet"
+          },
+          "quota": {
+            "$ref": "#/components/schemas/Quota"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "DriveItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "eTag": {
+            "type": "string"
+          },
+          "cTag": {
+            "type": "string"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "webUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "createdDateTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastModifiedDateTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "createdBy": {
+            "$ref": "#/components/schemas/IdentitySet"
+          },
+          "lastModifiedBy": {
+            "$ref": "#/components/schemas/IdentitySet"
+          },
+          "parentReference": {
+            "$ref": "#/components/schemas/ItemReference"
+          },
+          "file": {
+            "$ref": "#/components/schemas/FileFacet"
+          },
+          "folder": {
+            "$ref": "#/components/schemas/FolderFacet"
+          },
+          "@microsoft.graph.downloadUrl": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "DriveItemCollectionResponse": {
+        "type": "object",
+        "properties": {
+          "@odata.context": {
+            "type": "string"
+          },
+          "@odata.nextLink": {
+            "type": "string"
+          },
+          "value": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DriveItem"
+            }
+          }
+        },
+        "required": [
+          "value"
+        ]
+      },
+      "Site": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "displayName": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "webUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "createdDateTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastModifiedDateTime": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "List": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "displayName": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "webUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "createdDateTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastModifiedDateTime": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "ListCollectionResponse": {
+        "type": "object",
+        "properties": {
+          "@odata.context": {
+            "type": "string"
+          },
+          "@odata.nextLink": {
+            "type": "string"
+          },
+          "value": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/List"
+            }
+          }
+        },
+        "required": [
+          "value"
+        ]
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "displayName": {
+            "type": "string"
+          },
+          "givenName": {
+            "type": "string"
+          },
+          "surname": {
+            "type": "string"
+          },
+          "mail": {
+            "type": "string"
+          },
+          "userPrincipalName": {
+            "type": "string"
+          },
+          "jobTitle": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "Group": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "displayName": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "mail": {
+            "type": "string"
+          },
+          "mailNickname": {
+            "type": "string"
+          },
+          "groupTypes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "createdDateTime": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "Application": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "appId": {
+            "type": "string"
+          },
+          "displayName": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "createdDateTime": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Worksheet": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "position": {
+            "type": "integer"
+          },
+          "visibility": {
+            "type": "string",
+            "enum": [
+              "Visible",
+              "Hidden",
+              "VeryHidden"
+            ]
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "WorksheetCollectionResponse": {
+        "type": "object",
+        "properties": {
+          "@odata.context": {
+            "type": "string"
+          },
+          "value": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Worksheet"
+            }
+          }
+        },
+        "required": [
+          "value"
+        ]
+      },
+      "UploadSessionRequest": {
+        "type": "object",
+        "properties": {
+          "@microsoft.graph.conflictBehavior": {
+            "type": "string",
+            "enum": [
+              "fail",
+              "replace",
+              "rename"
+            ]
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "UploadSession": {
+        "type": "object",
+        "properties": {
+          "uploadUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "expirationDateTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "nextExpectedRanges": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "uploadUrl"
+        ]
+      }
+    }
+  }
+}

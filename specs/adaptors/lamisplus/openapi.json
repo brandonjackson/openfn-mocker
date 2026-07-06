@@ -1,0 +1,397 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "LAMISPlus EMR API (synthesized)",
+    "version": "1.0.0",
+    "description": "Synthesized OpenAPI description of the LAMISPlus EMR API surface used by the OpenFn lamisplus adaptor. LAMISPlus is a Nigerian HIV/health electronic medical record (EMR) system. No official machine-readable spec was found; this document was reconstructed from the adaptor's compiled source (the endpoints it actually calls) plus plausible EHR-plugin endpoints. The two endpoints that the adaptor is known to call verbatim are `POST core/api/v1/auth/login` (used by the implicit login step) and `GET plugin/ehr/api/v1/patient` (used by getPatients). The adaptor also exposes generic `http.get`/`http.post`/`http.request` helpers that can target any path on the configured LAMISPlus instance; the additional patient/visit/encounter endpoints below are plausible reconstructions to seed representative collections and are marked accordingly.",
+    "x-openfn-adaptor": "lamisplus"
+  },
+  "servers": [
+    {
+      "url": "https://lamisplus.example.org",
+      "description": "Placeholder base URL. The real base URL is the per-instance LAMISPlus deployment supplied via adaptor configuration (configuration.baseUrl)."
+    }
+  ],
+  "tags": [
+    { "name": "auth", "description": "Authentication" },
+    { "name": "patients", "description": "Patient records (EHR plugin)" },
+    { "name": "visits", "description": "Clinical visits and encounters" }
+  ],
+  "paths": {
+    "/core/api/v1/auth/login": {
+      "post": {
+        "operationId": "login",
+        "tags": ["auth"],
+        "summary": "Authenticate and obtain a bearer token",
+        "description": "Called implicitly by the adaptor when configuration includes email and password. Returns an access token used as a Bearer token on subsequent requests.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/LoginRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Authentication succeeded",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/LoginResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/plugin/ehr/api/v1/patient": {
+      "get": {
+        "operationId": "getPatients",
+        "tags": ["patients"],
+        "summary": "List patient resources",
+        "description": "Called by the adaptor's getPatients operation. Supports pagination query params such as size and page. The adaptor reads the patients array from body.data.patients.",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "default": 0 },
+            "description": "Zero-based page index"
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "default": 20 },
+            "description": "Number of records per page"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A paginated list of patients",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PatientListResponse" }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createPatient",
+        "tags": ["patients"],
+        "summary": "Create a patient record",
+        "description": "Plausible reconstruction. Reachable via the generic http.post helper.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/PatientInput" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Patient created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Patient" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/plugin/ehr/api/v1/patient/{id}": {
+      "get": {
+        "operationId": "getPatientById",
+        "tags": ["patients"],
+        "summary": "Get a single patient by id",
+        "description": "Plausible reconstruction. Reachable via the generic http.get helper.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A single patient",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Patient" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/plugin/ehr/api/v1/visit": {
+      "get": {
+        "operationId": "getVisits",
+        "tags": ["visits"],
+        "summary": "List clinical visits",
+        "description": "Plausible reconstruction. Reachable via the generic http.get helper.",
+        "parameters": [
+          {
+            "name": "patientId",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer" }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "default": 0 }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "default": 20 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A paginated list of visits",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/VisitListResponse" }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createVisit",
+        "tags": ["visits"],
+        "summary": "Create a clinical visit",
+        "description": "Plausible reconstruction. Reachable via the generic http.post helper.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/VisitInput" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Visit created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Visit" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/plugin/ehr/api/v1/encounter": {
+      "get": {
+        "operationId": "getEncounters",
+        "tags": ["visits"],
+        "summary": "List encounters",
+        "description": "Plausible reconstruction. Reachable via the generic http.get helper.",
+        "parameters": [
+          {
+            "name": "visitId",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of encounters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Encounter" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/plugin/ehr/api/v1/biometric": {
+      "get": {
+        "operationId": "getBiometrics",
+        "tags": ["patients"],
+        "summary": "List patient biometric records",
+        "description": "Plausible reconstruction. Reachable via the generic http.get helper.",
+        "parameters": [
+          {
+            "name": "patientId",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of biometric records",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Biometric" }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "LoginRequest": {
+        "type": "object",
+        "required": ["email", "password"],
+        "properties": {
+          "email": { "type": "string", "format": "email" },
+          "password": { "type": "string", "format": "password" }
+        }
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "accessToken": { "type": "string", "description": "JWT bearer token" },
+          "tokenType": { "type": "string", "example": "Bearer" },
+          "expiresIn": { "type": "integer", "description": "Seconds until token expiry" }
+        }
+      },
+      "Patient": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "uuid": { "type": "string", "format": "uuid" },
+          "hospitalNumber": { "type": "string", "description": "Facility patient/hospital number" },
+          "firstName": { "type": "string" },
+          "surname": { "type": "string" },
+          "otherName": { "type": "string", "nullable": true },
+          "sex": { "type": "string", "enum": ["Male", "Female"] },
+          "dateOfBirth": { "type": "string", "format": "date" },
+          "maritalStatus": { "type": "string", "nullable": true },
+          "phoneNumber": { "type": "string", "nullable": true },
+          "address": { "type": "string", "nullable": true },
+          "facilityId": { "type": "integer", "nullable": true },
+          "dateOfRegistration": { "type": "string", "format": "date", "nullable": true },
+          "archived": { "type": "boolean", "default": false }
+        }
+      },
+      "PatientInput": {
+        "type": "object",
+        "required": ["firstName", "surname", "sex", "dateOfBirth"],
+        "properties": {
+          "hospitalNumber": { "type": "string" },
+          "firstName": { "type": "string" },
+          "surname": { "type": "string" },
+          "otherName": { "type": "string" },
+          "sex": { "type": "string", "enum": ["Male", "Female"] },
+          "dateOfBirth": { "type": "string", "format": "date" },
+          "maritalStatus": { "type": "string" },
+          "phoneNumber": { "type": "string" },
+          "address": { "type": "string" },
+          "facilityId": { "type": "integer" }
+        }
+      },
+      "PatientListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "patients": {
+                "type": "array",
+                "items": { "$ref": "#/components/schemas/Patient" }
+              },
+              "totalRecords": { "type": "integer" },
+              "pageSize": { "type": "integer" },
+              "currentPage": { "type": "integer" }
+            }
+          },
+          "message": { "type": "string", "nullable": true },
+          "status": { "type": "string", "nullable": true }
+        }
+      },
+      "Visit": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "uuid": { "type": "string", "format": "uuid" },
+          "patientId": { "type": "integer" },
+          "visitDate": { "type": "string", "format": "date" },
+          "visitType": { "type": "string", "nullable": true },
+          "facilityId": { "type": "integer", "nullable": true },
+          "checkInDateTime": { "type": "string", "format": "date-time", "nullable": true },
+          "checkOutDateTime": { "type": "string", "format": "date-time", "nullable": true }
+        }
+      },
+      "VisitInput": {
+        "type": "object",
+        "required": ["patientId", "visitDate"],
+        "properties": {
+          "patientId": { "type": "integer" },
+          "visitDate": { "type": "string", "format": "date" },
+          "visitType": { "type": "string" },
+          "facilityId": { "type": "integer" }
+        }
+      },
+      "VisitListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "visits": {
+                "type": "array",
+                "items": { "$ref": "#/components/schemas/Visit" }
+              },
+              "totalRecords": { "type": "integer" }
+            }
+          }
+        }
+      },
+      "Encounter": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "uuid": { "type": "string", "format": "uuid" },
+          "visitId": { "type": "integer" },
+          "patientId": { "type": "integer" },
+          "encounterType": { "type": "string", "nullable": true },
+          "encounterDate": { "type": "string", "format": "date" },
+          "formData": { "type": "object", "additionalProperties": true, "nullable": true }
+        }
+      },
+      "Biometric": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "patientId": { "type": "integer" },
+          "biometricType": { "type": "string", "nullable": true },
+          "template": { "type": "string", "description": "Base64-encoded biometric template", "nullable": true },
+          "fingerType": { "type": "string", "nullable": true },
+          "captureDate": { "type": "string", "format": "date-time", "nullable": true }
+        }
+      }
+    }
+  },
+  "security": [
+    { "bearerAuth": [] }
+  ]
+}

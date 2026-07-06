@@ -1,0 +1,289 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "sftp — mocker seed-data schema",
+    "version": "1.0.0",
+    "description": "Schema for the seed data openfn-mocker needs to impersonate sftp. Derived from the adaptor's OpenAPI spec. A seed dump is { collection: { id: record } }; each record validates against its resource schema below.",
+    "x-openfn-adaptor": "sftp",
+    "x-derived-from": "openapi.json",
+    "x-captured-at": "2026-07-06"
+  },
+  "x-seed": {
+    "shape": "{ collection: { id: record } }",
+    "collections": {
+      "cSVRowses": {
+        "resource": "CSVRows",
+        "schema": {
+          "$ref": "#/components/schemas/CSVRows"
+        }
+      },
+      "dirListings": {
+        "resource": "DirListing",
+        "schema": {
+          "$ref": "#/components/schemas/DirListing"
+        }
+      },
+      "fileContents": {
+        "resource": "FileContent",
+        "schema": {
+          "$ref": "#/components/schemas/FileContent"
+        }
+      },
+      "putResults": {
+        "resource": "PutResult",
+        "schema": {
+          "$ref": "#/components/schemas/PutResult"
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SeedData": {
+        "type": "object",
+        "description": "Full seed dump loaded by mocker: one property per collection.",
+        "properties": {
+          "cSVRowses": {
+            "type": "object",
+            "description": "Records keyed by id for the cSVRowses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/CSVRows"
+            }
+          },
+          "dirListings": {
+            "type": "object",
+            "description": "Records keyed by id for the dirListings collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/DirListing"
+            }
+          },
+          "fileContents": {
+            "type": "object",
+            "description": "Records keyed by id for the fileContents collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/FileContent"
+            }
+          },
+          "putResults": {
+            "type": "object",
+            "description": "Records keyed by id for the putResults collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/PutResult"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "FileEntry": {
+        "type": "object",
+        "description": "A single entry returned by an SFTP directory listing.",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Entry type: '-' file, 'd' directory, 'l' symlink.",
+            "example": "-"
+          },
+          "name": {
+            "type": "string",
+            "example": "foo.txt"
+          },
+          "size": {
+            "type": "integer",
+            "example": 1024
+          },
+          "modifyTime": {
+            "type": "integer",
+            "description": "Last modified time in epoch milliseconds.",
+            "example": 1720000000000
+          },
+          "accessTime": {
+            "type": "integer",
+            "description": "Last access time in epoch milliseconds.",
+            "example": 1720000000000
+          },
+          "rights": {
+            "type": "object",
+            "properties": {
+              "user": {
+                "type": "string",
+                "example": "rw"
+              },
+              "group": {
+                "type": "string",
+                "example": "r"
+              },
+              "other": {
+                "type": "string",
+                "example": "r"
+              }
+            }
+          },
+          "owner": {
+            "type": "integer",
+            "example": 1000
+          },
+          "group": {
+            "type": "integer",
+            "example": 1000
+          }
+        },
+        "required": [
+          "type",
+          "name",
+          "size"
+        ]
+      },
+      "DirListing": {
+        "type": "array",
+        "description": "List of file entries in a remote directory.",
+        "items": {
+          "$ref": "#/components/schemas/FileEntry"
+        }
+      },
+      "CSVRow": {
+        "type": "object",
+        "description": "A single parsed CSV row as a key/value object.",
+        "additionalProperties": {
+          "type": "string"
+        }
+      },
+      "CSVRows": {
+        "type": "array",
+        "description": "Parsed CSV content as an array of row objects.",
+        "items": {
+          "$ref": "#/components/schemas/CSVRow"
+        }
+      },
+      "FileContent": {
+        "type": "object",
+        "description": "Parsed content of a remote file (e.g. a JSON document).",
+        "additionalProperties": true
+      },
+      "PutResult": {
+        "type": "object",
+        "description": "Result of uploading data to the remote server.",
+        "properties": {
+          "remoteFilePath": {
+            "type": "string",
+            "example": "/uploads/out.csv"
+          },
+          "bytesWritten": {
+            "type": "integer",
+            "example": 2048
+          },
+          "message": {
+            "type": "string",
+            "example": "Uploaded data to /uploads/out.csv"
+          }
+        },
+        "required": [
+          "remoteFilePath"
+        ]
+      },
+      "ParsingOptions": {
+        "type": "object",
+        "description": "csvtojson / stream parsing options passed through by the adaptor.",
+        "additionalProperties": true,
+        "properties": {
+          "delimiter": {
+            "type": "string",
+            "example": ","
+          },
+          "noheader": {
+            "type": "boolean",
+            "example": false
+          },
+          "quote": {
+            "type": "string",
+            "example": "\""
+          }
+        }
+      },
+      "ListRequest": {
+        "type": "object",
+        "description": "Arguments for the list operation.",
+        "properties": {
+          "dirPath": {
+            "type": "string",
+            "description": "Path to remote directory.",
+            "example": "/some/path/"
+          }
+        },
+        "required": [
+          "dirPath"
+        ]
+      },
+      "GetCSVRequest": {
+        "type": "object",
+        "description": "Arguments for the getCSV operation.",
+        "properties": {
+          "filePath": {
+            "type": "string",
+            "description": "Path to the remote CSV resource.",
+            "example": "/some/path/data.csv"
+          },
+          "parsingOptions": {
+            "$ref": "#/components/schemas/ParsingOptions"
+          }
+        },
+        "required": [
+          "filePath"
+        ]
+      },
+      "PutCSVRequest": {
+        "type": "object",
+        "description": "Arguments for the putCSV operation.",
+        "properties": {
+          "localFilePath": {
+            "type": "string",
+            "description": "Data source for data to copy to the remote server.",
+            "example": "/tmp/data.csv"
+          },
+          "remoteFilePath": {
+            "type": "string",
+            "description": "Path to the remote file to be created on the server.",
+            "example": "/uploads/out.csv"
+          },
+          "parsingOptions": {
+            "$ref": "#/components/schemas/ParsingOptions"
+          }
+        },
+        "required": [
+          "localFilePath",
+          "remoteFilePath"
+        ]
+      },
+      "GetJSONRequest": {
+        "type": "object",
+        "description": "Arguments for the getJSON operation.",
+        "properties": {
+          "filePath": {
+            "type": "string",
+            "description": "Path to the remote JSON resource.",
+            "example": "/some/path/data.json"
+          },
+          "encoding": {
+            "type": "string",
+            "description": "Character encoding for the JSON file.",
+            "example": "utf8"
+          }
+        },
+        "required": [
+          "filePath"
+        ]
+      },
+      "NormalizeCSVRequest": {
+        "type": "object",
+        "description": "Arguments for the normalizeCSVarray operation.",
+        "properties": {
+          "options": {
+            "$ref": "#/components/schemas/ParsingOptions"
+          }
+        },
+        "required": [
+          "options"
+        ]
+      }
+    }
+  }
+}

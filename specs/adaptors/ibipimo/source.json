@@ -1,0 +1,12 @@
+{
+  "adaptor": "ibipimo",
+  "npm": "@openfn/language-ibipimo",
+  "origin": "generated",
+  "upstreamFormat": "adaptor-surface",
+  "sources": [
+    "https://cdn.jsdelivr.net/npm/@openfn/language-ibipimo/ast.json",
+    "https://cdn.jsdelivr.net/npm/@openfn/language-ibipimo/types/Adaptor.d.ts"
+  ],
+  "capturedAt": "2026-07-06",
+  "notes": "No public IBIPIMO API documentation or machine spec could be found (it is a private laboratory information system). Authored a focused OpenAPI 3.0.3 from the adaptor surface: exact POST paths /api/v1/post-viral-load-requests and /api/v1/ask-for-vl-results were confirmed in dist/index.cjs; GET /api/v1/samples/status and /api/v1/sites come from the get() JSDoc examples. Request bodies (siteid, samples[], sample_uids[]) match the documented examples. Response shapes are best-effort reconstructions from the processViralLoadResults/processViralLoadSubmission descriptions (savedSamples, errors, availableResults, pending, published) and should be treated as approximate."
+}

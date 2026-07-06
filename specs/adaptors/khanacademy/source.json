@@ -1,0 +1,13 @@
+{
+  "adaptor": "khanacademy",
+  "npm": "@openfn/language-khanacademy",
+  "origin": "generated",
+  "upstreamFormat": "docs",
+  "sources": [
+    "https://github.com/Khan/khan-api",
+    "https://github.com/Khan/khan-api/blob/master/README.md",
+    "https://cdn.jsdelivr.net/npm/@openfn/language-khanacademy/ast.json"
+  ],
+  "capturedAt": "2026-07-06",
+  "notes": "The adaptor exposes a single generic fetch({ getEndpoint, queryParams }) GET operation against the Khan Academy public REST API v1 (base https://www.khanacademy.org/api/v1). No official machine-readable spec exists, so this OpenAPI 3.0.3 document was authored by hand from the documented khan-api endpoints and response shapes. Covers 12 core operations: topictree, topic/{slug}, topic/{slug}/exercises, topic/{slug}/videos, exercises, exercises/{name}, videos, videos/{id}, badges, badges/categories, user, playlists, playlists/{slug}/videos. Reusable component schemas: Topic, Exercise, Video, Badge, BadgeCategory, User, Playlist. Caveat: Khan Academy deprecated and removed these public v1 endpoints during 2020 (badges/user in Jan 2020; remaining content endpoints by mid-2020), so responses are synthesized from historical documentation and are intended for mocking, not live traffic."
+}

@@ -1,0 +1,13 @@
+{
+  "adaptor": "bigquery",
+  "npm": "@openfn/language-bigquery",
+  "origin": "converted",
+  "upstreamFormat": "google-discovery",
+  "sources": [
+    "https://bigquery.googleapis.com/discovery/v1/apis/bigquery/v2/rest",
+    "https://cloud.google.com/bigquery/docs/reference/rest",
+    "https://cdn.jsdelivr.net/npm/@openfn/language-bigquery/types/Adaptor.d.ts"
+  ],
+  "capturedAt": "2026-07-06",
+  "notes": "Converted from the Google API Discovery document for BigQuery v2, subset to the load path. The adaptor's load() wraps the @google-cloud/bigquery SDK, which under the hood creates a load job via jobs.insert with configuration.load (writeDisposition, createDisposition, skipLeadingRows, schemaUpdateOptions, schema). Included jobs.insert, jobs.get, tables.get and tabledata.insertAll with their core Discovery schema shapes (Job, Table, TableSchema, TableDataInsertAllResponse)."
+}

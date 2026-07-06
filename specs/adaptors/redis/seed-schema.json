@@ -1,0 +1,397 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "redis — mocker seed-data schema",
+    "version": "1.0.0",
+    "description": "Schema for the seed data openfn-mocker needs to impersonate redis. Derived from the adaptor's OpenAPI spec. A seed dump is { collection: { id: record } }; each record validates against its resource schema below.",
+    "x-openfn-adaptor": "redis",
+    "x-derived-from": "openapi.json",
+    "x-captured-at": "2026-07-06"
+  },
+  "x-seed": {
+    "shape": "{ collection: { id: record } }",
+    "collections": {
+      "countResults": {
+        "resource": "CountResult",
+        "schema": {
+          "$ref": "#/components/schemas/CountResult"
+        }
+      },
+      "hashResults": {
+        "resource": "HashResult",
+        "schema": {
+          "$ref": "#/components/schemas/HashResult"
+        }
+      },
+      "jsonArrayResults": {
+        "resource": "JsonArrayResult",
+        "schema": {
+          "$ref": "#/components/schemas/JsonArrayResult"
+        }
+      },
+      "jsonValueResults": {
+        "resource": "JsonValueResult",
+        "schema": {
+          "$ref": "#/components/schemas/JsonValueResult"
+        }
+      },
+      "scanResults": {
+        "resource": "ScanResult",
+        "schema": {
+          "$ref": "#/components/schemas/ScanResult"
+        }
+      },
+      "stringValueResults": {
+        "resource": "StringValueResult",
+        "schema": {
+          "$ref": "#/components/schemas/StringValueResult"
+        }
+      },
+      "writeResults": {
+        "resource": "WriteResult",
+        "schema": {
+          "$ref": "#/components/schemas/WriteResult"
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SeedData": {
+        "type": "object",
+        "description": "Full seed dump loaded by mocker: one property per collection.",
+        "properties": {
+          "countResults": {
+            "type": "object",
+            "description": "Records keyed by id for the countResults collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/CountResult"
+            }
+          },
+          "hashResults": {
+            "type": "object",
+            "description": "Records keyed by id for the hashResults collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/HashResult"
+            }
+          },
+          "jsonArrayResults": {
+            "type": "object",
+            "description": "Records keyed by id for the jsonArrayResults collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/JsonArrayResult"
+            }
+          },
+          "jsonValueResults": {
+            "type": "object",
+            "description": "Records keyed by id for the jsonValueResults collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/JsonValueResult"
+            }
+          },
+          "scanResults": {
+            "type": "object",
+            "description": "Records keyed by id for the scanResults collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ScanResult"
+            }
+          },
+          "stringValueResults": {
+            "type": "object",
+            "description": "Records keyed by id for the stringValueResults collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/StringValueResult"
+            }
+          },
+          "writeResults": {
+            "type": "object",
+            "description": "Records keyed by id for the writeResults collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/WriteResult"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "GetRequest": {
+        "type": "object",
+        "required": [
+          "key"
+        ],
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "The name of the key"
+          }
+        }
+      },
+      "HGetRequest": {
+        "type": "object",
+        "required": [
+          "key",
+          "field"
+        ],
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "The name of the key"
+          },
+          "field": {
+            "type": "string",
+            "description": "The hash field to read"
+          }
+        }
+      },
+      "MGetRequest": {
+        "type": "object",
+        "required": [
+          "keys"
+        ],
+        "properties": {
+          "keys": {
+            "type": "array",
+            "description": "The keys at which the JSON documents are stored.",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "SetRequest": {
+        "type": "object",
+        "required": [
+          "key",
+          "value"
+        ],
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "The name of the key"
+          },
+          "value": {
+            "type": "string",
+            "description": "The string value to set"
+          }
+        }
+      },
+      "HSetRequest": {
+        "type": "object",
+        "required": [
+          "key",
+          "value"
+        ],
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "The name of the key"
+          },
+          "value": {
+            "type": "object",
+            "description": "The field/value pairs to set on the hash.",
+            "additionalProperties": true
+          }
+        }
+      },
+      "JSetRequest": {
+        "type": "object",
+        "required": [
+          "key",
+          "value"
+        ],
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "The key to modify."
+          },
+          "value": {
+            "description": "The JSON object or string value to set.",
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": true
+              },
+              {
+                "type": "string"
+              }
+            ]
+          }
+        }
+      },
+      "MSetRequest": {
+        "type": "object",
+        "required": [
+          "entries"
+        ],
+        "properties": {
+          "entries": {
+            "type": "array",
+            "description": "An array of key/value pairs to set in the JSON store.",
+            "items": {
+              "$ref": "#/components/schemas/MSetEntry"
+            }
+          }
+        }
+      },
+      "MSetEntry": {
+        "type": "object",
+        "required": [
+          "key",
+          "value"
+        ],
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "value": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": true
+              },
+              {
+                "type": "string"
+              }
+            ]
+          }
+        }
+      },
+      "ScanRequest": {
+        "type": "object",
+        "required": [
+          "pattern"
+        ],
+        "properties": {
+          "pattern": {
+            "type": "string",
+            "description": "A glob-style pattern"
+          },
+          "options": {
+            "$ref": "#/components/schemas/ScanOptions"
+          }
+        }
+      },
+      "ScanOptions": {
+        "type": "object",
+        "description": "Scan options.",
+        "properties": {
+          "count": {
+            "type": "integer",
+            "description": "Hint for the number of keys to return per iteration."
+          },
+          "type": {
+            "type": "string",
+            "description": "Filter by Redis value type (e.g. string, hash)."
+          }
+        }
+      },
+      "StringValueResult": {
+        "type": "object",
+        "description": "Result carrying a single string value.",
+        "properties": {
+          "data": {
+            "type": "string",
+            "nullable": true,
+            "description": "The string value stored at the key, or null if absent."
+          }
+        }
+      },
+      "JsonValueResult": {
+        "type": "object",
+        "description": "Result carrying a single JSON document.",
+        "properties": {
+          "data": {
+            "description": "The JSON document stored at the key.",
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": true
+              },
+              {
+                "type": "array",
+                "items": {}
+              },
+              {
+                "type": "string"
+              }
+            ]
+          }
+        }
+      },
+      "JsonArrayResult": {
+        "type": "object",
+        "description": "Result carrying an array of JSON documents.",
+        "properties": {
+          "data": {
+            "type": "array",
+            "description": "One JSON document per requested key.",
+            "items": {
+              "nullable": true,
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": true
+                },
+                {
+                  "type": "array",
+                  "items": {}
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "HashResult": {
+        "type": "object",
+        "description": "Result carrying a hash as an object of field/value pairs.",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "The hash fields and their values.",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "ScanResult": {
+        "type": "object",
+        "description": "Result carrying the keys matched by a scan.",
+        "properties": {
+          "data": {
+            "type": "array",
+            "description": "An array of keys which match the pattern.",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "WriteResult": {
+        "type": "object",
+        "description": "Confirmation of a write operation.",
+        "properties": {
+          "data": {
+            "type": "string",
+            "description": "Redis status reply, typically \"OK\".",
+            "example": "OK"
+          }
+        }
+      },
+      "CountResult": {
+        "type": "object",
+        "description": "Confirmation carrying an affected-item count.",
+        "properties": {
+          "data": {
+            "type": "integer",
+            "description": "Number of fields that were added.",
+            "example": 1
+          }
+        }
+      }
+    }
+  }
+}

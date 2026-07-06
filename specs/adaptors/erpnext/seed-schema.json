@@ -1,0 +1,185 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "erpnext — mocker seed-data schema",
+    "version": "1.0.0",
+    "description": "Schema for the seed data openfn-mocker needs to impersonate erpnext. Derived from the adaptor's OpenAPI spec. A seed dump is { collection: { id: record } }; each record validates against its resource schema below.",
+    "x-openfn-adaptor": "erpnext",
+    "x-derived-from": "openapi.json",
+    "x-captured-at": "2026-07-06"
+  },
+  "x-seed": {
+    "shape": "{ collection: { id: record } }",
+    "collections": {
+      "countResponses": {
+        "resource": "CountResponse",
+        "schema": {
+          "$ref": "#/components/schemas/CountResponse"
+        }
+      },
+      "documents": {
+        "resource": "Document",
+        "schema": {
+          "$ref": "#/components/schemas/Document"
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SeedData": {
+        "type": "object",
+        "description": "Full seed dump loaded by mocker: one property per collection.",
+        "properties": {
+          "countResponses": {
+            "type": "object",
+            "description": "Records keyed by id for the countResponses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/CountResponse"
+            }
+          },
+          "documents": {
+            "type": "object",
+            "description": "Records keyed by id for the documents collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Document"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "Document": {
+        "type": "object",
+        "description": "Generic Frappe document. Fields depend on the doctype.",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "doctype": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "creation": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "modified": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": true
+      },
+      "DocumentResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Document"
+          }
+        }
+      },
+      "DocumentList": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Document"
+            }
+          }
+        }
+      },
+      "CountResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "integer"
+          }
+        }
+      },
+      "Customer": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "customer_name": {
+            "type": "string"
+          },
+          "customer_type": {
+            "type": "string",
+            "enum": [
+              "Company",
+              "Individual"
+            ]
+          },
+          "customer_group": {
+            "type": "string"
+          },
+          "territory": {
+            "type": "string"
+          },
+          "mobile_no": {
+            "type": "string"
+          },
+          "email_id": {
+            "type": "string"
+          }
+        }
+      },
+      "Item": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "item_code": {
+            "type": "string"
+          },
+          "item_name": {
+            "type": "string"
+          },
+          "item_group": {
+            "type": "string"
+          },
+          "stock_uom": {
+            "type": "string"
+          },
+          "standard_rate": {
+            "type": "number"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      },
+      "SalesOrder": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "customer": {
+            "type": "string"
+          },
+          "transaction_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "delivery_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "status": {
+            "type": "string"
+          },
+          "grand_total": {
+            "type": "number"
+          }
+        }
+      }
+    }
+  }
+}

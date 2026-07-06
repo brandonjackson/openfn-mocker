@@ -1,0 +1,658 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Microsoft Graph v1.0 (OpenFn msgraph subset)",
+    "version": "1.0.0",
+    "description": "Focused OpenAPI subset of the Microsoft Graph v1.0 API covering only the resources the OpenFn msgraph adaptor touches: drives and drive items (files/folders), SharePoint sites and lists, groups, users, applications, Excel workbook worksheets, and upload sessions. Derived from the official Microsoft Graph metadata (CSDL/EDMX) published at microsoftgraph/msgraph-metadata, subset by hand to the endpoints the adaptor's create/get/getDrive/getFolder/getFile/uploadFile operations call.",
+    "x-openfn-adaptor": "msgraph"
+  },
+  "servers": [
+    {
+      "url": "https://graph.microsoft.com/v1.0"
+    }
+  ],
+  "paths": {
+    "/applications": {
+      "post": {
+        "operationId": "createApplication",
+        "summary": "Create a resource (adaptor create()). Modeled on applications.",
+        "description": "Backs create(resource, data). POST to /{resource}; applications shown as the canonical example from the adaptor docs.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Application" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created resource",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Application" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/me": {
+      "get": {
+        "operationId": "getMe",
+        "summary": "Get the signed-in user",
+        "responses": {
+          "200": {
+            "description": "User",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/User" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{user-id}": {
+      "get": {
+        "operationId": "getUser",
+        "summary": "Get a user",
+        "parameters": [
+          { "$ref": "#/components/parameters/userId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "User",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/User" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/groups/{group-id}": {
+      "get": {
+        "operationId": "getGroup",
+        "summary": "Get a group",
+        "parameters": [
+          { "$ref": "#/components/parameters/groupId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Group",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Group" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/groups/{group-id}/drive": {
+      "get": {
+        "operationId": "getGroupDrive",
+        "summary": "Get the default drive of a group (getDrive with owner=groups)",
+        "parameters": [
+          { "$ref": "#/components/parameters/groupId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Drive",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Drive" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sites/root": {
+      "get": {
+        "operationId": "getRootSite",
+        "summary": "Get the tenant root SharePoint site",
+        "responses": {
+          "200": {
+            "description": "Site",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Site" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sites/{site-id}": {
+      "get": {
+        "operationId": "getSite",
+        "summary": "Get a SharePoint site",
+        "parameters": [
+          { "$ref": "#/components/parameters/siteId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Site",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Site" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sites/{site-id}/lists": {
+      "get": {
+        "operationId": "listSiteLists",
+        "summary": "List a site's lists (adaptor get('sites/root/lists') example)",
+        "parameters": [
+          { "$ref": "#/components/parameters/siteId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Collection of lists",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ListCollectionResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sites/{site-id}/drive": {
+      "get": {
+        "operationId": "getSiteDrive",
+        "summary": "Get the default document library (drive) of a site (getDrive with owner=sites)",
+        "parameters": [
+          { "$ref": "#/components/parameters/siteId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Drive",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Drive" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/drives/{drive-id}": {
+      "get": {
+        "operationId": "getDrive",
+        "summary": "Get a drive by id (getDrive with owner=drive)",
+        "parameters": [
+          { "$ref": "#/components/parameters/driveId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Drive",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Drive" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/drives/{drive-id}/items/{item-id}": {
+      "get": {
+        "operationId": "getDriveItem",
+        "summary": "Get driveItem metadata by id (getFolder/getFile with metadata:true)",
+        "parameters": [
+          { "$ref": "#/components/parameters/driveId" },
+          { "$ref": "#/components/parameters/itemId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "DriveItem",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DriveItem" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/drives/{drive-id}/items/{item-id}/children": {
+      "get": {
+        "operationId": "listDriveItemChildren",
+        "summary": "List the children of a folder driveItem (getFolder default)",
+        "parameters": [
+          { "$ref": "#/components/parameters/driveId" },
+          { "$ref": "#/components/parameters/itemId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Collection of driveItems",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DriveItemCollectionResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/drives/{drive-id}/items/{item-id}/content": {
+      "get": {
+        "operationId": "getDriveItemContent",
+        "summary": "Download the contents of a file driveItem (getFile default)",
+        "parameters": [
+          { "$ref": "#/components/parameters/driveId" },
+          { "$ref": "#/components/parameters/itemId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "File content",
+            "content": {
+              "application/octet-stream": {
+                "schema": { "type": "string", "format": "binary" }
+              },
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DriveItemContent" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/drives/{drive-id}/root:/{item-path}": {
+      "get": {
+        "operationId": "getDriveItemByPath",
+        "summary": "Get a driveItem by path (getFolder/getFile with a path starting with '/')",
+        "parameters": [
+          { "$ref": "#/components/parameters/driveId" },
+          {
+            "name": "item-path",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "DriveItem",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DriveItem" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/drives/{drive-id}/items/{item-id}/workbook/worksheets": {
+      "get": {
+        "operationId": "listWorksheets",
+        "summary": "List worksheets of an Excel workbook driveItem",
+        "parameters": [
+          { "$ref": "#/components/parameters/driveId" },
+          { "$ref": "#/components/parameters/itemId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Collection of worksheets",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/WorksheetCollectionResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/drives/{drive-id}/items/{item-id}:/{filename}:/createUploadSession": {
+      "post": {
+        "operationId": "createDriveUploadSession",
+        "summary": "Create an upload session for a large file in a drive (uploadFile with driveId)",
+        "parameters": [
+          { "$ref": "#/components/parameters/driveId" },
+          { "$ref": "#/components/parameters/itemId" },
+          {
+            "name": "filename",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UploadSessionRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Upload session",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/UploadSession" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sites/{site-id}/drive/items/{item-id}:/{filename}:/createUploadSession": {
+      "post": {
+        "operationId": "createSiteDriveUploadSession",
+        "summary": "Create an upload session for a large file in a site drive (uploadFile with siteId)",
+        "parameters": [
+          { "$ref": "#/components/parameters/siteId" },
+          { "$ref": "#/components/parameters/itemId" },
+          {
+            "name": "filename",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UploadSessionRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Upload session",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/UploadSession" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "driveId": {
+        "name": "drive-id",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string" }
+      },
+      "itemId": {
+        "name": "item-id",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string" }
+      },
+      "siteId": {
+        "name": "site-id",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string" }
+      },
+      "groupId": {
+        "name": "group-id",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string" }
+      },
+      "userId": {
+        "name": "user-id",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string" }
+      }
+    },
+    "schemas": {
+      "DriveItemContent": {
+        "type": "object",
+        "description": "JSON representation of a downloaded driveItem's content (mock seed shape; the real endpoint streams application/octet-stream bytes).",
+        "properties": {
+          "id": { "type": "string", "example": "01ABC..." },
+          "name": { "type": "string", "example": "report.txt" },
+          "contentType": { "type": "string", "example": "text/plain" },
+          "content": { "type": "string", "example": "file body contents" }
+        }
+      },
+      "Identity": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "displayName": { "type": "string" }
+        }
+      },
+      "IdentitySet": {
+        "type": "object",
+        "properties": {
+          "application": { "$ref": "#/components/schemas/Identity" },
+          "device": { "$ref": "#/components/schemas/Identity" },
+          "user": { "$ref": "#/components/schemas/Identity" }
+        }
+      },
+      "ItemReference": {
+        "type": "object",
+        "properties": {
+          "driveId": { "type": "string" },
+          "driveType": { "type": "string" },
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "path": { "type": "string" },
+          "siteId": { "type": "string" }
+        }
+      },
+      "Hashes": {
+        "type": "object",
+        "properties": {
+          "quickXorHash": { "type": "string" },
+          "sha1Hash": { "type": "string" },
+          "sha256Hash": { "type": "string" }
+        }
+      },
+      "FileFacet": {
+        "type": "object",
+        "properties": {
+          "mimeType": { "type": "string" },
+          "hashes": { "$ref": "#/components/schemas/Hashes" }
+        }
+      },
+      "FolderFacet": {
+        "type": "object",
+        "properties": {
+          "childCount": { "type": "integer" }
+        }
+      },
+      "Quota": {
+        "type": "object",
+        "properties": {
+          "deleted": { "type": "integer", "format": "int64" },
+          "remaining": { "type": "integer", "format": "int64" },
+          "state": { "type": "string" },
+          "total": { "type": "integer", "format": "int64" },
+          "used": { "type": "integer", "format": "int64" }
+        }
+      },
+      "Drive": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "driveType": {
+            "type": "string",
+            "enum": ["personal", "business", "documentLibrary"]
+          },
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "webUrl": { "type": "string", "format": "uri" },
+          "createdDateTime": { "type": "string", "format": "date-time" },
+          "lastModifiedDateTime": { "type": "string", "format": "date-time" },
+          "owner": { "$ref": "#/components/schemas/IdentitySet" },
+          "quota": { "$ref": "#/components/schemas/Quota" }
+        },
+        "required": ["id"]
+      },
+      "DriveItem": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "eTag": { "type": "string" },
+          "cTag": { "type": "string" },
+          "size": { "type": "integer", "format": "int64" },
+          "webUrl": { "type": "string", "format": "uri" },
+          "createdDateTime": { "type": "string", "format": "date-time" },
+          "lastModifiedDateTime": { "type": "string", "format": "date-time" },
+          "createdBy": { "$ref": "#/components/schemas/IdentitySet" },
+          "lastModifiedBy": { "$ref": "#/components/schemas/IdentitySet" },
+          "parentReference": { "$ref": "#/components/schemas/ItemReference" },
+          "file": { "$ref": "#/components/schemas/FileFacet" },
+          "folder": { "$ref": "#/components/schemas/FolderFacet" },
+          "@microsoft.graph.downloadUrl": { "type": "string", "format": "uri" }
+        },
+        "required": ["id"]
+      },
+      "DriveItemCollectionResponse": {
+        "type": "object",
+        "properties": {
+          "@odata.context": { "type": "string" },
+          "@odata.nextLink": { "type": "string" },
+          "value": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/DriveItem" }
+          }
+        },
+        "required": ["value"]
+      },
+      "Site": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "displayName": { "type": "string" },
+          "description": { "type": "string" },
+          "webUrl": { "type": "string", "format": "uri" },
+          "createdDateTime": { "type": "string", "format": "date-time" },
+          "lastModifiedDateTime": { "type": "string", "format": "date-time" }
+        },
+        "required": ["id"]
+      },
+      "List": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "displayName": { "type": "string" },
+          "description": { "type": "string" },
+          "webUrl": { "type": "string", "format": "uri" },
+          "createdDateTime": { "type": "string", "format": "date-time" },
+          "lastModifiedDateTime": { "type": "string", "format": "date-time" }
+        },
+        "required": ["id"]
+      },
+      "ListCollectionResponse": {
+        "type": "object",
+        "properties": {
+          "@odata.context": { "type": "string" },
+          "@odata.nextLink": { "type": "string" },
+          "value": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/List" }
+          }
+        },
+        "required": ["value"]
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "displayName": { "type": "string" },
+          "givenName": { "type": "string" },
+          "surname": { "type": "string" },
+          "mail": { "type": "string" },
+          "userPrincipalName": { "type": "string" },
+          "jobTitle": { "type": "string" }
+        },
+        "required": ["id"]
+      },
+      "Group": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "displayName": { "type": "string" },
+          "description": { "type": "string" },
+          "mail": { "type": "string" },
+          "mailNickname": { "type": "string" },
+          "groupTypes": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "createdDateTime": { "type": "string", "format": "date-time" }
+        },
+        "required": ["id"]
+      },
+      "Application": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "appId": { "type": "string" },
+          "displayName": { "type": "string" },
+          "description": { "type": "string" },
+          "createdDateTime": { "type": "string", "format": "date-time" }
+        }
+      },
+      "Worksheet": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "position": { "type": "integer" },
+          "visibility": {
+            "type": "string",
+            "enum": ["Visible", "Hidden", "VeryHidden"]
+          }
+        },
+        "required": ["id"]
+      },
+      "WorksheetCollectionResponse": {
+        "type": "object",
+        "properties": {
+          "@odata.context": { "type": "string" },
+          "value": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Worksheet" }
+          }
+        },
+        "required": ["value"]
+      },
+      "UploadSessionRequest": {
+        "type": "object",
+        "properties": {
+          "@microsoft.graph.conflictBehavior": {
+            "type": "string",
+            "enum": ["fail", "replace", "rename"]
+          },
+          "name": { "type": "string" }
+        }
+      },
+      "UploadSession": {
+        "type": "object",
+        "properties": {
+          "uploadUrl": { "type": "string", "format": "uri" },
+          "expirationDateTime": { "type": "string", "format": "date-time" },
+          "nextExpectedRanges": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        },
+        "required": ["uploadUrl"]
+      }
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "adaptor": "fhir",
+  "npm": "@openfn/language-fhir",
+  "origin": "generated",
+  "upstreamFormat": "docs",
+  "sources": [
+    "https://hl7.org/fhir/R4/http.html",
+    "https://hl7.org/fhir/R4/patient.html",
+    "https://hl7.org/fhir/R4/observation.html",
+    "https://hl7.org/fhir/R4/claim.html",
+    "https://cdn.jsdelivr.net/npm/@openfn/language-fhir/ast.json",
+    "https://github.com/OpenFn/adaptors/tree/main/packages/fhir"
+  ],
+  "capturedAt": "2026-07-06",
+  "notes": "HL7 FHIR R4 RESTful API. The fhir adaptor is generic (post/get/create/createTransactionBundle/getClaim) over any resource type; this subset models the resources seen in the adaptor examples and common OpenFn FHIR usage: Patient, Observation, Encounter, Claim, and transaction Bundle. Resource schemas are focused subsets of the full FHIR StructureDefinitions. Server base is the public HAPI R4 test server; real deployments vary."
+}

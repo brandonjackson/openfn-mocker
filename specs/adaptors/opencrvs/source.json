@@ -1,0 +1,13 @@
+{
+  "adaptor": "opencrvs",
+  "npm": "@openfn/language-opencrvs",
+  "origin": "synthesized",
+  "upstreamFormat": "adaptor-surface",
+  "sources": [
+    "https://github.com/OpenFn/adaptors/tree/main/packages/opencrvs/src",
+    "https://documentation.opencrvs.org/",
+    "https://cdn.jsdelivr.net/npm/@openfn/language-opencrvs/ast.json"
+  ],
+  "capturedAt": "2026-07-06",
+  "notes": "Synthesized from the adaptor surface (Adaptor.js, http.js, Utils.js, query.js). OpenCRVS spans multiple hosts under one domain: gateway (FHIR /notification + GraphQL /graphql), register (v2 events REST /api/events/*), countryconfig (/api/events/locations) and auth (/token). Because the adaptor uses relative paths against a shared domain, all are modeled as paths on a single server. The v2 Event and Location response shapes are inferred (the adaptor only reads data.id from events and does not type locations) and should be verified against the live OpenCRVS v2 API."
+}

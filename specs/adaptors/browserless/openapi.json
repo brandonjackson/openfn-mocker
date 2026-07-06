@@ -1,0 +1,223 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Browserless API (OpenFn focused subset)",
+    "version": "2.0.0",
+    "description": "Focused OpenAPI description of the Browserless browser-automation REST API endpoints relevant to the OpenFn browserless adaptor. The adaptor's createPDF calls /pdf; the generic request() operation can reach the other documented endpoints (/screenshot, /content, /scrape). PDF and screenshot responses are modelled as JSON result wrappers reflecting the base64 value the adaptor stores in state.",
+    "x-openfn-adaptor": "browserless"
+  },
+  "servers": [
+    { "url": "https://production-sfo.browserless.io" }
+  ],
+  "paths": {
+    "/pdf": {
+      "post": {
+        "operationId": "createPDF",
+        "summary": "Generate a PDF from HTML or a URL",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/PdfRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "PDF result. The real API returns application/pdf binary; here it is modelled as the base64 wrapper the adaptor exposes on state.data.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PdfResult" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/screenshot": {
+      "post": {
+        "operationId": "createScreenshot",
+        "summary": "Capture a screenshot from HTML or a URL",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ScreenshotRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Screenshot result (base64 wrapper).",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ScreenshotResult" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/content": {
+      "post": {
+        "operationId": "getContent",
+        "summary": "Return the fully rendered HTML of a page",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ContentRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Rendered content result.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ContentResult" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/scrape": {
+      "post": {
+        "operationId": "scrape",
+        "summary": "Scrape structured data from a page using element selectors",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ScrapeRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Scrape result",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ScrapeResult" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "GotoOptions": {
+        "type": "object",
+        "properties": {
+          "timeout": { "type": "integer" },
+          "waitUntil": { "type": "string", "example": "networkidle2" }
+        }
+      },
+      "PdfOptions": {
+        "type": "object",
+        "properties": {
+          "format": { "type": "string", "example": "A4" },
+          "printBackground": { "type": "boolean" },
+          "displayHeaderFooter": { "type": "boolean" },
+          "landscape": { "type": "boolean" },
+          "scale": { "type": "number" }
+        }
+      },
+      "PdfRequest": {
+        "type": "object",
+        "properties": {
+          "url": { "type": "string" },
+          "html": { "type": "string" },
+          "options": { "$ref": "#/components/schemas/PdfOptions" },
+          "gotoOptions": { "$ref": "#/components/schemas/GotoOptions" }
+        }
+      },
+      "PdfResult": {
+        "type": "object",
+        "properties": {
+          "base64": { "type": "string", "description": "Base64-encoded PDF bytes" },
+          "type": { "type": "string", "example": "application/pdf" }
+        }
+      },
+      "ScreenshotRequest": {
+        "type": "object",
+        "properties": {
+          "url": { "type": "string" },
+          "html": { "type": "string" },
+          "options": {
+            "type": "object",
+            "properties": {
+              "fullPage": { "type": "boolean" },
+              "type": { "type": "string", "example": "png" }
+            }
+          },
+          "gotoOptions": { "$ref": "#/components/schemas/GotoOptions" }
+        }
+      },
+      "ScreenshotResult": {
+        "type": "object",
+        "properties": {
+          "base64": { "type": "string", "description": "Base64-encoded image bytes" },
+          "type": { "type": "string", "example": "image/png" }
+        }
+      },
+      "ContentRequest": {
+        "type": "object",
+        "properties": {
+          "url": { "type": "string" },
+          "html": { "type": "string" },
+          "gotoOptions": { "$ref": "#/components/schemas/GotoOptions" }
+        }
+      },
+      "ContentResult": {
+        "type": "object",
+        "properties": {
+          "content": { "type": "string", "description": "Rendered HTML" }
+        }
+      },
+      "ScrapeRequest": {
+        "type": "object",
+        "properties": {
+          "url": { "type": "string" },
+          "html": { "type": "string" },
+          "elements": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": { "selector": { "type": "string" } }
+            }
+          },
+          "gotoOptions": { "$ref": "#/components/schemas/GotoOptions" }
+        }
+      },
+      "ScrapeResult": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "selector": { "type": "string" },
+                "results": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "text": { "type": "string" },
+                      "html": { "type": "string" },
+                      "attributes": { "type": "array", "items": { "type": "object", "additionalProperties": true } }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

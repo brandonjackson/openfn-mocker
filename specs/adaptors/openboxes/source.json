@@ -1,0 +1,13 @@
+{
+  "adaptor": "openboxes",
+  "npm": "@openfn/language-openboxes",
+  "origin": "generated",
+  "upstreamFormat": "docs",
+  "sources": [
+    "https://docs.openboxes.com/en/develop/api-guide/",
+    "https://github.com/openboxes/openboxes/tree/develop/docs/api-guide",
+    "https://cdn.jsdelivr.net/npm/@openfn/language-openboxes/ast.json"
+  ],
+  "capturedAt": "2026-07-06",
+  "notes": "Authored from the OpenBoxes API guide (no machine spec published). The adaptor uses generic get/post/request against /openboxes/api paths. Covers products, categories, locations, stock movements and the generic domain API. Most endpoints wrap payloads in a {data:...} envelope; the dedicated products list/detail endpoints are a documented exception that return raw arrays/objects (modeled that way). stockMovements dates are MM/DD/YYYY strings while product dates are ISO 8601. organization/active on Location are unverified and omitted."
+}

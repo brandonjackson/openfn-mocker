@@ -1,0 +1,17 @@
+{
+  "adaptor": "siuben-rd",
+  "npm": "@openfn/language-siuben-rd",
+  "origin": "synthesized",
+  "upstreamFormat": "adaptor-surface",
+  "sources": [
+    "https://cdn.jsdelivr.net/npm/@openfn/language-siuben-rd/ast.json",
+    "https://cdn.jsdelivr.net/npm/@openfn/language-siuben-rd/types/index.d.ts",
+    "https://cdn.jsdelivr.net/npm/@openfn/language-siuben-rd/dist/index.js",
+    "https://raw.githubusercontent.com/OpenFn/adaptors/main/packages/siuben-rd/src/Adaptor.js",
+    "https://github.com/OpenFn/adaptors/tree/main/packages/siuben-rd",
+    "https://siuben.gob.do/",
+    "https://siuben.gob.do/consultas/"
+  ],
+  "capturedAt": "2026-07-06",
+  "notes": "SIUBEN is the Dominican Republic's Sistema Único de Beneficiarios, a private government social-registry API with no public/machine-readable spec (web research found only the institutional site and open-data GIS hub, no developer docs). This OpenAPI 3.0.3 document is therefore synthesized from the adaptor surface. The adaptor is a thin HTTP wrapper: ast.json exposes no adaptor-specific operations, only re-exported language-common helpers plus an `http` namespace (http.get, http.request). The one CONFIRMED endpoint, read from src/Utils.js, is POST /authenticate — it takes {username, password} JSON and the adaptor stores response.body.Token as the bearer token for all subsequent calls. All other operations (listBeneficiarios, getBeneficiario, getHogar, getHogarMiembros, getIcv) are SYNTHESIZED/domain-plausible endpoints that the generic bearer-authenticated http.get would target, modeled from SIUBEN's documented public functions (cédula/beneficiary lookup, household 'hogar' records, and the Índice de Calidad de Vida 0–100 quality-of-life score). Paths, field names (Spanish) and shapes are best-effort inventions, not verified against the live API — suitable for mocking only. servers[0].url is a placeholder; the real base URL is provided per-connection via configuration.baseUrl. Common/utility exports (fn, each, field, cursor, etc.) are excluded as they make no external calls."
+}

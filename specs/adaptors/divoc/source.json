@@ -1,0 +1,13 @@
+{
+  "adaptor": "divoc",
+  "npm": "@openfn/language-divoc",
+  "origin": "generated",
+  "upstreamFormat": "docs",
+  "sources": [
+    "https://github.com/egovernments/DIVOC/blob/main/interfaces/vaccination-api.yaml",
+    "https://cdn.jsdelivr.net/npm/@openfn/language-divoc/ast.json",
+    "https://github.com/OpenFn/adaptors/tree/main/packages/divoc"
+  ],
+  "capturedAt": "2026-07-06",
+  "notes": "DIVOC publishes a Swagger 2.0 vaccination-api.yaml on GitHub but it was not directly fetchable at capture time. The single certify endpoint (POST /v1/certify) was confirmed from the compiled adaptor bundle, and the request schema (preEnrollmentCode/recipient/vaccination/vaccinator/facility) from the adaptor's JSDoc example and DIVOC docs. Response shape (Certificate) approximated from DIVOC certificate-generation documentation. Base URL is a mock placeholder since DIVOC is self-hosted."
+}

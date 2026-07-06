@@ -1,0 +1,196 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "divoc — mocker seed-data schema",
+    "version": "1.0.0",
+    "description": "Schema for the seed data openfn-mocker needs to impersonate divoc. Derived from the adaptor's OpenAPI spec. A seed dump is { collection: { id: record } }; each record validates against its resource schema below.",
+    "x-openfn-adaptor": "divoc",
+    "x-derived-from": "openapi.json",
+    "x-captured-at": "2026-07-06"
+  },
+  "x-seed": {
+    "shape": "{ collection: { id: record } }",
+    "collections": {
+      "certificates": {
+        "resource": "Certificate",
+        "schema": {
+          "$ref": "#/components/schemas/Certificate"
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SeedData": {
+        "type": "object",
+        "description": "Full seed dump loaded by mocker: one property per collection.",
+        "properties": {
+          "certificates": {
+            "type": "object",
+            "description": "Records keyed by id for the certificates collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Certificate"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "CertificationRequest": {
+        "type": "object",
+        "required": [
+          "preEnrollmentCode",
+          "recipient",
+          "vaccination"
+        ],
+        "properties": {
+          "preEnrollmentCode": {
+            "type": "string"
+          },
+          "recipient": {
+            "$ref": "#/components/schemas/Recipient"
+          },
+          "vaccination": {
+            "$ref": "#/components/schemas/Vaccination"
+          },
+          "vaccinator": {
+            "$ref": "#/components/schemas/Vaccinator"
+          },
+          "facility": {
+            "$ref": "#/components/schemas/Facility"
+          }
+        }
+      },
+      "Recipient": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "dob": {
+            "type": "string",
+            "format": "date"
+          },
+          "age": {
+            "type": "string"
+          },
+          "gender": {
+            "type": "string"
+          },
+          "nationality": {
+            "type": "string"
+          },
+          "identity": {
+            "type": "string"
+          },
+          "contact": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "address": {
+            "$ref": "#/components/schemas/Address"
+          }
+        }
+      },
+      "Vaccination": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "batch": {
+            "type": "string"
+          },
+          "manufacturer": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "effectiveStart": {
+            "type": "string",
+            "format": "date"
+          },
+          "effectiveUntil": {
+            "type": "string",
+            "format": "date"
+          },
+          "dose": {
+            "type": "integer"
+          },
+          "totalDoses": {
+            "type": "integer"
+          }
+        }
+      },
+      "Vaccinator": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "Facility": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "address": {
+            "$ref": "#/components/schemas/Address"
+          }
+        }
+      },
+      "Address": {
+        "type": "object",
+        "properties": {
+          "addressLine1": {
+            "type": "string"
+          },
+          "addressLine2": {
+            "type": "string"
+          },
+          "district": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "pincode": {
+            "type": "string"
+          }
+        }
+      },
+      "Certificate": {
+        "type": "object",
+        "properties": {
+          "certificateId": {
+            "type": "string"
+          },
+          "preEnrollmentCode": {
+            "type": "string"
+          },
+          "issuedDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string"
+          },
+          "signedCertificate": {
+            "type": "object"
+          },
+          "qrCode": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "adaptor": "openhim",
+  "npm": "@openfn/language-openhim",
+  "origin": "generated",
+  "upstreamFormat": "docs",
+  "sources": [
+    "https://cdn.jsdelivr.net/npm/@openfn/language-openhim/ast.json",
+    "https://openhim.org/docs/api/transactions/read/",
+    "https://openhim.org/docs/api/channels/create",
+    "https://openhim.org/docs/api/clients/create",
+    "https://openhim.org/docs/api/tasks/create",
+    "https://github.com/jembi/openhim-core-js"
+  ],
+  "capturedAt": "2026-07-06",
+  "notes": "No published OpenAPI/Swagger spec exists for the OpenHIM Core API. Authored by hand from the OpenHIM API docs, covering exactly the endpoints the adaptor calls: getTransactions (GET /transactions), getClients/createClient (GET,POST /clients), getChannels/createChannel (GET,POST /channels), getTasks/createTask (GET,POST /tasks). Added by-id GET variants for transactions/clients/channels since the adaptor passes an optional id. The real Core API is served over HTTPS on port 8080 and requires token/mutual-TLS auth; server URL is a local mock placeholder. Resource schemas (Transaction, Client, Channel, Route, Task) are focused subsets of the full OpenHIM Mongoose models."
+}

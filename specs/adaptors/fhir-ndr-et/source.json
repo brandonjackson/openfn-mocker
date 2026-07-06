@@ -1,0 +1,12 @@
+{
+  "adaptor": "fhir-ndr-et",
+  "npm": "@openfn/language-fhir-ndr-et",
+  "origin": "generated",
+  "upstreamFormat": "docs",
+  "sources": [
+    "https://github.com/OpenFn/adaptors/tree/main/packages/fhir-ndr-et",
+    "https://www.hl7.org/fhir/R4/http.html"
+  ],
+  "capturedAt": "2026-07-06",
+  "notes": "FHIR R4 profile for the Ethiopia National Data Repository (NDR). Adaptor exposes create(resourceType, resource) with server-assigned ids, plus the common FHIR REST verbs. Modelled as standard FHIR R4 REST + transaction Bundle over core resources. Server URL is a representative placeholder for the NDR FHIR endpoint."
+}

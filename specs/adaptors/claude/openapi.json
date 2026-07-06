@@ -1,0 +1,372 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Anthropic API (mock subset)",
+    "version": "2023-06-01",
+    "description": "Focused subset of the Anthropic (Claude) API used by the OpenFn claude adaptor. The adaptor's `prompt` operation calls the Messages API (POST /v1/messages) via the @anthropic-ai/sdk. This spec also covers token counting, the Models API, and the Message Batches API for completeness. Authentication uses the `x-api-key` header plus the `anthropic-version` header.",
+    "x-openfn-adaptor": "claude"
+  },
+  "servers": [{ "url": "https://api.anthropic.com/v1" }],
+  "paths": {
+    "/messages": {
+      "post": {
+        "operationId": "createMessage",
+        "summary": "Create a Message",
+        "description": "Send a structured list of input messages and generate the next message in the conversation. This is the endpoint used by the OpenFn claude adaptor's `prompt` operation.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateMessageRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The generated Message.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Message" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/messages/count_tokens": {
+      "post": {
+        "operationId": "countMessageTokens",
+        "summary": "Count tokens in a Message",
+        "description": "Count the number of tokens in a Message without creating it.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CountTokensRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Token count.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TokenCount" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/models": {
+      "get": {
+        "operationId": "listModels",
+        "summary": "List available models",
+        "parameters": [
+          { "name": "after_id", "in": "query", "schema": { "type": "string" }, "description": "Cursor: returns results after this object id." },
+          { "name": "before_id", "in": "query", "schema": { "type": "string" }, "description": "Cursor: returns results before this object id." },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 20, "minimum": 1, "maximum": 1000 } }
+        ],
+        "responses": {
+          "200": {
+            "description": "A paginated list of models.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ModelList" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/models/{model_id}": {
+      "get": {
+        "operationId": "getModel",
+        "summary": "Get a model",
+        "parameters": [
+          { "name": "model_id", "in": "path", "required": true, "schema": { "type": "string" }, "description": "Model identifier or alias, e.g. claude-opus-4-6." }
+        ],
+        "responses": {
+          "200": {
+            "description": "The requested model.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Model" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/messages/batches": {
+      "post": {
+        "operationId": "createMessageBatch",
+        "summary": "Create a Message Batch",
+        "description": "Send a batch of Message creation requests to be processed asynchronously.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateMessageBatchRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The created Message Batch.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/MessageBatch" }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "listMessageBatches",
+        "summary": "List Message Batches",
+        "parameters": [
+          { "name": "after_id", "in": "query", "schema": { "type": "string" } },
+          { "name": "before_id", "in": "query", "schema": { "type": "string" } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 20, "minimum": 1, "maximum": 1000 } }
+        ],
+        "responses": {
+          "200": {
+            "description": "A paginated list of Message Batches.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/MessageBatchList" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/messages/batches/{message_batch_id}": {
+      "get": {
+        "operationId": "getMessageBatch",
+        "summary": "Retrieve a Message Batch",
+        "parameters": [
+          { "name": "message_batch_id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "The requested Message Batch.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/MessageBatch" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/messages/batches/{message_batch_id}/cancel": {
+      "post": {
+        "operationId": "cancelMessageBatch",
+        "summary": "Cancel a Message Batch",
+        "parameters": [
+          { "name": "message_batch_id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "The Message Batch after cancellation was initiated.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/MessageBatch" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "apiKey": { "type": "apiKey", "in": "header", "name": "x-api-key" }
+    },
+    "schemas": {
+      "InputMessage": {
+        "type": "object",
+        "required": ["role", "content"],
+        "properties": {
+          "role": { "type": "string", "enum": ["user", "assistant"] },
+          "content": {
+            "description": "A string, or an array of content blocks.",
+            "oneOf": [
+              { "type": "string" },
+              { "type": "array", "items": { "type": "object", "additionalProperties": true } }
+            ]
+          }
+        }
+      },
+      "CreateMessageRequest": {
+        "type": "object",
+        "required": ["model", "max_tokens", "messages"],
+        "properties": {
+          "model": { "type": "string", "example": "claude-opus-4-6" },
+          "max_tokens": { "type": "integer", "example": 1024 },
+          "messages": { "type": "array", "items": { "$ref": "#/components/schemas/InputMessage" } },
+          "system": {
+            "description": "System prompt as a string or an array of text blocks.",
+            "oneOf": [
+              { "type": "string" },
+              { "type": "array", "items": { "type": "object", "additionalProperties": true } }
+            ]
+          },
+          "temperature": { "type": "number", "minimum": 0, "maximum": 1, "example": 1 },
+          "top_p": { "type": "number" },
+          "top_k": { "type": "integer" },
+          "stop_sequences": { "type": "array", "items": { "type": "string" } },
+          "stream": { "type": "boolean", "default": false },
+          "tools": { "type": "array", "items": { "type": "object", "additionalProperties": true } },
+          "tool_choice": { "type": "object", "additionalProperties": true },
+          "thinking": { "type": "object", "additionalProperties": true },
+          "metadata": {
+            "type": "object",
+            "properties": { "user_id": { "type": "string", "nullable": true } }
+          },
+          "service_tier": { "type": "string", "enum": ["auto", "standard_only"] }
+        }
+      },
+      "ContentBlock": {
+        "type": "object",
+        "description": "A block of generated content. The most common type is `text`; tool use and thinking blocks may also appear.",
+        "required": ["type"],
+        "properties": {
+          "type": { "type": "string", "example": "text", "enum": ["text", "thinking", "redacted_thinking", "tool_use", "server_tool_use", "web_search_tool_result", "code_execution_tool_result"] },
+          "text": { "type": "string", "description": "Present when type is `text`." },
+          "thinking": { "type": "string", "description": "Present when type is `thinking`." },
+          "id": { "type": "string", "description": "Present when type is `tool_use`." },
+          "name": { "type": "string", "description": "Tool name, present when type is `tool_use`." },
+          "input": { "type": "object", "additionalProperties": true, "description": "Tool input, present when type is `tool_use`." },
+          "citations": { "type": "array", "nullable": true, "items": { "type": "object", "additionalProperties": true } }
+        }
+      },
+      "Usage": {
+        "type": "object",
+        "properties": {
+          "input_tokens": { "type": "integer", "example": 12 },
+          "output_tokens": { "type": "integer", "example": 68 },
+          "cache_creation_input_tokens": { "type": "integer", "nullable": true },
+          "cache_read_input_tokens": { "type": "integer", "nullable": true },
+          "service_tier": { "type": "string", "nullable": true, "enum": ["standard", "priority", "batch"] }
+        }
+      },
+      "Message": {
+        "type": "object",
+        "description": "A Message returned by the Messages API.",
+        "required": ["id", "type", "role", "content", "model", "usage"],
+        "properties": {
+          "id": { "type": "string", "example": "msg_01XFDUDYJgAACzvnptvVoYEL" },
+          "type": { "type": "string", "enum": ["message"], "example": "message" },
+          "role": { "type": "string", "enum": ["assistant"], "example": "assistant" },
+          "model": { "type": "string", "example": "claude-opus-4-6" },
+          "content": { "type": "array", "items": { "$ref": "#/components/schemas/ContentBlock" } },
+          "stop_reason": {
+            "type": "string",
+            "nullable": true,
+            "enum": ["end_turn", "max_tokens", "stop_sequence", "tool_use", "pause_turn", "refusal"],
+            "example": "end_turn"
+          },
+          "stop_sequence": { "type": "string", "nullable": true },
+          "usage": { "$ref": "#/components/schemas/Usage" }
+        }
+      },
+      "CountTokensRequest": {
+        "type": "object",
+        "required": ["model", "messages"],
+        "properties": {
+          "model": { "type": "string", "example": "claude-opus-4-6" },
+          "messages": { "type": "array", "items": { "$ref": "#/components/schemas/InputMessage" } },
+          "system": {
+            "oneOf": [
+              { "type": "string" },
+              { "type": "array", "items": { "type": "object", "additionalProperties": true } }
+            ]
+          },
+          "tools": { "type": "array", "items": { "type": "object", "additionalProperties": true } }
+        }
+      },
+      "TokenCount": {
+        "type": "object",
+        "required": ["input_tokens"],
+        "properties": {
+          "input_tokens": { "type": "integer", "example": 2095 }
+        }
+      },
+      "Model": {
+        "type": "object",
+        "required": ["id", "type", "display_name", "created_at"],
+        "properties": {
+          "id": { "type": "string", "example": "claude-opus-4-6" },
+          "type": { "type": "string", "enum": ["model"], "example": "model" },
+          "display_name": { "type": "string", "example": "Claude Opus 4.6" },
+          "created_at": { "type": "string", "format": "date-time", "example": "2026-02-04T00:00:00Z" }
+        }
+      },
+      "ModelList": {
+        "type": "object",
+        "required": ["data", "has_more"],
+        "properties": {
+          "data": { "type": "array", "items": { "$ref": "#/components/schemas/Model" } },
+          "has_more": { "type": "boolean", "example": true },
+          "first_id": { "type": "string", "nullable": true },
+          "last_id": { "type": "string", "nullable": true }
+        }
+      },
+      "RequestCounts": {
+        "type": "object",
+        "properties": {
+          "processing": { "type": "integer", "example": 100 },
+          "succeeded": { "type": "integer", "example": 50 },
+          "errored": { "type": "integer", "example": 30 },
+          "canceled": { "type": "integer", "example": 10 },
+          "expired": { "type": "integer", "example": 10 }
+        }
+      },
+      "MessageBatch": {
+        "type": "object",
+        "required": ["id", "type", "processing_status", "request_counts", "created_at", "expires_at"],
+        "properties": {
+          "id": { "type": "string", "example": "msgbatch_013Zva2CMHLNnXjNJ2wu5wMh" },
+          "type": { "type": "string", "enum": ["message_batch"], "example": "message_batch" },
+          "processing_status": { "type": "string", "enum": ["in_progress", "canceling", "ended"], "example": "in_progress" },
+          "request_counts": { "$ref": "#/components/schemas/RequestCounts" },
+          "ended_at": { "type": "string", "format": "date-time", "nullable": true },
+          "created_at": { "type": "string", "format": "date-time", "example": "2024-08-20T18:37:24.100435Z" },
+          "expires_at": { "type": "string", "format": "date-time", "example": "2024-08-21T18:37:24.100435Z" },
+          "archived_at": { "type": "string", "format": "date-time", "nullable": true },
+          "cancel_initiated_at": { "type": "string", "format": "date-time", "nullable": true },
+          "results_url": { "type": "string", "nullable": true }
+        }
+      },
+      "MessageBatchList": {
+        "type": "object",
+        "required": ["data", "has_more"],
+        "properties": {
+          "data": { "type": "array", "items": { "$ref": "#/components/schemas/MessageBatch" } },
+          "has_more": { "type": "boolean" },
+          "first_id": { "type": "string", "nullable": true },
+          "last_id": { "type": "string", "nullable": true }
+        }
+      },
+      "BatchRequestItem": {
+        "type": "object",
+        "required": ["custom_id", "params"],
+        "properties": {
+          "custom_id": { "type": "string", "example": "my-first-request" },
+          "params": { "$ref": "#/components/schemas/CreateMessageRequest" }
+        }
+      },
+      "CreateMessageBatchRequest": {
+        "type": "object",
+        "required": ["requests"],
+        "properties": {
+          "requests": { "type": "array", "items": { "$ref": "#/components/schemas/BatchRequestItem" } }
+        }
+      }
+    }
+  },
+  "security": [{ "apiKey": [] }]
+}

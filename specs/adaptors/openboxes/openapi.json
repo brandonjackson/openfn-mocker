@@ -1,0 +1,440 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "OpenBoxes API (mock subset)",
+    "version": "0.9.0",
+    "description": "Focused OpenAPI 3.x subset of the OpenBoxes REST API, authored from the OpenBoxes API guide. OpenBoxes is an open-source inventory and supply-chain management system for health commodities. The OpenFn openboxes adaptor uses generic get(path)/post(path, data)/request(method, path, data) helpers against paths under /openboxes/api. Most endpoints wrap payloads in a {data: ...} envelope; the dedicated products list/detail endpoints are a documented exception returning raw arrays/objects. Covers products, categories, locations, stock movements and the generic domain API.",
+    "x-openfn-adaptor": "openboxes"
+  },
+  "servers": [{ "url": "https://demo.openboxes.com/openboxes/api" }],
+  "paths": {
+    "/products": {
+      "get": {
+        "operationId": "listProducts",
+        "summary": "List products",
+        "description": "Returns a raw array (no {data} envelope) per OpenBoxes docs.",
+        "parameters": [
+          { "$ref": "#/components/parameters/max" },
+          { "$ref": "#/components/parameters/offset" },
+          { "name": "name", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Product array",
+            "content": {
+              "application/json": {
+                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Product" } }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createProduct",
+        "summary": "Create a product",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/Product" } }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Created product",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ProductEnvelope" } }
+            }
+          }
+        }
+      }
+    },
+    "/products/{id}": {
+      "get": {
+        "operationId": "getProduct",
+        "summary": "Get a product",
+        "description": "Returns a raw object (no {data} envelope) per OpenBoxes docs.",
+        "parameters": [{ "$ref": "#/components/parameters/id" }],
+        "responses": {
+          "200": {
+            "description": "Product",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Product" } }
+            }
+          }
+        }
+      }
+    },
+    "/products/{id}/availableItems": {
+      "get": {
+        "operationId": "getProductAvailableItems",
+        "summary": "Get available inventory items for a product",
+        "parameters": [{ "$ref": "#/components/parameters/id" }],
+        "responses": {
+          "200": {
+            "description": "Available items",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": { "type": "array", "items": { "$ref": "#/components/schemas/InventoryItem" } }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/categories": {
+      "get": {
+        "operationId": "listCategories",
+        "summary": "List product categories",
+        "parameters": [
+          { "$ref": "#/components/parameters/max" },
+          { "$ref": "#/components/parameters/offset" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Categories",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": { "type": "array", "items": { "$ref": "#/components/schemas/Category" } }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/locations": {
+      "get": {
+        "operationId": "listLocations",
+        "summary": "List locations",
+        "parameters": [
+          { "$ref": "#/components/parameters/max" },
+          { "$ref": "#/components/parameters/offset" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Locations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": { "type": "array", "items": { "$ref": "#/components/schemas/Location" } }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createLocation",
+        "summary": "Create a location",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/Location" } }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Created location",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/LocationEnvelope" } }
+            }
+          }
+        }
+      }
+    },
+    "/locations/{id}": {
+      "get": {
+        "operationId": "getLocation",
+        "summary": "Get a location",
+        "parameters": [{ "$ref": "#/components/parameters/id" }],
+        "responses": {
+          "200": {
+            "description": "Location",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/LocationEnvelope" } }
+            }
+          }
+        }
+      }
+    },
+    "/stockMovements": {
+      "get": {
+        "operationId": "listStockMovements",
+        "summary": "List stock movements",
+        "parameters": [
+          { "$ref": "#/components/parameters/max" },
+          { "$ref": "#/components/parameters/offset" },
+          { "name": "direction", "in": "query", "schema": { "type": "string", "enum": ["INBOUND", "OUTBOUND"] } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Stock movements",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": { "type": "array", "items": { "$ref": "#/components/schemas/StockMovement" } }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createStockMovement",
+        "summary": "Create a stock movement",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/StockMovement" } }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Created stock movement",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/StockMovementEnvelope" } }
+            }
+          }
+        }
+      }
+    },
+    "/stockMovements/{id}": {
+      "get": {
+        "operationId": "getStockMovement",
+        "summary": "Get a stock movement",
+        "parameters": [{ "$ref": "#/components/parameters/id" }],
+        "responses": {
+          "200": {
+            "description": "Stock movement",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/StockMovementEnvelope" } }
+            }
+          }
+        }
+      }
+    },
+    "/generic/{resource}": {
+      "get": {
+        "operationId": "listGenericResource",
+        "summary": "List records of a domain class via the generic API",
+        "description": "Generic CRUD over arbitrary OpenBoxes domain classes (e.g. requisition, shipment, order, inventoryItem, transaction).",
+        "parameters": [
+          { "name": "resource", "in": "path", "required": true, "schema": { "type": "string" }, "example": "requisition" },
+          { "$ref": "#/components/parameters/max" },
+          { "$ref": "#/components/parameters/offset" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Generic record list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": { "type": "array", "items": { "$ref": "#/components/schemas/GenericRecord" } }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createGenericResource",
+        "summary": "Create/update a record of a domain class via the generic API",
+        "parameters": [
+          { "name": "resource", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/GenericRecord" } }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Created record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "data": { "$ref": "#/components/schemas/GenericRecord" } }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "id": { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } },
+      "max": { "name": "max", "in": "query", "schema": { "type": "integer", "default": 10 }, "description": "Page size" },
+      "offset": { "name": "offset", "in": "query", "schema": { "type": "integer", "default": 0 } }
+    },
+    "schemas": {
+      "Product": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "example": "ff80818163e2de8d0163eba1b1e90002" },
+          "productCode": { "type": "string", "example": "10001" },
+          "name": { "type": "string", "example": "Acetaminophen 325mg tablet" },
+          "description": { "type": "string" },
+          "category": { "$ref": "#/components/schemas/CategoryRef" },
+          "unitOfMeasure": { "type": "string", "example": "EA" },
+          "pricePerUnit": { "type": "number", "example": 0.05 },
+          "active": { "type": "boolean", "example": true },
+          "color": { "type": "string" },
+          "dateCreated": { "type": "string", "format": "date-time" },
+          "lastUpdated": { "type": "string", "format": "date-time" }
+        }
+      },
+      "ProductEnvelope": {
+        "type": "object",
+        "properties": { "data": { "$ref": "#/components/schemas/Product" } }
+      },
+      "CategoryRef": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string", "example": "Medicines" }
+        }
+      },
+      "Category": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string", "example": "Medicines" },
+          "parentCategory": { "$ref": "#/components/schemas/CategoryRef" }
+        }
+      },
+      "Location": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string", "example": "Boston Depot" },
+          "description": { "type": "string" },
+          "locationNumber": { "type": "string" },
+          "locationType": { "$ref": "#/components/schemas/LocationType" },
+          "locationTypeCode": { "type": "string", "example": "DEPOT" },
+          "parentLocation": {
+            "type": "object",
+            "properties": { "id": { "type": "string" }, "name": { "type": "string" } }
+          }
+        }
+      },
+      "LocationType": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string", "example": "Depot" },
+          "description": { "type": "string" },
+          "locationTypeCode": { "type": "string", "example": "DEPOT" }
+        }
+      },
+      "LocationEnvelope": {
+        "type": "object",
+        "properties": { "data": { "$ref": "#/components/schemas/Location" } }
+      },
+      "StockMovement": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "identifier": { "type": "string", "example": "0000A" },
+          "origin": {
+            "type": "object",
+            "properties": { "id": { "type": "string" }, "name": { "type": "string" } }
+          },
+          "destination": {
+            "type": "object",
+            "properties": { "id": { "type": "string" }, "name": { "type": "string" } }
+          },
+          "stockMovementType": { "type": "string", "example": "OUTBOUND" },
+          "dateRequested": { "type": "string", "description": "MM/DD/YYYY", "example": "06/10/2024" },
+          "requestedBy": { "$ref": "#/components/schemas/UserRef" },
+          "statusCode": { "type": "string", "example": "PENDING" },
+          "status": { "type": "string" },
+          "lineItems": { "type": "array", "items": { "$ref": "#/components/schemas/StockMovementLineItem" } }
+        }
+      },
+      "StockMovementLineItem": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "productCode": { "type": "string" },
+          "product": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "productCode": { "type": "string" },
+              "name": { "type": "string" }
+            }
+          },
+          "statusCode": { "type": "string" },
+          "quantityRequested": { "type": "integer" },
+          "quantityAllowed": { "type": "integer" },
+          "quantityAvailable": { "type": "integer" },
+          "quantityCanceled": { "type": "integer" },
+          "quantityRevised": { "type": "integer" },
+          "reasonCode": { "type": "string" },
+          "comments": { "type": "string" },
+          "sortOrder": { "type": "integer" }
+        }
+      },
+      "StockMovementEnvelope": {
+        "type": "object",
+        "properties": { "data": { "$ref": "#/components/schemas/StockMovement" } }
+      },
+      "UserRef": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "firstName": { "type": "string" },
+          "lastName": { "type": "string" },
+          "email": { "type": "string" },
+          "username": { "type": "string" }
+        }
+      },
+      "InventoryItem": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "lotNumber": { "type": "string" },
+          "expirationDate": { "type": "string" },
+          "quantityAvailable": { "type": "integer" },
+          "product": {
+            "type": "object",
+            "properties": { "id": { "type": "string" }, "productCode": { "type": "string" }, "name": { "type": "string" } }
+          }
+        }
+      },
+      "GenericRecord": {
+        "type": "object",
+        "description": "A record of an arbitrary OpenBoxes domain class returned by the generic API.",
+        "properties": {
+          "id": { "type": "string" }
+        },
+        "additionalProperties": true
+      }
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "adaptor": "postgresql",
+  "npm": "@openfn/language-postgresql",
+  "origin": "synthesized",
+  "upstreamFormat": "adaptor-surface",
+  "sources": [
+    "https://cdn.jsdelivr.net/npm/@openfn/language-postgresql/ast.json",
+    "https://cdn.jsdelivr.net/npm/@openfn/language-postgresql/types/index.d.ts",
+    "https://github.com/OpenFn/adaptors/tree/main/packages/postgresql"
+  ],
+  "capturedAt": "2026-07-06",
+  "notes": "PostgreSQL is a SQL database reached over the pg wire protocol, not a REST API, so there is no upstream machine spec. Synthesized an OpenAPI 3.0 HTTP facade from the adaptor surface: each public operation (sql, findValue, insert, insertMany, upsert/upsertMany, describeTable, insertTable, modifyTable) is modeled as a path whose request body mirrors the operation arguments and whose 200 response mirrors the node-postgres result shape (command/rowCount/rows/fields). Server URL is a mock placeholder."
+}

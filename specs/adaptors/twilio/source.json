@@ -1,0 +1,13 @@
+{
+  "adaptor": "twilio",
+  "npm": "@openfn/language-twilio",
+  "origin": "found-openapi",
+  "upstreamFormat": "openapi-3.0",
+  "sources": [
+    "https://raw.githubusercontent.com/twilio/twilio-oai/main/spec/json/twilio_api_v2010.json",
+    "https://github.com/twilio/twilio-oai",
+    "https://cdn.jsdelivr.net/npm/@openfn/language-twilio/ast.json"
+  ],
+  "capturedAt": "2026-07-06",
+  "notes": "Focused subset of Twilio's official OpenAPI (twilio_api_v2010.json) covering the Message resource on api.twilio.com/2010-04-01. The twilio adaptor exposes only sendSMS, which uses the Twilio Node client's messages.create -> POST /Accounts/{AccountSid}/Messages.json; that create endpoint plus the standard list/fetch/update/delete Message operations and the Media subresource (list/fetch) are included (7 operations). Request bodies are application/x-www-form-urlencoded as Twilio expects. Enums (status, direction) and schema field descriptions are taken verbatim from the upstream spec; components renamed to friendly names (Message, Media, MessageList, etc.) for the mocker. Calls, Lookups, and other Twilio resources are intentionally excluded as the adaptor does not call them."
+}

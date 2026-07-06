@@ -1,0 +1,17 @@
+{
+  "adaptor": "maximo",
+  "npm": "@openfn/language-maximo",
+  "origin": "generated",
+  "upstreamFormat": "docs",
+  "sources": [
+    "https://cdn.jsdelivr.net/npm/@openfn/language-maximo/ast.json",
+    "https://github.com/OpenFn/adaptors/tree/main/packages/maximo",
+    "https://ibm-maximo-dev.github.io/maximo-restapi-documentation/",
+    "https://ibm-maximo-dev.github.io/maximo-restapi-documentation/query/selecting/",
+    "https://ibm-maximo-dev.github.io/maximo-restapi-documentation/crud/create_and_update/",
+    "https://bportaluri.com/2017/04/maximo-rest-apis-examples.html",
+    "https://www.ibm.com/support/pages/using-rest-api-details"
+  ],
+  "capturedAt": "2026-07-06",
+  "notes": "IBM has no single published OpenAPI/Swagger document for the legacy Maximo Integration Framework REST API (the maxrest/rest service) that this adaptor uses, so the spec was authored from IBM's REST API docs plus the adaptor surface. The adaptor is a thin passthrough with three operations: fetch (GET baseUrl+endpoint with query params, then optionally re-POST the body elsewhere), update (POST baseUrl+endpoint with header x-methodoverride:PATCH, Maximo 7.6+), and update75 (same, Maximo 7.5). Endpoints are arbitrary strings supplied by the caller, e.g. maxrest/rest/os/mxinventory or maxrest/rest/mbo/workorder/1234. Coverage models the two endpoint families (os object structures and mbo business objects) for the resources shown in the adaptor examples and common Maximo MBOs: work orders, assets, inventory, inventory balances, and persons. Response wrapper (rsStart/rsCount/rsTotal + member array) and record field names are representative rather than exhaustive; real payloads vary by object structure and Maximo version. Newer NextGen/OSLC endpoints (/maximo/oslc, /maximo/api) are not modeled since this adaptor targets the maxrest service."
+}

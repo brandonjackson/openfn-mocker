@@ -1,0 +1,154 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Google Drive API (mock subset)",
+    "version": "v3",
+    "description": "Focused subset of the Google Drive API v3 used by the OpenFn googledrive adaptor: files.create, files.get, files.list, and files.update (called via the googleapis SDK). Converted from the Drive API v3 Discovery document, covering the files resource.",
+    "x-openfn-adaptor": "googledrive"
+  },
+  "servers": [{ "url": "https://www.googleapis.com" }],
+  "paths": {
+    "/drive/v3/files": {
+      "get": {
+        "operationId": "listFiles",
+        "summary": "List / search files",
+        "description": "Lists or searches the user's files. The adaptor's list() operation queries files within a folder.",
+        "parameters": [
+          { "name": "q", "in": "query", "schema": { "type": "string" }, "description": "Search query, e.g. \"'<folderId>' in parents and name = 'foo'\"." },
+          { "name": "pageSize", "in": "query", "schema": { "type": "integer", "format": "int32", "default": 10 } },
+          { "name": "pageToken", "in": "query", "schema": { "type": "string" } },
+          { "name": "fields", "in": "query", "schema": { "type": "string" }, "description": "Partial-response fields selector, e.g. 'files(id,name,mimeType)'." },
+          { "name": "orderBy", "in": "query", "schema": { "type": "string" } },
+          { "name": "supportsAllDrives", "in": "query", "schema": { "type": "boolean", "default": true } },
+          { "name": "includeItemsFromAllDrives", "in": "query", "schema": { "type": "boolean" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of files",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/FileList" }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createFile",
+        "summary": "Create a file",
+        "description": "Creates a new file (metadata, and optionally media content via multipart upload).",
+        "parameters": [
+          { "name": "uploadType", "in": "query", "schema": { "type": "string", "enum": ["media", "multipart", "resumable"] } },
+          { "name": "supportsAllDrives", "in": "query", "schema": { "type": "boolean", "default": true } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/File" } }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The created file",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/File" } }
+            }
+          }
+        }
+      }
+    },
+    "/drive/v3/files/{fileId}": {
+      "get": {
+        "operationId": "getFile",
+        "summary": "Get a file's metadata or content",
+        "parameters": [
+          { "name": "fileId", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "fields", "in": "query", "schema": { "type": "string" }, "description": "e.g. 'id, name, mimeType, modifiedTime, size'." },
+          { "name": "alt", "in": "query", "schema": { "type": "string", "enum": ["json", "media"] }, "description": "Use 'media' to download file content." },
+          { "name": "supportsAllDrives", "in": "query", "schema": { "type": "boolean", "default": true } }
+        ],
+        "responses": {
+          "200": {
+            "description": "The requested file",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/File" } }
+            }
+          },
+          "404": { "description": "File not found" }
+        }
+      },
+      "patch": {
+        "operationId": "updateFile",
+        "summary": "Update a file",
+        "description": "Updates a file's metadata and/or content.",
+        "parameters": [
+          { "name": "fileId", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "uploadType", "in": "query", "schema": { "type": "string", "enum": ["media", "multipart", "resumable"] } },
+          { "name": "supportsAllDrives", "in": "query", "schema": { "type": "boolean", "default": true } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/File" } }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The updated file",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/File" } }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "FileList": {
+        "type": "object",
+        "description": "A list of files.",
+        "properties": {
+          "kind": { "type": "string", "example": "drive#fileList" },
+          "nextPageToken": { "type": "string" },
+          "incompleteSearch": { "type": "boolean", "example": false },
+          "files": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/File" }
+          }
+        }
+      },
+      "File": {
+        "type": "object",
+        "description": "The metadata for a Google Drive file.",
+        "properties": {
+          "kind": { "type": "string", "example": "drive#file" },
+          "id": { "type": "string", "example": "1a2B3c4D5e6F7g8H9i0JkLmNoPqRsTuVwX" },
+          "name": { "type": "string", "example": "report.csv" },
+          "mimeType": { "type": "string", "example": "text/csv" },
+          "description": { "type": "string" },
+          "parents": { "type": "array", "items": { "type": "string" }, "example": ["0AJk9LmNoPqRsUk9PVA"] },
+          "webViewLink": { "type": "string", "example": "https://drive.google.com/file/d/1a2B3c4D5e6F7g8H9i0JkLmNoPqRsTuVwX/view" },
+          "webContentLink": { "type": "string" },
+          "iconLink": { "type": "string" },
+          "size": { "type": "string", "description": "Size in bytes, as a string.", "example": "10240" },
+          "createdTime": { "type": "string", "format": "date-time", "example": "2024-03-04T10:00:00.000Z" },
+          "modifiedTime": { "type": "string", "format": "date-time", "example": "2024-03-05T12:30:00.000Z" },
+          "trashed": { "type": "boolean", "example": false },
+          "starred": { "type": "boolean", "example": false },
+          "shared": { "type": "boolean", "example": false },
+          "md5Checksum": { "type": "string" },
+          "owners": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "kind": { "type": "string", "example": "drive#user" },
+                "displayName": { "type": "string", "example": "Ama Mensah" },
+                "emailAddress": { "type": "string", "example": "ama@example.org" }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

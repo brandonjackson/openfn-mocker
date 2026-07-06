@@ -1,0 +1,765 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "vtiger — mocker seed-data schema",
+    "version": "1.0.0",
+    "description": "Schema for the seed data openfn-mocker needs to impersonate vtiger. Derived from the adaptor's OpenAPI spec. A seed dump is { collection: { id: record } }; each record validates against its resource schema below.",
+    "x-openfn-adaptor": "vtiger",
+    "x-derived-from": "openapi.json",
+    "x-captured-at": "2026-07-06"
+  },
+  "x-seed": {
+    "shape": "{ collection: { id: record } }",
+    "collections": {
+      "challengeResponses": {
+        "resource": "ChallengeResponse",
+        "schema": {
+          "$ref": "#/components/schemas/ChallengeResponse"
+        }
+      },
+      "deleteResponses": {
+        "resource": "DeleteResponse",
+        "schema": {
+          "$ref": "#/components/schemas/DeleteResponse"
+        }
+      },
+      "describeResponses": {
+        "resource": "DescribeResponse",
+        "schema": {
+          "$ref": "#/components/schemas/DescribeResponse"
+        }
+      },
+      "elementResponses": {
+        "resource": "ElementResponse",
+        "schema": {
+          "$ref": "#/components/schemas/ElementResponse"
+        }
+      },
+      "listTypesResponses": {
+        "resource": "ListTypesResponse",
+        "schema": {
+          "$ref": "#/components/schemas/ListTypesResponse"
+        }
+      },
+      "loginResponses": {
+        "resource": "LoginResponse",
+        "schema": {
+          "$ref": "#/components/schemas/LoginResponse"
+        }
+      },
+      "logoutResponses": {
+        "resource": "LogoutResponse",
+        "schema": {
+          "$ref": "#/components/schemas/LogoutResponse"
+        }
+      },
+      "queryResponses": {
+        "resource": "QueryResponse",
+        "schema": {
+          "$ref": "#/components/schemas/QueryResponse"
+        }
+      },
+      "syncResponses": {
+        "resource": "SyncResponse",
+        "schema": {
+          "$ref": "#/components/schemas/SyncResponse"
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SeedData": {
+        "type": "object",
+        "description": "Full seed dump loaded by mocker: one property per collection.",
+        "properties": {
+          "challengeResponses": {
+            "type": "object",
+            "description": "Records keyed by id for the challengeResponses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ChallengeResponse"
+            }
+          },
+          "deleteResponses": {
+            "type": "object",
+            "description": "Records keyed by id for the deleteResponses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/DeleteResponse"
+            }
+          },
+          "describeResponses": {
+            "type": "object",
+            "description": "Records keyed by id for the describeResponses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/DescribeResponse"
+            }
+          },
+          "elementResponses": {
+            "type": "object",
+            "description": "Records keyed by id for the elementResponses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ElementResponse"
+            }
+          },
+          "listTypesResponses": {
+            "type": "object",
+            "description": "Records keyed by id for the listTypesResponses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ListTypesResponse"
+            }
+          },
+          "loginResponses": {
+            "type": "object",
+            "description": "Records keyed by id for the loginResponses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/LoginResponse"
+            }
+          },
+          "logoutResponses": {
+            "type": "object",
+            "description": "Records keyed by id for the logoutResponses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/LogoutResponse"
+            }
+          },
+          "queryResponses": {
+            "type": "object",
+            "description": "Records keyed by id for the queryResponses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/QueryResponse"
+            }
+          },
+          "syncResponses": {
+            "type": "object",
+            "description": "Records keyed by id for the syncResponses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/SyncResponse"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "ChallengeResult": {
+        "type": "object",
+        "description": "Challenge token payload.",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "Challenge token to hash with the user access key."
+          },
+          "serverTime": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Server time (epoch seconds)."
+          },
+          "expireTime": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Token expiry (epoch seconds)."
+          }
+        },
+        "required": [
+          "token"
+        ]
+      },
+      "ChallengeResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "result": {
+            "$ref": "#/components/schemas/ChallengeResult"
+          }
+        },
+        "required": [
+          "success",
+          "result"
+        ]
+      },
+      "LoginRequest": {
+        "type": "object",
+        "required": [
+          "operation",
+          "username",
+          "accessKey"
+        ],
+        "properties": {
+          "operation": {
+            "type": "string",
+            "enum": [
+              "login"
+            ]
+          },
+          "username": {
+            "type": "string",
+            "description": "CRM username."
+          },
+          "accessKey": {
+            "type": "string",
+            "description": "md5(challengeToken + userAccessKey)."
+          }
+        }
+      },
+      "LoginResult": {
+        "type": "object",
+        "description": "Session details returned on successful login.",
+        "properties": {
+          "sessionName": {
+            "type": "string",
+            "description": "Session id used to authenticate subsequent calls."
+          },
+          "sessionId": {
+            "type": "string",
+            "description": "Alias of sessionName in some Vtiger versions."
+          },
+          "userId": {
+            "type": "string",
+            "description": "Webservice id of the logged-in user, e.g. \"19x1\"."
+          },
+          "version": {
+            "type": "string",
+            "description": "Webservice API version."
+          },
+          "vtigerVersion": {
+            "type": "string",
+            "description": "CRM version."
+          }
+        },
+        "required": [
+          "sessionName"
+        ]
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "result": {
+            "$ref": "#/components/schemas/LoginResult"
+          }
+        },
+        "required": [
+          "success",
+          "result"
+        ]
+      },
+      "LogoutResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "result": {
+            "type": "object",
+            "description": "Empty or informational result object on logout.",
+            "additionalProperties": true
+          }
+        },
+        "required": [
+          "success"
+        ]
+      },
+      "ModuleType": {
+        "type": "object",
+        "description": "Metadata for a single CRM module (element type).",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Module name, e.g. Contacts."
+          },
+          "label": {
+            "type": "string",
+            "description": "Human-readable module label."
+          },
+          "singular": {
+            "type": "string",
+            "description": "Singular label."
+          },
+          "isEntity": {
+            "type": "boolean",
+            "description": "Whether the module represents an entity with records."
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "ListTypesResult": {
+        "type": "object",
+        "description": "Result of listTypes: accessible module names plus per-module info.",
+        "properties": {
+          "types": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Accessible module names."
+          },
+          "information": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ModuleType"
+            },
+            "description": "Map of module name to module metadata."
+          }
+        }
+      },
+      "ListTypesResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "result": {
+            "$ref": "#/components/schemas/ListTypesResult"
+          }
+        },
+        "required": [
+          "success",
+          "result"
+        ]
+      },
+      "FieldType": {
+        "type": "object",
+        "description": "Data type descriptor for a module field.",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Field type name, e.g. string, picklist, reference."
+          },
+          "picklistValues": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "refersTo": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "For reference fields, the modules referenced."
+          }
+        }
+      },
+      "Field": {
+        "type": "object",
+        "description": "A single field definition within a module description.",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "mandatory": {
+            "type": "boolean"
+          },
+          "type": {
+            "$ref": "#/components/schemas/FieldType"
+          },
+          "nullable": {
+            "type": "boolean"
+          },
+          "editable": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "DescribeResult": {
+        "type": "object",
+        "description": "Field-level description of a module.",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "createable": {
+            "type": "boolean"
+          },
+          "updateable": {
+            "type": "boolean"
+          },
+          "deleteable": {
+            "type": "boolean"
+          },
+          "retrieveable": {
+            "type": "boolean"
+          },
+          "idPrefix": {
+            "type": "string",
+            "description": "Numeric module prefix used in webservice ids."
+          },
+          "isEntity": {
+            "type": "boolean"
+          },
+          "fields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Field"
+            }
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "DescribeResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "result": {
+            "$ref": "#/components/schemas/DescribeResult"
+          }
+        },
+        "required": [
+          "success",
+          "result"
+        ]
+      },
+      "Element": {
+        "type": "object",
+        "description": "A generic Vtiger CRM record. Field set varies by module; `id` and `assigned_user_id` are common. Additional module fields are permitted.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Webservice record id, e.g. \"12x45\"."
+          },
+          "assigned_user_id": {
+            "type": "string",
+            "description": "Owner user/group webservice id."
+          },
+          "createdtime": {
+            "type": "string",
+            "description": "Creation timestamp."
+          },
+          "modifiedtime": {
+            "type": "string",
+            "description": "Last modified timestamp."
+          }
+        },
+        "additionalProperties": true
+      },
+      "Contact": {
+        "type": "object",
+        "description": "A record from the Contacts module.",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "firstname": {
+            "type": "string"
+          },
+          "lastname": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "mobile": {
+            "type": "string"
+          },
+          "account_id": {
+            "type": "string",
+            "description": "Reference to the parent Account."
+          },
+          "assigned_user_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "lastname"
+        ],
+        "additionalProperties": true
+      },
+      "Account": {
+        "type": "object",
+        "description": "A record from the Accounts (organizations) module.",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "accountname": {
+            "type": "string"
+          },
+          "email1": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "website": {
+            "type": "string"
+          },
+          "industry": {
+            "type": "string"
+          },
+          "assigned_user_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "accountname"
+        ],
+        "additionalProperties": true
+      },
+      "Lead": {
+        "type": "object",
+        "description": "A record from the Leads module.",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "firstname": {
+            "type": "string"
+          },
+          "lastname": {
+            "type": "string"
+          },
+          "company": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "leadstatus": {
+            "type": "string"
+          },
+          "leadsource": {
+            "type": "string"
+          },
+          "assigned_user_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "lastname",
+          "company"
+        ],
+        "additionalProperties": true
+      },
+      "CreateElementRequest": {
+        "type": "object",
+        "required": [
+          "operation",
+          "sessionName",
+          "elementType",
+          "element"
+        ],
+        "properties": {
+          "operation": {
+            "type": "string",
+            "enum": [
+              "create"
+            ]
+          },
+          "sessionName": {
+            "type": "string"
+          },
+          "elementType": {
+            "type": "string",
+            "description": "Module name, e.g. Contacts."
+          },
+          "element": {
+            "type": "string",
+            "description": "JSON-encoded record object (the adaptor JSON.stringifies `element`)."
+          }
+        }
+      },
+      "UpdateElementRequest": {
+        "type": "object",
+        "required": [
+          "operation",
+          "sessionName",
+          "element"
+        ],
+        "properties": {
+          "operation": {
+            "type": "string",
+            "enum": [
+              "update",
+              "revise"
+            ]
+          },
+          "sessionName": {
+            "type": "string"
+          },
+          "elementType": {
+            "type": "string",
+            "description": "Module name (optional for update/revise)."
+          },
+          "element": {
+            "type": "string",
+            "description": "JSON-encoded record object; must include `id`."
+          }
+        }
+      },
+      "ElementResponse": {
+        "type": "object",
+        "description": "Envelope for operations that return a single record (create/retrieve/update/revise).",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "result": {
+            "$ref": "#/components/schemas/Element"
+          }
+        },
+        "required": [
+          "success",
+          "result"
+        ]
+      },
+      "DeleteResult": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "successful"
+          }
+        }
+      },
+      "DeleteResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "result": {
+            "$ref": "#/components/schemas/DeleteResult"
+          }
+        },
+        "required": [
+          "success",
+          "result"
+        ]
+      },
+      "QueryResult": {
+        "type": "array",
+        "description": "Query returns an array of matching records.",
+        "items": {
+          "$ref": "#/components/schemas/Element"
+        }
+      },
+      "QueryResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "result": {
+            "$ref": "#/components/schemas/QueryResult"
+          }
+        },
+        "required": [
+          "success",
+          "result"
+        ]
+      },
+      "SyncResult": {
+        "type": "object",
+        "description": "Result of a sync call.",
+        "properties": {
+          "updated": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Element"
+            },
+            "description": "Records created or updated since modifiedTime."
+          },
+          "deleted": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Webservice ids of deleted records."
+          },
+          "lastModifiedTime": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Cursor to pass to the next sync call."
+          },
+          "more": {
+            "type": "boolean",
+            "description": "Whether additional pages remain."
+          }
+        }
+      },
+      "SyncResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "result": {
+            "$ref": "#/components/schemas/SyncResult"
+          }
+        },
+        "required": [
+          "success",
+          "result"
+        ]
+      },
+      "Error": {
+        "type": "object",
+        "description": "Error payload returned when success is false.",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "error": {
+            "$ref": "#/components/schemas/Error"
+          }
+        },
+        "required": [
+          "success",
+          "error"
+        ]
+      }
+    }
+  }
+}

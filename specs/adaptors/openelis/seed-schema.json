@@ -1,0 +1,539 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "openelis — mocker seed-data schema",
+    "version": "1.0.0",
+    "description": "Schema for the seed data openfn-mocker needs to impersonate openelis. Derived from the adaptor's OpenAPI spec. A seed dump is { collection: { id: record } }; each record validates against its resource schema below.",
+    "x-openfn-adaptor": "openelis",
+    "x-derived-from": "openapi.json",
+    "x-captured-at": "2026-07-06"
+  },
+  "x-seed": {
+    "shape": "{ collection: { id: record } }",
+    "collections": {
+      "accessionResultsRestResponses": {
+        "resource": "AccessionResultsRestResponse",
+        "schema": {
+          "$ref": "#/components/schemas/AccessionResultsRestResponse"
+        }
+      },
+      "dashboardMetricses": {
+        "resource": "DashboardMetrics",
+        "schema": {
+          "$ref": "#/components/schemas/DashboardMetrics"
+        }
+      },
+      "idValuePairs": {
+        "resource": "IdValuePair",
+        "schema": {
+          "$ref": "#/components/schemas/IdValuePair"
+        }
+      },
+      "orderDisplayBeans": {
+        "resource": "OrderDisplayBean",
+        "schema": {
+          "$ref": "#/components/schemas/OrderDisplayBean"
+        }
+      },
+      "patientDashBoardForms": {
+        "resource": "PatientDashBoardForm",
+        "schema": {
+          "$ref": "#/components/schemas/PatientDashBoardForm"
+        }
+      },
+      "patientManagementInfos": {
+        "resource": "PatientManagementInfo",
+        "schema": {
+          "$ref": "#/components/schemas/PatientManagementInfo"
+        }
+      },
+      "patientSearchResultses": {
+        "resource": "PatientSearchResults",
+        "schema": {
+          "$ref": "#/components/schemas/PatientSearchResults"
+        }
+      },
+      "resultsForms": {
+        "resource": "ResultsForm",
+        "schema": {
+          "$ref": "#/components/schemas/ResultsForm"
+        }
+      },
+      "sampleEntryResponses": {
+        "resource": "SampleEntryResponse",
+        "schema": {
+          "$ref": "#/components/schemas/SampleEntryResponse"
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SeedData": {
+        "type": "object",
+        "description": "Full seed dump loaded by mocker: one property per collection.",
+        "properties": {
+          "accessionResultsRestResponses": {
+            "type": "object",
+            "description": "Records keyed by id for the accessionResultsRestResponses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/AccessionResultsRestResponse"
+            }
+          },
+          "dashboardMetricses": {
+            "type": "object",
+            "description": "Records keyed by id for the dashboardMetricses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/DashboardMetrics"
+            }
+          },
+          "idValuePairs": {
+            "type": "object",
+            "description": "Records keyed by id for the idValuePairs collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/IdValuePair"
+            }
+          },
+          "orderDisplayBeans": {
+            "type": "object",
+            "description": "Records keyed by id for the orderDisplayBeans collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/OrderDisplayBean"
+            }
+          },
+          "patientDashBoardForms": {
+            "type": "object",
+            "description": "Records keyed by id for the patientDashBoardForms collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/PatientDashBoardForm"
+            }
+          },
+          "patientManagementInfos": {
+            "type": "object",
+            "description": "Records keyed by id for the patientManagementInfos collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/PatientManagementInfo"
+            }
+          },
+          "patientSearchResultses": {
+            "type": "object",
+            "description": "Records keyed by id for the patientSearchResultses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/PatientSearchResults"
+            }
+          },
+          "resultsForms": {
+            "type": "object",
+            "description": "Records keyed by id for the resultsForms collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ResultsForm"
+            }
+          },
+          "sampleEntryResponses": {
+            "type": "object",
+            "description": "Records keyed by id for the sampleEntryResponses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/SampleEntryResponse"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "IdValuePair": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "1"
+          },
+          "value": {
+            "type": "string",
+            "example": "Male"
+          }
+        }
+      },
+      "PatientManagementInfo": {
+        "type": "object",
+        "properties": {
+          "patientUpdateStatus": {
+            "type": "string",
+            "enum": [
+              "ADD",
+              "UPDATE",
+              "NO_ACTION"
+            ],
+            "example": "ADD"
+          },
+          "patientPK": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string",
+            "example": "Jane"
+          },
+          "lastName": {
+            "type": "string",
+            "example": "Doe"
+          },
+          "gender": {
+            "type": "string",
+            "example": "F"
+          },
+          "birthDateForDisplay": {
+            "type": "string",
+            "example": "01/05/1990"
+          },
+          "nationalId": {
+            "type": "string",
+            "example": "NID12345"
+          },
+          "subjectNumber": {
+            "type": "string"
+          },
+          "STnumber": {
+            "type": "string"
+          },
+          "guid": {
+            "type": "string"
+          },
+          "primaryPhone": {
+            "type": "string"
+          },
+          "streetAddress": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          }
+        }
+      },
+      "PatientSearchResults": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "42"
+          },
+          "GUID": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string",
+            "example": "Jane"
+          },
+          "lastName": {
+            "type": "string",
+            "example": "Doe"
+          },
+          "gender": {
+            "type": "string",
+            "example": "F"
+          },
+          "birthdate": {
+            "type": "string",
+            "example": "01/05/1990"
+          },
+          "nationalId": {
+            "type": "string"
+          },
+          "externalId": {
+            "type": "string"
+          },
+          "stNumber": {
+            "type": "string"
+          },
+          "subjectNumber": {
+            "type": "string"
+          },
+          "mothersName": {
+            "type": "string"
+          },
+          "contactPhone": {
+            "type": "string"
+          }
+        }
+      },
+      "OrderDisplayBean": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "priority": {
+            "type": "string",
+            "example": "ROUTINE"
+          },
+          "orderDate": {
+            "type": "string",
+            "example": "2026-07-01"
+          },
+          "patientId": {
+            "type": "string"
+          },
+          "labNumber": {
+            "type": "string",
+            "example": "0000000123"
+          },
+          "testName": {
+            "type": "string"
+          },
+          "testSection": {
+            "type": "string"
+          },
+          "userFirstName": {
+            "type": "string"
+          },
+          "userLastName": {
+            "type": "string"
+          },
+          "countOfOrdersEntered": {
+            "type": "integer"
+          }
+        }
+      },
+      "PatientDashBoardForm": {
+        "type": "object",
+        "properties": {
+          "orderList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrderDisplayBean"
+            }
+          }
+        }
+      },
+      "DashboardMetrics": {
+        "type": "object",
+        "properties": {
+          "ordersInProgress": {
+            "type": "integer",
+            "example": 12
+          },
+          "ordersReadyForValidation": {
+            "type": "integer",
+            "example": 4
+          },
+          "ordersCompletedToday": {
+            "type": "integer",
+            "example": 20
+          },
+          "averageTurnAroundTime": {
+            "type": "number",
+            "example": 3.5
+          }
+        }
+      },
+      "SampleOrderItem": {
+        "type": "object",
+        "properties": {
+          "labNo": {
+            "type": "string",
+            "example": "0000000123"
+          },
+          "sampleId": {
+            "type": "string"
+          },
+          "receivedDateForDisplay": {
+            "type": "string",
+            "example": "01/07/2026"
+          },
+          "requesterSampleID": {
+            "type": "string"
+          },
+          "priority": {
+            "type": "string",
+            "example": "ROUTINE"
+          },
+          "newSampleType": {
+            "type": "string",
+            "example": "Blood"
+          }
+        }
+      },
+      "SampleEntryResponse": {
+        "type": "object",
+        "properties": {
+          "labNo": {
+            "type": "string",
+            "example": "0000000123"
+          },
+          "accessionNumber": {
+            "type": "string",
+            "example": "0000000123"
+          }
+        },
+        "additionalProperties": true
+      },
+      "SamplePatientEntryForm": {
+        "type": "object",
+        "properties": {
+          "patientProperties": {
+            "$ref": "#/components/schemas/PatientManagementInfo"
+          },
+          "sampleOrderItems": {
+            "$ref": "#/components/schemas/SampleOrderItem"
+          },
+          "sampleXML": {
+            "type": "string",
+            "description": "Encodes the ordered tests/panels"
+          },
+          "patientUpdateStatus": {
+            "type": "string",
+            "example": "ADD"
+          },
+          "useReferral": {
+            "type": "boolean"
+          }
+        }
+      },
+      "TestResultItem": {
+        "type": "object",
+        "properties": {
+          "accessionNumber": {
+            "type": "string",
+            "example": "0000000123"
+          },
+          "sequenceNumber": {
+            "type": "string"
+          },
+          "testId": {
+            "type": "string"
+          },
+          "testName": {
+            "type": "string",
+            "example": "Hemoglobin"
+          },
+          "testMethod": {
+            "type": "string"
+          },
+          "resultValue": {
+            "type": "string",
+            "example": "13.5"
+          },
+          "resultType": {
+            "type": "string",
+            "example": "N"
+          },
+          "unitsOfMeasure": {
+            "type": "string",
+            "example": "g/dL"
+          },
+          "normalRange": {
+            "type": "string",
+            "example": "12.0-16.0"
+          },
+          "testDate": {
+            "type": "string"
+          },
+          "analysisId": {
+            "type": "string"
+          },
+          "analysisStatusId": {
+            "type": "string"
+          },
+          "resultId": {
+            "type": "string"
+          },
+          "patientName": {
+            "type": "string"
+          },
+          "nationalId": {
+            "type": "string"
+          },
+          "technician": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          },
+          "reportable": {
+            "type": "boolean"
+          },
+          "valid": {
+            "type": "boolean"
+          },
+          "normal": {
+            "type": "boolean"
+          },
+          "referralReasons": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IdValuePair"
+            }
+          },
+          "dictionaryResults": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IdValuePair"
+            }
+          }
+        }
+      },
+      "AccessionResultsRestResponse": {
+        "type": "object",
+        "properties": {
+          "accessionNumber": {
+            "type": "string",
+            "example": "0000000123"
+          },
+          "searchFinished": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "boolean"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "dob": {
+            "type": "string"
+          },
+          "gender": {
+            "type": "string"
+          },
+          "nationalId": {
+            "type": "string"
+          },
+          "subjectNumber": {
+            "type": "string"
+          },
+          "testResult": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TestResultItem"
+            }
+          }
+        }
+      },
+      "ResultsForm": {
+        "type": "object",
+        "properties": {
+          "accessionNumber": {
+            "type": "string"
+          },
+          "currentDate": {
+            "type": "string"
+          },
+          "testSectionId": {
+            "type": "string"
+          },
+          "testResult": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TestResultItem"
+            }
+          },
+          "resultList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TestResultItem"
+            }
+          }
+        }
+      }
+    }
+  }
+}

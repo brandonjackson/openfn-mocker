@@ -1,0 +1,14 @@
+{
+  "adaptor": "aws-s3",
+  "npm": "@openfn/language-aws-s3",
+  "origin": "synthesized",
+  "upstreamFormat": "adaptor-surface",
+  "sources": [
+    "https://cdn.jsdelivr.net/npm/@openfn/language-aws-s3/types/Adaptor.d.ts",
+    "https://cdn.jsdelivr.net/npm/@openfn/language-aws-s3/ast.json",
+    "https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObject.html",
+    "https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListObjectsV2.html"
+  ],
+  "capturedAt": "2026-07-06",
+  "notes": "Synthesized from the adaptor surface (put/get/list) and the S3 SDK operations they wrap (PutObject, GetObject, ListObjectsV2). The adaptor uses the AWS JS SDK, not raw REST, so the real S3 REST responses are XML; here responses are modelled as JSON to match the shapes the adaptor exposes on state (parsed body or {base64} for get, ListObjectsV2 Contents for list). Server URL is the generic S3 endpoint; real requests are region/bucket scoped and SigV4-signed."
+}

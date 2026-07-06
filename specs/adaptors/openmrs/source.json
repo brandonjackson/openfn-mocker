@@ -1,0 +1,14 @@
+{
+  "adaptor": "openmrs",
+  "npm": "@openfn/language-openmrs",
+  "origin": "generated",
+  "upstreamFormat": "docs",
+  "sources": [
+    "https://rest.openmrs.org/",
+    "https://cdn.jsdelivr.net/npm/@openfn/language-openmrs/ast.json",
+    "https://github.com/OpenFn/adaptors/tree/main/packages/openmrs",
+    "https://wiki.openmrs.org/display/docs/REST+Web+Services+API+For+Clients"
+  ],
+  "capturedAt": "2026-07-06",
+  "notes": "The openmrs adaptor is a generic CRUD wrapper (get/create/update/upsert/destroy) over OpenMRS REST Web Services resource paths under /ws/rest/v1/, so no per-endpoint operations exist in the adaptor surface to enumerate. Spec authored by hand from the official OpenMRS REST API reference (rest.openmrs.org) and wiki, covering the core resources the adaptor targets: patient, person, encounter, obs (observation), concept, location, visit, patientidentifiertype, encountertype, visittype, provider, plus the patient/allergy subresource. 30 operations across list/get/create/update/delete. OpenMRS list endpoints return a { results: [...] } envelope; single-resource GETs return the object directly; all resources carry uuid, display and links. Could not fetch the module's live swagger.json (demo.openmrs.org uses cookie/session auth, not basic auth over the proxy) so shapes reflect the documented default representations rather than a converted machine spec. Representation (v), q, and paging (limit/startIndex) query params are modeled where relevant."
+}

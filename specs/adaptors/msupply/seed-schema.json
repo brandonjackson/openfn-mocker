@@ -1,0 +1,474 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "msupply — mocker seed-data schema",
+    "version": "1.0.0",
+    "description": "Schema for the seed data openfn-mocker needs to impersonate msupply. Derived from the adaptor's OpenAPI spec. A seed dump is { collection: { id: record } }; each record validates against its resource schema below.",
+    "x-openfn-adaptor": "msupply",
+    "x-derived-from": "openapi.json",
+    "x-captured-at": "2026-07-06"
+  },
+  "x-seed": {
+    "shape": "{ collection: { id: record } }",
+    "collections": {
+      "authTokenResponses": {
+        "resource": "AuthTokenResponse",
+        "schema": {
+          "$ref": "#/components/schemas/AuthTokenResponse"
+        }
+      },
+      "batchOutboundShipmentResponses": {
+        "resource": "BatchOutboundShipmentResponse",
+        "schema": {
+          "$ref": "#/components/schemas/BatchOutboundShipmentResponse"
+        }
+      },
+      "graphQLResponses": {
+        "resource": "GraphQLResponse",
+        "schema": {
+          "$ref": "#/components/schemas/GraphQLResponse"
+        }
+      },
+      "insertOutboundShipmentResponses": {
+        "resource": "InsertOutboundShipmentResponse",
+        "schema": {
+          "$ref": "#/components/schemas/InsertOutboundShipmentResponse"
+        }
+      },
+      "itemsResponses": {
+        "resource": "ItemsResponse",
+        "schema": {
+          "$ref": "#/components/schemas/ItemsResponse"
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SeedData": {
+        "type": "object",
+        "description": "Full seed dump loaded by mocker: one property per collection.",
+        "properties": {
+          "authTokenResponses": {
+            "type": "object",
+            "description": "Records keyed by id for the authTokenResponses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/AuthTokenResponse"
+            }
+          },
+          "batchOutboundShipmentResponses": {
+            "type": "object",
+            "description": "Records keyed by id for the batchOutboundShipmentResponses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/BatchOutboundShipmentResponse"
+            }
+          },
+          "graphQLResponses": {
+            "type": "object",
+            "description": "Records keyed by id for the graphQLResponses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/GraphQLResponse"
+            }
+          },
+          "insertOutboundShipmentResponses": {
+            "type": "object",
+            "description": "Records keyed by id for the insertOutboundShipmentResponses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/InsertOutboundShipmentResponse"
+            }
+          },
+          "itemsResponses": {
+            "type": "object",
+            "description": "Records keyed by id for the itemsResponses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ItemsResponse"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "GraphQLRequest": {
+        "type": "object",
+        "required": [
+          "query"
+        ],
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "The GraphQL query or mutation document."
+          },
+          "variables": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "GraphQL variables map."
+          },
+          "operationName": {
+            "type": "string",
+            "description": "Optional name of the operation to execute."
+          }
+        }
+      },
+      "GraphQLError": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "path": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "locations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "line": {
+                  "type": "integer"
+                },
+                "column": {
+                  "type": "integer"
+                }
+              }
+            }
+          },
+          "extensions": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      },
+      "GraphQLResponse": {
+        "type": "object",
+        "description": "Generic GraphQL response envelope.",
+        "properties": {
+          "data": {
+            "type": "object",
+            "nullable": true,
+            "additionalProperties": true
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GraphQLError"
+            }
+          }
+        }
+      },
+      "AuthToken": {
+        "type": "object",
+        "description": "Authentication token payload.",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "JWT bearer token."
+          }
+        }
+      },
+      "AuthTokenResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "authToken": {
+                "$ref": "#/components/schemas/AuthToken"
+              }
+            }
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GraphQLError"
+            }
+          }
+        }
+      },
+      "ItemStats": {
+        "type": "object",
+        "description": "Per-store stock statistics for a catalogue item.",
+        "properties": {
+          "averageMonthlyConsumption": {
+            "type": "number"
+          },
+          "availableStockOnHand": {
+            "type": "number"
+          },
+          "availableMonthsOfStockOnHand": {
+            "type": "number",
+            "nullable": true
+          },
+          "monthsOfStockOnHand": {
+            "type": "number",
+            "nullable": true
+          },
+          "totalConsumption": {
+            "type": "number"
+          },
+          "stockOnHand": {
+            "type": "number"
+          }
+        }
+      },
+      "ItemNode": {
+        "type": "object",
+        "description": "A catalogue item.",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "unitName": {
+            "type": "string",
+            "nullable": true
+          },
+          "defaultPackSize": {
+            "type": "number"
+          },
+          "availableStockOnHand": {
+            "type": "number"
+          },
+          "stats": {
+            "$ref": "#/components/schemas/ItemStats"
+          }
+        }
+      },
+      "ItemConnector": {
+        "type": "object",
+        "description": "A paged connector of catalogue items.",
+        "properties": {
+          "__typename": {
+            "type": "string",
+            "example": "ItemConnector"
+          },
+          "nodes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ItemNode"
+            }
+          },
+          "totalCount": {
+            "type": "integer"
+          }
+        }
+      },
+      "ItemsResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "items": {
+                "$ref": "#/components/schemas/ItemConnector"
+              }
+            }
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GraphQLError"
+            }
+          }
+        }
+      },
+      "InvoiceNode": {
+        "type": "object",
+        "description": "An outbound shipment invoice.",
+        "properties": {
+          "__typename": {
+            "type": "string",
+            "example": "InvoiceNode"
+          },
+          "id": {
+            "type": "string"
+          },
+          "invoiceNumber": {
+            "type": "integer"
+          }
+        }
+      },
+      "GraphQLTypedError": {
+        "type": "object",
+        "description": "A typed mutation error payload returned in place of a success node.",
+        "properties": {
+          "__typename": {
+            "type": "string"
+          },
+          "error": {
+            "type": "object",
+            "properties": {
+              "__typename": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "fullError": {
+                "type": "string",
+                "nullable": true
+              },
+              "key": {
+                "type": "string",
+                "nullable": true
+              }
+            }
+          }
+        }
+      },
+      "InsertOutboundShipmentResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "insertOutboundShipment": {
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/InvoiceNode"
+                  },
+                  {
+                    "$ref": "#/components/schemas/GraphQLTypedError"
+                  }
+                ]
+              }
+            }
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GraphQLError"
+            }
+          }
+        }
+      },
+      "BatchMutationResult": {
+        "type": "object",
+        "description": "Result entry for a single item within a batch outbound-shipment mutation.",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "response": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "The per-item response node (a success node such as InvoiceLineNode/DeleteResponse, or a typed error)."
+          }
+        }
+      },
+      "BatchOutboundShipmentResult": {
+        "type": "object",
+        "description": "Outcome of a batchOutboundShipment mutation. Each array holds the results of the corresponding sub-operation.",
+        "properties": {
+          "__typename": {
+            "type": "string",
+            "example": "BatchOutboundShipmentResponse"
+          },
+          "insertOutboundShipments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BatchMutationResult"
+            }
+          },
+          "updateOutboundShipments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BatchMutationResult"
+            }
+          },
+          "deleteOutboundShipments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BatchMutationResult"
+            }
+          },
+          "insertOutboundShipmentLines": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BatchMutationResult"
+            }
+          },
+          "updateOutboundShipmentLines": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BatchMutationResult"
+            }
+          },
+          "deleteOutboundShipmentLines": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BatchMutationResult"
+            }
+          },
+          "insertOutboundShipmentServiceLines": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BatchMutationResult"
+            }
+          },
+          "updateOutboundShipmentServiceLines": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BatchMutationResult"
+            }
+          },
+          "deleteOutboundShipmentServiceLines": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BatchMutationResult"
+            }
+          },
+          "insertOutboundShipmentUnallocatedLines": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BatchMutationResult"
+            }
+          },
+          "updateOutboundShipmentUnallocatedLines": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BatchMutationResult"
+            }
+          },
+          "deleteOutboundShipmentUnallocatedLines": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BatchMutationResult"
+            }
+          },
+          "allocateOutboundShipmentUnallocatedLines": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BatchMutationResult"
+            }
+          }
+        }
+      },
+      "BatchOutboundShipmentResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "batchOutboundShipment": {
+                "$ref": "#/components/schemas/BatchOutboundShipmentResult"
+              }
+            }
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GraphQLError"
+            }
+          }
+        }
+      }
+    }
+  }
+}

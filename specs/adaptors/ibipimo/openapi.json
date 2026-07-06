@@ -1,0 +1,213 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "IBIPIMO Viral Load API (mock subset)",
+    "version": "v1",
+    "description": "Focused OpenAPI for the IBIPIMO laboratory / viral load API used by the OpenFn ibipimo adaptor. IBIPIMO is a laboratory information system used for HIV viral load sample tracking. Covers submitting viral load test requests, asking for results, and reading sample status and sites. Authenticated with a Bearer apiToken.",
+    "x-openfn-adaptor": "ibipimo"
+  },
+  "servers": [{ "url": "https://demo.ibipimo.org" }],
+  "paths": {
+    "/api/v1/post-viral-load-requests": {
+      "post": {
+        "operationId": "postViralLoadRequest",
+        "summary": "Submit viral load test requests",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ViralLoadRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Submission result",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SubmissionResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/ask-for-vl-results": {
+      "post": {
+        "operationId": "getViralLoadResults",
+        "summary": "Request viral load results for a set of samples",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ResultsRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Viral load results",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ResultsResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/samples/status": {
+      "get": {
+        "operationId": "getSamplesStatus",
+        "summary": "Get sample processing statuses",
+        "parameters": [
+          { "name": "siteid", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sample statuses",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statuses": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/SampleStatus" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sites": {
+      "get": {
+        "operationId": "getSites",
+        "summary": "List sites",
+        "parameters": [
+          { "name": "active", "in": "query", "schema": { "type": "boolean" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of sites",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Site" }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ViralLoadRequest": {
+        "type": "object",
+        "required": ["siteid", "samples"],
+        "properties": {
+          "siteid": { "type": "string", "example": "77889900" },
+          "samples": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Sample" }
+          }
+        }
+      },
+      "Sample": {
+        "type": "object",
+        "properties": {
+          "sidainfo_uid": { "type": "string", "example": "147460" },
+          "p_code": { "type": "string", "example": "000003" },
+          "p_name": { "type": "string", "example": "Magara" },
+          "p_prename": { "type": "string", "example": "Mahire" },
+          "p_sex": { "type": "string", "enum": ["M", "F"], "example": "M" },
+          "p_dob": { "type": "string", "format": "date", "example": "1950-01-15" },
+          "sample_uid": { "type": "string", "example": "2026010401" }
+        }
+      },
+      "ResultsRequest": {
+        "type": "object",
+        "required": ["siteid", "sample_uids"],
+        "properties": {
+          "siteid": { "type": "string", "example": "77889900" },
+          "sample_uids": {
+            "type": "array",
+            "items": { "type": "string" },
+            "example": ["2026010401", "IBI-2024-000001"]
+          }
+        }
+      },
+      "SubmissionResponse": {
+        "type": "object",
+        "properties": {
+          "saved_samples": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "sidainfo_uid": { "type": "string", "example": "147460" },
+                "sample_uid": { "type": "string", "example": "IBI-2024-000001" }
+              }
+            }
+          },
+          "saved_count": { "type": "integer", "example": 1 },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "sidainfo_uid": { "type": "string" },
+                "message": { "type": "string" }
+              }
+            }
+          },
+          "error_count": { "type": "integer", "example": 0 }
+        }
+      },
+      "ResultsResponse": {
+        "type": "object",
+        "properties": {
+          "results": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ViralLoadResult" }
+          }
+        }
+      },
+      "ViralLoadResult": {
+        "type": "object",
+        "properties": {
+          "sample_uid": { "type": "string", "example": "2026010401" },
+          "sidainfo_uid": { "type": "string", "example": "147460" },
+          "published": { "type": "boolean", "example": true },
+          "result_value": { "type": "string", "example": "< 20 copies/mL" },
+          "result_numeric": { "type": "number", "nullable": true, "example": 0 },
+          "log_value": { "type": "number", "nullable": true },
+          "result_date": { "type": "string", "format": "date", "example": "2026-01-10" },
+          "status": { "type": "string", "example": "published" }
+        }
+      },
+      "SampleStatus": {
+        "type": "object",
+        "properties": {
+          "sample_uid": { "type": "string", "example": "2026010401" },
+          "status": { "type": "string", "example": "processing" },
+          "received_date": { "type": "string", "format": "date" }
+        }
+      },
+      "Site": {
+        "type": "object",
+        "properties": {
+          "siteid": { "type": "string", "example": "77889900" },
+          "name": { "type": "string", "example": "Bujumbura Central Lab" },
+          "active": { "type": "boolean", "example": true }
+        }
+      }
+    }
+  }
+}

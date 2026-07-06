@@ -1,0 +1,15 @@
+{
+  "adaptor": "ihris",
+  "npm": "@openfn/language-ihris",
+  "origin": "generated",
+  "upstreamFormat": "docs",
+  "sources": [
+    "https://hl7.org/fhir/R4/practitioner.html",
+    "https://hl7.org/fhir/R4/practitionerrole.html",
+    "https://hl7.org/fhir/R4/organization.html",
+    "https://hl7.org/fhir/R4/http.html",
+    "https://cdn.jsdelivr.net/npm/@openfn/language-ihris/configuration-schema.json"
+  ],
+  "capturedAt": "2026-07-06",
+  "notes": "The ihris adaptor exposes only common + re-exported @openfn/language-fhir-4 builders over a generic HTTP client (no bespoke operations), targeting an iHRIS FHIR R4 server. Authored a focused FHIR R4 OpenAPI 3.0.3 covering the health-workforce resources iHRIS uses (Practitioner, PractitionerRole, Organization, Location) plus /metadata, using standard FHIR REST interactions and the application/fhir+json media type. Resource shapes are trimmed subsets of the HL7 FHIR R4 definitions."
+}

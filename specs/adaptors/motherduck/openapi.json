@@ -1,0 +1,145 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "MotherDuck (DuckDB Cloud) SQL API (synthesized)",
+    "version": "1.0.0",
+    "description": "Synthesized OpenAPI surface for the OpenFn motherduck adaptor. MotherDuck is a serverless DuckDB cloud data warehouse; the adaptor connects with a DuckDB/MotherDuck client and issues SQL rather than calling a REST API. This spec models the adaptor operations (query, insert, execute) as HTTP endpoints so the mocker can seed and serve representative SQL result shapes. There is no public REST endpoint; servers.url is a mock placeholder.",
+    "x-openfn-adaptor": "motherduck"
+  },
+  "servers": [
+    { "url": "http://localhost:4010", "description": "Mock server (MotherDuck has no public REST API; SQL runs over the DuckDB/MotherDuck client)" }
+  ],
+  "paths": {
+    "/query": {
+      "post": {
+        "operationId": "query",
+        "summary": "Execute a SQL query against MotherDuck",
+        "description": "Runs a SQL statement (SELECT or DDL/DML) and returns rows plus execution metadata.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/QueryRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Query result",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/QueryResult" } }
+            }
+          }
+        }
+      }
+    },
+    "/tables/{table}/insert": {
+      "post": {
+        "operationId": "insert",
+        "summary": "Insert records into a table",
+        "parameters": [
+          { "name": "table", "in": "path", "required": true, "schema": { "type": "string" }, "description": "Target table name" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/InsertRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Insert result",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/MutationResult" } }
+            }
+          }
+        }
+      }
+    },
+    "/execute": {
+      "post": {
+        "operationId": "execute",
+        "summary": "Execute a sequence of operations",
+        "description": "Runs a batch of operations against the MotherDuck database and returns their combined results.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "operations": { "type": "array", "items": { "type": "object" } }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Execution result",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/QueryResult" } }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Row": {
+        "type": "object",
+        "description": "A single result row. Columns are dynamic; example fields shown.",
+        "additionalProperties": true,
+        "properties": {
+          "id": { "type": "integer", "example": 1 },
+          "name": { "type": "string", "example": "John" },
+          "age": { "type": "integer", "example": 30 }
+        }
+      },
+      "QueryRequest": {
+        "type": "object",
+        "required": ["sqlQuery"],
+        "properties": {
+          "sqlQuery": { "type": "string", "example": "SELECT * FROM users WHERE age > 18" },
+          "writeSql": { "type": "boolean", "default": false, "description": "Include full SQL in response.query" }
+        }
+      },
+      "InsertRequest": {
+        "type": "object",
+        "required": ["records"],
+        "properties": {
+          "records": {
+            "oneOf": [
+              { "$ref": "#/components/schemas/Row" },
+              { "type": "array", "items": { "$ref": "#/components/schemas/Row" } }
+            ]
+          }
+        }
+      },
+      "QueryResult": {
+        "type": "object",
+        "properties": {
+          "data": { "type": "array", "items": { "$ref": "#/components/schemas/Row" } },
+          "response": { "$ref": "#/components/schemas/ResultMetadata" }
+        }
+      },
+      "MutationResult": {
+        "type": "object",
+        "properties": {
+          "response": { "$ref": "#/components/schemas/ResultMetadata" }
+        }
+      },
+      "ResultMetadata": {
+        "type": "object",
+        "properties": {
+          "rowCount": { "type": "integer", "example": 1 },
+          "command": { "type": "string", "example": "SELECT" },
+          "query": { "type": "string", "nullable": true, "example": "SELECT * FROM users" }
+        }
+      }
+    }
+  }
+}

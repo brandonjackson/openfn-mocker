@@ -1,0 +1,489 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "salesforce — mocker seed-data schema",
+    "version": "1.0.0",
+    "description": "Schema for the seed data openfn-mocker needs to impersonate salesforce. Derived from the adaptor's OpenAPI spec. A seed dump is { collection: { id: record } }; each record validates against its resource schema below.",
+    "x-openfn-adaptor": "salesforce",
+    "x-derived-from": "openapi.json",
+    "x-captured-at": "2026-07-06"
+  },
+  "x-seed": {
+    "shape": "{ collection: { id: record } }",
+    "collections": {
+      "createResults": {
+        "resource": "CreateResult",
+        "schema": {
+          "$ref": "#/components/schemas/CreateResult"
+        }
+      },
+      "describeGlobalResults": {
+        "resource": "DescribeGlobalResult",
+        "schema": {
+          "$ref": "#/components/schemas/DescribeGlobalResult"
+        }
+      },
+      "describeSObjectResults": {
+        "resource": "DescribeSObjectResult",
+        "schema": {
+          "$ref": "#/components/schemas/DescribeSObjectResult"
+        }
+      },
+      "sObjects": {
+        "resource": "SObject",
+        "schema": {
+          "$ref": "#/components/schemas/SObject"
+        }
+      },
+      "saveResults": {
+        "resource": "SaveResult",
+        "schema": {
+          "$ref": "#/components/schemas/SaveResult"
+        }
+      },
+      "upsertResults": {
+        "resource": "UpsertResult",
+        "schema": {
+          "$ref": "#/components/schemas/UpsertResult"
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SeedData": {
+        "type": "object",
+        "description": "Full seed dump loaded by mocker: one property per collection.",
+        "properties": {
+          "createResults": {
+            "type": "object",
+            "description": "Records keyed by id for the createResults collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/CreateResult"
+            }
+          },
+          "describeGlobalResults": {
+            "type": "object",
+            "description": "Records keyed by id for the describeGlobalResults collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/DescribeGlobalResult"
+            }
+          },
+          "describeSObjectResults": {
+            "type": "object",
+            "description": "Records keyed by id for the describeSObjectResults collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/DescribeSObjectResult"
+            }
+          },
+          "sObjects": {
+            "type": "object",
+            "description": "Records keyed by id for the sObjects collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/SObject"
+            }
+          },
+          "saveResults": {
+            "type": "object",
+            "description": "Records keyed by id for the saveResults collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/SaveResult"
+            }
+          },
+          "upsertResults": {
+            "type": "object",
+            "description": "Records keyed by id for the upsertResults collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/UpsertResult"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "SObject": {
+        "type": "object",
+        "description": "A generic Salesforce record. Field set varies by sObject type. When returned, it includes an 'attributes' member with type and url.",
+        "properties": {
+          "attributes": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "example": "Account"
+              },
+              "url": {
+                "type": "string",
+                "example": "/services/data/v59.0/sobjects/Account/0015000000VALDtAAP"
+              }
+            }
+          },
+          "Id": {
+            "type": "string",
+            "example": "0015000000VALDtAAP"
+          },
+          "Name": {
+            "type": "string",
+            "example": "Acme Corporation"
+          }
+        },
+        "additionalProperties": true
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "string",
+            "example": "REQUIRED_FIELD_MISSING"
+          },
+          "message": {
+            "type": "string",
+            "example": "Required fields are missing: [Name]"
+          },
+          "fields": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "CreateResult": {
+        "type": "object",
+        "description": "Result of creating a single record.",
+        "required": [
+          "id",
+          "success",
+          "errors"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "0015000000VALDtAAP"
+          },
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "UpsertResult": {
+        "type": "object",
+        "description": "Result of an upsert. 'created' is true when a new record was inserted.",
+        "required": [
+          "id",
+          "success",
+          "errors"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "0015000000VALDtAAP"
+          },
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "created": {
+            "type": "boolean",
+            "example": false
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "SaveResult": {
+        "type": "object",
+        "description": "Per-record result within a composite sObject collection response.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "0015000000VALDtAAP"
+          },
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "CompositeSObjectCollection": {
+        "type": "object",
+        "description": "Request body for composite sObject create/update.",
+        "required": [
+          "records"
+        ],
+        "properties": {
+          "allOrNone": {
+            "type": "boolean",
+            "example": false
+          },
+          "records": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SObject"
+            }
+          }
+        }
+      },
+      "QueryResult": {
+        "type": "object",
+        "description": "Result of a SOQL query.",
+        "required": [
+          "totalSize",
+          "done",
+          "records"
+        ],
+        "properties": {
+          "totalSize": {
+            "type": "integer",
+            "example": 2
+          },
+          "done": {
+            "type": "boolean",
+            "example": true
+          },
+          "nextRecordsUrl": {
+            "type": "string",
+            "description": "Present when done is false; used to fetch the next batch.",
+            "example": "/services/data/v59.0/query/01g5000000T50h1AAB-2000"
+          },
+          "records": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SObject"
+            }
+          }
+        }
+      },
+      "DescribeGlobalResult": {
+        "type": "object",
+        "description": "Result of Describe Global (list of objects in the org).",
+        "properties": {
+          "encoding": {
+            "type": "string",
+            "example": "UTF-8"
+          },
+          "maxBatchSize": {
+            "type": "integer",
+            "example": 200
+          },
+          "sobjects": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DescribeGlobalSObject"
+            }
+          }
+        }
+      },
+      "DescribeGlobalSObject": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Account"
+          },
+          "label": {
+            "type": "string",
+            "example": "Account"
+          },
+          "labelPlural": {
+            "type": "string",
+            "example": "Accounts"
+          },
+          "keyPrefix": {
+            "type": "string",
+            "example": "001"
+          },
+          "custom": {
+            "type": "boolean",
+            "example": false
+          },
+          "queryable": {
+            "type": "boolean",
+            "example": true
+          },
+          "createable": {
+            "type": "boolean",
+            "example": true
+          },
+          "updateable": {
+            "type": "boolean",
+            "example": true
+          },
+          "deletable": {
+            "type": "boolean",
+            "example": true
+          },
+          "urls": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "DescribeSObjectResult": {
+        "type": "object",
+        "description": "Full metadata describing a single sObject type.",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Account"
+          },
+          "label": {
+            "type": "string",
+            "example": "Account"
+          },
+          "labelPlural": {
+            "type": "string",
+            "example": "Accounts"
+          },
+          "keyPrefix": {
+            "type": "string",
+            "example": "001"
+          },
+          "custom": {
+            "type": "boolean",
+            "example": false
+          },
+          "createable": {
+            "type": "boolean",
+            "example": true
+          },
+          "updateable": {
+            "type": "boolean",
+            "example": true
+          },
+          "deletable": {
+            "type": "boolean",
+            "example": true
+          },
+          "queryable": {
+            "type": "boolean",
+            "example": true
+          },
+          "fields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Field"
+            }
+          },
+          "childRelationships": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChildRelationship"
+            }
+          },
+          "recordTypeInfos": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "urls": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "Field": {
+        "type": "object",
+        "description": "Metadata describing a single field on an sObject.",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Name"
+          },
+          "label": {
+            "type": "string",
+            "example": "Account Name"
+          },
+          "type": {
+            "type": "string",
+            "example": "string"
+          },
+          "length": {
+            "type": "integer",
+            "example": 255
+          },
+          "custom": {
+            "type": "boolean",
+            "example": false
+          },
+          "nillable": {
+            "type": "boolean",
+            "example": false
+          },
+          "createable": {
+            "type": "boolean",
+            "example": true
+          },
+          "updateable": {
+            "type": "boolean",
+            "example": true
+          },
+          "unique": {
+            "type": "boolean",
+            "example": false
+          },
+          "externalId": {
+            "type": "boolean",
+            "example": false
+          },
+          "picklistValues": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "referenceTo": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "ChildRelationship": {
+        "type": "object",
+        "properties": {
+          "field": {
+            "type": "string",
+            "example": "AccountId"
+          },
+          "childSObject": {
+            "type": "string",
+            "example": "Contact"
+          },
+          "relationshipName": {
+            "type": "string",
+            "example": "Contacts"
+          },
+          "cascadeDelete": {
+            "type": "boolean",
+            "example": true
+          }
+        }
+      }
+    }
+  }
+}

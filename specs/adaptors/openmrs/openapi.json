@@ -1,0 +1,757 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "OpenMRS REST Web Services API (mock subset)",
+    "version": "2.x",
+    "description": "Focused subset of the OpenMRS REST Web Services API (module webservices.rest, served under /ws/rest/v1) used by the OpenFn openmrs adaptor. The adaptor is a generic CRUD wrapper (get/create/update/upsert/destroy) over OpenMRS resource paths. This spec covers the core resources those operations target: patient, person, encounter, obs (observation), concept, location, visit, patientidentifiertype, encountertype, visittype, provider, and the patient/allergy subresource. OpenMRS list endpoints return a { results: [...] } envelope; single-resource GETs return the object directly. Every resource carries uuid, display and links.",
+    "x-openfn-adaptor": "openmrs"
+  },
+  "servers": [
+    { "url": "https://demo.openmrs.org/openmrs/ws/rest/v1" }
+  ],
+  "paths": {
+    "/patient": {
+      "get": {
+        "operationId": "listPatients",
+        "summary": "Search patients",
+        "parameters": [
+          { "name": "q", "in": "query", "schema": { "type": "string" }, "description": "Search query (name or identifier)" },
+          { "name": "identifier", "in": "query", "schema": { "type": "string" } },
+          { "name": "v", "in": "query", "schema": { "type": "string" }, "description": "Representation: ref | default | full | custom:(...)" },
+          { "name": "limit", "in": "query", "schema": { "type": "integer" } },
+          { "name": "startIndex", "in": "query", "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Patient search results",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PatientList" } } }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createPatient",
+        "summary": "Create a patient",
+        "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Patient" } } } },
+        "responses": {
+          "201": {
+            "description": "Created patient",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Patient" } } }
+          }
+        }
+      }
+    },
+    "/patient/{uuid}": {
+      "parameters": [{ "name": "uuid", "in": "path", "required": true, "schema": { "type": "string" } }],
+      "get": {
+        "operationId": "getPatient",
+        "summary": "Get a patient by UUID",
+        "parameters": [{ "name": "v", "in": "query", "schema": { "type": "string" } }],
+        "responses": {
+          "200": { "description": "Patient", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Patient" } } } },
+          "404": { "description": "Not found" }
+        }
+      },
+      "post": {
+        "operationId": "updatePatient",
+        "summary": "Update a patient",
+        "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Patient" } } } },
+        "responses": {
+          "200": { "description": "Updated patient", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Patient" } } } }
+        }
+      },
+      "delete": {
+        "operationId": "deletePatient",
+        "summary": "Void (delete) a patient",
+        "parameters": [{ "name": "purge", "in": "query", "schema": { "type": "boolean" } }],
+        "responses": { "204": { "description": "Deleted" } }
+      }
+    },
+    "/patient/{uuid}/allergy": {
+      "parameters": [{ "name": "uuid", "in": "path", "required": true, "schema": { "type": "string" } }],
+      "get": {
+        "operationId": "listPatientAllergies",
+        "summary": "List a patient's allergies (subresource)",
+        "responses": {
+          "200": { "description": "Allergy list", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AllergyList" } } } }
+        }
+      },
+      "post": {
+        "operationId": "createPatientAllergy",
+        "summary": "Add an allergy to a patient",
+        "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Allergy" } } } },
+        "responses": {
+          "201": { "description": "Created allergy", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Allergy" } } } }
+        }
+      }
+    },
+    "/patient/{uuid}/allergy/{allergyUuid}": {
+      "parameters": [
+        { "name": "uuid", "in": "path", "required": true, "schema": { "type": "string" } },
+        { "name": "allergyUuid", "in": "path", "required": true, "schema": { "type": "string" } }
+      ],
+      "get": {
+        "operationId": "getPatientAllergy",
+        "summary": "Get one allergy subresource by UUID",
+        "responses": {
+          "200": { "description": "Allergy", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Allergy" } } } },
+          "404": { "description": "Not found" }
+        }
+      }
+    },
+    "/person": {
+      "get": {
+        "operationId": "listPersons",
+        "summary": "Search persons",
+        "parameters": [
+          { "name": "q", "in": "query", "schema": { "type": "string" } },
+          { "name": "v", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Person search results", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PersonList" } } } }
+        }
+      },
+      "post": {
+        "operationId": "createPerson",
+        "summary": "Create a person",
+        "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Person" } } } },
+        "responses": {
+          "201": { "description": "Created person", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Person" } } } }
+        }
+      }
+    },
+    "/person/{uuid}": {
+      "parameters": [{ "name": "uuid", "in": "path", "required": true, "schema": { "type": "string" } }],
+      "get": {
+        "operationId": "getPerson",
+        "summary": "Get a person by UUID",
+        "responses": {
+          "200": { "description": "Person", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Person" } } } },
+          "404": { "description": "Not found" }
+        }
+      },
+      "post": {
+        "operationId": "updatePerson",
+        "summary": "Update a person",
+        "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Person" } } } },
+        "responses": {
+          "200": { "description": "Updated person", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Person" } } } }
+        }
+      }
+    },
+    "/encounter": {
+      "get": {
+        "operationId": "listEncounters",
+        "summary": "Search encounters",
+        "parameters": [
+          { "name": "patient", "in": "query", "schema": { "type": "string" }, "description": "Patient UUID" },
+          { "name": "encounterType", "in": "query", "schema": { "type": "string" } },
+          { "name": "v", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Encounter search results", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/EncounterList" } } } }
+        }
+      },
+      "post": {
+        "operationId": "createEncounter",
+        "summary": "Create an encounter",
+        "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Encounter" } } } },
+        "responses": {
+          "201": { "description": "Created encounter", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Encounter" } } } }
+        }
+      }
+    },
+    "/encounter/{uuid}": {
+      "parameters": [{ "name": "uuid", "in": "path", "required": true, "schema": { "type": "string" } }],
+      "get": {
+        "operationId": "getEncounter",
+        "summary": "Get an encounter by UUID",
+        "responses": {
+          "200": { "description": "Encounter", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Encounter" } } } },
+          "404": { "description": "Not found" }
+        }
+      },
+      "post": {
+        "operationId": "updateEncounter",
+        "summary": "Update an encounter",
+        "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Encounter" } } } },
+        "responses": {
+          "200": { "description": "Updated encounter", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Encounter" } } } }
+        }
+      },
+      "delete": {
+        "operationId": "deleteEncounter",
+        "summary": "Void an encounter",
+        "responses": { "204": { "description": "Deleted" } }
+      }
+    },
+    "/obs": {
+      "get": {
+        "operationId": "listObs",
+        "summary": "Search observations",
+        "parameters": [
+          { "name": "patient", "in": "query", "schema": { "type": "string" } },
+          { "name": "concept", "in": "query", "schema": { "type": "string" } },
+          { "name": "v", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Observation search results", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ObsList" } } } }
+        }
+      },
+      "post": {
+        "operationId": "createObs",
+        "summary": "Create an observation",
+        "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Obs" } } } },
+        "responses": {
+          "201": { "description": "Created observation", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Obs" } } } }
+        }
+      }
+    },
+    "/obs/{uuid}": {
+      "parameters": [{ "name": "uuid", "in": "path", "required": true, "schema": { "type": "string" } }],
+      "get": {
+        "operationId": "getObs",
+        "summary": "Get an observation by UUID",
+        "responses": {
+          "200": { "description": "Observation", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Obs" } } } },
+          "404": { "description": "Not found" }
+        }
+      },
+      "delete": {
+        "operationId": "deleteObs",
+        "summary": "Void an observation",
+        "responses": { "204": { "description": "Deleted" } }
+      }
+    },
+    "/concept": {
+      "get": {
+        "operationId": "listConcepts",
+        "summary": "Search concepts",
+        "parameters": [
+          { "name": "q", "in": "query", "schema": { "type": "string" } },
+          { "name": "v", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Concept search results", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ConceptList" } } } }
+        }
+      },
+      "post": {
+        "operationId": "createConcept",
+        "summary": "Create a concept",
+        "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Concept" } } } },
+        "responses": {
+          "201": { "description": "Created concept", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Concept" } } } }
+        }
+      }
+    },
+    "/concept/{uuid}": {
+      "parameters": [{ "name": "uuid", "in": "path", "required": true, "schema": { "type": "string" } }],
+      "get": {
+        "operationId": "getConcept",
+        "summary": "Get a concept by UUID",
+        "responses": {
+          "200": { "description": "Concept", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Concept" } } } },
+          "404": { "description": "Not found" }
+        }
+      }
+    },
+    "/location": {
+      "get": {
+        "operationId": "listLocations",
+        "summary": "Search locations",
+        "parameters": [
+          { "name": "q", "in": "query", "schema": { "type": "string" } },
+          { "name": "v", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Location search results", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/LocationList" } } } }
+        }
+      },
+      "post": {
+        "operationId": "createLocation",
+        "summary": "Create a location",
+        "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Location" } } } },
+        "responses": {
+          "201": { "description": "Created location", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Location" } } } }
+        }
+      }
+    },
+    "/location/{uuid}": {
+      "parameters": [{ "name": "uuid", "in": "path", "required": true, "schema": { "type": "string" } }],
+      "get": {
+        "operationId": "getLocation",
+        "summary": "Get a location by UUID",
+        "responses": {
+          "200": { "description": "Location", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Location" } } } },
+          "404": { "description": "Not found" }
+        }
+      }
+    },
+    "/visit": {
+      "get": {
+        "operationId": "listVisits",
+        "summary": "Search visits",
+        "parameters": [
+          { "name": "patient", "in": "query", "schema": { "type": "string" } },
+          { "name": "v", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Visit search results", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/VisitList" } } } }
+        }
+      },
+      "post": {
+        "operationId": "createVisit",
+        "summary": "Create a visit",
+        "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Visit" } } } },
+        "responses": {
+          "201": { "description": "Created visit", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Visit" } } } }
+        }
+      }
+    },
+    "/visit/{uuid}": {
+      "parameters": [{ "name": "uuid", "in": "path", "required": true, "schema": { "type": "string" } }],
+      "get": {
+        "operationId": "getVisit",
+        "summary": "Get a visit by UUID",
+        "responses": {
+          "200": { "description": "Visit", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Visit" } } } },
+          "404": { "description": "Not found" }
+        }
+      },
+      "post": {
+        "operationId": "updateVisit",
+        "summary": "Update a visit",
+        "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Visit" } } } },
+        "responses": {
+          "200": { "description": "Updated visit", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Visit" } } } }
+        }
+      }
+    },
+    "/patientidentifiertype": {
+      "get": {
+        "operationId": "listPatientIdentifierTypes",
+        "summary": "List patient identifier types",
+        "responses": {
+          "200": { "description": "Patient identifier type list", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PatientIdentifierTypeList" } } } }
+        }
+      }
+    },
+    "/patientidentifiertype/{uuid}": {
+      "parameters": [{ "name": "uuid", "in": "path", "required": true, "schema": { "type": "string" } }],
+      "get": {
+        "operationId": "getPatientIdentifierType",
+        "summary": "Get a patient identifier type by UUID",
+        "responses": {
+          "200": { "description": "Patient identifier type", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PatientIdentifierType" } } } },
+          "404": { "description": "Not found" }
+        }
+      }
+    },
+    "/encountertype": {
+      "get": {
+        "operationId": "listEncounterTypes",
+        "summary": "List encounter types",
+        "responses": {
+          "200": { "description": "Encounter type list", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/EncounterTypeList" } } } }
+        }
+      }
+    },
+    "/encountertype/{uuid}": {
+      "parameters": [{ "name": "uuid", "in": "path", "required": true, "schema": { "type": "string" } }],
+      "get": {
+        "operationId": "getEncounterType",
+        "summary": "Get an encounter type by UUID",
+        "responses": {
+          "200": { "description": "Encounter type", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/EncounterType" } } } },
+          "404": { "description": "Not found" }
+        }
+      }
+    },
+    "/visittype": {
+      "get": {
+        "operationId": "listVisitTypes",
+        "summary": "List visit types",
+        "responses": {
+          "200": { "description": "Visit type list", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/VisitTypeList" } } } }
+        }
+      }
+    },
+    "/provider": {
+      "get": {
+        "operationId": "listProviders",
+        "summary": "Search providers",
+        "parameters": [{ "name": "q", "in": "query", "schema": { "type": "string" } }],
+        "responses": {
+          "200": { "description": "Provider search results", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ProviderList" } } } }
+        }
+      }
+    },
+    "/provider/{uuid}": {
+      "parameters": [{ "name": "uuid", "in": "path", "required": true, "schema": { "type": "string" } }],
+      "get": {
+        "operationId": "getProvider",
+        "summary": "Get a provider by UUID",
+        "responses": {
+          "200": { "description": "Provider", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Provider" } } } },
+          "404": { "description": "Not found" }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Link": {
+        "type": "object",
+        "properties": {
+          "rel": { "type": "string", "example": "self" },
+          "uri": { "type": "string", "example": "https://demo.openmrs.org/openmrs/ws/rest/v1/patient/da7f524f-27ce-4bb2-86d6-6d1d05312bd5" }
+        }
+      },
+      "Reference": {
+        "type": "object",
+        "description": "Lightweight reference to another OpenMRS resource",
+        "properties": {
+          "uuid": { "type": "string", "example": "8d871386-c2cc-11de-8d13-0010c6dffd0f" },
+          "display": { "type": "string", "example": "Adult Initial" },
+          "links": { "type": "array", "items": { "$ref": "#/components/schemas/Link" } }
+        }
+      },
+      "PatientList": {
+        "type": "object",
+        "properties": {
+          "results": { "type": "array", "items": { "$ref": "#/components/schemas/Patient" } }
+        }
+      },
+      "Patient": {
+        "type": "object",
+        "properties": {
+          "uuid": { "type": "string", "example": "da7f524f-27ce-4bb2-86d6-6d1d05312bd5" },
+          "display": { "type": "string", "example": "10000X - John Smith" },
+          "identifiers": { "type": "array", "items": { "$ref": "#/components/schemas/PatientIdentifier" } },
+          "person": { "$ref": "#/components/schemas/Person" },
+          "voided": { "type": "boolean", "example": false },
+          "links": { "type": "array", "items": { "$ref": "#/components/schemas/Link" } }
+        }
+      },
+      "PatientIdentifier": {
+        "type": "object",
+        "properties": {
+          "uuid": { "type": "string", "example": "857c1c53-c2cc-11de-8d13-0010c6dffd0f" },
+          "display": { "type": "string", "example": "OpenMRS ID = 10000X" },
+          "identifier": { "type": "string", "example": "10000X" },
+          "identifierType": { "$ref": "#/components/schemas/Reference" },
+          "location": { "$ref": "#/components/schemas/Reference" },
+          "preferred": { "type": "boolean", "example": true },
+          "voided": { "type": "boolean", "example": false }
+        }
+      },
+      "PersonList": {
+        "type": "object",
+        "properties": {
+          "results": { "type": "array", "items": { "$ref": "#/components/schemas/Person" } }
+        }
+      },
+      "Person": {
+        "type": "object",
+        "properties": {
+          "uuid": { "type": "string", "example": "8d870ba0-c2cc-11de-8d13-0010c6dffd0f" },
+          "display": { "type": "string", "example": "John Smith" },
+          "gender": { "type": "string", "example": "M" },
+          "age": { "type": "integer", "example": 45 },
+          "birthdate": { "type": "string", "example": "1980-04-12T00:00:00.000+0000" },
+          "birthdateEstimated": { "type": "boolean", "example": false },
+          "dead": { "type": "boolean", "example": false },
+          "deathDate": { "type": "string", "nullable": true, "example": null },
+          "causeOfDeath": { "$ref": "#/components/schemas/Reference" },
+          "preferredName": { "$ref": "#/components/schemas/PersonName" },
+          "preferredAddress": { "$ref": "#/components/schemas/PersonAddress" },
+          "names": { "type": "array", "items": { "$ref": "#/components/schemas/PersonName" } },
+          "addresses": { "type": "array", "items": { "$ref": "#/components/schemas/PersonAddress" } },
+          "attributes": { "type": "array", "items": { "$ref": "#/components/schemas/PersonAttribute" } },
+          "voided": { "type": "boolean", "example": false },
+          "links": { "type": "array", "items": { "$ref": "#/components/schemas/Link" } }
+        }
+      },
+      "PersonName": {
+        "type": "object",
+        "properties": {
+          "uuid": { "type": "string", "example": "8d871386-c2cc-11de-8d13-0010c6dffd0f" },
+          "display": { "type": "string", "example": "John Smith" },
+          "givenName": { "type": "string", "example": "John" },
+          "middleName": { "type": "string", "nullable": true, "example": null },
+          "familyName": { "type": "string", "example": "Smith" },
+          "preferred": { "type": "boolean", "example": true },
+          "voided": { "type": "boolean", "example": false }
+        }
+      },
+      "PersonAddress": {
+        "type": "object",
+        "properties": {
+          "uuid": { "type": "string", "example": "0675e11c-6d3a-4a2f-8f4e-c2f9a8d0e001" },
+          "display": { "type": "string", "example": "123 Main St" },
+          "address1": { "type": "string", "example": "123 Main St" },
+          "cityVillage": { "type": "string", "example": "Boston" },
+          "stateProvince": { "type": "string", "example": "MA" },
+          "country": { "type": "string", "example": "USA" },
+          "postalCode": { "type": "string", "example": "02118" },
+          "preferred": { "type": "boolean", "example": true },
+          "voided": { "type": "boolean", "example": false }
+        }
+      },
+      "PersonAttribute": {
+        "type": "object",
+        "properties": {
+          "uuid": { "type": "string", "example": "d3d0e64c-9b1a-4c9a-9c2e-2b8f4b6a1234" },
+          "display": { "type": "string", "example": "Telephone Number = 555-1234" },
+          "value": { "type": "string", "example": "555-1234" },
+          "attributeType": { "$ref": "#/components/schemas/Reference" },
+          "voided": { "type": "boolean", "example": false }
+        }
+      },
+      "EncounterList": {
+        "type": "object",
+        "properties": {
+          "results": { "type": "array", "items": { "$ref": "#/components/schemas/Encounter" } }
+        }
+      },
+      "Encounter": {
+        "type": "object",
+        "properties": {
+          "uuid": { "type": "string", "example": "e403fafb-e5e4-42d0-9d11-4f52e89d148c" },
+          "display": { "type": "string", "example": "Adult Initial 01/04/2024" },
+          "encounterDatetime": { "type": "string", "example": "2024-04-01T09:30:00.000+0000" },
+          "patient": { "$ref": "#/components/schemas/Reference" },
+          "location": { "$ref": "#/components/schemas/Reference" },
+          "form": { "$ref": "#/components/schemas/Reference" },
+          "encounterType": { "$ref": "#/components/schemas/Reference" },
+          "visit": { "$ref": "#/components/schemas/Reference" },
+          "obs": { "type": "array", "items": { "$ref": "#/components/schemas/Obs" } },
+          "encounterProviders": { "type": "array", "items": { "$ref": "#/components/schemas/EncounterProvider" } },
+          "voided": { "type": "boolean", "example": false },
+          "links": { "type": "array", "items": { "$ref": "#/components/schemas/Link" } }
+        }
+      },
+      "EncounterProvider": {
+        "type": "object",
+        "properties": {
+          "uuid": { "type": "string", "example": "a1b2c3d4-e5e4-42d0-9d11-4f52e89d148c" },
+          "provider": { "$ref": "#/components/schemas/Reference" },
+          "encounterRole": { "$ref": "#/components/schemas/Reference" },
+          "voided": { "type": "boolean", "example": false }
+        }
+      },
+      "ObsList": {
+        "type": "object",
+        "properties": {
+          "results": { "type": "array", "items": { "$ref": "#/components/schemas/Obs" } }
+        }
+      },
+      "Obs": {
+        "type": "object",
+        "properties": {
+          "uuid": { "type": "string", "example": "f9a4c1e2-27ce-4bb2-86d6-6d1d05312bd5" },
+          "display": { "type": "string", "example": "Weight (kg): 72.0" },
+          "concept": { "$ref": "#/components/schemas/Reference" },
+          "person": { "$ref": "#/components/schemas/Reference" },
+          "obsDatetime": { "type": "string", "example": "2024-04-01T09:35:00.000+0000" },
+          "accessionNumber": { "type": "string", "nullable": true, "example": null },
+          "obsGroup": { "$ref": "#/components/schemas/Reference" },
+          "value": { "description": "Value: numeric, text, or a coded concept reference", "example": 72.0 },
+          "valueModifier": { "type": "string", "nullable": true, "example": null },
+          "comment": { "type": "string", "nullable": true, "example": null },
+          "location": { "$ref": "#/components/schemas/Reference" },
+          "encounter": { "$ref": "#/components/schemas/Reference" },
+          "groupMembers": { "type": "array", "nullable": true, "items": { "$ref": "#/components/schemas/Obs" } },
+          "voided": { "type": "boolean", "example": false },
+          "links": { "type": "array", "items": { "$ref": "#/components/schemas/Link" } }
+        }
+      },
+      "ConceptList": {
+        "type": "object",
+        "properties": {
+          "results": { "type": "array", "items": { "$ref": "#/components/schemas/Concept" } }
+        }
+      },
+      "Concept": {
+        "type": "object",
+        "properties": {
+          "uuid": { "type": "string", "example": "5089AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" },
+          "display": { "type": "string", "example": "Weight (kg)" },
+          "name": { "$ref": "#/components/schemas/ConceptName" },
+          "datatype": { "$ref": "#/components/schemas/Reference" },
+          "conceptClass": { "$ref": "#/components/schemas/Reference" },
+          "set": { "type": "boolean", "example": false },
+          "version": { "type": "string", "nullable": true, "example": null },
+          "retired": { "type": "boolean", "example": false },
+          "names": { "type": "array", "items": { "$ref": "#/components/schemas/ConceptName" } },
+          "descriptions": { "type": "array", "items": { "$ref": "#/components/schemas/Reference" } },
+          "answers": { "type": "array", "items": { "$ref": "#/components/schemas/Reference" } },
+          "setMembers": { "type": "array", "items": { "$ref": "#/components/schemas/Reference" } },
+          "links": { "type": "array", "items": { "$ref": "#/components/schemas/Link" } }
+        }
+      },
+      "ConceptName": {
+        "type": "object",
+        "properties": {
+          "uuid": { "type": "string", "example": "b8159118-c97b-4d5a-a63e-d4aa4be0c4d3" },
+          "display": { "type": "string", "example": "Weight (kg)" },
+          "name": { "type": "string", "example": "Weight (kg)" },
+          "locale": { "type": "string", "example": "en" },
+          "localePreferred": { "type": "boolean", "example": true },
+          "conceptNameType": { "type": "string", "nullable": true, "example": "FULLY_SPECIFIED" }
+        }
+      },
+      "LocationList": {
+        "type": "object",
+        "properties": {
+          "results": { "type": "array", "items": { "$ref": "#/components/schemas/Location" } }
+        }
+      },
+      "Location": {
+        "type": "object",
+        "properties": {
+          "uuid": { "type": "string", "example": "aff27d58-a15c-49a6-9beb-d30dcfc0c66e" },
+          "display": { "type": "string", "example": "Outpatient Clinic" },
+          "name": { "type": "string", "example": "Outpatient Clinic" },
+          "description": { "type": "string", "nullable": true, "example": null },
+          "address1": { "type": "string", "nullable": true, "example": null },
+          "cityVillage": { "type": "string", "nullable": true, "example": null },
+          "stateProvince": { "type": "string", "nullable": true, "example": null },
+          "country": { "type": "string", "nullable": true, "example": null },
+          "postalCode": { "type": "string", "nullable": true, "example": null },
+          "latitude": { "type": "string", "nullable": true, "example": null },
+          "longitude": { "type": "string", "nullable": true, "example": null },
+          "parentLocation": { "$ref": "#/components/schemas/Reference" },
+          "tags": { "type": "array", "items": { "$ref": "#/components/schemas/Reference" } },
+          "retired": { "type": "boolean", "example": false },
+          "links": { "type": "array", "items": { "$ref": "#/components/schemas/Link" } }
+        }
+      },
+      "VisitList": {
+        "type": "object",
+        "properties": {
+          "results": { "type": "array", "items": { "$ref": "#/components/schemas/Visit" } }
+        }
+      },
+      "Visit": {
+        "type": "object",
+        "properties": {
+          "uuid": { "type": "string", "example": "b1c9a3f0-27ce-4bb2-86d6-6d1d05312bd5" },
+          "display": { "type": "string", "example": "Facility Visit @ Outpatient Clinic" },
+          "patient": { "$ref": "#/components/schemas/Reference" },
+          "visitType": { "$ref": "#/components/schemas/Reference" },
+          "indication": { "$ref": "#/components/schemas/Reference" },
+          "location": { "$ref": "#/components/schemas/Reference" },
+          "startDatetime": { "type": "string", "example": "2024-04-01T09:00:00.000+0000" },
+          "stopDatetime": { "type": "string", "nullable": true, "example": null },
+          "encounters": { "type": "array", "items": { "$ref": "#/components/schemas/Reference" } },
+          "attributes": { "type": "array", "items": { "$ref": "#/components/schemas/Reference" } },
+          "voided": { "type": "boolean", "example": false },
+          "links": { "type": "array", "items": { "$ref": "#/components/schemas/Link" } }
+        }
+      },
+      "PatientIdentifierTypeList": {
+        "type": "object",
+        "properties": {
+          "results": { "type": "array", "items": { "$ref": "#/components/schemas/PatientIdentifierType" } }
+        }
+      },
+      "PatientIdentifierType": {
+        "type": "object",
+        "properties": {
+          "uuid": { "type": "string", "example": "05a29f94-c0ed-11e2-94be-8c13b969e334" },
+          "display": { "type": "string", "example": "OpenMRS ID" },
+          "name": { "type": "string", "example": "OpenMRS ID" },
+          "description": { "type": "string", "example": "OpenMRS patient identifier, with check-digit" },
+          "format": { "type": "string", "nullable": true, "example": null },
+          "formatDescription": { "type": "string", "nullable": true, "example": null },
+          "required": { "type": "boolean", "example": false },
+          "checkDigit": { "type": "boolean", "example": true },
+          "validator": { "type": "string", "nullable": true, "example": "org.openmrs.patient.impl.LuhnIdentifierValidator" },
+          "locationBehavior": { "type": "string", "nullable": true, "example": null },
+          "uniquenessBehavior": { "type": "string", "nullable": true, "example": null },
+          "retired": { "type": "boolean", "example": false },
+          "links": { "type": "array", "items": { "$ref": "#/components/schemas/Link" } }
+        }
+      },
+      "EncounterTypeList": {
+        "type": "object",
+        "properties": {
+          "results": { "type": "array", "items": { "$ref": "#/components/schemas/EncounterType" } }
+        }
+      },
+      "EncounterType": {
+        "type": "object",
+        "properties": {
+          "uuid": { "type": "string", "example": "61ae96f4-6afe-4351-b6f8-cd4fc383cce1" },
+          "display": { "type": "string", "example": "Adult Initial" },
+          "name": { "type": "string", "example": "Adult Initial" },
+          "description": { "type": "string", "nullable": true, "example": "Initial adult clinic visit" },
+          "retired": { "type": "boolean", "example": false },
+          "links": { "type": "array", "items": { "$ref": "#/components/schemas/Link" } }
+        }
+      },
+      "VisitTypeList": {
+        "type": "object",
+        "properties": {
+          "results": { "type": "array", "items": { "$ref": "#/components/schemas/VisitType" } }
+        }
+      },
+      "VisitType": {
+        "type": "object",
+        "properties": {
+          "uuid": { "type": "string", "example": "7b0f5697-27e3-40c4-8bae-f4049abfb4ed" },
+          "display": { "type": "string", "example": "Facility Visit" },
+          "name": { "type": "string", "example": "Facility Visit" },
+          "description": { "type": "string", "nullable": true, "example": null },
+          "retired": { "type": "boolean", "example": false },
+          "links": { "type": "array", "items": { "$ref": "#/components/schemas/Link" } }
+        }
+      },
+      "ProviderList": {
+        "type": "object",
+        "properties": {
+          "results": { "type": "array", "items": { "$ref": "#/components/schemas/Provider" } }
+        }
+      },
+      "Provider": {
+        "type": "object",
+        "properties": {
+          "uuid": { "type": "string", "example": "c2299800-cca9-11e0-9572-0800200c9a66" },
+          "display": { "type": "string", "example": "Super User" },
+          "person": { "$ref": "#/components/schemas/Reference" },
+          "identifier": { "type": "string", "nullable": true, "example": "PROV-001" },
+          "attributes": { "type": "array", "items": { "$ref": "#/components/schemas/Reference" } },
+          "retired": { "type": "boolean", "example": false },
+          "links": { "type": "array", "items": { "$ref": "#/components/schemas/Link" } }
+        }
+      },
+      "AllergyList": {
+        "type": "object",
+        "properties": {
+          "results": { "type": "array", "items": { "$ref": "#/components/schemas/Allergy" } }
+        }
+      },
+      "Allergy": {
+        "type": "object",
+        "properties": {
+          "uuid": { "type": "string", "example": "d1b2c3d4-27ce-4bb2-86d6-6d1d05312bd5" },
+          "display": { "type": "string", "example": "Penicillins" },
+          "allergen": {
+            "type": "object",
+            "properties": {
+              "allergenType": { "type": "string", "example": "DRUG" },
+              "codedAllergen": { "$ref": "#/components/schemas/Reference" },
+              "nonCodedAllergen": { "type": "string", "nullable": true, "example": null }
+            }
+          },
+          "severity": { "$ref": "#/components/schemas/Reference" },
+          "comment": { "type": "string", "nullable": true, "example": null },
+          "reactions": { "type": "array", "items": { "$ref": "#/components/schemas/Reference" } },
+          "patient": { "$ref": "#/components/schemas/Reference" },
+          "voided": { "type": "boolean", "example": false },
+          "links": { "type": "array", "items": { "$ref": "#/components/schemas/Link" } }
+        }
+      }
+    }
+  }
+}

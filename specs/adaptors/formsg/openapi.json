@@ -1,0 +1,125 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "FormSG Webhook / Submission API (OpenFn formsg synthesized)",
+    "version": "1.0.0",
+    "description": "Synthesized OpenAPI describing the FormSG data shapes the OpenFn formsg adaptor operates on. The adaptor does not call a remote REST API: decryptSubmission, verifyWebhook and processWebhook run the @opengovsg/formsg-sdk locally to verify a webhook signature (X-FormSG-Signature) and decrypt the submission's encryptedContent with the form secret key. Endpoints here model those operations as request/response pairs so the encrypted-submission and decrypted-submission shapes seed as collections. Server URL is a mock placeholder.",
+    "x-openfn-adaptor": "formsg"
+  },
+  "servers": [{ "url": "http://localhost:4010", "description": "Mock placeholder (adaptor runs the FormSG SDK locally)" }],
+  "components": {
+    "schemas": {
+      "EncryptedSubmission": {
+        "type": "object",
+        "description": "The webhook payload FormSG POSTs to your endpoint (state.data).",
+        "properties": {
+          "formId": { "type": "string" },
+          "submissionId": { "type": "string" },
+          "encryptedContent": { "type": "string", "description": "Encrypted responses, base64 nonce:ciphertext" },
+          "verifiedContent": { "type": "string", "nullable": true },
+          "version": { "type": "integer" },
+          "created": { "type": "string", "format": "date-time" },
+          "attachmentDownloadUrls": {
+            "type": "object",
+            "additionalProperties": { "type": "string", "format": "uri" }
+          }
+        },
+        "required": ["formId", "submissionId", "encryptedContent"]
+      },
+      "FormResponse": {
+        "type": "object",
+        "description": "A single decrypted form field response.",
+        "properties": {
+          "_id": { "type": "string" },
+          "question": { "type": "string" },
+          "fieldType": { "type": "string", "enum": ["textfield", "textarea", "dropdown", "radiobutton", "checkbox", "email", "mobile", "number", "date", "rating", "attachment", "table", "section"] },
+          "answer": { "type": "string" },
+          "answerArray": { "type": "array", "items": { "type": "string" } },
+          "isVisible": { "type": "boolean" }
+        }
+      },
+      "DecryptedSubmission": {
+        "type": "object",
+        "description": "Output of decryptSubmission / processWebhook.",
+        "properties": {
+          "submissionId": { "type": "string" },
+          "responses": { "type": "array", "items": { "$ref": "#/components/schemas/FormResponse" } },
+          "verified": { "type": "object", "nullable": true, "additionalProperties": true },
+          "attachments": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "properties": {
+                "filename": { "type": "string" },
+                "content": { "type": "string", "description": "Decrypted attachment bytes (base64)" }
+              }
+            }
+          }
+        }
+      },
+      "WebhookVerificationResult": {
+        "type": "object",
+        "description": "Output of verifyWebhook: whether the X-FormSG-Signature header is authentic.",
+        "properties": {
+          "verified": { "type": "boolean" },
+          "epoch": { "type": "integer" },
+          "submissionId": { "type": "string" },
+          "formId": { "type": "string" }
+        }
+      },
+      "DecryptRequest": {
+        "type": "object",
+        "properties": {
+          "submissionData": { "$ref": "#/components/schemas/EncryptedSubmission" },
+          "options": {
+            "type": "object",
+            "properties": {
+              "verifySignature": { "type": "boolean" },
+              "signatureHeader": { "type": "string" }
+            }
+          }
+        },
+        "required": ["submissionData"]
+      }
+    }
+  },
+  "paths": {
+    "/decrypt": {
+      "post": {
+        "operationId": "decryptSubmission",
+        "summary": "Decrypt a FormSG submission (local SDK operation, modelled as an endpoint)",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/DecryptRequest" } } }
+        },
+        "responses": {
+          "200": { "description": "Decrypted submission", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/DecryptedSubmission" } } } }
+        }
+      }
+    },
+    "/verify": {
+      "post": {
+        "operationId": "verifyWebhook",
+        "summary": "Verify a FormSG webhook signature header",
+        "parameters": [{ "name": "X-FormSG-Signature", "in": "header", "schema": { "type": "string" } }],
+        "responses": {
+          "200": { "description": "Verification result", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/WebhookVerificationResult" } } } }
+        }
+      }
+    },
+    "/process": {
+      "post": {
+        "operationId": "processWebhook",
+        "summary": "Verify and decrypt a FormSG webhook in one step",
+        "parameters": [{ "name": "X-FormSG-Signature", "in": "header", "schema": { "type": "string" } }],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/EncryptedSubmission" } } }
+        },
+        "responses": {
+          "200": { "description": "Decrypted submission", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/DecryptedSubmission" } } } }
+        }
+      }
+    }
+  }
+}

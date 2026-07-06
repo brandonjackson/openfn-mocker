@@ -1,0 +1,13 @@
+{
+  "adaptor": "mogli",
+  "npm": "@openfn/language-mogli",
+  "origin": "generated",
+  "upstreamFormat": "adaptor-surface",
+  "sources": [
+    "https://cdn.jsdelivr.net/npm/@openfn/language-mogli/ast.json",
+    "https://github.com/OpenFn/adaptors/blob/main/packages/mogli/src/Adaptor.js",
+    "https://docs.openfn.org/adaptors/packages/mogli-docs"
+  ],
+  "capturedAt": "2026-07-06",
+  "notes": "Mogli SMS is a Salesforce managed package with no published external API spec. The adaptor's only network operations (createSMS, updateSMS) POST/PUT to the custom Apex REST resource /services/apexrest/Mogli_SMS/v1/sms on the org's instanceUrl (confirmed in src/Adaptor.js). Generated a focused OpenAPI 3.0.3 from the adaptor surface and source; server URL is a Salesforce instance placeholder. Request/response field names are best-effort from the adaptor examples since the Apex REST payload schema is not publicly documented."
+}

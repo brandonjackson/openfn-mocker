@@ -1,0 +1,15 @@
+{
+  "adaptor": "msgraph",
+  "npm": "@openfn/language-msgraph",
+  "origin": "converted",
+  "upstreamFormat": "csdl",
+  "sources": [
+    "https://github.com/microsoftgraph/msgraph-metadata/blob/master/openapi/v1.0/openapi.yaml",
+    "https://learn.microsoft.com/en-us/graph/api/overview",
+    "https://cdn.jsdelivr.net/npm/@openfn/language-msgraph/ast.json",
+    "https://cdn.jsdelivr.net/npm/@openfn/language-msgraph/dist/index.cjs",
+    "https://github.com/OpenFn/adaptors/tree/main/packages/msgraph"
+  ],
+  "capturedAt": "2026-07-06",
+  "notes": "Focused subset covering the Graph resources the adaptor touches. The msgraph adaptor exposes 6 public operations (create, get, getDrive, getFolder, getFile, uploadFile) against base https://graph.microsoft.com/v1.0. Endpoints were confirmed from the adaptor's dist/index.cjs: getDrive hits /drives/{id} or /{owner}/{id}/drive (sites, groups); getFolder hits /drives/{id}/items/{id}/children (or /root:/{path}); getFile hits /drives/{id}/items/{id}/content; uploadFile POSTs /drives/{id}/items/{id}:/{name}:/createUploadSession (or the /sites/{id}/drive equivalent) then PUTs to the returned uploadUrl; create POSTs to any resource (applications shown as the doc example); get is generic (sites/root/lists shown). Reusable shapes (DriveItem, Drive, Site, List, User, Group, Application, Worksheet, UploadSession) were subset by hand from the official Microsoft Graph metadata (CSDL/EDMX converted to OpenAPI, published at microsoftgraph/msgraph-metadata). The full Graph OpenAPI is multi-megabyte and deliberately NOT vendored; only ~17 operations relevant to the adaptor are modeled."
+}

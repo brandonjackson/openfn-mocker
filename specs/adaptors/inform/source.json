@@ -1,0 +1,14 @@
+{
+  "adaptor": "inform",
+  "npm": "@openfn/language-inform",
+  "origin": "generated",
+  "upstreamFormat": "docs",
+  "sources": [
+    "https://api.ona.io/static/docs/forms.html",
+    "https://api.ona.io/static/docs/data.html",
+    "https://api.ona.io/static/docs/index.html",
+    "https://cdn.jsdelivr.net/npm/@openfn/language-inform/ast.json"
+  ],
+  "capturedAt": "2026-07-06",
+  "notes": "UNICEF Inform (data.inform.unicef.org) is built on the Ona/onadata platform, which exposes no OpenAPI document. Authored a focused OpenAPI 3.0.3 from the Ona API docs, matching the exact paths the adaptor calls (confirmed in dist/index.cjs): forms, forms/{id}, forms/{id}/form.json, data/{id}, data/{id}/{submissionId}, media/{id}. Field sets for Form, Submission and Attachment come from the Ona docs; Submission uses additionalProperties since form field keys are form-specific."
+}

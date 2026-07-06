@@ -1,0 +1,391 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "CARTO Platform API (mock subset)",
+    "version": "2.0.0",
+    "description": "Focused subset of the CARTO platform APIs used by the OpenFn cartodb adaptor. The adaptor's sql() and addRow() operations both call the SQL API (GET https://{account}.carto.com/api/v2/sql with q and api_key query params). This spec models the SQL API (GET and POST) plus the CARTO Import API (create/list/get import jobs) so the mock can serve realistic SQL result sets and asynchronous import job responses.",
+    "x-openfn-adaptor": "cartodb"
+  },
+  "servers": [
+    {
+      "url": "https://{account}.carto.com",
+      "description": "CARTO account-scoped base URL. {account} is the CARTO username/organization subdomain.",
+      "variables": {
+        "account": {
+          "default": "localhost",
+          "description": "CARTO account name (subdomain)."
+        }
+      }
+    }
+  ],
+  "paths": {
+    "/api/v2/sql": {
+      "get": {
+        "operationId": "runSqlQueryGet",
+        "summary": "Run an SQL query (GET)",
+        "description": "Executes an SQL statement against the account's CARTO/PostGIS database. This is the exact call made by the adaptor's sql() and addRow() operations (superagent GET with q and api_key query params).",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "description": "The SQL statement to execute.",
+            "schema": { "type": "string" },
+            "example": "SELECT * FROM table WHERE ST_DWithin(geom, ST_Point(-73,40), 1000)"
+          },
+          {
+            "name": "api_key",
+            "in": "query",
+            "required": false,
+            "description": "CARTO API key. Required for write queries and access to private datasets.",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "required": false,
+            "description": "Output format. Defaults to JSON.",
+            "schema": {
+              "type": "string",
+              "enum": ["json", "geojson", "csv"],
+              "default": "json"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Query result set",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SqlResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "SQL or request error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SqlError" }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "runSqlQueryPost",
+        "summary": "Run an SQL query (POST)",
+        "description": "Executes an SQL statement via POST. Useful for large queries that exceed URL length limits. Accepts either application/json or application/x-www-form-urlencoded bodies containing the query.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/SqlRequest" }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": { "$ref": "#/components/schemas/SqlRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Query result set",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SqlResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "SQL or request error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SqlError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/imports": {
+      "get": {
+        "operationId": "listImports",
+        "summary": "List import jobs",
+        "description": "Returns the identifiers of all import jobs for the account.",
+        "parameters": [
+          {
+            "name": "api_key",
+            "in": "query",
+            "required": true,
+            "description": "CARTO API key.",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of import job ids",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ImportList" }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createImport",
+        "summary": "Create an import job",
+        "description": "Uploads a file (or references a remote URL) to import as a new dataset. The import runs asynchronously; poll the returned item_queue_id via getImport to track progress.",
+        "parameters": [
+          {
+            "name": "api_key",
+            "in": "query",
+            "required": true,
+            "description": "CARTO API key.",
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": { "$ref": "#/components/schemas/ImportRequest" }
+            },
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ImportRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Import job accepted",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ImportCreatedResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/imports/{item_queue_id}": {
+      "get": {
+        "operationId": "getImport",
+        "summary": "Get an import job status",
+        "description": "Returns the current state of an asynchronous import job.",
+        "parameters": [
+          {
+            "name": "item_queue_id",
+            "in": "path",
+            "required": true,
+            "description": "The import job id returned by createImport.",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "api_key",
+            "in": "query",
+            "required": true,
+            "description": "CARTO API key.",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Import job status",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ImportJob" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SqlRequest": {
+        "type": "object",
+        "required": ["q"],
+        "properties": {
+          "q": {
+            "type": "string",
+            "description": "SQL statement to execute.",
+            "example": "INSERT INTO users (name, age, city) VALUES ('Alice', 25, 'New York')"
+          },
+          "api_key": {
+            "type": "string",
+            "description": "CARTO API key."
+          },
+          "format": {
+            "type": "string",
+            "enum": ["json", "geojson", "csv"],
+            "default": "json"
+          }
+        }
+      },
+      "SqlResponse": {
+        "type": "object",
+        "description": "Standard JSON result of an SQL API query.",
+        "properties": {
+          "rows": {
+            "type": "array",
+            "description": "The rows returned by the query. Each row is an object keyed by column name.",
+            "items": { "$ref": "#/components/schemas/SqlRow" }
+          },
+          "time": {
+            "type": "number",
+            "format": "float",
+            "description": "Query execution time in seconds.",
+            "example": 0.006
+          },
+          "fields": {
+            "type": "object",
+            "description": "Map of column name to its type descriptor.",
+            "additionalProperties": { "$ref": "#/components/schemas/SqlField" },
+            "example": {
+              "cartodb_id": { "type": "number" },
+              "name": { "type": "string" },
+              "the_geom": { "type": "geometry" }
+            }
+          },
+          "total_rows": {
+            "type": "integer",
+            "description": "Number of rows affected or returned.",
+            "example": 1
+          }
+        }
+      },
+      "SqlRow": {
+        "type": "object",
+        "description": "A single result row keyed by column name.",
+        "additionalProperties": true,
+        "example": {
+          "cartodb_id": 1,
+          "name": "Alice",
+          "age": 25,
+          "city": "New York"
+        }
+      },
+      "SqlField": {
+        "type": "object",
+        "description": "Type descriptor for a returned column.",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "PostgreSQL/CARTO column type family.",
+            "example": "string"
+          },
+          "pgtype": {
+            "type": "string",
+            "description": "Underlying PostgreSQL type name.",
+            "example": "text"
+          }
+        }
+      },
+      "SqlError": {
+        "type": "object",
+        "description": "Error response from the SQL API. Contains the full PostgreSQL error text.",
+        "properties": {
+          "error": {
+            "type": "array",
+            "items": { "type": "string" },
+            "example": ["syntax error at or near \"SELECt\""]
+          },
+          "hint": {
+            "type": "string",
+            "description": "Optional PostgreSQL hint."
+          }
+        }
+      },
+      "ImportRequest": {
+        "type": "object",
+        "description": "Payload for creating an import. Provide either an uploaded file or a remote url.",
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "binary",
+            "description": "The dataset file to upload (CSV, GeoJSON, SHP zip, etc.)."
+          },
+          "url": {
+            "type": "string",
+            "description": "Remote URL of the dataset to import."
+          },
+          "table_name": {
+            "type": "string",
+            "description": "Optional target table name for the imported dataset."
+          }
+        }
+      },
+      "ImportCreatedResponse": {
+        "type": "object",
+        "description": "Acknowledgement returned when an import job is queued.",
+        "properties": {
+          "success": { "type": "boolean", "example": true },
+          "item_queue_id": {
+            "type": "string",
+            "description": "Identifier used to poll the import job.",
+            "example": "5e35bbec-4a48-4bf0-b95a-99a67cb0d6f2"
+          }
+        }
+      },
+      "ImportList": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean", "example": true },
+          "imports": {
+            "type": "array",
+            "description": "Identifiers of import jobs.",
+            "items": { "type": "string" },
+            "example": ["5e35bbec-4a48-4bf0-b95a-99a67cb0d6f2"]
+          }
+        }
+      },
+      "ImportJob": {
+        "type": "object",
+        "description": "State of an asynchronous import job.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "5e35bbec-4a48-4bf0-b95a-99a67cb0d6f2"
+          },
+          "item_queue_id": {
+            "type": "string",
+            "example": "5e35bbec-4a48-4bf0-b95a-99a67cb0d6f2"
+          },
+          "user_id": { "type": "string", "example": "0d3f0dfa-1e12-4b2a-9b1a-000000000000" },
+          "table_id": { "type": "string", "nullable": true },
+          "state": {
+            "type": "string",
+            "description": "Job lifecycle state.",
+            "enum": ["enqueued", "pending", "uploading", "importing", "complete", "failure"],
+            "example": "complete"
+          },
+          "success": { "type": "boolean", "example": true },
+          "table_name": {
+            "type": "string",
+            "nullable": true,
+            "example": "my_dataset"
+          },
+          "tables_created_count": { "type": "integer", "example": 1 },
+          "queue_id": {
+            "type": "string",
+            "example": "5e35bbec-4a48-4bf0-b95a-99a67cb0d6f2"
+          },
+          "error_code": { "type": "integer", "nullable": true, "example": null },
+          "get_error_text": {
+            "type": "object",
+            "nullable": true,
+            "properties": {
+              "title": { "type": "string" },
+              "what_about": { "type": "string" },
+              "source": { "type": "string" }
+            }
+          },
+          "warnings": { "type": "string", "nullable": true },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" }
+        }
+      }
+    }
+  }
+}

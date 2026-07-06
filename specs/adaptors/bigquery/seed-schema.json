@@ -1,0 +1,319 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "bigquery — mocker seed-data schema",
+    "version": "1.0.0",
+    "description": "Schema for the seed data openfn-mocker needs to impersonate bigquery. Derived from the adaptor's OpenAPI spec. A seed dump is { collection: { id: record } }; each record validates against its resource schema below.",
+    "x-openfn-adaptor": "bigquery",
+    "x-derived-from": "openapi.json",
+    "x-captured-at": "2026-07-06"
+  },
+  "x-seed": {
+    "shape": "{ collection: { id: record } }",
+    "collections": {
+      "jobs": {
+        "resource": "Job",
+        "schema": {
+          "$ref": "#/components/schemas/Job"
+        }
+      },
+      "tables": {
+        "resource": "Table",
+        "schema": {
+          "$ref": "#/components/schemas/Table"
+        }
+      },
+      "tableDataInsertAllResponses": {
+        "resource": "TableDataInsertAllResponse",
+        "schema": {
+          "$ref": "#/components/schemas/TableDataInsertAllResponse"
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SeedData": {
+        "type": "object",
+        "description": "Full seed dump loaded by mocker: one property per collection.",
+        "properties": {
+          "jobs": {
+            "type": "object",
+            "description": "Records keyed by id for the jobs collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Job"
+            }
+          },
+          "tables": {
+            "type": "object",
+            "description": "Records keyed by id for the tables collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Table"
+            }
+          },
+          "tableDataInsertAllResponses": {
+            "type": "object",
+            "description": "Records keyed by id for the tableDataInsertAllResponses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/TableDataInsertAllResponse"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "ErrorProto": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          },
+          "debugInfo": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "JobReference": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          }
+        }
+      },
+      "TableReference": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "string"
+          },
+          "datasetId": {
+            "type": "string"
+          },
+          "tableId": {
+            "type": "string"
+          }
+        }
+      },
+      "JobConfigurationLoad": {
+        "type": "object",
+        "properties": {
+          "sourceUris": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "destinationTable": {
+            "$ref": "#/components/schemas/TableReference"
+          },
+          "schema": {
+            "$ref": "#/components/schemas/TableSchema"
+          },
+          "sourceFormat": {
+            "type": "string",
+            "example": "CSV"
+          },
+          "skipLeadingRows": {
+            "type": "integer"
+          },
+          "writeDisposition": {
+            "type": "string",
+            "example": "WRITE_APPEND"
+          },
+          "createDisposition": {
+            "type": "string",
+            "example": "CREATE_IF_NEEDED"
+          },
+          "schemaUpdateOptions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "autodetect": {
+            "type": "boolean"
+          }
+        }
+      },
+      "JobStatus": {
+        "type": "object",
+        "properties": {
+          "state": {
+            "type": "string",
+            "example": "DONE"
+          },
+          "errorResult": {
+            "$ref": "#/components/schemas/ErrorProto"
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorProto"
+            }
+          }
+        }
+      },
+      "Job": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "example": "bigquery#job"
+          },
+          "id": {
+            "type": "string"
+          },
+          "etag": {
+            "type": "string"
+          },
+          "selfLink": {
+            "type": "string"
+          },
+          "jobReference": {
+            "$ref": "#/components/schemas/JobReference"
+          },
+          "configuration": {
+            "type": "object",
+            "properties": {
+              "jobType": {
+                "type": "string",
+                "example": "LOAD"
+              },
+              "load": {
+                "$ref": "#/components/schemas/JobConfigurationLoad"
+              }
+            }
+          },
+          "status": {
+            "$ref": "#/components/schemas/JobStatus"
+          },
+          "statistics": {
+            "type": "object",
+            "properties": {
+              "creationTime": {
+                "type": "string"
+              },
+              "startTime": {
+                "type": "string"
+              },
+              "endTime": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "TableFieldSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "example": "STRING"
+          },
+          "mode": {
+            "type": "string",
+            "example": "NULLABLE"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      },
+      "TableSchema": {
+        "type": "object",
+        "properties": {
+          "fields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TableFieldSchema"
+            }
+          }
+        }
+      },
+      "Table": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "example": "bigquery#table"
+          },
+          "id": {
+            "type": "string"
+          },
+          "etag": {
+            "type": "string"
+          },
+          "selfLink": {
+            "type": "string"
+          },
+          "tableReference": {
+            "$ref": "#/components/schemas/TableReference"
+          },
+          "schema": {
+            "$ref": "#/components/schemas/TableSchema"
+          },
+          "numRows": {
+            "type": "string"
+          },
+          "numBytes": {
+            "type": "string"
+          },
+          "creationTime": {
+            "type": "string"
+          },
+          "lastModifiedTime": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "example": "TABLE"
+          },
+          "location": {
+            "type": "string"
+          }
+        }
+      },
+      "TableDataInsertAllResponse": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "example": "bigquery#tableDataInsertAllResponse"
+          },
+          "insertErrors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "index": {
+                  "type": "integer"
+                },
+                "errors": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ErrorProto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

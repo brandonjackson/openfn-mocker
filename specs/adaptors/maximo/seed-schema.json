@@ -1,0 +1,366 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "maximo — mocker seed-data schema",
+    "version": "1.0.0",
+    "description": "Schema for the seed data openfn-mocker needs to impersonate maximo. Derived from the adaptor's OpenAPI spec. A seed dump is { collection: { id: record } }; each record validates against its resource schema below.",
+    "x-openfn-adaptor": "maximo",
+    "x-derived-from": "openapi.json",
+    "x-captured-at": "2026-07-06"
+  },
+  "x-seed": {
+    "shape": "{ collection: { id: record } }",
+    "collections": {
+      "assets": {
+        "resource": "Asset",
+        "schema": {
+          "$ref": "#/components/schemas/Asset"
+        }
+      },
+      "genericRecords": {
+        "resource": "GenericRecord",
+        "schema": {
+          "$ref": "#/components/schemas/GenericRecord"
+        }
+      },
+      "invBalances": {
+        "resource": "InvBalance",
+        "schema": {
+          "$ref": "#/components/schemas/InvBalance"
+        }
+      },
+      "queryResponses": {
+        "resource": "QueryResponse",
+        "schema": {
+          "$ref": "#/components/schemas/QueryResponse"
+        }
+      },
+      "workOrders": {
+        "resource": "WorkOrder",
+        "schema": {
+          "$ref": "#/components/schemas/WorkOrder"
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SeedData": {
+        "type": "object",
+        "description": "Full seed dump loaded by mocker: one property per collection.",
+        "properties": {
+          "assets": {
+            "type": "object",
+            "description": "Records keyed by id for the assets collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Asset"
+            }
+          },
+          "genericRecords": {
+            "type": "object",
+            "description": "Records keyed by id for the genericRecords collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/GenericRecord"
+            }
+          },
+          "invBalances": {
+            "type": "object",
+            "description": "Records keyed by id for the invBalances collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/InvBalance"
+            }
+          },
+          "queryResponses": {
+            "type": "object",
+            "description": "Records keyed by id for the queryResponses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/QueryResponse"
+            }
+          },
+          "workOrders": {
+            "type": "object",
+            "description": "Records keyed by id for the workOrders collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/WorkOrder"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "QueryResponse": {
+        "type": "object",
+        "description": "Generic query response wrapper returned by object structure queries.",
+        "properties": {
+          "rsStart": {
+            "type": "integer",
+            "description": "Index of the first returned record."
+          },
+          "rsCount": {
+            "type": "integer",
+            "description": "Number of records in this response."
+          },
+          "rsTotal": {
+            "type": "integer",
+            "description": "Total number of matching records."
+          },
+          "member": {
+            "type": "array",
+            "description": "The returned records.",
+            "items": {
+              "$ref": "#/components/schemas/GenericRecord"
+            }
+          }
+        }
+      },
+      "GenericRecord": {
+        "type": "object",
+        "description": "A generic Maximo record. Attribute names are upper-case MBO field names; contents vary by object structure.",
+        "additionalProperties": true,
+        "properties": {
+          "_rowstamp": {
+            "type": "string",
+            "description": "Optimistic-locking row stamp."
+          },
+          "href": {
+            "type": "string",
+            "description": "Self reference URI of the record."
+          }
+        }
+      },
+      "WorkOrder": {
+        "type": "object",
+        "description": "Work order record (WORKORDER MBO / MXWO object structure).",
+        "properties": {
+          "WORKORDERID": {
+            "type": "integer",
+            "description": "Unique numeric id of the work order."
+          },
+          "WONUM": {
+            "type": "string",
+            "description": "Work order number."
+          },
+          "DESCRIPTION": {
+            "type": "string"
+          },
+          "STATUS": {
+            "type": "string",
+            "description": "Work order status (e.g. WAPPR, APPR, COMP, CLOSE)."
+          },
+          "STATUSDATE": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "SITEID": {
+            "type": "string"
+          },
+          "ORGID": {
+            "type": "string"
+          },
+          "ASSETNUM": {
+            "type": "string"
+          },
+          "LOCATION": {
+            "type": "string"
+          },
+          "WOPRIORITY": {
+            "type": "integer"
+          },
+          "WORKTYPE": {
+            "type": "string"
+          },
+          "REPORTDATE": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "SCHEDSTART": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "ESTDUR": {
+            "type": "number"
+          },
+          "_rowstamp": {
+            "type": "string"
+          },
+          "href": {
+            "type": "string"
+          }
+        }
+      },
+      "Asset": {
+        "type": "object",
+        "description": "Asset record (ASSET MBO / MXASSET object structure).",
+        "properties": {
+          "ASSETID": {
+            "type": "integer",
+            "description": "Unique numeric id of the asset."
+          },
+          "ASSETNUM": {
+            "type": "string"
+          },
+          "DESCRIPTION": {
+            "type": "string"
+          },
+          "STATUS": {
+            "type": "string",
+            "description": "Asset status (e.g. OPERATING, DECOMMISSIONED)."
+          },
+          "SITEID": {
+            "type": "string"
+          },
+          "ORGID": {
+            "type": "string"
+          },
+          "LOCATION": {
+            "type": "string"
+          },
+          "SERIALNUM": {
+            "type": "string"
+          },
+          "ASSETTYPE": {
+            "type": "string"
+          },
+          "PARENT": {
+            "type": "string"
+          },
+          "PRIORITY": {
+            "type": "integer"
+          },
+          "_rowstamp": {
+            "type": "string"
+          },
+          "href": {
+            "type": "string"
+          }
+        }
+      },
+      "InventoryItem": {
+        "type": "object",
+        "description": "Inventory record (INVENTORY MBO / MXINVENTORY object structure).",
+        "properties": {
+          "INVENTORYID": {
+            "type": "integer"
+          },
+          "ITEMNUM": {
+            "type": "string",
+            "description": "Item number."
+          },
+          "ITEMSETID": {
+            "type": "string"
+          },
+          "DESCRIPTION": {
+            "type": "string"
+          },
+          "LOCATION": {
+            "type": "string"
+          },
+          "SITEID": {
+            "type": "string"
+          },
+          "STATUS": {
+            "type": "string"
+          },
+          "CURBAL": {
+            "type": "number",
+            "description": "Current balance."
+          },
+          "ISSUEUNIT": {
+            "type": "string"
+          },
+          "ORDERUNIT": {
+            "type": "string"
+          },
+          "_rowstamp": {
+            "type": "string"
+          },
+          "href": {
+            "type": "string"
+          }
+        }
+      },
+      "InvBalance": {
+        "type": "object",
+        "description": "Inventory balance record (INVBALANCES MBO).",
+        "properties": {
+          "INVBALANCESID": {
+            "type": "integer"
+          },
+          "ITEMNUM": {
+            "type": "string"
+          },
+          "ITEMSETID": {
+            "type": "string"
+          },
+          "LOCATION": {
+            "type": "string"
+          },
+          "BINNUM": {
+            "type": "string"
+          },
+          "LOTNUM": {
+            "type": "string"
+          },
+          "SITEID": {
+            "type": "string"
+          },
+          "CURBAL": {
+            "type": "number",
+            "description": "Current balance."
+          },
+          "PHYSCNT": {
+            "type": "number",
+            "description": "Physical count."
+          },
+          "PHYSCNTDATE": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "_rowstamp": {
+            "type": "string"
+          },
+          "href": {
+            "type": "string"
+          }
+        }
+      },
+      "Person": {
+        "type": "object",
+        "description": "Person record (PERSON MBO / MXPERSON object structure).",
+        "properties": {
+          "PERSONID": {
+            "type": "string",
+            "description": "Unique person id."
+          },
+          "FIRSTNAME": {
+            "type": "string"
+          },
+          "LASTNAME": {
+            "type": "string"
+          },
+          "DISPLAYNAME": {
+            "type": "string"
+          },
+          "STATUS": {
+            "type": "string"
+          },
+          "PRIMARYEMAIL": {
+            "type": "string",
+            "format": "email"
+          },
+          "PRIMARYPHONE": {
+            "type": "string"
+          },
+          "LOCATIONORG": {
+            "type": "string"
+          },
+          "_rowstamp": {
+            "type": "string"
+          },
+          "href": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

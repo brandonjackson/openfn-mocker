@@ -1,0 +1,92 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "hive — mocker seed-data schema",
+    "version": "1.0.0",
+    "description": "Schema for the seed data openfn-mocker needs to impersonate hive. Derived from the adaptor's OpenAPI spec. A seed dump is { collection: { id: record } }; each record validates against its resource schema below.",
+    "x-openfn-adaptor": "hive",
+    "x-derived-from": "openapi.json",
+    "x-captured-at": "2026-07-06"
+  },
+  "x-seed": {
+    "shape": "{ collection: { id: record } }",
+    "collections": {
+      "queryResults": {
+        "resource": "QueryResult",
+        "schema": {
+          "$ref": "#/components/schemas/QueryResult"
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SeedData": {
+        "type": "object",
+        "description": "Full seed dump loaded by mocker: one property per collection.",
+        "properties": {
+          "queryResults": {
+            "type": "object",
+            "description": "Records keyed by id for the queryResults collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/QueryResult"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "QueryRequest": {
+        "type": "object",
+        "required": [
+          "sql"
+        ],
+        "properties": {
+          "sql": {
+            "type": "string",
+            "description": "The SQL statement to execute",
+            "example": "select count(*) as patient_count from patient"
+          },
+          "options": {
+            "type": "object",
+            "description": "Optional execution options",
+            "additionalProperties": true
+          }
+        }
+      },
+      "QueryResult": {
+        "type": "object",
+        "properties": {
+          "columns": {
+            "type": "array",
+            "description": "Column names in result order",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "patient_count"
+            ]
+          },
+          "rows": {
+            "type": "array",
+            "description": "Result rows, each keyed by column name",
+            "items": {
+              "$ref": "#/components/schemas/QueryRow"
+            }
+          },
+          "rowCount": {
+            "type": "integer",
+            "example": 1
+          }
+        }
+      },
+      "QueryRow": {
+        "type": "object",
+        "description": "A single result row (columns are query-dependent)",
+        "additionalProperties": true,
+        "example": {
+          "patient_count": 4213
+        }
+      }
+    }
+  }
+}

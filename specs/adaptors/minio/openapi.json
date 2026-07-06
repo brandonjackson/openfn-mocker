@@ -1,0 +1,173 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "MinIO S3-Compatible Object Store (synthesized)",
+    "version": "1.0.0",
+    "description": "Synthesized OpenAPI 3.0.3 describing the S3-compatible object operations exercised by the OpenFn minio adaptor. MinIO natively speaks the AWS S3 protocol (XML) via the minio JS client; this document models the same operations as JSON REST shapes so mocker can seed and serve bucket/object/tag collections.",
+    "x-openfn-adaptor": "minio"
+  },
+  "servers": [{ "url": "http://localhost:9000" }],
+  "paths": {
+    "/{bucketName}": {
+      "put": {
+        "operationId": "createBucket",
+        "summary": "Create a new bucket",
+        "parameters": [
+          { "name": "bucketName", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "region", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bucket created",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Bucket" } }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "listObjects",
+        "summary": "List objects in a bucket",
+        "parameters": [
+          { "name": "bucketName", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "prefix", "in": "query", "schema": { "type": "string" } },
+          { "name": "recursive", "in": "query", "schema": { "type": "boolean" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of objects",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ObjectList" } }
+            }
+          }
+        }
+      }
+    },
+    "/{bucketName}/{objectName}": {
+      "get": {
+        "operationId": "getObject",
+        "summary": "Get an object",
+        "parameters": [
+          { "name": "bucketName", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "objectName", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "The object metadata and content",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/StorageObject" } }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "putObject",
+        "summary": "Upload an object",
+        "parameters": [
+          { "name": "bucketName", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "objectName", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/octet-stream": { "schema": { "type": "string", "format": "binary" } }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Upload result",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/PutObjectResult" } }
+            }
+          }
+        }
+      }
+    },
+    "/{bucketName}/{objectName}/tagging": {
+      "get": {
+        "operationId": "getObjectTags",
+        "summary": "Get tags on an object",
+        "parameters": [
+          { "name": "bucketName", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "objectName", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "The object's tag set",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/TagSet" } }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "setObjectTags",
+        "summary": "Set tags on an object",
+        "parameters": [
+          { "name": "bucketName", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "objectName", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/TagSet" } }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The applied tag set",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/TagSet" } }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Bucket": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "example": "my-new-bucket" },
+          "region": { "type": "string", "example": "us-east-1" },
+          "creationDate": { "type": "string", "format": "date-time" }
+        }
+      },
+      "StorageObject": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "example": "records/patient-001.json" },
+          "bucketName": { "type": "string", "example": "my-bucket" },
+          "size": { "type": "integer", "example": 1024 },
+          "etag": { "type": "string", "example": "d41d8cd98f00b204e9800998ecf8427e" },
+          "lastModified": { "type": "string", "format": "date-time" },
+          "contentType": { "type": "string", "example": "application/json" }
+        }
+      },
+      "ObjectList": {
+        "type": "object",
+        "properties": {
+          "bucketName": { "type": "string", "example": "my-bucket" },
+          "prefix": { "type": "string" },
+          "objects": { "type": "array", "items": { "$ref": "#/components/schemas/StorageObject" } }
+        }
+      },
+      "PutObjectResult": {
+        "type": "object",
+        "properties": {
+          "etag": { "type": "string", "example": "d41d8cd98f00b204e9800998ecf8427e" },
+          "versionId": { "type": "string", "nullable": true }
+        }
+      },
+      "TagSet": {
+        "type": "object",
+        "properties": {
+          "tags": {
+            "type": "object",
+            "additionalProperties": { "type": "string" },
+            "example": { "source": "openmrs", "status": "raw" }
+          }
+        }
+      }
+    }
+  }
+}

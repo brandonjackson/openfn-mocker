@@ -1,0 +1,150 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "motherduck — mocker seed-data schema",
+    "version": "1.0.0",
+    "description": "Schema for the seed data openfn-mocker needs to impersonate motherduck. Derived from the adaptor's OpenAPI spec. A seed dump is { collection: { id: record } }; each record validates against its resource schema below.",
+    "x-openfn-adaptor": "motherduck",
+    "x-derived-from": "openapi.json",
+    "x-captured-at": "2026-07-06"
+  },
+  "x-seed": {
+    "shape": "{ collection: { id: record } }",
+    "collections": {
+      "mutationResults": {
+        "resource": "MutationResult",
+        "schema": {
+          "$ref": "#/components/schemas/MutationResult"
+        }
+      },
+      "rows": {
+        "resource": "Row",
+        "schema": {
+          "$ref": "#/components/schemas/Row"
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SeedData": {
+        "type": "object",
+        "description": "Full seed dump loaded by mocker: one property per collection.",
+        "properties": {
+          "mutationResults": {
+            "type": "object",
+            "description": "Records keyed by id for the mutationResults collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/MutationResult"
+            }
+          },
+          "rows": {
+            "type": "object",
+            "description": "Records keyed by id for the rows collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Row"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "Row": {
+        "type": "object",
+        "description": "A single result row. Columns are dynamic; example fields shown.",
+        "additionalProperties": true,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "example": "John"
+          },
+          "age": {
+            "type": "integer",
+            "example": 30
+          }
+        }
+      },
+      "QueryRequest": {
+        "type": "object",
+        "required": [
+          "sqlQuery"
+        ],
+        "properties": {
+          "sqlQuery": {
+            "type": "string",
+            "example": "SELECT * FROM users WHERE age > 18"
+          },
+          "writeSql": {
+            "type": "boolean",
+            "default": false,
+            "description": "Include full SQL in response.query"
+          }
+        }
+      },
+      "InsertRequest": {
+        "type": "object",
+        "required": [
+          "records"
+        ],
+        "properties": {
+          "records": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Row"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Row"
+                }
+              }
+            ]
+          }
+        }
+      },
+      "QueryResult": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Row"
+            }
+          },
+          "response": {
+            "$ref": "#/components/schemas/ResultMetadata"
+          }
+        }
+      },
+      "MutationResult": {
+        "type": "object",
+        "properties": {
+          "response": {
+            "$ref": "#/components/schemas/ResultMetadata"
+          }
+        }
+      },
+      "ResultMetadata": {
+        "type": "object",
+        "properties": {
+          "rowCount": {
+            "type": "integer",
+            "example": 1
+          },
+          "command": {
+            "type": "string",
+            "example": "SELECT"
+          },
+          "query": {
+            "type": "string",
+            "nullable": true,
+            "example": "SELECT * FROM users"
+          }
+        }
+      }
+    }
+  }
+}

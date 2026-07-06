@@ -1,0 +1,500 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Khan Academy API v1",
+    "version": "1.0.0",
+    "description": "OpenAPI description of the public Khan Academy REST API v1 (base https://www.khanacademy.org/api/v1). The @openfn/language-khanacademy adaptor exposes a single generic fetch({ getEndpoint, queryParams }) operation that issues GET requests against these endpoints. This spec covers the core content and account endpoints (topic tree, topics, exercises, videos, badges, user, playlists). Note: Khan Academy deprecated and removed these public API endpoints during 2020; this document reflects the historical documented surface the adaptor was built against.",
+    "x-openfn-adaptor": "khanacademy"
+  },
+  "servers": [
+    {
+      "url": "https://www.khanacademy.org/api/v1"
+    }
+  ],
+  "paths": {
+    "/topictree": {
+      "get": {
+        "operationId": "getTopicTree",
+        "summary": "Retrieve the full topic tree",
+        "parameters": [
+          {
+            "name": "kind",
+            "in": "query",
+            "required": false,
+            "description": "Comma-separated list of node kinds to include (e.g. Video,Exercise,Topic).",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The root topic node with nested children.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Topic" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/topic/{topic_slug}": {
+      "get": {
+        "operationId": "getTopic",
+        "summary": "Retrieve a single topic by slug",
+        "parameters": [
+          {
+            "name": "topic_slug",
+            "in": "path",
+            "required": true,
+            "description": "The slug identifying the topic.",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The requested topic.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Topic" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/topic/{topic_slug}/exercises": {
+      "get": {
+        "operationId": "getTopicExercises",
+        "summary": "List exercises within a topic",
+        "parameters": [
+          {
+            "name": "topic_slug",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Exercises belonging to the topic.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Exercise" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/topic/{topic_slug}/videos": {
+      "get": {
+        "operationId": "getTopicVideos",
+        "summary": "List videos within a topic",
+        "parameters": [
+          {
+            "name": "topic_slug",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Videos belonging to the topic.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Video" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/exercises": {
+      "get": {
+        "operationId": "listExercises",
+        "summary": "List all exercises",
+        "responses": {
+          "200": {
+            "description": "A list of all exercises.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Exercise" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/exercises/{exercise_name}": {
+      "get": {
+        "operationId": "getExercise",
+        "summary": "Retrieve a single exercise by name",
+        "parameters": [
+          {
+            "name": "exercise_name",
+            "in": "path",
+            "required": true,
+            "description": "The unique name (slug) of the exercise.",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The requested exercise.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Exercise" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/videos": {
+      "get": {
+        "operationId": "listVideos",
+        "summary": "List all videos",
+        "responses": {
+          "200": {
+            "description": "A list of all videos.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Video" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/videos/{video_id}": {
+      "get": {
+        "operationId": "getVideo",
+        "summary": "Retrieve a single video by id or readable id",
+        "parameters": [
+          {
+            "name": "video_id",
+            "in": "path",
+            "required": true,
+            "description": "The video id, YouTube id, or readable id.",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The requested video.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Video" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/badges": {
+      "get": {
+        "operationId": "listBadges",
+        "summary": "List all badges",
+        "responses": {
+          "200": {
+            "description": "A list of all badges. When authenticated, ownership fields are populated for the current user.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Badge" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/badges/categories": {
+      "get": {
+        "operationId": "listBadgeCategories",
+        "summary": "List badge categories",
+        "responses": {
+          "200": {
+            "description": "A list of badge categories.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/BadgeCategory" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user": {
+      "get": {
+        "operationId": "getUser",
+        "summary": "Retrieve the authenticated user's profile",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "query",
+            "required": false,
+            "description": "Look up a specific user by username (requires appropriate permissions).",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "email",
+            "in": "query",
+            "required": false,
+            "description": "Look up a specific user by email (requires appropriate permissions).",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The user profile.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/User" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/playlists": {
+      "get": {
+        "operationId": "listPlaylists",
+        "summary": "List all playlists",
+        "responses": {
+          "200": {
+            "description": "A list of playlists.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Playlist" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/playlists/{topic_slug}/videos": {
+      "get": {
+        "operationId": "getPlaylistVideos",
+        "summary": "List videos in a playlist",
+        "parameters": [
+          {
+            "name": "topic_slug",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Videos belonging to the playlist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Video" }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Topic": {
+        "type": "object",
+        "description": "A node in the Khan Academy content topic tree.",
+        "properties": {
+          "kind": { "type": "string", "example": "Topic" },
+          "id": { "type": "string", "example": "x2e352b1a2d21e07e" },
+          "slug": { "type": "string", "example": "algebra" },
+          "title": { "type": "string", "example": "Algebra" },
+          "description": { "type": "string", "nullable": true },
+          "node_slug": { "type": "string", "example": "math/algebra" },
+          "extended_slug": { "type": "string", "example": "math/algebra" },
+          "relative_url": { "type": "string", "example": "/math/algebra" },
+          "ka_url": { "type": "string", "example": "https://www.khanacademy.org/math/algebra" },
+          "render_type": { "type": "string", "example": "Subject" },
+          "icon_src": { "type": "string", "nullable": true },
+          "hide": { "type": "boolean" },
+          "children": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Topic" }
+          }
+        },
+        "required": ["kind", "id", "slug", "title"]
+      },
+      "Exercise": {
+        "type": "object",
+        "description": "A Khan Academy exercise.",
+        "properties": {
+          "kind": { "type": "string", "example": "Exercise" },
+          "id": { "type": "string", "example": "9527" },
+          "name": { "type": "string", "example": "adding_and_subtracting_fractions" },
+          "display_name": { "type": "string", "example": "Adding and subtracting fractions" },
+          "short_display_name": { "type": "string", "example": "Add/sub fractions" },
+          "description": { "type": "string", "nullable": true },
+          "relative_url": { "type": "string", "example": "/e/adding_and_subtracting_fractions" },
+          "ka_url": { "type": "string", "example": "https://www.khanacademy.org/e/adding_and_subtracting_fractions" },
+          "seconds_per_fast_problem": { "type": "number", "example": 8 },
+          "live": { "type": "boolean" },
+          "creation_date": { "type": "string", "format": "date-time" },
+          "prerequisites": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "covers": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "related_videos": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        },
+        "required": ["kind", "name", "display_name"]
+      },
+      "Video": {
+        "type": "object",
+        "description": "A Khan Academy video.",
+        "properties": {
+          "kind": { "type": "string", "example": "Video" },
+          "id": { "type": "string", "example": "xba62d78" },
+          "readable_id": { "type": "string", "example": "adding-and-subtracting-fractions" },
+          "title": { "type": "string", "example": "Adding and subtracting fractions" },
+          "description": { "type": "string", "nullable": true },
+          "youtube_id": { "type": "string", "example": "52ZlXsFJULI" },
+          "duration": { "type": "integer", "example": 233 },
+          "date_added": { "type": "string", "format": "date-time" },
+          "views": { "type": "integer", "example": 123456 },
+          "keywords": { "type": "string", "example": "fractions, adding, subtracting" },
+          "ka_url": { "type": "string", "example": "https://www.khanacademy.org/video/adding-and-subtracting-fractions" },
+          "url": { "type": "string", "example": "https://www.youtube.com/watch?v=52ZlXsFJULI" },
+          "relative_url": { "type": "string", "example": "/video/adding-and-subtracting-fractions" },
+          "image_url": { "type": "string", "nullable": true },
+          "download_urls": {
+            "type": "object",
+            "nullable": true,
+            "properties": {
+              "mp4": { "type": "string" },
+              "png": { "type": "string" },
+              "m3u8": { "type": "string" }
+            }
+          }
+        },
+        "required": ["kind", "id", "title"]
+      },
+      "Badge": {
+        "type": "object",
+        "description": "A Khan Academy achievement badge.",
+        "properties": {
+          "name": { "type": "string", "example": "challenge_patch_algebra" },
+          "description": { "type": "string", "example": "Algebra Master" },
+          "safe_extended_description": { "type": "string", "nullable": true },
+          "translated_description": { "type": "string", "nullable": true },
+          "points": { "type": "integer", "example": 0 },
+          "badge_category": { "type": "integer", "example": 4 },
+          "category_description": { "type": "string", "example": "Challenge Patches" },
+          "is_owned": { "type": "boolean" },
+          "absolute_url": { "type": "string", "example": "https://www.khanacademy.org/badges" },
+          "relative_url": { "type": "string", "example": "/badges" },
+          "icons": {
+            "type": "object",
+            "properties": {
+              "small": { "type": "string" },
+              "compact": { "type": "string" },
+              "large": { "type": "string" },
+              "email": { "type": "string" }
+            }
+          }
+        },
+        "required": ["name", "description"]
+      },
+      "BadgeCategory": {
+        "type": "object",
+        "description": "A category grouping for badges.",
+        "properties": {
+          "category": { "type": "integer", "example": 4 },
+          "type_label": { "type": "string", "example": "Challenge Patches" },
+          "description": { "type": "string", "example": "Challenge Patches" },
+          "points": { "type": "integer", "example": 0 },
+          "icons": {
+            "type": "object",
+            "properties": {
+              "small": { "type": "string" },
+              "compact": { "type": "string" },
+              "large": { "type": "string" },
+              "email": { "type": "string" }
+            }
+          }
+        },
+        "required": ["category", "description"]
+      },
+      "User": {
+        "type": "object",
+        "description": "A Khan Academy user profile.",
+        "properties": {
+          "kind": { "type": "string", "example": "UserProfile" },
+          "user_id": { "type": "string", "example": "http://googleid.khanacademy.org/1234567890" },
+          "username": { "type": "string", "example": "learner123" },
+          "nickname": { "type": "string", "example": "Jane Learner" },
+          "email": { "type": "string", "format": "email", "nullable": true },
+          "prettified_user_email": { "type": "string", "nullable": true },
+          "points": { "type": "integer", "example": 45230 },
+          "total_seconds_watched": { "type": "integer", "example": 18320 },
+          "joined": { "type": "string", "format": "date-time" },
+          "is_registered": { "type": "boolean" },
+          "badge_counts": {
+            "type": "object",
+            "additionalProperties": { "type": "integer" },
+            "example": { "0": 5, "1": 3, "2": 1 }
+          }
+        },
+        "required": ["kind", "user_id"]
+      },
+      "Playlist": {
+        "type": "object",
+        "description": "A Khan Academy playlist (legacy topic grouping of videos).",
+        "properties": {
+          "kind": { "type": "string", "example": "Playlist" },
+          "id": { "type": "string", "example": "algebra-playlist" },
+          "title": { "type": "string", "example": "Algebra" },
+          "description": { "type": "string", "nullable": true },
+          "youtube_id": { "type": "string", "nullable": true },
+          "standalone_title": { "type": "string", "example": "Algebra" },
+          "slug": { "type": "string", "example": "algebra" },
+          "url": { "type": "string", "example": "https://www.khanacademy.org/math/algebra" },
+          "ka_url": { "type": "string", "example": "https://www.khanacademy.org/math/algebra" },
+          "topic_page_url": { "type": "string", "example": "/math/algebra" },
+          "tags": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        },
+        "required": ["kind", "title", "slug"]
+      }
+    }
+  }
+}

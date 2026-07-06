@@ -1,0 +1,14 @@
+{
+  "adaptor": "ghana-nia",
+  "npm": "@openfn/language-ghana-nia",
+  "origin": "synthesized",
+  "upstreamFormat": "adaptor-surface",
+  "sources": [
+    "https://cdn.jsdelivr.net/npm/@openfn/language-ghana-nia/ast.json",
+    "https://cdn.jsdelivr.net/npm/@openfn/language-ghana-nia/types/index.d.ts",
+    "https://cdn.jsdelivr.net/npm/@openfn/language-ghana-nia/dist/index.cjs",
+    "https://github.com/OpenFn/adaptors/tree/main/packages/ghana-nia"
+  ],
+  "capturedAt": "2026-07-06",
+  "notes": "The Ghana NIA AWOPA baby-registration service (base https://selfie.imsgh.org:2035) is a private government API with no published OpenAPI or vendor docs. Spec synthesized from the adaptor's public operations and the mock client bundled in the adaptor's dist/index.cjs, which contains the real endpoint path (POST /awopa/api/v1/baby/registration) and verbatim sample request/response bodies. The generic get/post operations accept arbitrary resource paths; only the registration endpoint is modeled in detail. Field names and the source's spelling (e.g. 'timeOfbirth', 'Verifiation') are preserved as they appear in the adaptor."
+}

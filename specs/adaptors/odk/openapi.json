@@ -1,0 +1,328 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "ODK Central API (mock subset)",
+    "version": "2024.1",
+    "description": "Focused subset of the official ODK Central API (OpenAPI 3.0.1), covering the endpoints the OpenFn odk adaptor exercises. ODK Central manages projects, forms, submissions and entity datasets. The adaptor's getForms(projectId) lists forms, getSubmissions(projectId, xmlFormId, options) reads the OData submissions feed, and generic get/post/request reach any path. Field shapes follow the official central-backend spec.",
+    "x-openfn-adaptor": "odk"
+  },
+  "servers": [{ "url": "https://odk-central.example.org" }],
+  "paths": {
+    "/v1/projects": {
+      "get": {
+        "operationId": "listProjects",
+        "summary": "List projects",
+        "responses": {
+          "200": {
+            "description": "Project list",
+            "content": {
+              "application/json": {
+                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Project" } }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createProject",
+        "summary": "Create a project",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name"],
+                "properties": { "name": { "type": "string" }, "description": { "type": "string" } }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Created project",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Project" } }
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{projectId}": {
+      "get": {
+        "operationId": "getProject",
+        "summary": "Get a project",
+        "parameters": [{ "$ref": "#/components/parameters/projectId" }],
+        "responses": {
+          "200": {
+            "description": "Project",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Project" } }
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{projectId}/forms": {
+      "get": {
+        "operationId": "getForms",
+        "summary": "List forms in a project",
+        "parameters": [
+          { "$ref": "#/components/parameters/projectId" },
+          { "name": "deleted", "in": "query", "schema": { "type": "boolean" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Form list",
+            "content": {
+              "application/json": {
+                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Form" } }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createForm",
+        "summary": "Create (publish) a form",
+        "description": "Body is XForms XML or an XLSForm. Modeled here with a JSON placeholder body.",
+        "parameters": [
+          { "$ref": "#/components/parameters/projectId" },
+          { "name": "publish", "in": "query", "schema": { "type": "boolean" } },
+          { "name": "ignoreWarnings", "in": "query", "schema": { "type": "boolean" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/xml": { "schema": { "type": "string" } }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Created form",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Form" } }
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{projectId}/forms/{xmlFormId}": {
+      "get": {
+        "operationId": "getForm",
+        "summary": "Get a form",
+        "parameters": [
+          { "$ref": "#/components/parameters/projectId" },
+          { "$ref": "#/components/parameters/xmlFormId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Form",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Form" } }
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{projectId}/forms/{xmlFormId}/submissions": {
+      "get": {
+        "operationId": "listSubmissions",
+        "summary": "List submissions (REST)",
+        "parameters": [
+          { "$ref": "#/components/parameters/projectId" },
+          { "$ref": "#/components/parameters/xmlFormId" },
+          { "name": "deleted", "in": "query", "schema": { "type": "boolean" } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer" } },
+          { "name": "offset", "in": "query", "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Submission list",
+            "content": {
+              "application/json": {
+                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Submission" } }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{projectId}/forms/{xmlFormId}/submissions/{instanceId}": {
+      "get": {
+        "operationId": "getSubmission",
+        "summary": "Get a single submission",
+        "parameters": [
+          { "$ref": "#/components/parameters/projectId" },
+          { "$ref": "#/components/parameters/xmlFormId" },
+          { "name": "instanceId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Submission",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Submission" } }
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{projectId}/forms/{xmlFormId}.svc/Submissions": {
+      "get": {
+        "operationId": "getSubmissions",
+        "summary": "Read the OData submissions feed",
+        "description": "The adaptor's getSubmissions(). Returns an OData response with a value array of flattened submissions.",
+        "parameters": [
+          { "$ref": "#/components/parameters/projectId" },
+          { "$ref": "#/components/parameters/xmlFormId" },
+          { "name": "$filter", "in": "query", "schema": { "type": "string" } },
+          { "name": "$top", "in": "query", "schema": { "type": "integer" } },
+          { "name": "$skip", "in": "query", "schema": { "type": "integer" } },
+          { "name": "$count", "in": "query", "schema": { "type": "boolean" } },
+          { "name": "$orderby", "in": "query", "schema": { "type": "string" } },
+          { "name": "$expand", "in": "query", "schema": { "type": "string" } },
+          { "name": "$select", "in": "query", "schema": { "type": "string" } },
+          { "name": "$skiptoken", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "OData submissions feed",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ODataSubmissions" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{projectId}/datasets": {
+      "get": {
+        "operationId": "listDatasets",
+        "summary": "List entity datasets",
+        "parameters": [
+          { "$ref": "#/components/parameters/projectId" },
+          { "name": "deleted", "in": "query", "schema": { "type": "boolean" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dataset list",
+            "content": {
+              "application/json": {
+                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Dataset" } }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "projectId": { "name": "projectId", "in": "path", "required": true, "schema": { "type": "integer" }, "example": 22 },
+      "xmlFormId": { "name": "xmlFormId", "in": "path", "required": true, "schema": { "type": "string" }, "example": "patient-follow-up" }
+    },
+    "schemas": {
+      "Project": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "example": 22 },
+          "name": { "type": "string", "example": "Health Facility Survey" },
+          "description": { "type": "string" },
+          "keyId": { "type": "integer", "nullable": true },
+          "archived": { "type": "boolean", "nullable": true }
+        }
+      },
+      "Form": {
+        "type": "object",
+        "properties": {
+          "projectId": { "type": "integer", "example": 22 },
+          "xmlFormId": { "type": "string", "example": "patient-follow-up" },
+          "name": { "type": "string", "example": "Patient Follow Up" },
+          "version": { "type": "string", "example": "1" },
+          "enketoId": { "type": "string" },
+          "hash": { "type": "string", "example": "51a93eab3a1974dbffc4c7913fa5a16a" },
+          "keyId": { "type": "integer", "nullable": true },
+          "state": { "type": "string", "enum": ["open", "closing", "closed"], "example": "open" },
+          "publishedAt": { "type": "string", "format": "date-time", "nullable": true },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time", "nullable": true }
+        }
+      },
+      "Submission": {
+        "type": "object",
+        "properties": {
+          "instanceId": { "type": "string", "example": "uuid:85cb9aff-005e-4edd-9739-dc9c1a829c44" },
+          "submitterId": { "type": "integer", "example": 5 },
+          "deviceId": { "type": "string", "nullable": true },
+          "userAgent": { "type": "string", "nullable": true },
+          "reviewState": { "type": "string", "enum": ["null", "received", "hasIssues", "edited", "approved", "rejected"], "nullable": true },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time", "nullable": true },
+          "deletedAt": { "type": "string", "format": "date-time", "nullable": true },
+          "currentVersion": {
+            "type": "object",
+            "properties": {
+              "instanceId": { "type": "string" },
+              "instanceName": { "type": "string", "nullable": true },
+              "submitterId": { "type": "integer" },
+              "createdAt": { "type": "string", "format": "date-time" },
+              "current": { "type": "boolean" }
+            }
+          }
+        }
+      },
+      "ODataSubmissions": {
+        "type": "object",
+        "properties": {
+          "@odata.context": { "type": "string", "example": "https://odk-central.example.org/v1/projects/22/forms/patient-follow-up.svc/$metadata#Submissions" },
+          "@odata.count": { "type": "integer", "example": 1 },
+          "@odata.nextLink": { "type": "string" },
+          "value": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ODataSubmission" }
+          }
+        }
+      },
+      "ODataSubmission": {
+        "type": "object",
+        "description": "A flattened submission row. __id is the instanceId; __system carries metadata; remaining keys are form instance fields.",
+        "properties": {
+          "__id": { "type": "string", "example": "uuid:85cb9aff-005e-4edd-9739-dc9c1a829c44" },
+          "__system": { "$ref": "#/components/schemas/ODataSystem" },
+          "meta": {
+            "type": "object",
+            "properties": { "instanceID": { "type": "string" } }
+          }
+        },
+        "additionalProperties": true
+      },
+      "ODataSystem": {
+        "type": "object",
+        "properties": {
+          "submissionDate": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time", "nullable": true },
+          "deletedAt": { "type": "string", "format": "date-time", "nullable": true },
+          "submitterId": { "type": "string", "example": "5" },
+          "submitterName": { "type": "string", "example": "Data Collector" },
+          "attachmentsPresent": { "type": "integer", "example": 0 },
+          "attachmentsExpected": { "type": "integer", "example": 0 },
+          "status": { "type": "string", "nullable": true },
+          "reviewState": { "type": "string", "nullable": true },
+          "deviceId": { "type": "string", "nullable": true },
+          "edits": { "type": "integer", "example": 0 },
+          "formVersion": { "type": "string", "example": "1" }
+        }
+      },
+      "Dataset": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "example": "people" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "projectId": { "type": "integer", "example": 22 },
+          "approvalRequired": { "type": "boolean" },
+          "ownerOnly": { "type": "boolean" }
+        }
+      }
+    }
+  }
+}

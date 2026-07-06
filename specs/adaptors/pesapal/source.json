@@ -1,0 +1,15 @@
+{
+  "adaptor": "pesapal",
+  "npm": "@openfn/language-pesapal",
+  "origin": "generated",
+  "upstreamFormat": "docs",
+  "sources": [
+    "https://developer.pesapal.com/how-to-integrate/e-commerce/api-30-json/api-reference",
+    "https://developer.pesapal.com/how-to-integrate/e-commerce/api-30-json/submitorderrequest",
+    "https://developer.pesapal.com/how-to-integrate/e-commerce/api-30-json/gettransactionstatus",
+    "https://developer.pesapal.com/how-to-integrate/e-commerce/api-30-json/authentication",
+    "https://cdn.jsdelivr.net/npm/@openfn/language-pesapal/ast.json"
+  ],
+  "capturedAt": "2026-07-06",
+  "notes": "Pesapal publishes no machine spec, only a developer portal + Postman docs. Authored OpenAPI 3.0 by hand from the API 3.0 JSON reference. The adaptor itself exposes generic get()/post()/request() helpers over the Pesapal base URL (https://pay.pesapal.com/pesapalv3/api); the concrete Auth/URLSetup/Transactions endpoints modeled here are the ones those helpers call in practice. Field lists for SubmitOrderRequest and GetTransactionStatus confirmed against vendor docs."
+}

@@ -1,0 +1,421 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "primero — mocker seed-data schema",
+    "version": "1.0.0",
+    "description": "Schema for the seed data openfn-mocker needs to impersonate primero. Derived from the adaptor's OpenAPI spec. A seed dump is { collection: { id: record } }; each record validates against its resource schema below.",
+    "x-openfn-adaptor": "primero",
+    "x-derived-from": "openapi.json",
+    "x-captured-at": "2026-07-06"
+  },
+  "x-seed": {
+    "shape": "{ collection: { id: record } }",
+    "collections": {
+      "cases": {
+        "resource": "Case",
+        "schema": {
+          "$ref": "#/components/schemas/Case"
+        }
+      },
+      "forms": {
+        "resource": "Form",
+        "schema": {
+          "$ref": "#/components/schemas/Form"
+        }
+      },
+      "locations": {
+        "resource": "Location",
+        "schema": {
+          "$ref": "#/components/schemas/Location"
+        }
+      },
+      "lookups": {
+        "resource": "Lookup",
+        "schema": {
+          "$ref": "#/components/schemas/Lookup"
+        }
+      },
+      "referrals": {
+        "resource": "Referral",
+        "schema": {
+          "$ref": "#/components/schemas/Referral"
+        }
+      },
+      "tokenResponses": {
+        "resource": "TokenResponse",
+        "schema": {
+          "$ref": "#/components/schemas/TokenResponse"
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SeedData": {
+        "type": "object",
+        "description": "Full seed dump loaded by mocker: one property per collection.",
+        "properties": {
+          "cases": {
+            "type": "object",
+            "description": "Records keyed by id for the cases collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Case"
+            }
+          },
+          "forms": {
+            "type": "object",
+            "description": "Records keyed by id for the forms collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Form"
+            }
+          },
+          "locations": {
+            "type": "object",
+            "description": "Records keyed by id for the locations collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Location"
+            }
+          },
+          "lookups": {
+            "type": "object",
+            "description": "Records keyed by id for the lookups collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Lookup"
+            }
+          },
+          "referrals": {
+            "type": "object",
+            "description": "Records keyed by id for the referrals collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Referral"
+            }
+          },
+          "tokenResponses": {
+            "type": "object",
+            "description": "Records keyed by id for the tokenResponses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/TokenResponse"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "TokenRequest": {
+        "type": "object",
+        "required": [
+          "user"
+        ],
+        "properties": {
+          "user": {
+            "type": "object",
+            "properties": {
+              "user_name": {
+                "type": "string"
+              },
+              "password": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "TokenResponse": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "user_name": {
+            "type": "string"
+          }
+        }
+      },
+      "Case": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "UUID"
+          },
+          "case_id_display": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "age": {
+            "type": "integer"
+          },
+          "sex": {
+            "type": "string"
+          },
+          "owned_by": {
+            "type": "string"
+          },
+          "registration_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "photos": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "CaseWrapper": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Case"
+          }
+        }
+      },
+      "CaseResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Case"
+          }
+        }
+      },
+      "CaseList": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Case"
+            }
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/PageMetadata"
+          }
+        }
+      },
+      "PageMetadata": {
+        "type": "object",
+        "properties": {
+          "total": {
+            "type": "integer"
+          },
+          "per": {
+            "type": "integer"
+          },
+          "page": {
+            "type": "integer"
+          }
+        }
+      },
+      "Referral": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "record_id": {
+            "type": "string"
+          },
+          "record_type": {
+            "type": "string",
+            "example": "cases"
+          },
+          "transitioned_to": {
+            "type": "string"
+          },
+          "transitioned_by": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ReferralWrapper": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Referral"
+          }
+        }
+      },
+      "ReferralResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Referral"
+          }
+        }
+      },
+      "ReferralList": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Referral"
+            }
+          }
+        }
+      },
+      "BulkReferralWrite": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "transitioned_to": {
+                "type": "string"
+              },
+              "notes": {
+                "type": "string"
+              },
+              "ids": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "Form": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "unique_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "parent_form": {
+            "type": "string"
+          },
+          "visible": {
+            "type": "boolean"
+          }
+        }
+      },
+      "FormList": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Form"
+            }
+          }
+        }
+      },
+      "Lookup": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "unique_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "values": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          }
+        }
+      },
+      "LookupList": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Lookup"
+            }
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/PageMetadata"
+          }
+        }
+      },
+      "Location": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "code": {
+            "type": "string"
+          },
+          "admin_level": {
+            "type": "integer"
+          },
+          "type": {
+            "type": "string"
+          },
+          "name": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "hierarchy_path": {
+            "type": "string"
+          }
+        }
+      },
+      "LocationList": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Location"
+            }
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/PageMetadata"
+          }
+        }
+      }
+    }
+  }
+}

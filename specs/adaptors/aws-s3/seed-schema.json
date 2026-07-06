@@ -1,0 +1,175 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "aws-s3 — mocker seed-data schema",
+    "version": "1.0.0",
+    "description": "Schema for the seed data openfn-mocker needs to impersonate aws-s3. Derived from the adaptor's OpenAPI spec. A seed dump is { collection: { id: record } }; each record validates against its resource schema below.",
+    "x-openfn-adaptor": "aws-s3",
+    "x-derived-from": "openapi.json",
+    "x-captured-at": "2026-07-06"
+  },
+  "x-seed": {
+    "shape": "{ collection: { id: record } }",
+    "collections": {
+      "getObjectResults": {
+        "resource": "GetObjectResult",
+        "schema": {
+          "$ref": "#/components/schemas/GetObjectResult"
+        }
+      },
+      "listObjectsResults": {
+        "resource": "ListObjectsResult",
+        "schema": {
+          "$ref": "#/components/schemas/ListObjectsResult"
+        }
+      },
+      "putObjectResults": {
+        "resource": "PutObjectResult",
+        "schema": {
+          "$ref": "#/components/schemas/PutObjectResult"
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SeedData": {
+        "type": "object",
+        "description": "Full seed dump loaded by mocker: one property per collection.",
+        "properties": {
+          "getObjectResults": {
+            "type": "object",
+            "description": "Records keyed by id for the getObjectResults collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/GetObjectResult"
+            }
+          },
+          "listObjectsResults": {
+            "type": "object",
+            "description": "Records keyed by id for the listObjectsResults collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ListObjectsResult"
+            }
+          },
+          "putObjectResults": {
+            "type": "object",
+            "description": "Records keyed by id for the putObjectResults collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/PutObjectResult"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "PutObjectResult": {
+        "type": "object",
+        "properties": {
+          "bucket": {
+            "type": "string"
+          },
+          "key": {
+            "type": "string"
+          },
+          "ETag": {
+            "type": "string",
+            "example": "\"9b2cf535f27731c974343645a3985328\""
+          },
+          "VersionId": {
+            "type": "string",
+            "nullable": true
+          },
+          "ServerSideEncryption": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "GetObjectResult": {
+        "type": "object",
+        "properties": {
+          "bucket": {
+            "type": "string"
+          },
+          "key": {
+            "type": "string"
+          },
+          "ContentType": {
+            "type": "string"
+          },
+          "ContentLength": {
+            "type": "integer"
+          },
+          "LastModified": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "ETag": {
+            "type": "string"
+          },
+          "body": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Parsed JSON body when applicable"
+          },
+          "base64": {
+            "type": "string",
+            "description": "Base64 content for binary objects"
+          }
+        }
+      },
+      "S3Object": {
+        "type": "object",
+        "properties": {
+          "Key": {
+            "type": "string"
+          },
+          "LastModified": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "ETag": {
+            "type": "string"
+          },
+          "Size": {
+            "type": "integer"
+          },
+          "StorageClass": {
+            "type": "string",
+            "example": "STANDARD"
+          }
+        }
+      },
+      "ListObjectsResult": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "description": "Bucket name"
+          },
+          "Prefix": {
+            "type": "string"
+          },
+          "KeyCount": {
+            "type": "integer"
+          },
+          "MaxKeys": {
+            "type": "integer"
+          },
+          "IsTruncated": {
+            "type": "boolean"
+          },
+          "NextContinuationToken": {
+            "type": "string",
+            "nullable": true
+          },
+          "Contents": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/S3Object"
+            }
+          }
+        }
+      }
+    }
+  }
+}

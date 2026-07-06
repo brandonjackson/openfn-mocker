@@ -1,0 +1,498 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "openspp — mocker seed-data schema",
+    "version": "1.0.0",
+    "description": "Schema for the seed data openfn-mocker needs to impersonate openspp. Derived from the adaptor's OpenAPI spec. A seed dump is { collection: { id: record } }; each record validates against its resource schema below.",
+    "x-openfn-adaptor": "openspp",
+    "x-derived-from": "openapi.json",
+    "x-captured-at": "2026-07-06"
+  },
+  "x-seed": {
+    "shape": "{ collection: { id: record } }",
+    "collections": {
+      "areas": {
+        "resource": "Area",
+        "schema": {
+          "$ref": "#/components/schemas/Area"
+        }
+      },
+      "createResults": {
+        "resource": "CreateResult",
+        "schema": {
+          "$ref": "#/components/schemas/CreateResult"
+        }
+      },
+      "groups": {
+        "resource": "Group",
+        "schema": {
+          "$ref": "#/components/schemas/Group"
+        }
+      },
+      "groupMembers": {
+        "resource": "GroupMember",
+        "schema": {
+          "$ref": "#/components/schemas/GroupMember"
+        }
+      },
+      "individuals": {
+        "resource": "Individual",
+        "schema": {
+          "$ref": "#/components/schemas/Individual"
+        }
+      },
+      "programs": {
+        "resource": "Program",
+        "schema": {
+          "$ref": "#/components/schemas/Program"
+        }
+      },
+      "programMemberships": {
+        "resource": "ProgramMembership",
+        "schema": {
+          "$ref": "#/components/schemas/ProgramMembership"
+        }
+      },
+      "servicePoints": {
+        "resource": "ServicePoint",
+        "schema": {
+          "$ref": "#/components/schemas/ServicePoint"
+        }
+      },
+      "writeResults": {
+        "resource": "WriteResult",
+        "schema": {
+          "$ref": "#/components/schemas/WriteResult"
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SeedData": {
+        "type": "object",
+        "description": "Full seed dump loaded by mocker: one property per collection.",
+        "properties": {
+          "areas": {
+            "type": "object",
+            "description": "Records keyed by id for the areas collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Area"
+            }
+          },
+          "createResults": {
+            "type": "object",
+            "description": "Records keyed by id for the createResults collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/CreateResult"
+            }
+          },
+          "groups": {
+            "type": "object",
+            "description": "Records keyed by id for the groups collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Group"
+            }
+          },
+          "groupMembers": {
+            "type": "object",
+            "description": "Records keyed by id for the groupMembers collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/GroupMember"
+            }
+          },
+          "individuals": {
+            "type": "object",
+            "description": "Records keyed by id for the individuals collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Individual"
+            }
+          },
+          "programs": {
+            "type": "object",
+            "description": "Records keyed by id for the programs collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Program"
+            }
+          },
+          "programMemberships": {
+            "type": "object",
+            "description": "Records keyed by id for the programMemberships collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ProgramMembership"
+            }
+          },
+          "servicePoints": {
+            "type": "object",
+            "description": "Records keyed by id for the servicePoints collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ServicePoint"
+            }
+          },
+          "writeResults": {
+            "type": "object",
+            "description": "Records keyed by id for the writeResults collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/WriteResult"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "Group": {
+        "type": "object",
+        "description": "A group registrant (household/family) — res.partner with is_group=true, is_registrant=true.",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Odoo database id"
+          },
+          "spp_id": {
+            "type": "string",
+            "example": "GRP_Q4VGGZPF"
+          },
+          "name": {
+            "type": "string",
+            "example": "Doe Household"
+          },
+          "address": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "kind": {
+            "description": "Group kind (many2one, [id, name])",
+            "example": [
+              1,
+              "Household"
+            ],
+            "nullable": true
+          },
+          "registration_date": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "Individual": {
+        "type": "object",
+        "description": "An individual registrant — res.partner with is_group=false, is_registrant=true.",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "spp_id": {
+            "type": "string",
+            "example": "IND_Q4VGGZPF"
+          },
+          "name": {
+            "type": "string",
+            "example": "Jane Doe"
+          },
+          "address": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "gender": {
+            "type": "string",
+            "example": "Female"
+          },
+          "birthdate": {
+            "type": "string",
+            "format": "date"
+          },
+          "category_id": {
+            "description": "Category tags (many2many list of ids)",
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "GroupMember": {
+        "type": "object",
+        "description": "A g2p.group.membership record linking an individual to a group.",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "individual": {
+            "description": "Linked individual (many2one, [id, name])",
+            "example": [
+              42,
+              "Jane Doe"
+            ]
+          },
+          "group": {
+            "description": "Linked group (many2one, [id, name])",
+            "example": [
+              7,
+              "Doe Household"
+            ]
+          },
+          "kind": {
+            "description": "Membership roles (many2many)",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "Head"
+            ]
+          },
+          "start_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "ended_date": {
+            "type": "string",
+            "format": "date",
+            "nullable": true
+          },
+          "is_ended": {
+            "type": "boolean"
+          },
+          "individual_birthdate": {
+            "type": "string",
+            "format": "date"
+          },
+          "individual_gender": {
+            "type": "string"
+          }
+        }
+      },
+      "Program": {
+        "type": "object",
+        "description": "A g2p.program social-protection program.",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "program_id": {
+            "type": "string",
+            "example": "PROG_2023_00000001"
+          },
+          "name": {
+            "type": "string",
+            "example": "Cash Transfer 2023"
+          },
+          "eligible_beneficiaries_count": {
+            "type": "integer"
+          },
+          "cycles_count": {
+            "type": "integer"
+          },
+          "state": {
+            "type": "string",
+            "example": "active"
+          },
+          "target_type": {
+            "type": "string",
+            "example": "group"
+          }
+        }
+      },
+      "ProgramMembership": {
+        "type": "object",
+        "description": "A g2p.program_membership enrollment record.",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "partner_id": {
+            "description": "Registrant (many2one, [id, name])",
+            "example": [
+              42,
+              "Jane Doe"
+            ]
+          },
+          "program_id": {
+            "description": "Program (many2one, [id, name])",
+            "example": [
+              3,
+              "Cash Transfer 2023"
+            ]
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "enrolled",
+              "not_eligible",
+              "paused",
+              "exited"
+            ],
+            "example": "enrolled"
+          }
+        }
+      },
+      "ServicePoint": {
+        "type": "object",
+        "description": "A spp.service.point (agent/shop delivering services).",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "spp_id": {
+            "type": "string",
+            "example": "SVP_8P4KP4RT"
+          },
+          "name": {
+            "type": "string"
+          },
+          "area_id": {
+            "description": "Area (many2one, [id, name])",
+            "example": [
+              12,
+              "Central District"
+            ]
+          },
+          "service_type_ids": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "phone_sanitized": {
+            "type": "string"
+          },
+          "shop_address": {
+            "type": "string"
+          },
+          "is_contract_active": {
+            "type": "boolean"
+          },
+          "is_disabled": {
+            "type": "boolean"
+          }
+        }
+      },
+      "Area": {
+        "type": "object",
+        "description": "A spp.area administrative area.",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "parent_id": {
+            "description": "Parent area (many2one, [id, name])",
+            "example": [
+              1,
+              "Country"
+            ],
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "example": "Central District"
+          },
+          "code": {
+            "type": "string"
+          },
+          "altnames": {
+            "type": "string"
+          },
+          "area_level": {
+            "type": "integer"
+          },
+          "kind": {
+            "description": "Area kind (many2one, [id, name])",
+            "example": [
+              2,
+              "District"
+            ]
+          }
+        }
+      },
+      "SearchRequest": {
+        "type": "object",
+        "description": "Odoo search-read request: a search domain plus optional paging/order options.",
+        "properties": {
+          "domain": {
+            "type": "array",
+            "description": "Odoo search domain — list of [field, operator, value] triples (and optional '|','&','!' logical operators).",
+            "items": {},
+            "example": [
+              [
+                "spp_id",
+                "ilike",
+                "GRP"
+              ]
+            ]
+          },
+          "options": {
+            "type": "object",
+            "properties": {
+              "limit": {
+                "type": "integer",
+                "default": 100
+              },
+              "offset": {
+                "type": "integer",
+                "default": 0
+              },
+              "order": {
+                "type": "string",
+                "default": "id desc"
+              }
+            }
+          }
+        },
+        "required": [
+          "domain"
+        ]
+      },
+      "AddToGroupRequest": {
+        "type": "object",
+        "properties": {
+          "individual_id": {
+            "type": "string",
+            "example": "IND_Q4VGGZPF"
+          },
+          "role": {
+            "type": "string",
+            "description": "Membership kind/role name",
+            "example": "Head"
+          }
+        },
+        "required": [
+          "individual_id"
+        ]
+      },
+      "CreateResult": {
+        "type": "object",
+        "description": "Result of a create — the new registrant's spp_id.",
+        "properties": {
+          "spp_id": {
+            "type": "string",
+            "example": "IND_Q4VGGZPF"
+          }
+        }
+      },
+      "WriteResult": {
+        "type": "object",
+        "description": "Result of an Odoo write/unlink call.",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          }
+        }
+      }
+    }
+  }
+}

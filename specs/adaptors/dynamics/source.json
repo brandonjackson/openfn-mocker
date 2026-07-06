@@ -1,0 +1,14 @@
+{
+  "adaptor": "dynamics",
+  "npm": "@openfn/language-dynamics",
+  "origin": "generated",
+  "upstreamFormat": "docs",
+  "sources": [
+    "https://learn.microsoft.com/en-us/power-apps/developer/data-platform/webapi/overview",
+    "https://learn.microsoft.com/en-us/power-apps/developer/data-platform/webapi/perform-operations-web-api",
+    "https://cdn.jsdelivr.net/npm/@openfn/language-dynamics/ast.json",
+    "https://github.com/OpenFn/adaptors/tree/main/packages/dynamics"
+  ],
+  "capturedAt": "2026-07-06",
+  "notes": "Dynamics adaptor uses the Dataverse OData v4 Web API (base /api/data/v9.2). Adaptor operations createEntity/query/updateEntity/deleteEntity confirmed from the compiled bundle (ast.json exposes no named operations). Modelled with the common accounts and contacts entity sets; other Dataverse entity sets follow the same CRUD pattern. Server URL is a placeholder org host."
+}

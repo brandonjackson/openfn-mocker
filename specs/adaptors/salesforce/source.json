@@ -1,0 +1,17 @@
+{
+  "adaptor": "salesforce",
+  "npm": "@openfn/language-salesforce",
+  "origin": "generated",
+  "upstreamFormat": "docs",
+  "sources": [
+    "https://cdn.jsdelivr.net/npm/@openfn/language-salesforce/ast.json",
+    "https://cdn.jsdelivr.net/npm/@openfn/language-salesforce/types/index.d.ts",
+    "https://github.com/OpenFn/adaptors/tree/main/packages/salesforce",
+    "https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_sobject_basic_info.htm",
+    "https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_sobject_describe.htm",
+    "https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/dome_query.htm",
+    "https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_composite_sobjects_collections.htm"
+  ],
+  "capturedAt": "2026-07-06",
+  "notes": "Hand-authored focused OpenAPI 3.0.3 modeling the Salesforce REST API resources the salesforce adaptor uses via jsforce: sObject describe / describe-global, single-record CRUD (create/insert, retrieve, update, destroy), external-ID upsert, SOQL query / queryAll / queryMore, and composite sObject collections (bulk create/update/delete). API version appears as the {version} path parameter (e.g. 59.0). update and destroy return 204 No Content. The full Salesforce REST surface (bulk API v1/v2 jobs, Analytics, Chatter, Tooling, Metadata, Apex REST) is intentionally out of scope; the bulk1/bulk2 adaptor modules submit Bulk API jobs not modeled here. Response shapes (CreateResult, UpsertResult, QueryResult, DescribeSObjectResult, SaveResult) reflect the documented Salesforce REST responses and jsforce return values."
+}

@@ -1,0 +1,299 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "PDFShift API (mock subset)",
+    "version": "3.0",
+    "description": "Focused subset of the PDFShift v3 HTML-to-PDF conversion API used by the OpenFn pdfshift adaptor. Covers PDF conversion (POST /convert/pdf, called by generatePDF), credits usage, and account details. Derived from the official PDFShift OpenAPI document at https://docs.pdfshift.io/openapi.json. The convert endpoint returns a raw binary PDF by default, or a JSON conversion-result object when filename/webhook is used or when encode is true.",
+    "x-openfn-adaptor": "pdfshift"
+  },
+  "servers": [
+    {
+      "url": "https://api.pdfshift.io/v3",
+      "description": "PDFShift API v3"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "apiKeyHeader": {
+        "type": "apiKey",
+        "name": "X-API-Key",
+        "in": "header",
+        "description": "Authenticate by including your secret key in the HTTP header X-API-Key. Manage keys in the PDFShift dashboard."
+      }
+    },
+    "schemas": {
+      "ConvertRequest": {
+        "type": "object",
+        "required": ["source"],
+        "properties": {
+          "source": {
+            "type": "string",
+            "description": "The HTML document (raw string) or a URL to convert to PDF."
+          },
+          "sandbox": {
+            "type": "boolean",
+            "description": "Generate the PDF in dev/sandbox mode. Produces a watermarked document that does not consume credits."
+          },
+          "encode": {
+            "type": "boolean",
+            "description": "Return the generated PDF as a Base64-encoded string instead of raw binary. Defaults to true in the adaptor.",
+            "default": true
+          },
+          "filename": {
+            "type": "string",
+            "description": "Optional. 7+ characters (letters, numbers, '-' or '_'). When set, the file is stored and the API returns a JSON result containing a temporary download URL (kept ~2 days) instead of the binary PDF.",
+            "pattern": "^[A-Za-z0-9_-]{7,}$"
+          },
+          "webhook": {
+            "type": "string",
+            "format": "uri",
+            "description": "Optional callback URL for async conversion. When set, the API responds with a queued acknowledgement and later POSTs the result to this URL."
+          },
+          "use_print": {
+            "type": "boolean",
+            "description": "Use the print CSS stylesheet instead of the screen stylesheet."
+          },
+          "format": {
+            "type": "string",
+            "description": "Page format, e.g. 'A4', 'Letter', 'Legal', or a custom 'widthxheight' value.",
+            "example": "A4"
+          },
+          "landscape": {
+            "type": "boolean",
+            "description": "Render the document in landscape orientation."
+          },
+          "css": {
+            "type": "string",
+            "description": "Additional CSS (URL or raw string) applied before conversion."
+          }
+        }
+      },
+      "ConversionResult": {
+        "type": "object",
+        "description": "JSON result returned by a conversion endpoint when filename/webhook is used or encode is true.",
+        "required": ["success", "url", "filesize", "duration", "response", "executed"],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Whether the conversion succeeded."
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Temporary download URL for the generated document (when filename/webhook is used)."
+          },
+          "filesize": {
+            "type": "integer",
+            "description": "Size of the generated document in bytes."
+          },
+          "duration": {
+            "type": "integer",
+            "description": "Total time taken to generate the document, in milliseconds."
+          },
+          "response": {
+            "type": "object",
+            "description": "Details about loading the source document.",
+            "properties": {
+              "duration": {
+                "type": "integer",
+                "description": "Milliseconds spent loading the source."
+              },
+              "status-code": {
+                "type": "integer",
+                "description": "HTTP status code PDFShift received when loading an HTTP source."
+              }
+            }
+          },
+          "executed": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO 8601 timestamp at which the conversion ran."
+          },
+          "pdf_pages": {
+            "type": "integer",
+            "description": "Total number of pages in the generated PDF."
+          }
+        }
+      },
+      "Credits": {
+        "type": "object",
+        "description": "Current credit usage for the account.",
+        "properties": {
+          "credits": {
+            "type": "object",
+            "properties": {
+              "base": {
+                "type": "integer",
+                "format": "int32",
+                "description": "Default credit limit from the current plan."
+              },
+              "remaining": {
+                "type": "integer",
+                "format": "int32",
+                "description": "Credits still available for the current period."
+              },
+              "total": {
+                "type": "integer",
+                "format": "int32",
+                "description": "Total credit limit (may exceed base if overage is enabled)."
+              },
+              "used": {
+                "type": "integer",
+                "format": "int32",
+                "description": "Credits consumed so far this period."
+              }
+            }
+          },
+          "success": {
+            "type": "boolean"
+          }
+        }
+      },
+      "Account": {
+        "type": "object",
+        "description": "Account details.",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "account": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "firstname": { "type": "string" },
+              "email": { "type": "string", "format": "email" },
+              "created": { "type": "integer", "format": "int64" },
+              "company_name": { "type": "string" },
+              "country": { "type": "string" },
+              "renew_date": { "type": "integer", "format": "int64" },
+              "avatar": { "type": "string", "format": "uri" },
+              "plan": {
+                "type": "object",
+                "properties": {
+                  "display": { "type": "string" },
+                  "name": { "type": "string" },
+                  "credits": { "type": "integer", "format": "int32" },
+                  "filesize": { "type": "integer", "format": "int32" },
+                  "timeout": { "type": "integer", "format": "int32" },
+                  "price": { "type": "number", "format": "float" },
+                  "yearly": { "type": "boolean" },
+                  "overage": { "type": "number", "format": "float" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "error": { "type": "string" },
+          "code": { "type": "integer", "format": "int32" }
+        }
+      }
+    }
+  },
+  "security": [{ "apiKeyHeader": [] }],
+  "paths": {
+    "/convert/pdf": {
+      "post": {
+        "operationId": "convertToPdf",
+        "summary": "Convert HTML or a URL to PDF",
+        "description": "Converts an HTML string or a URL to a PDF document. Called by the adaptor's generatePDF operation. Returns a raw binary PDF by default; returns a JSON ConversionResult when filename or webhook is provided, or a Base64-encoded PDF string when encode is true.",
+        "tags": ["convert"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ConvertRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "PDF generated successfully. Binary PDF, Base64 string, or a JSON conversion result depending on the request options.",
+            "content": {
+              "application/pdf": {
+                "schema": { "type": "string", "format": "binary" }
+              },
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ConversionResult" }
+              }
+            }
+          },
+          "202": {
+            "description": "Async conversion accepted (webhook provided). Result will be POSTed to the webhook.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "queued": { "type": "boolean" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Invalid, missing, or disabled API key.",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Error" } }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests. Rate limit exceeded.",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Error" } }
+            }
+          }
+        }
+      }
+    },
+    "/credits/usage": {
+      "get": {
+        "operationId": "getCreditsUsage",
+        "summary": "Get current credits usage",
+        "description": "Returns the current credits usage: total, remaining and used credits for the current period.",
+        "tags": ["credits"],
+        "responses": {
+          "200": {
+            "description": "Current credit usage",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Credits" } }
+            }
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Error" } }
+            }
+          }
+        }
+      }
+    },
+    "/account": {
+      "get": {
+        "operationId": "getAccount",
+        "summary": "Get account details",
+        "description": "Returns details about the authenticated account, including plan and billing information.",
+        "tags": ["account"],
+        "responses": {
+          "200": {
+            "description": "Account details",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Account" } }
+            }
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Error" } }
+            }
+          }
+        }
+      }
+    }
+  }
+}

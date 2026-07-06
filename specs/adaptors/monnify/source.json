@@ -1,0 +1,15 @@
+{
+  "adaptor": "monnify",
+  "npm": "@openfn/language-monnify",
+  "origin": "generated",
+  "upstreamFormat": "docs",
+  "sources": [
+    "https://developers.monnify.com/api",
+    "https://developers.monnify.com/docs/collections/customer-reserved-account",
+    "https://developers.monnify.com/docs/disbursements/single-transfers",
+    "https://www.postman.com/monnifyteam/monnify-public-apis/collection/0k8llkr/monnify-api",
+    "https://github.com/OpenFn/adaptors/blob/main/packages/monnify/src/Adaptor.js"
+  ],
+  "capturedAt": "2026-07-06",
+  "notes": "The monnify adaptor exposes only generic get/list/post/request helpers, so this OpenAPI 3.0.3 was authored from the Monnify developer docs to cover the common endpoints those helpers target: auth login, transaction search, reserved accounts, and single disbursement transfers. Base URL is the sandbox host (https://sandbox.monnify.com; live is https://api.monnify.com). All responses use Monnify's standard envelope (requestSuccessful/responseMessage/responseCode/responseBody) modelled via MonnifyEnvelope + allOf. Focused subset of a larger API."
+}

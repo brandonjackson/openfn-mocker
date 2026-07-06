@@ -1,0 +1,543 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "ihris — mocker seed-data schema",
+    "version": "1.0.0",
+    "description": "Schema for the seed data openfn-mocker needs to impersonate ihris. Derived from the adaptor's OpenAPI spec. A seed dump is { collection: { id: record } }; each record validates against its resource schema below.",
+    "x-openfn-adaptor": "ihris",
+    "x-derived-from": "openapi.json",
+    "x-captured-at": "2026-07-06"
+  },
+  "x-seed": {
+    "shape": "{ collection: { id: record } }",
+    "collections": {
+      "bundles": {
+        "resource": "Bundle",
+        "schema": {
+          "$ref": "#/components/schemas/Bundle"
+        }
+      },
+      "capabilityStatements": {
+        "resource": "CapabilityStatement",
+        "schema": {
+          "$ref": "#/components/schemas/CapabilityStatement"
+        }
+      },
+      "codeableConcepts": {
+        "resource": "CodeableConcept",
+        "schema": {
+          "$ref": "#/components/schemas/CodeableConcept"
+        }
+      },
+      "contactPoints": {
+        "resource": "ContactPoint",
+        "schema": {
+          "$ref": "#/components/schemas/ContactPoint"
+        }
+      },
+      "humanNames": {
+        "resource": "HumanName",
+        "schema": {
+          "$ref": "#/components/schemas/HumanName"
+        }
+      },
+      "identifiers": {
+        "resource": "Identifier",
+        "schema": {
+          "$ref": "#/components/schemas/Identifier"
+        }
+      },
+      "locations": {
+        "resource": "Location",
+        "schema": {
+          "$ref": "#/components/schemas/Location"
+        }
+      },
+      "organizations": {
+        "resource": "Organization",
+        "schema": {
+          "$ref": "#/components/schemas/Organization"
+        }
+      },
+      "practitioners": {
+        "resource": "Practitioner",
+        "schema": {
+          "$ref": "#/components/schemas/Practitioner"
+        }
+      },
+      "practitionerRoles": {
+        "resource": "PractitionerRole",
+        "schema": {
+          "$ref": "#/components/schemas/PractitionerRole"
+        }
+      },
+      "references": {
+        "resource": "Reference",
+        "schema": {
+          "$ref": "#/components/schemas/Reference"
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SeedData": {
+        "type": "object",
+        "description": "Full seed dump loaded by mocker: one property per collection.",
+        "properties": {
+          "bundles": {
+            "type": "object",
+            "description": "Records keyed by id for the bundles collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Bundle"
+            }
+          },
+          "capabilityStatements": {
+            "type": "object",
+            "description": "Records keyed by id for the capabilityStatements collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/CapabilityStatement"
+            }
+          },
+          "codeableConcepts": {
+            "type": "object",
+            "description": "Records keyed by id for the codeableConcepts collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/CodeableConcept"
+            }
+          },
+          "contactPoints": {
+            "type": "object",
+            "description": "Records keyed by id for the contactPoints collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ContactPoint"
+            }
+          },
+          "humanNames": {
+            "type": "object",
+            "description": "Records keyed by id for the humanNames collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/HumanName"
+            }
+          },
+          "identifiers": {
+            "type": "object",
+            "description": "Records keyed by id for the identifiers collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          "locations": {
+            "type": "object",
+            "description": "Records keyed by id for the locations collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Location"
+            }
+          },
+          "organizations": {
+            "type": "object",
+            "description": "Records keyed by id for the organizations collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Organization"
+            }
+          },
+          "practitioners": {
+            "type": "object",
+            "description": "Records keyed by id for the practitioners collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Practitioner"
+            }
+          },
+          "practitionerRoles": {
+            "type": "object",
+            "description": "Records keyed by id for the practitionerRoles collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/PractitionerRole"
+            }
+          },
+          "references": {
+            "type": "object",
+            "description": "Records keyed by id for the references collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Reference"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "HumanName": {
+        "type": "object",
+        "properties": {
+          "use": {
+            "type": "string",
+            "example": "official"
+          },
+          "text": {
+            "type": "string",
+            "example": "Dr Jane Doe"
+          },
+          "family": {
+            "type": "string",
+            "example": "Doe"
+          },
+          "given": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "Jane"
+            ]
+          },
+          "prefix": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "Dr"
+            ]
+          }
+        }
+      },
+      "Identifier": {
+        "type": "object",
+        "properties": {
+          "use": {
+            "type": "string",
+            "example": "official"
+          },
+          "system": {
+            "type": "string",
+            "example": "https://ihris.example.com/identifier/employee"
+          },
+          "value": {
+            "type": "string",
+            "example": "EMP-0001"
+          }
+        }
+      },
+      "ContactPoint": {
+        "type": "object",
+        "properties": {
+          "system": {
+            "type": "string",
+            "example": "phone"
+          },
+          "value": {
+            "type": "string",
+            "example": "+254700000000"
+          },
+          "use": {
+            "type": "string",
+            "example": "work"
+          }
+        }
+      },
+      "CodeableConcept": {
+        "type": "object",
+        "properties": {
+          "coding": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "system": {
+                  "type": "string"
+                },
+                "code": {
+                  "type": "string"
+                },
+                "display": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "text": {
+            "type": "string"
+          }
+        }
+      },
+      "Reference": {
+        "type": "object",
+        "properties": {
+          "reference": {
+            "type": "string",
+            "example": "Practitioner/123"
+          },
+          "display": {
+            "type": "string"
+          }
+        }
+      },
+      "Practitioner": {
+        "type": "object",
+        "required": [
+          "resourceType"
+        ],
+        "properties": {
+          "resourceType": {
+            "type": "string",
+            "enum": [
+              "Practitioner"
+            ],
+            "example": "Practitioner"
+          },
+          "id": {
+            "type": "string",
+            "example": "123"
+          },
+          "identifier": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          "active": {
+            "type": "boolean",
+            "example": true
+          },
+          "name": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HumanName"
+            }
+          },
+          "telecom": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ContactPoint"
+            }
+          },
+          "gender": {
+            "type": "string",
+            "example": "female"
+          },
+          "birthDate": {
+            "type": "string",
+            "format": "date",
+            "example": "1985-04-12"
+          }
+        }
+      },
+      "PractitionerRole": {
+        "type": "object",
+        "required": [
+          "resourceType"
+        ],
+        "properties": {
+          "resourceType": {
+            "type": "string",
+            "enum": [
+              "PractitionerRole"
+            ],
+            "example": "PractitionerRole"
+          },
+          "id": {
+            "type": "string",
+            "example": "456"
+          },
+          "active": {
+            "type": "boolean",
+            "example": true
+          },
+          "practitioner": {
+            "$ref": "#/components/schemas/Reference"
+          },
+          "organization": {
+            "$ref": "#/components/schemas/Reference"
+          },
+          "location": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Reference"
+            }
+          },
+          "code": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CodeableConcept"
+            }
+          },
+          "specialty": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CodeableConcept"
+            }
+          }
+        }
+      },
+      "Organization": {
+        "type": "object",
+        "required": [
+          "resourceType"
+        ],
+        "properties": {
+          "resourceType": {
+            "type": "string",
+            "enum": [
+              "Organization"
+            ],
+            "example": "Organization"
+          },
+          "id": {
+            "type": "string",
+            "example": "org-1"
+          },
+          "identifier": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          "active": {
+            "type": "boolean",
+            "example": true
+          },
+          "name": {
+            "type": "string",
+            "example": "Ministry of Health"
+          },
+          "type": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CodeableConcept"
+            }
+          },
+          "telecom": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ContactPoint"
+            }
+          }
+        }
+      },
+      "Location": {
+        "type": "object",
+        "required": [
+          "resourceType"
+        ],
+        "properties": {
+          "resourceType": {
+            "type": "string",
+            "enum": [
+              "Location"
+            ],
+            "example": "Location"
+          },
+          "id": {
+            "type": "string",
+            "example": "loc-1"
+          },
+          "status": {
+            "type": "string",
+            "example": "active"
+          },
+          "name": {
+            "type": "string",
+            "example": "Nairobi County Hospital"
+          },
+          "description": {
+            "type": "string"
+          },
+          "managingOrganization": {
+            "$ref": "#/components/schemas/Reference"
+          }
+        }
+      },
+      "Bundle": {
+        "type": "object",
+        "required": [
+          "resourceType"
+        ],
+        "properties": {
+          "resourceType": {
+            "type": "string",
+            "enum": [
+              "Bundle"
+            ],
+            "example": "Bundle"
+          },
+          "type": {
+            "type": "string",
+            "example": "searchset"
+          },
+          "total": {
+            "type": "integer",
+            "example": 1
+          },
+          "link": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "relation": {
+                  "type": "string",
+                  "example": "self"
+                },
+                "url": {
+                  "type": "string",
+                  "format": "uri"
+                }
+              }
+            }
+          },
+          "entry": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "fullUrl": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "resource": {
+                  "$ref": "#/components/schemas/Practitioner"
+                },
+                "search": {
+                  "type": "object",
+                  "properties": {
+                    "mode": {
+                      "type": "string",
+                      "example": "match"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "CapabilityStatement": {
+        "type": "object",
+        "properties": {
+          "resourceType": {
+            "type": "string",
+            "enum": [
+              "CapabilityStatement"
+            ],
+            "example": "CapabilityStatement"
+          },
+          "status": {
+            "type": "string",
+            "example": "active"
+          },
+          "fhirVersion": {
+            "type": "string",
+            "example": "4.0.1"
+          },
+          "format": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "json"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

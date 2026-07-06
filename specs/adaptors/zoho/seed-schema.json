@@ -1,0 +1,246 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "zoho — mocker seed-data schema",
+    "version": "1.0.0",
+    "description": "Schema for the seed data openfn-mocker needs to impersonate zoho. Derived from the adaptor's OpenAPI spec. A seed dump is { collection: { id: record } }; each record validates against its resource schema below.",
+    "x-openfn-adaptor": "zoho",
+    "x-derived-from": "openapi.json",
+    "x-captured-at": "2026-07-06"
+  },
+  "x-seed": {
+    "shape": "{ collection: { id: record } }",
+    "collections": {
+      "actionResponses": {
+        "resource": "ActionResponse",
+        "schema": {
+          "$ref": "#/components/schemas/ActionResponse"
+        }
+      },
+      "workspaceListResponses": {
+        "resource": "WorkspaceListResponse",
+        "schema": {
+          "$ref": "#/components/schemas/WorkspaceListResponse"
+        }
+      },
+      "workspaceMetadataResponses": {
+        "resource": "WorkspaceMetadataResponse",
+        "schema": {
+          "$ref": "#/components/schemas/WorkspaceMetadataResponse"
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SeedData": {
+        "type": "object",
+        "description": "Full seed dump loaded by mocker: one property per collection.",
+        "properties": {
+          "actionResponses": {
+            "type": "object",
+            "description": "Records keyed by id for the actionResponses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ActionResponse"
+            }
+          },
+          "workspaceListResponses": {
+            "type": "object",
+            "description": "Records keyed by id for the workspaceListResponses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/WorkspaceListResponse"
+            }
+          },
+          "workspaceMetadataResponses": {
+            "type": "object",
+            "description": "Records keyed by id for the workspaceMetadataResponses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/WorkspaceMetadataResponse"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "Row": {
+        "type": "object",
+        "description": "A single table row expressed as a map of column name to value. Sent form-encoded.",
+        "additionalProperties": {
+          "type": "string"
+        },
+        "example": {
+          "Subject": "New ticket",
+          "Status": "Closed"
+        }
+      },
+      "RowResult": {
+        "type": "object",
+        "description": "Row data payload returned inside a response result: column ordering plus row values.",
+        "properties": {
+          "column_order": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "rows": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "nullable": true
+              }
+            }
+          }
+        }
+      },
+      "ImportSummary": {
+        "type": "object",
+        "description": "Summary returned by import/write actions.",
+        "properties": {
+          "totalColumnCount": {
+            "type": "integer"
+          },
+          "selectedColumnCount": {
+            "type": "integer"
+          },
+          "totalRowCount": {
+            "type": "integer"
+          },
+          "successRowCount": {
+            "type": "integer"
+          },
+          "warnings": {
+            "type": "integer"
+          },
+          "importOperation": {
+            "type": "string"
+          }
+        }
+      },
+      "ActionResponse": {
+        "type": "object",
+        "description": "Standard Zoho Reports success envelope for data actions (ADDROW, UPDATE, DELETE, IMPORT, EXPORT).",
+        "required": [
+          "response"
+        ],
+        "properties": {
+          "response": {
+            "type": "object",
+            "properties": {
+              "uri": {
+                "type": "string"
+              },
+              "action": {
+                "type": "string",
+                "example": "ADDROW"
+              },
+              "result": {
+                "description": "Action result. For ADDROW/EXPORT this is row data; for IMPORT it may carry an import summary.",
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/RowResult"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ImportSummary"
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": true
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "WorkspaceMetadataResponse": {
+        "type": "object",
+        "description": "Envelope returned by metadata / create-table actions.",
+        "required": [
+          "response"
+        ],
+        "properties": {
+          "response": {
+            "type": "object",
+            "properties": {
+              "uri": {
+                "type": "string"
+              },
+              "action": {
+                "type": "string"
+              },
+              "result": {
+                "type": "object",
+                "additionalProperties": true,
+                "description": "Metadata payload (tables, columns, table info)."
+              }
+            }
+          }
+        }
+      },
+      "WorkspaceListResponse": {
+        "type": "object",
+        "description": "Envelope listing the workspaces/databases owned by the user.",
+        "required": [
+          "response"
+        ],
+        "properties": {
+          "response": {
+            "type": "object",
+            "properties": {
+              "uri": {
+                "type": "string"
+              },
+              "action": {
+                "type": "string",
+                "example": "USERDATABASES"
+              },
+              "result": {
+                "type": "object",
+                "properties": {
+                  "dbList": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "additionalProperties": true
+              }
+            }
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "description": "Zoho Reports error envelope.",
+        "required": [
+          "response"
+        ],
+        "properties": {
+          "response": {
+            "type": "object",
+            "properties": {
+              "uri": {
+                "type": "string"
+              },
+              "error": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "integer",
+                    "example": 7107
+                  },
+                  "message": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

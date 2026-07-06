@@ -1,0 +1,269 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "collections — mocker seed-data schema",
+    "version": "1.0.0",
+    "description": "Schema for the seed data openfn-mocker needs to impersonate collections. Derived from the adaptor's OpenAPI spec. A seed dump is { collection: { id: record } }; each record validates against its resource schema below.",
+    "x-openfn-adaptor": "collections",
+    "x-derived-from": "openapi.json",
+    "x-captured-at": "2026-07-06"
+  },
+  "x-seed": {
+    "shape": "{ collection: { id: record } }",
+    "collections": {
+      "collectionItems": {
+        "resource": "CollectionItem",
+        "schema": {
+          "$ref": "#/components/schemas/CollectionItem"
+        }
+      },
+      "collectionLists": {
+        "resource": "CollectionList",
+        "schema": {
+          "$ref": "#/components/schemas/CollectionList"
+        }
+      },
+      "deleteResults": {
+        "resource": "DeleteResult",
+        "schema": {
+          "$ref": "#/components/schemas/DeleteResult"
+        }
+      },
+      "upsertResults": {
+        "resource": "UpsertResult",
+        "schema": {
+          "$ref": "#/components/schemas/UpsertResult"
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SeedData": {
+        "type": "object",
+        "description": "Full seed dump loaded by mocker: one property per collection.",
+        "properties": {
+          "collectionItems": {
+            "type": "object",
+            "description": "Records keyed by id for the collectionItems collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/CollectionItem"
+            }
+          },
+          "collectionLists": {
+            "type": "object",
+            "description": "Records keyed by id for the collectionLists collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/CollectionList"
+            }
+          },
+          "deleteResults": {
+            "type": "object",
+            "description": "Records keyed by id for the deleteResults collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/DeleteResult"
+            }
+          },
+          "upsertResults": {
+            "type": "object",
+            "description": "Records keyed by id for the upsertResults collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/UpsertResult"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "Collection": {
+        "type": "object",
+        "description": "Metadata for a collection (a named key/value namespace).",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Unique name of the collection.",
+            "example": "patients-2024"
+          },
+          "projectId": {
+            "type": "string",
+            "nullable": true,
+            "description": "Lightning project the collection belongs to, if scoped.",
+            "example": "3a1e9c2b-5f47-4d8a-9b2e-1c0f7a6d5e4b"
+          },
+          "itemCount": {
+            "type": "integer",
+            "description": "Number of items currently stored in the collection.",
+            "example": 128
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2024-01-15T08:30:00Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2024-06-01T12:00:00Z"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "CollectionList": {
+        "type": "object",
+        "description": "A list of collections.",
+        "properties": {
+          "collections": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Collection"
+            }
+          }
+        },
+        "required": [
+          "collections"
+        ]
+      },
+      "CollectionItem": {
+        "type": "object",
+        "description": "A single key/value item. The value is stored as a string and typically contains JSON.",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "The item key.",
+            "example": "556e0a62"
+          },
+          "value": {
+            "type": "string",
+            "description": "The item value, stored as a string (usually JSON-encoded).",
+            "example": "{\"name\":\"New York\",\"code\":\"NY\"}"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2024-01-15T08:30:00Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2024-01-15T08:30:00Z"
+          }
+        },
+        "required": [
+          "key",
+          "value"
+        ]
+      },
+      "CollectionItemList": {
+        "type": "object",
+        "description": "A cursor-paginated page of items. When `cursor` is non-null, more items remain and it should be passed back to fetch the next page.",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CollectionItem"
+            }
+          },
+          "cursor": {
+            "type": "string",
+            "nullable": true,
+            "description": "Opaque cursor to the next page, or null when the last page has been returned.",
+            "example": "1000"
+          },
+          "count": {
+            "type": "integer",
+            "description": "Number of items returned in this page.",
+            "example": 2
+          }
+        },
+        "required": [
+          "items",
+          "cursor"
+        ]
+      },
+      "ItemValue": {
+        "type": "object",
+        "description": "A single item value payload (for setting one key).",
+        "properties": {
+          "value": {
+            "type": "string",
+            "description": "The value to store, as a string (usually JSON-encoded).",
+            "example": "{\"NY\":\"New York\",\"LDN\":\"London\"}"
+          }
+        },
+        "required": [
+          "value"
+        ]
+      },
+      "UpsertRequest": {
+        "type": "object",
+        "description": "A batch of key/value items to upsert.",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CollectionItem"
+            }
+          }
+        },
+        "required": [
+          "items"
+        ]
+      },
+      "UpsertResult": {
+        "type": "object",
+        "description": "Result of an upsert operation.",
+        "properties": {
+          "upserted": {
+            "type": "integer",
+            "description": "Number of items inserted or replaced.",
+            "example": 3
+          },
+          "errors": {
+            "type": "array",
+            "description": "Any per-item errors reported by the server.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "key": {
+                  "type": "string"
+                },
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "upserted"
+        ]
+      },
+      "DeleteResult": {
+        "type": "object",
+        "description": "Result of a remove operation.",
+        "properties": {
+          "deleted": {
+            "type": "integer",
+            "description": "Number of items removed.",
+            "example": 5
+          },
+          "keys": {
+            "type": "array",
+            "description": "The keys that were removed.",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "2024-01-01",
+              "2024-01-02"
+            ]
+          }
+        },
+        "required": [
+          "deleted"
+        ]
+      }
+    }
+  }
+}

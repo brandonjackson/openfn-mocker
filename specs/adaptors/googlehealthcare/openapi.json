@@ -1,0 +1,188 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Google Cloud Healthcare API - FHIR store (mock subset)",
+    "version": "v1",
+    "description": "Focused subset of the Google Cloud Healthcare API v1 FHIR-store REST surface used by the OpenFn googlehealthcare adaptor. The adaptor's createFhirResource operation POSTs a FHIR resource to a FHIR store; read and search of resources are included for completeness. Converted from the Healthcare API v1 Discovery document plus the FHIR REST semantics exposed by the fhirStores.fhir endpoints.",
+    "x-openfn-adaptor": "googlehealthcare"
+  },
+  "servers": [{ "url": "https://healthcare.googleapis.com/v1" }],
+  "paths": {
+    "/projects/{projectId}/locations/{cloudRegion}/datasets/{datasetId}/fhirStores/{fhirStoreId}/fhir/{resourceType}": {
+      "post": {
+        "operationId": "createFhirResource",
+        "summary": "Create a FHIR resource",
+        "description": "Creates a FHIR resource of the given type in the FHIR store (FHIR `create` interaction). The server assigns an id and returns the stored resource.",
+        "parameters": [
+          { "name": "projectId", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "cloudRegion", "in": "path", "required": true, "schema": { "type": "string", "example": "us-central1" } },
+          { "name": "datasetId", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "fhirStoreId", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "resourceType", "in": "path", "required": true, "schema": { "type": "string", "example": "Patient" }, "description": "FHIR resource type, e.g. Patient, Observation, Encounter." }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/fhir+json": { "schema": { "$ref": "#/components/schemas/FhirResource" } }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The created FHIR resource",
+            "content": {
+              "application/fhir+json": { "schema": { "$ref": "#/components/schemas/FhirResource" } }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/fhir+json": { "schema": { "$ref": "#/components/schemas/OperationOutcome" } }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "searchFhirResources",
+        "summary": "Search FHIR resources of a type",
+        "description": "Searches for resources of the given type in the FHIR store (FHIR type-level `search`). Returns a searchset Bundle.",
+        "parameters": [
+          { "name": "projectId", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "cloudRegion", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "datasetId", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "fhirStoreId", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "resourceType", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "_count", "in": "query", "schema": { "type": "integer", "format": "int32" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "A searchset Bundle",
+            "content": {
+              "application/fhir+json": { "schema": { "$ref": "#/components/schemas/Bundle" } }
+            }
+          }
+        }
+      }
+    },
+    "/projects/{projectId}/locations/{cloudRegion}/datasets/{datasetId}/fhirStores/{fhirStoreId}/fhir/{resourceType}/{resourceId}": {
+      "get": {
+        "operationId": "readFhirResource",
+        "summary": "Read a FHIR resource by id",
+        "description": "Gets the contents of a FHIR resource (FHIR `read` interaction).",
+        "parameters": [
+          { "name": "projectId", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "cloudRegion", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "datasetId", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "fhirStoreId", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "resourceType", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "resourceId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "The requested FHIR resource",
+            "content": {
+              "application/fhir+json": { "schema": { "$ref": "#/components/schemas/FhirResource" } }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/fhir+json": { "schema": { "$ref": "#/components/schemas/OperationOutcome" } }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "FhirResource": {
+        "type": "object",
+        "description": "A generic FHIR R4 resource. resourceType is required; other fields vary by type.",
+        "required": ["resourceType"],
+        "properties": {
+          "resourceType": { "type": "string", "example": "Patient" },
+          "id": { "type": "string", "example": "a1b2c3d4-0000-0000-0000-000000000000" },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "versionId": { "type": "string", "example": "1" },
+              "lastUpdated": { "type": "string", "format": "date-time", "example": "2024-03-05T12:30:00.000Z" }
+            }
+          },
+          "identifier": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "system": { "type": "string", "example": "urn:oid:2.16.840.1.113883.2.4.6.3" },
+                "value": { "type": "string", "example": "12345" }
+              }
+            }
+          }
+        },
+        "additionalProperties": true,
+        "example": {
+          "resourceType": "Patient",
+          "id": "a1b2c3d4-0000-0000-0000-000000000000",
+          "meta": { "versionId": "1", "lastUpdated": "2024-03-05T12:30:00.000Z" },
+          "name": [{ "use": "official", "family": "Mensah", "given": ["Ama"] }],
+          "gender": "female",
+          "birthDate": "1990-05-12"
+        }
+      },
+      "Bundle": {
+        "type": "object",
+        "description": "A FHIR Bundle (searchset).",
+        "required": ["resourceType"],
+        "properties": {
+          "resourceType": { "type": "string", "example": "Bundle" },
+          "type": { "type": "string", "example": "searchset" },
+          "total": { "type": "integer", "format": "int32", "example": 1 },
+          "link": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "relation": { "type": "string", "example": "self" },
+                "url": { "type": "string" }
+              }
+            }
+          },
+          "entry": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "fullUrl": { "type": "string" },
+                "resource": { "$ref": "#/components/schemas/FhirResource" },
+                "search": {
+                  "type": "object",
+                  "properties": { "mode": { "type": "string", "example": "match" } }
+                }
+              }
+            }
+          }
+        }
+      },
+      "OperationOutcome": {
+        "type": "object",
+        "description": "A FHIR OperationOutcome, returned for errors.",
+        "required": ["resourceType"],
+        "properties": {
+          "resourceType": { "type": "string", "example": "OperationOutcome" },
+          "issue": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "severity": { "type": "string", "example": "error" },
+                "code": { "type": "string", "example": "invalid" },
+                "diagnostics": { "type": "string", "example": "Resource type in URL does not match resourceType in body." }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,258 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "varo — mocker seed-data schema",
+    "version": "1.0.0",
+    "description": "Schema for the seed data openfn-mocker needs to impersonate varo. Derived from the adaptor's OpenAPI spec. A seed dump is { collection: { id: record } }; each record validates against its resource schema below.",
+    "x-openfn-adaptor": "varo",
+    "x-derived-from": "openapi.json",
+    "x-captured-at": "2026-07-06"
+  },
+  "x-seed": {
+    "shape": "{ collection: { id: record } }",
+    "collections": {
+      "emsRecords": {
+        "resource": "EmsRecord",
+        "schema": {
+          "$ref": "#/components/schemas/EmsRecord"
+        }
+      },
+      "fileContents": {
+        "resource": "FileContent",
+        "schema": {
+          "$ref": "#/components/schemas/FileContent"
+        }
+      },
+      "keyInRangeResults": {
+        "resource": "KeyInRangeResult",
+        "schema": {
+          "$ref": "#/components/schemas/KeyInRangeResult"
+        }
+      },
+      "utcRanges": {
+        "resource": "UtcRange",
+        "schema": {
+          "$ref": "#/components/schemas/UtcRange"
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SeedData": {
+        "type": "object",
+        "description": "Full seed dump loaded by mocker: one property per collection.",
+        "properties": {
+          "emsRecords": {
+            "type": "object",
+            "description": "Records keyed by id for the emsRecords collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/EmsRecord"
+            }
+          },
+          "fileContents": {
+            "type": "object",
+            "description": "Records keyed by id for the fileContents collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/FileContent"
+            }
+          },
+          "keyInRangeResults": {
+            "type": "object",
+            "description": "Records keyed by id for the keyInRangeResults collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/KeyInRangeResult"
+            }
+          },
+          "utcRanges": {
+            "type": "object",
+            "description": "Records keyed by id for the utcRanges collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/UtcRange"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "FileContent": {
+        "type": "object",
+        "description": "A single file's content and name, as extracted from a Gmail message attachment.",
+        "properties": {
+          "content": {
+            "type": "string",
+            "description": "Raw file content (text or JSON string)."
+          },
+          "filename": {
+            "type": "string"
+          }
+        }
+      },
+      "MessageContent": {
+        "type": "object",
+        "description": "A Varo/FridgeTag message content bundle produced by the Gmail adaptor.",
+        "properties": {
+          "metadata": {
+            "$ref": "#/components/schemas/FileContent"
+          },
+          "data": {
+            "$ref": "#/components/schemas/FileContent"
+          },
+          "fridgeTag": {
+            "$ref": "#/components/schemas/FileContent"
+          }
+        }
+      },
+      "EmsRecord": {
+        "type": "object",
+        "description": "An EMS-compliant atomic sensor reading.",
+        "properties": {
+          "ASER": {
+            "type": "string",
+            "description": "Asset/device serial identifier."
+          },
+          "ABST": {
+            "type": "string",
+            "description": "Absolute ISO-8601 timestamp of the reading, e.g. \"2024-10-08T08:15:00.000Z\"."
+          },
+          "TVC": {
+            "type": "number",
+            "description": "Temperature value in degrees Celsius."
+          },
+          "ALRM": {
+            "type": "string",
+            "nullable": true,
+            "description": "Optional alarm flag, e.g. \"HEAT\" or \"FRZE\"."
+          },
+          "zdescription": {
+            "type": "string",
+            "description": "Human-readable label for context."
+          }
+        }
+      },
+      "EmsReport": {
+        "type": "object",
+        "description": "An EMS report: report-level properties plus an array of EMS records. Also carries optional out-of-spec zReports.",
+        "properties": {
+          "ASER": {
+            "type": "string",
+            "description": "Asset/device serial identifier for the report."
+          },
+          "records": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EmsRecord"
+            }
+          },
+          "zReports": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ZReport"
+            }
+          }
+        }
+      },
+      "ZReport": {
+        "type": "object",
+        "description": "Out-of-spec daily aggregate and alarm summary (FridgeTag). Ignored by EMS consumers; retained for dashboards.",
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "duration": {
+            "type": "string",
+            "description": "Aggregation window, e.g. \"1D\"."
+          },
+          "alarms": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "condition": {
+                  "type": "string"
+                },
+                "conditionMinutes": {
+                  "type": "integer"
+                },
+                "alarmTime": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              }
+            }
+          },
+          "aggregates": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "min": {
+                  "type": "number"
+                },
+                "max": {
+                  "type": "number"
+                },
+                "average": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        }
+      },
+      "VaroMessageComponent": {
+        "type": "object",
+        "description": "A Varo-compatible message component: an email subject and a data file, ready for the Gmail adaptor.",
+        "properties": {
+          "subject": {
+            "type": "string",
+            "description": "Email subject, e.g. \"OpenFn | EMS\"."
+          },
+          "data": {
+            "$ref": "#/components/schemas/FileContent"
+          }
+        }
+      },
+      "UtcRange": {
+        "type": "object",
+        "description": "A UTC datetime range derived from a wall-clock timezone window.",
+        "properties": {
+          "wallClock": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Current local datetime in the specified timezone."
+          },
+          "startUtc": {
+            "type": "string",
+            "format": "date-time",
+            "description": "UTC start of range (inclusive)."
+          },
+          "endUtc": {
+            "type": "string",
+            "format": "date-time",
+            "description": "UTC end of range (exclusive)."
+          },
+          "collectionKeys": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Wildcard patterns matching UTC dates in range, e.g. \"*20250624*\"."
+          }
+        }
+      },
+      "KeyInRangeResult": {
+        "type": "object",
+        "description": "Result of an isKeyInRange check.",
+        "properties": {
+          "result": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,2121 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "kobotoolbox — mocker seed-data schema",
+    "version": "1.0.0",
+    "description": "Schema for the seed data openfn-mocker needs to impersonate kobotoolbox. Derived from the adaptor's OpenAPI spec. A seed dump is { collection: { id: record } }; each record validates against its resource schema below.",
+    "x-openfn-adaptor": "kobotoolbox",
+    "x-derived-from": "openapi.json",
+    "x-captured-at": "2026-07-06"
+  },
+  "x-seed": {
+    "shape": "{ collection: { id: record } }",
+    "collections": {
+      "assets": {
+        "resource": "Asset",
+        "schema": {
+          "$ref": "#/components/schemas/Asset"
+        }
+      },
+      "assetMetadataResponses": {
+        "resource": "AssetMetadataResponse",
+        "schema": {
+          "$ref": "#/components/schemas/AssetMetadataResponse"
+        }
+      },
+      "dataBulkUpdateResponses": {
+        "resource": "DataBulkUpdateResponse",
+        "schema": {
+          "$ref": "#/components/schemas/DataBulkUpdateResponse"
+        }
+      },
+      "dataResponses": {
+        "resource": "DataResponse",
+        "schema": {
+          "$ref": "#/components/schemas/DataResponse"
+        }
+      },
+      "dataValidationStatusUpdateResponses": {
+        "resource": "DataValidationStatusUpdateResponse",
+        "schema": {
+          "$ref": "#/components/schemas/DataValidationStatusUpdateResponse"
+        }
+      },
+      "deploymentResponses": {
+        "resource": "DeploymentResponse",
+        "schema": {
+          "$ref": "#/components/schemas/DeploymentResponse"
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SeedData": {
+        "type": "object",
+        "description": "Full seed dump loaded by mocker: one property per collection.",
+        "properties": {
+          "assets": {
+            "type": "object",
+            "description": "Records keyed by id for the assets collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Asset"
+            }
+          },
+          "assetMetadataResponses": {
+            "type": "object",
+            "description": "Records keyed by id for the assetMetadataResponses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/AssetMetadataResponse"
+            }
+          },
+          "dataBulkUpdateResponses": {
+            "type": "object",
+            "description": "Records keyed by id for the dataBulkUpdateResponses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/DataBulkUpdateResponse"
+            }
+          },
+          "dataResponses": {
+            "type": "object",
+            "description": "Records keyed by id for the dataResponses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/DataResponse"
+            }
+          },
+          "dataValidationStatusUpdateResponses": {
+            "type": "object",
+            "description": "Records keyed by id for the dataValidationStatusUpdateResponses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/DataValidationStatusUpdateResponse"
+            }
+          },
+          "deploymentResponses": {
+            "type": "object",
+            "description": "Records keyed by id for the deploymentResponses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/DeploymentResponse"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "Asset": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://kf.kobotoolbox.org/api/v2/assets/aBeA23YCYjkGTFvYVHuAyU/",
+            "readOnly": true
+          },
+          "owner": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://kf.kobotoolbox.org/api/v2/users/bob/",
+            "readOnly": true
+          },
+          "owner__username": {
+            "type": "string",
+            "description": "Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.",
+            "readOnly": true
+          },
+          "parent": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://kf.kobotoolbox.org/api/v2/assets/a3C9wWefqZVkChNLKqqXVZ/",
+            "nullable": true
+          },
+          "settings": {
+            "type": "object",
+            "properties": {
+              "sector": {
+                "type": "object"
+              },
+              "country": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "description": {
+                "type": "string"
+              },
+              "collects_pii": {
+                "type": "string"
+              },
+              "organization": {
+                "type": "string"
+              },
+              "country_codes": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "operational_purpose": {
+                "type": "string"
+              }
+            }
+          },
+          "asset_type": {
+            "$ref": "#/components/schemas/AssetTypeEnum"
+          },
+          "files": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "readOnly": true
+          },
+          "summary": {
+            "type": "object",
+            "properties": {
+              "geo": {
+                "type": "boolean"
+              },
+              "labels": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "columns": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "lock_all": {
+                "type": "boolean"
+              },
+              "lock_any": {
+                "type": "boolean"
+              },
+              "languages": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "row_count": {
+                "type": "integer"
+              },
+              "name_quality": {
+                "type": "object"
+              },
+              "default_translation": {
+                "type": "string"
+              }
+            },
+            "readOnly": true
+          },
+          "date_created": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "date_modified": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "date_deployed": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "version_id": {
+            "type": "string",
+            "readOnly": true
+          },
+          "version__content_hash": {
+            "type": "string",
+            "readOnly": true
+          },
+          "version_count": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "has_deployment": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "deployed_version_id": {
+            "type": "string",
+            "readOnly": true
+          },
+          "deployed_versions": {
+            "type": "object",
+            "properties": {
+              "count": {
+                "type": "integer"
+              },
+              "next": {
+                "type": "string"
+              },
+              "previous": {
+                "type": "string"
+              },
+              "results": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "uid": {
+                      "type": "string"
+                    },
+                    "url": {
+                      "type": "string",
+                      "format": "uri",
+                      "example": "https://kf.kobotoolbox.org/api/v2/assets/aBeA23YCYjkGTFvYVHuAyU/versions/vBeA23YCYjkGTFvYVHuAyU/"
+                    },
+                    "content_hash": {
+                      "type": "string"
+                    },
+                    "date_deployed": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "date_modified": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  }
+                }
+              }
+            },
+            "readOnly": true
+          },
+          "deployment__links": {
+            "type": "object",
+            "readOnly": true
+          },
+          "deployment__active": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "deployment__data_download_links": {
+            "type": "object",
+            "readOnly": true
+          },
+          "deployment__submission_count": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "deployment__last_submission_time": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "deployment__encrypted": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "deployment__uuid": {
+            "type": "string",
+            "readOnly": true
+          },
+          "deployment_status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AssetDeploymentStatusEnum"
+              }
+            ],
+            "readOnly": true
+          },
+          "report_styles": {
+            "type": "object",
+            "properties": {
+              "default": {
+                "type": "object"
+              },
+              "specified": {
+                "type": "object",
+                "properties": {
+                  "end": {
+                    "type": "object"
+                  },
+                  "start": {
+                    "type": "object"
+                  }
+                }
+              },
+              "kuid_names": {
+                "type": "object",
+                "properties": {
+                  "end": {
+                    "type": "string"
+                  },
+                  "start": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "report_custom": {
+            "type": "object"
+          },
+          "advanced_features": {
+            "type": "object"
+          },
+          "map_styles": {
+            "type": "object"
+          },
+          "map_custom": {
+            "type": "object"
+          },
+          "content": {
+            "type": "object",
+            "properties": {
+              "schema": {
+                "type": "string"
+              },
+              "survey": {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              },
+              "settings": {
+                "type": "object"
+              },
+              "translated": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "translations": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "downloads": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "format": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string"
+                }
+              }
+            },
+            "readOnly": true
+          },
+          "embeds": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "format": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string"
+                }
+              }
+            },
+            "readOnly": true
+          },
+          "analysis_form_json": {
+            "type": "object",
+            "properties": {
+              "additional_fields": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "readOnly": true
+          },
+          "xform_link": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://kf.kobotoolbox.org/api/v2/assets/aBeA23YCYjkGTFvYVHuAyU/xform/",
+            "readOnly": true
+          },
+          "hooks_link": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://kf.kobotoolbox.org/api/v2/assets/aBeA23YCYjkGTFvYVHuAyU/hooks/",
+            "readOnly": true
+          },
+          "tag_string": {
+            "type": "string"
+          },
+          "uid": {
+            "type": "string",
+            "readOnly": true
+          },
+          "kind": {
+            "type": "string",
+            "readOnly": true
+          },
+          "xls_link": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://kf.kobotoolbox.org/api/v2/assets/aBeA23YCYjkGTFvYVHuAyU.xls",
+            "readOnly": true
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "assignable_permissions": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            },
+            "readOnly": true
+          },
+          "permissions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "readOnly": true
+          },
+          "effective_permissions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "codename": {
+                  "type": "string"
+                }
+              }
+            },
+            "readOnly": true
+          },
+          "exports": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://kf.kobotoolbox.org/api/v2/assets/aBeA23YCYjkGTFvYVHuAyU/exports/",
+            "readOnly": true
+          },
+          "export_settings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AssetExportSettings"
+            },
+            "readOnly": true
+          },
+          "data": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://kf.kobotoolbox.org/api/v2/assets/aBeA23YCYjkGTFvYVHuAyU/data/",
+            "readOnly": true
+          },
+          "children": {
+            "type": "object",
+            "properties": {
+              "count": {
+                "type": "integer"
+              }
+            },
+            "readOnly": true
+          },
+          "subscribers_count": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "status": {
+            "type": "string",
+            "readOnly": true
+          },
+          "access_types": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "readOnly": true
+          },
+          "data_sharing": {
+            "type": "object"
+          },
+          "paired_data": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://kf.kobotoolbox.org/api/v2/assets/aBeA23YCYjkGTFvYVHuAyU/paired-data/",
+            "readOnly": true
+          },
+          "project_ownership": {
+            "type": "object",
+            "additionalProperties": {},
+            "nullable": true,
+            "readOnly": true
+          },
+          "owner_label": {
+            "type": "string",
+            "readOnly": true
+          },
+          "last_modified_by": {
+            "type": "string",
+            "readOnly": true,
+            "nullable": true
+          },
+          "created_by": {
+            "type": "string",
+            "readOnly": true,
+            "nullable": true
+          }
+        },
+        "required": [
+          "access_types",
+          "analysis_form_json",
+          "asset_type",
+          "assignable_permissions",
+          "children",
+          "created_by",
+          "data",
+          "deployed_version_id",
+          "deployed_versions",
+          "deployment__active",
+          "deployment__data_download_links",
+          "deployment__encrypted",
+          "deployment__last_submission_time",
+          "deployment__links",
+          "deployment__submission_count",
+          "deployment__uuid",
+          "deployment_status",
+          "downloads",
+          "effective_permissions",
+          "embeds",
+          "export_settings",
+          "exports",
+          "files",
+          "has_deployment",
+          "hooks_link",
+          "kind",
+          "last_modified_by",
+          "owner",
+          "owner__username",
+          "owner_label",
+          "paired_data",
+          "permissions",
+          "project_ownership",
+          "status",
+          "subscribers_count",
+          "summary",
+          "uid",
+          "url",
+          "version__content_hash",
+          "version_count",
+          "version_id",
+          "xform_link",
+          "xls_link"
+        ]
+      },
+      "AssetDeploymentStatusEnum": {
+        "enum": [
+          "archived",
+          "deployed",
+          "draft",
+          "-"
+        ],
+        "type": "string",
+        "description": "* `archived` - Archived\n* `deployed` - Deployed\n* `draft` - Draft\n* `-` - -"
+      },
+      "AssetExportSettings": {
+        "type": "object",
+        "properties": {
+          "uid": {
+            "type": "string",
+            "readOnly": true
+          },
+          "url": {
+            "type": "string",
+            "readOnly": true
+          },
+          "data_url_csv": {
+            "type": "string",
+            "readOnly": true
+          },
+          "data_url_xlsx": {
+            "type": "string",
+            "readOnly": true
+          },
+          "name": {
+            "type": "string"
+          },
+          "date_modified": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "export_settings": {
+            "type": "object",
+            "additionalProperties": {}
+          }
+        },
+        "required": [
+          "data_url_csv",
+          "data_url_xlsx",
+          "date_modified",
+          "export_settings",
+          "name",
+          "uid",
+          "url"
+        ]
+      },
+      "AssetMetadataResponse": {
+        "type": "object",
+        "properties": {
+          "languages": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "countries": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "sectors": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "organizations": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "countries",
+          "languages",
+          "organizations",
+          "sectors"
+        ]
+      },
+      "AssetTypeEnum": {
+        "enum": [
+          "text",
+          "empty",
+          "question",
+          "block",
+          "survey",
+          "template",
+          "collection"
+        ],
+        "type": "string",
+        "description": "* `text` - text\n* `empty` - empty\n* `question` - question\n* `block` - block\n* `survey` - survey\n* `template` - template\n* `collection` - collection"
+      },
+      "DataBulkUpdateResponse": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "integer"
+          },
+          "successes": {
+            "type": "integer"
+          },
+          "failures": {
+            "type": "integer"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "uuid": {
+                  "type": "string"
+                },
+                "status_code": {
+                  "type": "integer"
+                },
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "count",
+          "failures",
+          "results",
+          "successes"
+        ]
+      },
+      "DataResponse": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "integer",
+            "title": " id"
+          },
+          "formhub/uuid": {
+            "type": "string"
+          },
+          "__version__": {
+            "type": "string",
+            "title": "  version  "
+          },
+          "meta/instanceID": {
+            "type": "string"
+          },
+          "meta/rootUuid": {
+            "type": "string"
+          },
+          "meta/deprecatedID": {
+            "type": "string"
+          },
+          "_xform_id_string": {
+            "type": "string",
+            "title": " xform id string"
+          },
+          "_uuid": {
+            "type": "string",
+            "title": " uuid"
+          },
+          "_attachments": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "download_url": {
+                  "type": "string",
+                  "format": "uri",
+                  "example": "https://kf.kobotoolbox.org/api/v2/assets/aTPPUDScaFZkvBzd8FyK4Q/data/18/attachments/1"
+                },
+                "download_large_url": {
+                  "type": "string",
+                  "format": "uri",
+                  "example": "https://kf.kobotoolbox.org/api/v2/assets/aTPPUDScaFZkvBzd8FyK4Q/data/18/attachments/attWNZNwhXK6HDYVkZJSn9jy/large/"
+                },
+                "download_medium_url": {
+                  "type": "string",
+                  "format": "uri",
+                  "example": "https://kf.kobotoolbox.org/api/v2/assets/aTPPUDScaFZkvBzd8FyK4Q/data/18/attachments/attWNZNwhXK6HDYVkZJSn9jy/medium/"
+                },
+                "download_small_url": {
+                  "type": "string",
+                  "format": "uri",
+                  "example": "https://kf.kobotoolbox.org/api/v2/assets/aTPPUDScaFZkvBzd8FyK4Q/data/18/attachments/attWNZNwhXK6HDYVkZJSn9jy/small/"
+                },
+                "mimetype": {
+                  "type": "string",
+                  "example": "image/png"
+                },
+                "media_file_basename": {
+                  "type": "string"
+                },
+                "filename": {
+                  "type": "string"
+                },
+                "uid": {
+                  "type": "string"
+                },
+                "question_xpath": {
+                  "type": "string"
+                },
+                "is_deleted": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "download_url",
+                "filename",
+                "media_file_basename",
+                "mimetype",
+                "question_xpath",
+                "uid"
+              ],
+              "additional_properties": false
+            },
+            "title": " attachments"
+          },
+          "_status": {
+            "type": "string",
+            "title": " status"
+          },
+          "_geolocation": {
+            "type": "array",
+            "items": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "minItems": 2,
+            "maxItems": 2,
+            "title": " geolocation"
+          },
+          "_submission_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": " submission time"
+          },
+          "_validation_status": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DataValidationStatus"
+              },
+              {
+                "type": "object",
+                "maxProperties": 0
+              }
+            ],
+            "title": " validation status"
+          },
+          "_submitted_by": {
+            "type": "string",
+            "title": " submitted by"
+          },
+          "_supplementalDetails": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/SupplementalDetailsManualTranscription"
+              },
+              {
+                "$ref": "#/components/schemas/SupplementalDetailsManualTranslation"
+              },
+              {
+                "$ref": "#/components/schemas/SupplementalDetailsAutomaticTranscription"
+              },
+              {
+                "$ref": "#/components/schemas/SupplementalDetailsAutomaticTranslation"
+              },
+              {
+                "$ref": "#/components/schemas/SupplementalDetailsManualQual"
+              },
+              {
+                "$ref": "#/components/schemas/SupplementalDetailsAutomaticQual"
+              }
+            ],
+            "nullable": true,
+            "description": "Action-specific supplemental data attached to this submission. Structure varies by action type (transcription, translation, qual). Top-level keys are question XPaths, values are action objects.",
+            "title": " supplementaldetails"
+          }
+        },
+        "required": [
+          "__version__",
+          "_attachments",
+          "_geolocation",
+          "_id",
+          "_status",
+          "_submission_time",
+          "_submitted_by",
+          "_uuid",
+          "_validation_status",
+          "_xform_id_string",
+          "meta/instanceID",
+          "meta/rootUuid"
+        ]
+      },
+      "DataSupplementAutomaticQualDataIntegerResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "uuid": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "value": {
+                "type": "integer",
+                "nullable": true
+              },
+              "status": {
+                "type": "string",
+                "const": "complete"
+              }
+            },
+            "additionalProperties": false,
+            "required": [
+              "status",
+              "uuid",
+              "value"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "uuid": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "status": {
+                "type": "string",
+                "const": "failed"
+              },
+              "error": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false,
+            "required": [
+              "error",
+              "status",
+              "uuid"
+            ]
+          }
+        ]
+      },
+      "DataSupplementAutomaticQualDataSelectMultipleResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "uuid": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "value": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              },
+              "status": {
+                "type": "string",
+                "const": "complete"
+              }
+            },
+            "additionalProperties": false,
+            "required": [
+              "status",
+              "uuid",
+              "value"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "uuid": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "status": {
+                "type": "string",
+                "const": "failed"
+              },
+              "error": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false,
+            "required": [
+              "error",
+              "status",
+              "uuid"
+            ]
+          }
+        ]
+      },
+      "DataSupplementAutomaticQualDataSelectOneResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "uuid": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "value": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "status": {
+                "type": "string",
+                "const": "complete"
+              }
+            },
+            "additionalProperties": false,
+            "required": [
+              "status",
+              "uuid",
+              "value"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "uuid": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "status": {
+                "type": "string",
+                "const": "failed"
+              },
+              "error": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false,
+            "required": [
+              "error",
+              "status",
+              "uuid"
+            ]
+          }
+        ]
+      },
+      "DataSupplementAutomaticQualDataTextResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "uuid": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "value": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string",
+                "const": "complete"
+              }
+            },
+            "additionalProperties": false,
+            "required": [
+              "status",
+              "uuid",
+              "value"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "uuid": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "status": {
+                "type": "string",
+                "const": "failed"
+              },
+              "error": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false,
+            "required": [
+              "error",
+              "status",
+              "uuid"
+            ]
+          }
+        ]
+      },
+      "DataSupplementManualQualDataInteger": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "value": {
+            "type": "integer",
+            "nullable": true
+          },
+          "uuid": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "uuid",
+          "value"
+        ]
+      },
+      "DataSupplementManualQualDataSelectMultiple": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "value": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "uuid": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "uuid",
+          "value"
+        ]
+      },
+      "DataSupplementManualQualDataSelectOne": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "value": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "uuid": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "uuid",
+          "value"
+        ]
+      },
+      "DataSupplementManualQualDataTags": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "value": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "uuid": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "uuid",
+          "value"
+        ]
+      },
+      "DataSupplementManualQualDataText": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "value": {
+            "type": "string"
+          },
+          "uuid": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "uuid",
+          "value"
+        ]
+      },
+      "DataValidationStatus": {
+        "type": "object",
+        "properties": {
+          "timestamp": {
+            "type": "integer"
+          },
+          "uid": {
+            "$ref": "#/components/schemas/DataValidationStatusUidEnum"
+          },
+          "by_whom": {
+            "type": "string"
+          },
+          "label": {
+            "$ref": "#/components/schemas/DataValidationStatusLabelEnum"
+          }
+        },
+        "required": [
+          "timestamp",
+          "uid",
+          "label",
+          "by_whom"
+        ],
+        "additionalProperties": false
+      },
+      "DataValidationStatusLabelEnum": {
+        "enum": [
+          "Not Approved",
+          "Approved",
+          "On Hold"
+        ]
+      },
+      "DataValidationStatusUidEnum": {
+        "enum": [
+          "validation_status_not_approved",
+          "validation_status_approved",
+          "validation_status_on_hold"
+        ]
+      },
+      "DataValidationStatusUpdateResponse": {
+        "type": "object",
+        "properties": {
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "uid": {
+            "type": "string"
+          },
+          "by_whom": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "by_whom",
+          "label",
+          "timestamp",
+          "uid"
+        ]
+      },
+      "DeploymentResponse": {
+        "type": "object",
+        "properties": {
+          "backend": {
+            "type": "string"
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "version_id": {
+            "type": "string"
+          },
+          "asset": {
+            "$ref": "#/components/schemas/Asset"
+          }
+        },
+        "required": [
+          "active",
+          "asset",
+          "backend",
+          "version_id"
+        ]
+      },
+      "ErrorDetail": {
+        "type": "object",
+        "properties": {
+          "detail": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "detail"
+        ]
+      },
+      "PaginatedAssetList": {
+        "type": "object",
+        "required": [
+          "count",
+          "results"
+        ],
+        "properties": {
+          "count": {
+            "type": "integer",
+            "example": 123
+          },
+          "next": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "nullable": true,
+            "format": "uri",
+            "example": "https://kf.kobotoolbox.org/accounts/?start=400&limit=100"
+          },
+          "previous": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "nullable": true,
+            "format": "uri",
+            "example": "https://kf.kobotoolbox.org/accounts/?start=200&limit=100"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Asset"
+            }
+          }
+        },
+        "metadata": {
+          "type": "object",
+          "properties": {
+            "languages": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "example": [
+                "English (en)"
+              ]
+            },
+            "countries": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "example": [
+                [
+                  "FRA",
+                  "France"
+                ]
+              ]
+            },
+            "sectors": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "example": [
+                [
+                  "Public Administration",
+                  "Public Administration"
+                ]
+              ]
+            },
+            "organizations": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "example": [
+                "Kobotoolbox"
+              ]
+            }
+          }
+        }
+      },
+      "PaginatedDataResponseList": {
+        "type": "object",
+        "required": [
+          "count",
+          "results"
+        ],
+        "properties": {
+          "count": {
+            "type": "integer",
+            "example": 123
+          },
+          "next": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "nullable": true,
+            "format": "uri",
+            "example": "https://kf.kobotoolbox.org/accounts/?start=400&limit=100"
+          },
+          "previous": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "nullable": true,
+            "format": "uri",
+            "example": "https://kf.kobotoolbox.org/accounts/?start=200&limit=100"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DataResponse"
+            }
+          }
+        }
+      },
+      "PatchedDataBulkUpdate": {
+        "type": "object",
+        "properties": {
+          "payload": {
+            "type": "object",
+            "properties": {
+              "submission_ids": {
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                }
+              },
+              "data": {
+                "type": "object",
+                "properties": {
+                  "field_to_update": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "SupplementalDataAutomaticQual": {
+        "type": "object",
+        "description": "Map of automatic question UUIDs to their action objects",
+        "additionalProperties": {
+          "$ref": "#/components/schemas/SupplementalDataAutomaticQualItem"
+        },
+        "patternProperties": {
+          "^[0-9a-fA-F-]{36}$": {
+            "$ref": "#/components/schemas/SupplementalDataAutomaticQualItem"
+          }
+        }
+      },
+      "SupplementalDataAutomaticQualItem": {
+        "type": "object",
+        "properties": {
+          "_dateCreated": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "_dateModified": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "_versions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SupplementalDataVersionItemQualAutomatic"
+            },
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "_dateCreated",
+          "_dateModified",
+          "_versions"
+        ]
+      },
+      "SupplementalDataAutomaticTranscription": {
+        "type": "object",
+        "properties": {
+          "_dateCreated": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "_dateModified": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "_versions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SupplementalDataVersionItemAutomatic"
+            },
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "_dateCreated",
+          "_dateModified",
+          "_versions"
+        ]
+      },
+      "SupplementalDataAutomaticTranslation": {
+        "type": "object",
+        "description": "Map of language codes to automatic translation objects",
+        "additionalProperties": {
+          "$ref": "#/components/schemas/SupplementalDataAutomaticTranslationItem"
+        }
+      },
+      "SupplementalDataAutomaticTranslationItem": {
+        "type": "object",
+        "properties": {
+          "_dateCreated": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "_dateModified": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "_versions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SupplementalDataVersionItemAutomaticWithDep"
+            },
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "_dateCreated",
+          "_dateModified",
+          "_versions"
+        ]
+      },
+      "SupplementalDataContentAutomatic": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/SupplementalDataContentAutomaticInProgress"
+          },
+          {
+            "$ref": "#/components/schemas/SupplementalDataContentAutomaticFailed"
+          },
+          {
+            "$ref": "#/components/schemas/SupplementalDataContentAutomaticComplete"
+          },
+          {
+            "$ref": "#/components/schemas/SupplementalDataContentAutomaticDeleted"
+          }
+        ]
+      },
+      "SupplementalDataContentAutomaticComplete": {
+        "type": "object",
+        "properties": {
+          "language": {
+            "type": "string"
+          },
+          "locale": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "const": "complete"
+          },
+          "value": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "language",
+          "status",
+          "value"
+        ]
+      },
+      "SupplementalDataContentAutomaticDeleted": {
+        "type": "object",
+        "properties": {
+          "language": {
+            "type": "string"
+          },
+          "locale": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "const": "deleted"
+          },
+          "value": {
+            "type": "null"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "language",
+          "status",
+          "value"
+        ]
+      },
+      "SupplementalDataContentAutomaticFailed": {
+        "type": "object",
+        "properties": {
+          "language": {
+            "type": "string"
+          },
+          "locale": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "const": "failed"
+          },
+          "error": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "error",
+          "language",
+          "status"
+        ]
+      },
+      "SupplementalDataContentAutomaticInProgress": {
+        "type": "object",
+        "properties": {
+          "language": {
+            "type": "string"
+          },
+          "locale": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "const": "in_progress"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "language",
+          "status"
+        ]
+      },
+      "SupplementalDataContentManual": {
+        "type": "object",
+        "properties": {
+          "language": {
+            "type": "string"
+          },
+          "locale": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "language",
+          "value"
+        ]
+      },
+      "SupplementalDataDependency": {
+        "type": "object",
+        "properties": {
+          "_actionId": {
+            "type": "string"
+          },
+          "_uuid": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "_actionId",
+          "_uuid"
+        ]
+      },
+      "SupplementalDataManualQual": {
+        "type": "object",
+        "description": "Map of manual qualitative question UUIDs to their action objects",
+        "additionalProperties": {
+          "$ref": "#/components/schemas/SupplementalDataManualQualItem"
+        },
+        "patternProperties": {
+          "^[0-9a-fA-F-]{36}$": {
+            "$ref": "#/components/schemas/SupplementalDataManualQualItem"
+          }
+        }
+      },
+      "SupplementalDataManualQualItem": {
+        "type": "object",
+        "properties": {
+          "_dateCreated": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "_dateModified": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "_versions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SupplementalDataVersionItemQual"
+            },
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "_dateCreated",
+          "_dateModified",
+          "_versions"
+        ]
+      },
+      "SupplementalDataManualTranscription": {
+        "type": "object",
+        "properties": {
+          "_dateCreated": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "_dateModified": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "_versions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SupplementalDataVersionItemManual"
+            },
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "_dateCreated",
+          "_dateModified",
+          "_versions"
+        ]
+      },
+      "SupplementalDataManualTranslation": {
+        "type": "object",
+        "description": "Map of language codes to manual translation objects",
+        "additionalProperties": {
+          "$ref": "#/components/schemas/SupplementalDataManualTranslationItem"
+        }
+      },
+      "SupplementalDataManualTranslationItem": {
+        "type": "object",
+        "properties": {
+          "_dateCreated": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "_dateModified": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "_versions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SupplementalDataVersionItemManualWithDep"
+            },
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "_dateCreated",
+          "_dateModified",
+          "_versions"
+        ]
+      },
+      "SupplementalDataQualData": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/DataSupplementManualQualDataInteger"
+          },
+          {
+            "$ref": "#/components/schemas/DataSupplementManualQualDataText"
+          },
+          {
+            "$ref": "#/components/schemas/DataSupplementManualQualDataSelectOne"
+          },
+          {
+            "$ref": "#/components/schemas/DataSupplementManualQualDataSelectMultiple"
+          },
+          {
+            "$ref": "#/components/schemas/DataSupplementManualQualDataTags"
+          }
+        ]
+      },
+      "SupplementalDataQualDataAutomatic": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/DataSupplementAutomaticQualDataIntegerResponse"
+          },
+          {
+            "$ref": "#/components/schemas/DataSupplementAutomaticQualDataTextResponse"
+          },
+          {
+            "$ref": "#/components/schemas/DataSupplementAutomaticQualDataSelectOneResponse"
+          },
+          {
+            "$ref": "#/components/schemas/DataSupplementAutomaticQualDataSelectMultipleResponse"
+          }
+        ]
+      },
+      "SupplementalDataVersionItemAutomatic": {
+        "type": "object",
+        "properties": {
+          "_dateCreated": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "_uuid": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "_dateAccepted": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "_data": {
+            "$ref": "#/components/schemas/SupplementalDataContentAutomatic"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "_data",
+          "_dateCreated",
+          "_uuid"
+        ]
+      },
+      "SupplementalDataVersionItemAutomaticWithDep": {
+        "type": "object",
+        "properties": {
+          "_dateCreated": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "_uuid": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "_dateAccepted": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "_dependency": {
+            "$ref": "#/components/schemas/SupplementalDataDependency"
+          },
+          "_data": {
+            "$ref": "#/components/schemas/SupplementalDataContentAutomatic"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "_data",
+          "_dateCreated",
+          "_dependency",
+          "_uuid"
+        ]
+      },
+      "SupplementalDataVersionItemManual": {
+        "type": "object",
+        "properties": {
+          "_dateCreated": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "_uuid": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "_dateAccepted": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "_data": {
+            "$ref": "#/components/schemas/SupplementalDataContentManual"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "_data",
+          "_dateAccepted",
+          "_dateCreated",
+          "_uuid"
+        ]
+      },
+      "SupplementalDataVersionItemManualWithDep": {
+        "type": "object",
+        "properties": {
+          "_dateCreated": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "_uuid": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "_dateAccepted": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "_dependency": {
+            "$ref": "#/components/schemas/SupplementalDataDependency"
+          },
+          "_data": {
+            "$ref": "#/components/schemas/SupplementalDataContentManual"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "_data",
+          "_dateAccepted",
+          "_dateCreated",
+          "_dependency",
+          "_uuid"
+        ]
+      },
+      "SupplementalDataVersionItemQual": {
+        "type": "object",
+        "properties": {
+          "_data": {
+            "$ref": "#/components/schemas/SupplementalDataQualData"
+          },
+          "_dateAccepted": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "_dateCreated": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "_dateVerified": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "_uuid": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "verified": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "_data",
+          "_dateCreated",
+          "_uuid"
+        ]
+      },
+      "SupplementalDataVersionItemQualAutomatic": {
+        "type": "object",
+        "properties": {
+          "_data": {
+            "$ref": "#/components/schemas/SupplementalDataQualDataAutomatic"
+          },
+          "_dateAccepted": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "_dateCreated": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "_dateVerified": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "_uuid": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "_dependency": {
+            "$ref": "#/components/schemas/SupplementalDataDependency"
+          },
+          "verified": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "_data",
+          "_dateCreated",
+          "_uuid"
+        ]
+      },
+      "SupplementalDetailsAutomaticQual": {
+        "type": "object",
+        "description": "Automatic qualitative supplemental details",
+        "additionalProperties": {
+          "type": "object",
+          "properties": {
+            "automatic_bedrock_qual": {
+              "$ref": "#/components/schemas/SupplementalDataAutomaticQual"
+            }
+          },
+          "required": [
+            "automatic_bedrock_qual"
+          ]
+        }
+      },
+      "SupplementalDetailsAutomaticTranscription": {
+        "type": "object",
+        "description": "Automatic transcription supplemental details",
+        "additionalProperties": {
+          "type": "object",
+          "properties": {
+            "automatic_google_transcription": {
+              "$ref": "#/components/schemas/SupplementalDataAutomaticTranscription"
+            }
+          },
+          "required": [
+            "automatic_google_transcription"
+          ]
+        }
+      },
+      "SupplementalDetailsAutomaticTranslation": {
+        "type": "object",
+        "description": "Automatic translation supplemental details",
+        "additionalProperties": {
+          "type": "object",
+          "properties": {
+            "automatic_google_translation": {
+              "$ref": "#/components/schemas/SupplementalDataAutomaticTranslation"
+            }
+          },
+          "required": [
+            "automatic_google_translation"
+          ]
+        }
+      },
+      "SupplementalDetailsManualQual": {
+        "type": "object",
+        "description": "Manual qualitative supplemental details",
+        "additionalProperties": {
+          "type": "object",
+          "properties": {
+            "manual_qual": {
+              "$ref": "#/components/schemas/SupplementalDataManualQual"
+            }
+          },
+          "required": [
+            "manual_qual"
+          ]
+        }
+      },
+      "SupplementalDetailsManualTranscription": {
+        "type": "object",
+        "description": "Manual transcription supplemental details",
+        "additionalProperties": {
+          "type": "object",
+          "properties": {
+            "manual_transcription": {
+              "$ref": "#/components/schemas/SupplementalDataManualTranscription"
+            }
+          },
+          "required": [
+            "manual_transcription"
+          ]
+        }
+      },
+      "SupplementalDetailsManualTranslation": {
+        "type": "object",
+        "description": "Manual translation supplemental details",
+        "additionalProperties": {
+          "type": "object",
+          "properties": {
+            "manual_translation": {
+              "$ref": "#/components/schemas/SupplementalDataManualTranslation"
+            }
+          },
+          "required": [
+            "manual_translation"
+          ]
+        }
+      }
+    }
+  }
+}
