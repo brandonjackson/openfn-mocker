@@ -62,23 +62,23 @@ systems:
     error_rate: 0.05   # 5% of requests get an injected failure
 ```
 
-**4. Serve it** and watch the Rwanda-flavoured data come back through the real API envelopes — with a different response time each call:
+**4. Serve it**, then hit one endpoint to confirm the Rwanda-flavoured data really comes back through the live API envelopes:
 
 ```bash
 MOCKER_DATASET=rwanda-civil-registry MOCKER_SYSTEMS=dhis2,opencrvs pnpm start &
 
-# DHIS2 org units, now Rwandan provinces/districts (dhis2 requires auth; any user/token works):
-curl -s -u any:token localhost:4000/dhis2/api/organisationUnits | jq '.organisationUnits[].name'
-
-# OpenCRVS registration-office locations (opencrvs is accept-all, no credentials needed):
-curl -s localhost:4000/opencrvs/api/events/locations | jq
-
-# Same request twice — note the stochastic latency:
-curl -o /dev/null -s -u any:token -w 'first:  %{time_total}s\n' localhost:4000/dhis2/api/organisationUnits
-curl -o /dev/null -s -u any:token -w 'second: %{time_total}s\n' localhost:4000/dhis2/api/organisationUnits
+# OpenCRVS registration-office locations, now Rwandan:
+curl -s localhost:4000/opencrvs/api/events/locations | jq '.[].name'
 ```
 
-Point your OpenFn DHIS2 and OpenCRVS credentials at `http://localhost:4000/dhis2` and `http://localhost:4000/opencrvs` (any username/token works) and the workflow runs against this mock. See [Using with OpenFn](#using-with-openfn) for every credential shape.
+That single call is doing more than it looks, and everything below comes for free with no extra wiring:
+
+- **Faithful, re-flavoured data.** The response arrives in OpenCRVS's real envelope shape, and the DHIS2 side serves the same org-unit tree the live system would (country → province → district → sector), now populated with real Rwandan names. Responses are structurally indistinguishable from the systems they impersonate.
+- **Production-like latency and failures.** Because of step 3, every response arrives after a jittered delay (~300ms for DHIS2, ~500ms for OpenCRVS) and ~5% of OpenCRVS calls fail outright, so your workflow's timeout, retry, and backoff paths actually get exercised. Call the same endpoint twice and you get two different response times.
+- **Real credential enforcement.** DHIS2 (and the other auth-taking systems) returns a genuine `401` with a `WWW-Authenticate` header when a request arrives with no credentials, exactly like the real instance. Send any username/token (`curl -u any:token ...`) and it proceeds: the mock checks that a credential is *present*, not that it is *correct*.
+- **Stateful in memory.** A record you create is readable in a later step, and the seed data is there on first boot, so queries work immediately. State resets on restart, which is what makes it good for deterministic CI.
+
+When you are ready to run a real workflow against it, point your OpenFn DHIS2 and OpenCRVS credentials at `http://localhost:4000/dhis2` and `http://localhost:4000/opencrvs` (any username/token works). See [Using with OpenFn](#using-with-openfn) for every credential shape.
 
 ## Quick start
 
