@@ -68,6 +68,15 @@ function resolveCredential(
       urlField = f.name;
       return { name: f.name, role: 'url', value: '{{ORIGIN}}' + mountPath };
     }
+    if (f.role === 'host') {
+      urlField = f.name;
+      // No mount path here (a host field can't contain one) and no scheme — the
+      // browser fills `{{HOST}}` with `location.host`. See CredentialFieldRole
+      // ('host') and the README's "Local network aliasing" section for why this
+      // is still not enough on its own to drive an adaptor that derives
+      // per-service hosts from it.
+      return { name: f.name, role: 'host', value: '{{HOST}}' };
+    }
     if (f.role === 'secret') {
       return { name: f.name, role: 'secret', secret: f.secret ?? {} };
     }
@@ -473,7 +482,8 @@ const CLIENT_JS = [
   '(function(){',
   'var DATA=window.__SANDBOX__||{systems:[]};',
   'var ORIGIN=window.location.origin;',
-  'function sub(s){return typeof s==="string"?s.split("{{ORIGIN}}").join(ORIGIN):s;}',
+  'var HOST=window.location.host;',
+  'function sub(s){return typeof s==="string"?s.split("{{ORIGIN}}").join(ORIGIN).split("{{HOST}}").join(HOST):s;}',
   'function el(tag,cls,text){var n=document.createElement(tag);if(cls)n.className=cls;',
   'if(text!=null)n.textContent=text;return n;}',
   // Build an element from mixed parts (strings become text nodes; nodes append as-is).

@@ -47,10 +47,10 @@ function replaceSection(readme: string, section: string, content: string): strin
   return readme.slice(0, beginIdx + begin.length) + '\n' + content + '\n' + readme.slice(endIdx);
 }
 
-/** The credential's URL field name, or an em dash when there is none. */
+/** The credential's URL (or bare-host) field name, or an em dash when there is none. */
 function urlFieldOf(name: string): string {
   const spec = plugins[name]?.credential;
-  const url = spec?.fields.find((f) => f.role === 'url');
+  const url = spec?.fields.find((f) => f.role === 'url' || f.role === 'host');
   return url ? `\`${url.name}\`` : '—';
 }
 
@@ -79,6 +79,11 @@ function credentialJson(name: string): string {
   const vars = systemVars(plugin.guide, loadConfig().systems[name]);
   const values = resolveCredentialValues(plugin.credential, {
     url: `${ORIGIN}/${name}`,
+    // Bare host, no scheme or mount path — see the 'host' CredentialFieldRole.
+    // Just illustrative here; actually resolving an adaptor's derived
+    // per-service hosts against this mock needs the local alias-proxy (see
+    // README's "Local network aliasing"), not shown by this example.
+    hostValue: ORIGIN.replace(/^https?:\/\//, ''),
     vars,
     secret: () => '<generated>',
   });

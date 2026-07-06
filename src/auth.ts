@@ -64,6 +64,11 @@ export type CredentialType = 'userpass' | 'apikey' | 'oauth' | 'none';
 /** How a single credential field is treated by the sandbox. */
 export type CredentialFieldRole =
   | 'url' // the mock origin + mount path; the adaptor targets this. Value is filled in by the sandbox.
+  | 'host' // like `url`, but the bare host[:port] with no scheme or mount path — for
+  // adaptors that build their own scheme and derive per-service hosts from it
+  // (e.g. OpenCRVS's `https://<service>.<domain>`), where a mount path would
+  // land inside the hostname. See README's "Local network aliasing" section for
+  // what actually resolving those derived hosts against this mock requires.
   | 'static' // a fixed, non-secret config value (domain, appId, apiVersion, database, …).
   | 'username' // an identifier the user picks; suggested, not generated as a secret.
   | 'email' // like `username`, but email-shaped.

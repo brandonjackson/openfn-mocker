@@ -37,6 +37,10 @@ const plugin: MockSystemPlugin = {
       { name: 'apiKey', role: 'secret', secret: { prefix: 'key-', charset: 'hex', length: 32 } },
     ],
   },
+  // The stock adaptor (via mailgun.js) never reads `baseUrl` — it always talks
+  // to the real api.mailgun.net. Only the local test-harness alias-proxy acts
+  // on this; see README's "Local network aliasing".
+  hostAliases: ['api.mailgun.net'],
 
   usage,
   guide,

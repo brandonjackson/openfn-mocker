@@ -117,6 +117,26 @@ export interface MockSystemPlugin {
    */
   credential?: CredentialSpec;
   /**
+   * Extra hostnames this system's real adaptor calls that must resolve to this
+   * mock for an end-to-end run to work, beyond the credential's own `url`/`host`
+   * field — either because the adaptor hardcodes a literal public hostname it
+   * never reads from configuration (e.g. Mailgun's `api.mailgun.net`), or
+   * derives per-service hosts from the credential's `host` field itself (e.g.
+   * OpenCRVS's `auth.<domain>`, `register.<domain>`, …). Write templated
+   * entries with a literal `{host}` placeholder for the bare host (no port)
+   * the mock is bound to, e.g. `'auth.{host}'`.
+   *
+   * Consumed ONLY by the local test-harness's alias-proxy helper
+   * (`scripts/test-usage-examples.ts`), which resolves `{host}`, adds matching
+   * `/etc/hosts` entries, and terminates TLS for them locally — it is not
+   * applied when running the multi-system server directly, in docker-compose,
+   * or on a hosted deployment (Railway, …). See the README's "Local network
+   * aliasing" section for exactly what's supported where and why some of these
+   * (Mailgun/Twilio's hardcoded public hostnames) can never work on a hosted
+   * deployment regardless of this mechanism.
+   */
+  hostAliases?: string[];
+  /**
    * Per-adaptor-function usage examples for the sandbox "Usage" tab: the OpenFn
    * job code for each function this adaptor exposes and a link to the API
    * request it calls. Authored in a co-located `usage.ts` (like `seed`) and

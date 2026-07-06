@@ -663,7 +663,7 @@ Create (or edit) the credential for each adaptor and point its URL field at the 
 { "baseUrl": "http://localhost:4000/openspp", "database": "openspp", "username": "admin", "password": "<generated>" }
 
 // OpenCRVS  (OAuth client credentials)
-{ "domain": "http://localhost:4000/opencrvs", "clientId": "<generated>", "clientSecret": "<generated>" }
+{ "domain": "localhost:4000", "clientId": "<generated>", "clientSecret": "<generated>" }
 
 // OpenELIS Global  (username & password)
 { "baseUrl": "http://localhost:4000/openelis", "username": "admin", "password": "<generated>" }
@@ -1003,6 +1003,52 @@ on demand or in a network-enabled CI job. Adaptors that can't yet be driven
 against the mock (see the Roadmap below) show up here as failures — that is the
 empirical check behind those gaps.
 
+## Local network aliasing
+
+A few adaptors call hostnames the mock isn't reachable at by just setting a
+`baseUrl`: either a literal public hostname hardcoded into the adaptor (Mailgun
+always calls `api.mailgun.net`; Twilio, `api.twilio.com`), or per-service hosts
+it derives from the credential's own domain (OpenCRVS's v2 adaptor builds
+`auth.<domain>`, `gateway.<domain>`, `register.<domain>`,
+`countryconfig.<domain>`). A plugin declares these on
+`MockSystemPlugin.hostAliases` (see `src/systems/types.ts`) — but what (if
+anything) can be done to actually resolve them to this mock is different in
+each of the three places this project runs, and none of it involves touching
+adaptor code:
+
+1. **Local dev / `pnpm test:usage` — supported.** The test harness
+   (`scripts/lib/host-alias-proxy.ts`) fully owns the machine it runs on, so it
+   can add the alias hostnames to `/etc/hosts`, terminate TLS for them with a
+   locally-generated self-signed cert, and reverse-proxy the plaintext request
+   back to the mock — all scoped to the one CLI subprocess it spawns per
+   example (`NODE_TLS_REJECT_UNAUTHORIZED`, `NO_PROXY`), never touching the
+   rest of your system. This needs root (binding `:443` for a hardcoded-host
+   adaptor, and writing `/etc/hosts`); when it can't get that, it warns and
+   skips, and that system's examples fail exactly as they did before this
+   mechanism existed — never the whole suite. It is **not** wired into
+   `pnpm start` or the multi-system server itself, only the usage-test runner.
+2. **Docker-compose (e.g. Lightning + mocker as sibling containers) —
+   not yet built.** This can't be solved from inside the mocker container at
+   all: it's the *other* container that needs to resolve the alias, and a
+   process can't rewrite another container's DNS. It needs a
+   docker-compose-level network alias on the mocker service (or `extra_hosts`
+   on whichever container calls it), generated from the same `hostAliases`
+   data — a config-generation step, not runtime behavior. Nothing in this repo
+   does that generation yet.
+3. **Hosted, single public URL (Railway, …) — partially possible, and only
+   for the templated-host cases.** For a system like OpenCRVS, where the
+   aliased hosts are `<service>.<your-domain>`, the platform's own
+   custom-domain feature can front all of them: attach
+   `auth.<yourapp>.up.railway.app`, `register.<yourapp>.up.railway.app`, etc.
+   as additional custom domains on the *same* service, and the mock needs no
+   code change since it already routes by path, not by `Host` header (see
+   [Deploying](#deploying-railway--single-public-domain)). For a system like
+   Mailgun or Twilio, this is **not possible at all**: the adaptor calls a
+   real hostname (`api.mailgun.net`) that you don't control the DNS for, so no
+   configuration on your hosted deployment can ever intercept it. That's a
+   permanent limitation of running those two against a mock, not a gap this
+   project can close.
+
 ## Auditing adaptor-function coverage
 
 `pnpm test:usage` proves the examples a system *has* actually run; `pnpm
@@ -1032,15 +1078,20 @@ a workaround (`pnpm test:usage` is how these surface — see
 are the known gaps to close so every adaptor works against the mock out of the
 box:
 
-- **OpenCRVS OAuth + multi-host.** OpenCRVS authenticates by exchanging
-  `clientId`/`clientSecret` for an access token, and the v2 adaptor derives
-  per-service hosts from `domain` (e.g. `auth.<domain>`, `register.<domain>`),
-  which can't resolve against a single-origin mock — so `pnpm test:usage`
-  reports its examples as `getaddrinfo ENOTFOUND auth.<host>`. Aligning the
-  mock with the v2 adaptor needs a token handshake plus a way to collapse those
-  hosts onto one origin. (OpenLMIS's OAuth2 handshake, previously listed here,
-  now runs end to end: the mock serves its `/api/oauth/token` and the
-  reference-data routes the adaptor calls.)
+- **OpenCRVS is blocked on an upstream `@openfn/language-common` bug, not
+  aliasing.** The mock now serves the v2 adaptor's OAuth token exchange
+  (`POST /token`) and all four hosts it derives from `domain` (`auth.`,
+  `gateway.`, `register.`, `countryconfig.`) — `hostAliases` plus the local
+  `pnpm test:usage` alias-proxy (see [Local network
+  aliasing](#local-network-aliasing)) resolve them. But every call, including
+  the token exchange itself, still fails with `TypeError: Invalid URL`:
+  `@openfn/language-common@3.3.4`'s `parseUrl` builds the request URL with
+  `path.posix.join(baseUrl, path)`, which collapses the `://` in *any*
+  `https://` base into `:/` (`path.posix.join('https://x', '/y')` →
+  `"https:/x/y"`, not a valid URL) — reproducible with `node -e` outside this
+  repo entirely, so it isn't specific to the mock or to what `domain`
+  resolves to. This needs a fix in `language-common` upstream; nothing on the
+  mock side can work around it.
 - **CommCare bulk uploads (`submitXls` / `bulk`).** These upload a spreadsheet as
   `multipart/form-data` built from a `FormData`/`Blob`. The stock adaptor sends it
   through `@openfn/language-common`'s low-level undici `request`, which (unlike
@@ -1049,14 +1100,12 @@ box:
   Timeout`. The mock itself handles a correctly-serialized multipart POST fine;
   the fix is upstream in the adaptor's multipart send path. Until then these two
   examples fail fast in `pnpm test:usage`.
-- **Base-URL override for Twilio & Mailgun.** Their real credential schemas have
-  **no URL field** — the adaptors always call `api.twilio.com` /
-  `api.mailgun.net`. The mock adds a `baseUrl` for convenience, but the stock
-  adaptor ignores it, so it can't currently be pointed at the mock. Needs an
-  adaptor base-URL override upstream, or a documented DNS/proxy shim.
-- **OpenCRVS API model.** The mock models OpenCRVS's older bearer + REST/GraphQL
-  shape; the current adaptor uses OAuth and derives its endpoints from `domain`.
-  Align the mock's OpenCRVS surface (and its auth) with the v2 adaptor.
+- **Twilio still calls the real `api.twilio.com`.** Mailgun's identical
+  hardcoded-hostname problem is now solved for local dev/test (see [Local
+  network aliasing](#local-network-aliasing)) — Twilio just hasn't been wired
+  up to the same `hostAliases` mechanism yet (a one-line addition once
+  someone needs it). Neither can ever work against a *hosted* mock deployment
+  regardless — see point 3 in that section.
 - **Alternative auth modes.** Several adaptors accept a second credential shape
   the sandbox doesn't surface yet: DHIS2 personal access token (`pat`),
   `access_token` on FHIR / http / ODK, CommCare's `ApiKey <user>:<key>` header,

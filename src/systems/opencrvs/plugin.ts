@@ -38,16 +38,36 @@ const plugin: MockSystemPlugin = {
   credential: {
     type: 'oauth',
     fields: [
-      { name: 'domain', role: 'url' },
+      // `domain` is a bare host[:port], not a URL: the adaptor builds its own
+      // per-service hosts from it (`https://<service>.<domain>`), so a scheme
+      // or mount path here would land inside the derived hostname. See the
+      // 'host' CredentialFieldRole and README's "Local network aliasing".
+      { name: 'domain', role: 'host' },
       { name: 'clientId', role: 'secret', secret: { charset: 'hex', length: 24 } },
       { name: 'clientSecret', role: 'secret', secret: { charset: 'hex', length: 32 } },
     ],
   },
+  // The v2 adaptor calls four hosts derived from `domain`: `auth.<domain>` for
+  // the token exchange, and `gateway.` / `register.` / `countryconfig.` for the
+  // REST + GraphQL surfaces below (all served by the same routes regardless of
+  // which alias they arrive on). Only the local test-harness alias-proxy acts
+  // on this — see README's "Local network aliasing".
+  hostAliases: ['auth.{host}', 'gateway.{host}', 'register.{host}', 'countryconfig.{host}'],
 
   usage,
   guide,
 
   async overrides(app: FastifyInstance, store: DataStore, _config: SystemConfig) {
+    // --- OAuth token exchange (auth.<domain>/token) ---
+    // The mock never validates clientId/clientSecret, matching every other
+    // credential here — it just mints a token so the adaptor's own request
+    // pipeline (which requires an access_token before calling anything else)
+    // can proceed.
+    app.post('/token', async (_req, reply) => {
+      reply.code(200);
+      return { access_token: randomUUID(), token_type: 'bearer', expires_in: 3600 };
+    });
+
     // --- GraphQL (queryEvents / searchEvents) ---
     app.post('/graphql', async (req) => {
       const body = (req.body ?? {}) as Record<string, any>;
