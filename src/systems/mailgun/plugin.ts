@@ -3,7 +3,7 @@ import type { MockSystemPlugin, SystemConfig } from '../types.js';
 import type { DataStore } from '../../store.js';
 import { parseSpec, type ParsedSpec } from '../../engine/spec-parser.js';
 import { shapeRecord } from '../../engine/response-generator.js';
-import { getOpenapi } from '../../api-specs.js';
+import { fetchOpenapi } from '../../api-specs.js';
 import { selfUrlBase } from '../shared/self-url.js';
 import { seed, buildStats, makeEvent, makeMessageId, DEFAULT_DOMAIN } from './seed.js';
 import { usage } from './usage.js';
@@ -45,10 +45,11 @@ const plugin: MockSystemPlugin = {
     const configuredDomain = (config.domain as string) || DEFAULT_DOMAIN;
 
     // Spec is the source of truth for response shapes; fetch + parse it once at
-    // setup from the openfn-api-specs package.
+    // setup. fetchOpenapi pulls the latest from the openfn-api-specs CDN, with
+    // the bundled snapshot as fallback.
     let spec: ParsedSpec | undefined;
     try {
-      const raw = getOpenapi('mailgun');
+      const raw = await fetchOpenapi('mailgun');
       spec = raw ? parseSpec(raw) : undefined;
     } catch {
       spec = undefined;

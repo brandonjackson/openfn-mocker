@@ -10,12 +10,21 @@
  * Maintenance of the specs (find/generate/refresh) now happens in that repo;
  * `pnpm specs` here just delegates to its CLI (installed as the `api-specs` bin).
  *
- * Reads resolve against the installed package's shipped specs. Everything is
- * synchronous file reads except `listAdaptors`, which may hit the network to
- * refresh the adaptor list.
+ * Prefer the async `fetch*` variants: they pull the live specs from the CDN
+ * (jsDelivr mirror of the openfn-api-specs repo) so mocker always serves the
+ * latest without a dependency bump, falling back to the version bundled in
+ * node_modules when the CDN is unreachable. The synchronous `get*` readers
+ * return only that bundled snapshot — use them for offline/deterministic paths.
  */
 export {
   listAdaptors,
+  // async, CDN-first (latest) with bundled fallback — the default for runtime use:
+  fetchOpenapi,
+  fetchManifest,
+  fetchDataObjects,
+  fetchDataObject,
+  fetchDataObjectIndex,
+  // sync, bundled snapshot only:
   getManifest,
   getOpenapi,
   getSource,
