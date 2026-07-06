@@ -1,0 +1,761 @@
+{
+  "generatedAt": "2026-07-06T07:32:36.106Z",
+  "source": "https://github.com/OpenFn/adaptors (packages/*)",
+  "totals": {
+    "adaptors": 104,
+    "withOpenapi": 1,
+    "withSeedSchema": 1,
+    "byOrigin": {
+      "generated": 1
+    }
+  },
+  "adaptors": [
+    {
+      "adaptor": "arcgis",
+      "npm": "@openfn/language-arcgis",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "asana",
+      "npm": "@openfn/language-asana",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "aws-s3",
+      "npm": "@openfn/language-aws-s3",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "azure-storage",
+      "npm": "@openfn/language-azure-storage",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "beyonic",
+      "npm": "@openfn/language-beyonic",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "bigquery",
+      "npm": "@openfn/language-bigquery",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "browserless",
+      "npm": "@openfn/language-browserless",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "cartodb",
+      "npm": "@openfn/language-cartodb",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "chatgpt",
+      "npm": "@openfn/language-chatgpt",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "cht",
+      "npm": "@openfn/language-cht",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "claude",
+      "npm": "@openfn/language-claude",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "collections",
+      "npm": "@openfn/language-collections",
+      "rest": false,
+      "hasOpenapi": false,
+      "hasSeedSchema": false,
+      "note": "OpenFn Collections (internal Lightning API)"
+    },
+    {
+      "adaptor": "commcare",
+      "npm": "@openfn/language-commcare",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "common",
+      "npm": "@openfn/language-common",
+      "rest": false,
+      "hasOpenapi": false,
+      "hasSeedSchema": false,
+      "note": "utility — shared helpers, no external system"
+    },
+    {
+      "adaptor": "dagu",
+      "npm": "@openfn/language-dagu",
+      "rest": false,
+      "hasOpenapi": false,
+      "hasSeedSchema": false,
+      "note": "workflow engine, thin surface"
+    },
+    {
+      "adaptor": "dhis2",
+      "npm": "@openfn/language-dhis2",
+      "rest": true,
+      "hasOpenapi": true,
+      "hasSeedSchema": true,
+      "operations": 20,
+      "schemas": 23,
+      "origin": "generated",
+      "upstreamFormat": "docs",
+      "capturedAt": "2026-07-06"
+    },
+    {
+      "adaptor": "divoc",
+      "npm": "@openfn/language-divoc",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "dynamics",
+      "npm": "@openfn/language-dynamics",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "erpnext",
+      "npm": "@openfn/language-erpnext",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "et-mfr",
+      "npm": "@openfn/language-et-mfr",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "facebook",
+      "npm": "@openfn/language-facebook",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "fhir",
+      "npm": "@openfn/language-fhir",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "fhir-4",
+      "npm": "@openfn/language-fhir-4",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "fhir-eswatini",
+      "npm": "@openfn/language-fhir-eswatini",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "fhir-fr",
+      "npm": "@openfn/language-fhir-fr",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "fhir-ndr-et",
+      "npm": "@openfn/language-fhir-ndr-et",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "flutterwave",
+      "npm": "@openfn/language-flutterwave",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "formsg",
+      "npm": "@openfn/language-formsg",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "gemini",
+      "npm": "@openfn/language-gemini",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "ghana-bdr",
+      "npm": "@openfn/language-ghana-bdr",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "ghana-nia",
+      "npm": "@openfn/language-ghana-nia",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "gmail",
+      "npm": "@openfn/language-gmail",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "godata",
+      "npm": "@openfn/language-godata",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "googledrive",
+      "npm": "@openfn/language-googledrive",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "googlehealthcare",
+      "npm": "@openfn/language-googlehealthcare",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "googlesheets",
+      "npm": "@openfn/language-googlesheets",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "hive",
+      "npm": "@openfn/language-hive",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "http",
+      "npm": "@openfn/language-http",
+      "rest": false,
+      "hasOpenapi": false,
+      "hasSeedSchema": false,
+      "note": "generic HTTP client, no single vendor API"
+    },
+    {
+      "adaptor": "hubtel",
+      "npm": "@openfn/language-hubtel",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "ibipimo",
+      "npm": "@openfn/language-ibipimo",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "ihris",
+      "npm": "@openfn/language-ihris",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "inform",
+      "npm": "@openfn/language-inform",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "intuit",
+      "npm": "@openfn/language-intuit",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "khanacademy",
+      "npm": "@openfn/language-khanacademy",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "kobotoolbox",
+      "npm": "@openfn/language-kobotoolbox",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "lamisplus",
+      "npm": "@openfn/language-lamisplus",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "magpi",
+      "npm": "@openfn/language-magpi",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "mailchimp",
+      "npm": "@openfn/language-mailchimp",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "mailgun",
+      "npm": "@openfn/language-mailgun",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "maximo",
+      "npm": "@openfn/language-maximo",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "medicmobile",
+      "npm": "@openfn/language-medicmobile",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "memento",
+      "npm": "@openfn/language-memento",
+      "rest": false,
+      "hasOpenapi": false,
+      "hasSeedSchema": false,
+      "note": "note-taking app, thin surface"
+    },
+    {
+      "adaptor": "minio",
+      "npm": "@openfn/language-minio",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "mogli",
+      "npm": "@openfn/language-mogli",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "mojatax",
+      "npm": "@openfn/language-mojatax",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "mongodb",
+      "npm": "@openfn/language-mongodb",
+      "rest": false,
+      "hasOpenapi": false,
+      "hasSeedSchema": false,
+      "note": "document database (driver adaptor, not REST)"
+    },
+    {
+      "adaptor": "monnify",
+      "npm": "@openfn/language-monnify",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "motherduck",
+      "npm": "@openfn/language-motherduck",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "mpesa",
+      "npm": "@openfn/language-mpesa",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "msgraph",
+      "npm": "@openfn/language-msgraph",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "mssql",
+      "npm": "@openfn/language-mssql",
+      "rest": false,
+      "hasOpenapi": false,
+      "hasSeedSchema": false,
+      "note": "SQL database (protocol adaptor, not REST)"
+    },
+    {
+      "adaptor": "msupply",
+      "npm": "@openfn/language-msupply",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "mtn-momo",
+      "npm": "@openfn/language-mtn-momo",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "mysql",
+      "npm": "@openfn/language-mysql",
+      "rest": false,
+      "hasOpenapi": false,
+      "hasSeedSchema": false,
+      "note": "SQL database (protocol adaptor, not REST)"
+    },
+    {
+      "adaptor": "nexmo",
+      "npm": "@openfn/language-nexmo",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "ocl",
+      "npm": "@openfn/language-ocl",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "odk",
+      "npm": "@openfn/language-odk",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "odoo",
+      "npm": "@openfn/language-odoo",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "openboxes",
+      "npm": "@openfn/language-openboxes",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "opencrvs",
+      "npm": "@openfn/language-opencrvs",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "openelis",
+      "npm": "@openfn/language-openelis",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "openfn",
+      "npm": "@openfn/language-openfn",
+      "rest": false,
+      "hasOpenapi": false,
+      "hasSeedSchema": false,
+      "note": "OpenFn platform (internal Lightning API)"
+    },
+    {
+      "adaptor": "openhim",
+      "npm": "@openfn/language-openhim",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "openimis",
+      "npm": "@openfn/language-openimis",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "openlmis",
+      "npm": "@openfn/language-openlmis",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "openmrs",
+      "npm": "@openfn/language-openmrs",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "openspp",
+      "npm": "@openfn/language-openspp",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "pdfshift",
+      "npm": "@openfn/language-pdfshift",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "pesapal",
+      "npm": "@openfn/language-pesapal",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "ping",
+      "npm": "@openfn/language-ping",
+      "rest": false,
+      "hasOpenapi": false,
+      "hasSeedSchema": false,
+      "note": "connectivity probe, no external system"
+    },
+    {
+      "adaptor": "postgresql",
+      "npm": "@openfn/language-postgresql",
+      "rest": false,
+      "hasOpenapi": false,
+      "hasSeedSchema": false,
+      "note": "SQL database (protocol adaptor, not REST)"
+    },
+    {
+      "adaptor": "primero",
+      "npm": "@openfn/language-primero",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "progres",
+      "npm": "@openfn/language-progres",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "puntosolidario-rd",
+      "npm": "@openfn/language-puntosolidario-rd",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "rapidpro",
+      "npm": "@openfn/language-rapidpro",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "redis",
+      "npm": "@openfn/language-redis",
+      "rest": false,
+      "hasOpenapi": false,
+      "hasSeedSchema": false,
+      "note": "key-value store (protocol adaptor, not REST)"
+    },
+    {
+      "adaptor": "resourcemap",
+      "npm": "@openfn/language-resourcemap",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "salesforce",
+      "npm": "@openfn/language-salesforce",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "satusehat",
+      "npm": "@openfn/language-satusehat",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "senaite",
+      "npm": "@openfn/language-senaite",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "sftp",
+      "npm": "@openfn/language-sftp",
+      "rest": false,
+      "hasOpenapi": false,
+      "hasSeedSchema": false,
+      "note": "file transfer (protocol adaptor, not REST)"
+    },
+    {
+      "adaptor": "siuben-rd",
+      "npm": "@openfn/language-siuben-rd",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "stripe",
+      "npm": "@openfn/language-stripe",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "sunbird-rc",
+      "npm": "@openfn/language-sunbird-rc",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "surveycto",
+      "npm": "@openfn/language-surveycto",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "telerivet",
+      "npm": "@openfn/language-telerivet",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "testing",
+      "npm": "@openfn/language-testing",
+      "rest": false,
+      "hasOpenapi": false,
+      "hasSeedSchema": false,
+      "note": "test/dev harness, no external system"
+    },
+    {
+      "adaptor": "twilio",
+      "npm": "@openfn/language-twilio",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "varo",
+      "npm": "@openfn/language-varo",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "vtiger",
+      "npm": "@openfn/language-vtiger",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "whatsapp",
+      "npm": "@openfn/language-whatsapp",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "wigal-sms",
+      "npm": "@openfn/language-wigal-sms",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "zata",
+      "npm": "@openfn/language-zata",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    },
+    {
+      "adaptor": "zoho",
+      "npm": "@openfn/language-zoho",
+      "rest": true,
+      "hasOpenapi": false,
+      "hasSeedSchema": false
+    }
+  ]
+}

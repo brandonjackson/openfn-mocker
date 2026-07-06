@@ -1,0 +1,705 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "dhis2 — mocker seed-data schema",
+    "version": "1.0.0",
+    "description": "Schema for the seed data openfn-mocker needs to impersonate dhis2. Derived from the adaptor's OpenAPI spec. A seed dump is { collection: { id: record } }; each record validates against its resource schema below.",
+    "x-openfn-adaptor": "dhis2",
+    "x-derived-from": "openapi.json",
+    "x-captured-at": "2026-07-06"
+  },
+  "x-seed": {
+    "shape": "{ collection: { id: record } }",
+    "collections": {
+      "dataElements": {
+        "resource": "DataElement",
+        "schema": {
+          "$ref": "#/components/schemas/DataElement"
+        }
+      },
+      "dataValueSets": {
+        "resource": "DataValueSet",
+        "schema": {
+          "$ref": "#/components/schemas/DataValueSet"
+        }
+      },
+      "enrollments": {
+        "resource": "Enrollment",
+        "schema": {
+          "$ref": "#/components/schemas/Enrollment"
+        }
+      },
+      "events": {
+        "resource": "Event",
+        "schema": {
+          "$ref": "#/components/schemas/Event"
+        }
+      },
+      "importSummaryResponses": {
+        "resource": "ImportSummaryResponse",
+        "schema": {
+          "$ref": "#/components/schemas/ImportSummaryResponse"
+        }
+      },
+      "metadataImportResponses": {
+        "resource": "MetadataImportResponse",
+        "schema": {
+          "$ref": "#/components/schemas/MetadataImportResponse"
+        }
+      },
+      "organisationUnits": {
+        "resource": "OrganisationUnit",
+        "schema": {
+          "$ref": "#/components/schemas/OrganisationUnit"
+        }
+      },
+      "programs": {
+        "resource": "Program",
+        "schema": {
+          "$ref": "#/components/schemas/Program"
+        }
+      },
+      "systemInfos": {
+        "resource": "SystemInfo",
+        "schema": {
+          "$ref": "#/components/schemas/SystemInfo"
+        }
+      },
+      "trackedEntityInstances": {
+        "resource": "TrackedEntityInstance",
+        "schema": {
+          "$ref": "#/components/schemas/TrackedEntityInstance"
+        }
+      },
+      "trackedEntityTypes": {
+        "resource": "TrackedEntityType",
+        "schema": {
+          "$ref": "#/components/schemas/TrackedEntityType"
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SeedData": {
+        "type": "object",
+        "description": "Full seed dump loaded by mocker: one property per collection.",
+        "properties": {
+          "dataElements": {
+            "type": "object",
+            "description": "Records keyed by id for the dataElements collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/DataElement"
+            }
+          },
+          "dataValueSets": {
+            "type": "object",
+            "description": "Records keyed by id for the dataValueSets collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/DataValueSet"
+            }
+          },
+          "enrollments": {
+            "type": "object",
+            "description": "Records keyed by id for the enrollments collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Enrollment"
+            }
+          },
+          "events": {
+            "type": "object",
+            "description": "Records keyed by id for the events collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Event"
+            }
+          },
+          "importSummaryResponses": {
+            "type": "object",
+            "description": "Records keyed by id for the importSummaryResponses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ImportSummaryResponse"
+            }
+          },
+          "metadataImportResponses": {
+            "type": "object",
+            "description": "Records keyed by id for the metadataImportResponses collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/MetadataImportResponse"
+            }
+          },
+          "organisationUnits": {
+            "type": "object",
+            "description": "Records keyed by id for the organisationUnits collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/OrganisationUnit"
+            }
+          },
+          "programs": {
+            "type": "object",
+            "description": "Records keyed by id for the programs collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Program"
+            }
+          },
+          "systemInfos": {
+            "type": "object",
+            "description": "Records keyed by id for the systemInfos collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/SystemInfo"
+            }
+          },
+          "trackedEntityInstances": {
+            "type": "object",
+            "description": "Records keyed by id for the trackedEntityInstances collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/TrackedEntityInstance"
+            }
+          },
+          "trackedEntityTypes": {
+            "type": "object",
+            "description": "Records keyed by id for the trackedEntityTypes collection.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/TrackedEntityType"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "SystemInfo": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "string",
+            "example": "2.39"
+          },
+          "revision": {
+            "type": "string",
+            "example": "9d9dcf1"
+          },
+          "serverDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "contextPath": {
+            "type": "string",
+            "example": "http://localhost:4010"
+          }
+        }
+      },
+      "Pager": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "example": 1
+          },
+          "pageSize": {
+            "type": "integer",
+            "example": 50
+          },
+          "pageCount": {
+            "type": "integer",
+            "example": 1
+          },
+          "total": {
+            "type": "integer",
+            "example": 3
+          }
+        }
+      },
+      "OrganisationUnit": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "DiszpKrYNg8"
+          },
+          "name": {
+            "type": "string",
+            "example": "Ngelehun CHC"
+          },
+          "shortName": {
+            "type": "string",
+            "example": "Ngelehun"
+          },
+          "level": {
+            "type": "integer",
+            "example": 4
+          },
+          "path": {
+            "type": "string",
+            "example": "/ImspTQPwCqd/O6uvpzGd5pu/DiszpKrYNg8"
+          },
+          "openingDate": {
+            "type": "string",
+            "example": "1970-01-01"
+          },
+          "parent": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "O6uvpzGd5pu"
+              }
+            }
+          }
+        }
+      },
+      "OrganisationUnitList": {
+        "type": "object",
+        "properties": {
+          "pager": {
+            "$ref": "#/components/schemas/Pager"
+          },
+          "organisationUnits": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrganisationUnit"
+            }
+          }
+        }
+      },
+      "DataElement": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "fbfJHSPpUQD"
+          },
+          "name": {
+            "type": "string",
+            "example": "ANC 1st visit"
+          },
+          "shortName": {
+            "type": "string",
+            "example": "ANC 1st visit"
+          },
+          "valueType": {
+            "type": "string",
+            "example": "NUMBER"
+          },
+          "domainType": {
+            "type": "string",
+            "example": "AGGREGATE"
+          }
+        }
+      },
+      "DataElementList": {
+        "type": "object",
+        "properties": {
+          "pager": {
+            "$ref": "#/components/schemas/Pager"
+          },
+          "dataElements": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DataElement"
+            }
+          }
+        }
+      },
+      "ProgramStage": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "A03MvHHogjR"
+          },
+          "name": {
+            "type": "string",
+            "example": "Birth"
+          },
+          "sortOrder": {
+            "type": "integer",
+            "example": 1
+          },
+          "repeatable": {
+            "type": "boolean",
+            "example": false
+          }
+        }
+      },
+      "Program": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "IpHINAT79UW"
+          },
+          "name": {
+            "type": "string",
+            "example": "Child Programme"
+          },
+          "shortName": {
+            "type": "string",
+            "example": "Child Programme"
+          },
+          "programType": {
+            "type": "string",
+            "example": "WITH_REGISTRATION"
+          },
+          "trackedEntityType": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "nEenWmSyUEp"
+              }
+            }
+          },
+          "programStages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProgramStage"
+            }
+          }
+        }
+      },
+      "ProgramList": {
+        "type": "object",
+        "properties": {
+          "pager": {
+            "$ref": "#/components/schemas/Pager"
+          },
+          "programs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Program"
+            }
+          }
+        }
+      },
+      "TrackedEntityType": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "nEenWmSyUEp"
+          },
+          "name": {
+            "type": "string",
+            "example": "Person"
+          }
+        }
+      },
+      "TrackedEntityTypeList": {
+        "type": "object",
+        "properties": {
+          "pager": {
+            "$ref": "#/components/schemas/Pager"
+          },
+          "trackedEntityTypes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TrackedEntityType"
+            }
+          }
+        }
+      },
+      "Attribute": {
+        "type": "object",
+        "properties": {
+          "attribute": {
+            "type": "string",
+            "example": "w75KJ2mc4zz"
+          },
+          "value": {
+            "type": "string",
+            "example": "Jane"
+          }
+        }
+      },
+      "TrackedEntityInstance": {
+        "type": "object",
+        "properties": {
+          "trackedEntityInstance": {
+            "type": "string",
+            "example": "PgmUFEQYZGz"
+          },
+          "trackedEntityType": {
+            "type": "string",
+            "example": "nEenWmSyUEp"
+          },
+          "orgUnit": {
+            "type": "string",
+            "example": "DiszpKrYNg8"
+          },
+          "attributes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Attribute"
+            }
+          }
+        }
+      },
+      "TrackedEntityInstanceList": {
+        "type": "object",
+        "properties": {
+          "pager": {
+            "$ref": "#/components/schemas/Pager"
+          },
+          "trackedEntityInstances": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TrackedEntityInstance"
+            }
+          }
+        }
+      },
+      "DataValue": {
+        "type": "object",
+        "properties": {
+          "dataElement": {
+            "type": "string",
+            "example": "qrur9Dvnyt5"
+          },
+          "categoryOptionCombo": {
+            "type": "string",
+            "example": "HllvX50cXC0"
+          },
+          "value": {
+            "type": "string",
+            "example": "22"
+          }
+        }
+      },
+      "Event": {
+        "type": "object",
+        "properties": {
+          "event": {
+            "type": "string",
+            "example": "lxAQ7Zs9VYR"
+          },
+          "program": {
+            "type": "string",
+            "example": "IpHINAT79UW"
+          },
+          "programStage": {
+            "type": "string",
+            "example": "A03MvHHogjR"
+          },
+          "orgUnit": {
+            "type": "string",
+            "example": "DiszpKrYNg8"
+          },
+          "eventDate": {
+            "type": "string",
+            "example": "2024-02-01"
+          },
+          "status": {
+            "type": "string",
+            "example": "COMPLETED"
+          },
+          "dataValues": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DataValue"
+            }
+          }
+        }
+      },
+      "EventList": {
+        "type": "object",
+        "properties": {
+          "pager": {
+            "$ref": "#/components/schemas/Pager"
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Event"
+            }
+          }
+        }
+      },
+      "Enrollment": {
+        "type": "object",
+        "properties": {
+          "enrollment": {
+            "type": "string",
+            "example": "MNWZ6hnuhSw"
+          },
+          "trackedEntityInstance": {
+            "type": "string",
+            "example": "PgmUFEQYZGz"
+          },
+          "program": {
+            "type": "string",
+            "example": "IpHINAT79UW"
+          },
+          "orgUnit": {
+            "type": "string",
+            "example": "DiszpKrYNg8"
+          },
+          "enrollmentDate": {
+            "type": "string",
+            "example": "2024-02-01"
+          },
+          "incidentDate": {
+            "type": "string",
+            "example": "2024-02-01"
+          },
+          "status": {
+            "type": "string",
+            "example": "ACTIVE"
+          }
+        }
+      },
+      "EnrollmentList": {
+        "type": "object",
+        "properties": {
+          "pager": {
+            "$ref": "#/components/schemas/Pager"
+          },
+          "enrollments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Enrollment"
+            }
+          }
+        }
+      },
+      "DataValueSet": {
+        "type": "object",
+        "properties": {
+          "dataSet": {
+            "type": "string",
+            "example": "pBOMPrpg1QX"
+          },
+          "period": {
+            "type": "string",
+            "example": "202401"
+          },
+          "orgUnit": {
+            "type": "string",
+            "example": "DiszpKrYNg8"
+          },
+          "dataValues": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DataValue"
+            }
+          }
+        }
+      },
+      "ImportSummaryResponse": {
+        "type": "object",
+        "properties": {
+          "httpStatus": {
+            "type": "string",
+            "example": "OK"
+          },
+          "httpStatusCode": {
+            "type": "integer",
+            "example": 200
+          },
+          "status": {
+            "type": "string",
+            "example": "OK"
+          },
+          "response": {
+            "type": "object",
+            "properties": {
+              "responseType": {
+                "type": "string",
+                "example": "ImportSummary"
+              },
+              "status": {
+                "type": "string",
+                "example": "SUCCESS"
+              },
+              "importCount": {
+                "type": "object",
+                "properties": {
+                  "imported": {
+                    "type": "integer",
+                    "example": 1
+                  },
+                  "updated": {
+                    "type": "integer",
+                    "example": 0
+                  },
+                  "ignored": {
+                    "type": "integer",
+                    "example": 0
+                  },
+                  "deleted": {
+                    "type": "integer",
+                    "example": 0
+                  }
+                }
+              },
+              "reference": {
+                "type": "string",
+                "example": "PgmUFEQYZGz"
+              }
+            }
+          }
+        }
+      },
+      "MetadataBundle": {
+        "type": "object",
+        "properties": {
+          "organisationUnits": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrganisationUnit"
+            }
+          },
+          "dataElements": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DataElement"
+            }
+          },
+          "programs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Program"
+            }
+          },
+          "trackedEntityTypes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TrackedEntityType"
+            }
+          }
+        }
+      },
+      "MetadataImportResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "OK"
+          },
+          "stats": {
+            "type": "object",
+            "properties": {
+              "created": {
+                "type": "integer",
+                "example": 2
+              },
+              "updated": {
+                "type": "integer",
+                "example": 0
+              },
+              "deleted": {
+                "type": "integer",
+                "example": 0
+              },
+              "ignored": {
+                "type": "integer",
+                "example": 0
+              },
+              "total": {
+                "type": "integer",
+                "example": 2
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
