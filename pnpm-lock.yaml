@@ -19,7 +19,7 @@ importers:
         version: 4.29.1
       openfn-api-specs:
         specifier: github:brandonjackson/openfn-api-specs
-        version: git+https://git@github.com:brandonjackson/openfn-api-specs.git#73efe3147a0b42dad2a805114027c874a57b0451
+        version: https://codeload.github.com/brandonjackson/openfn-api-specs/tar.gz/0f661ae6cb42d76b714410077673b35e4e33644b
       yaml:
         specifier: ^2
         version: 2.9.0
@@ -693,8 +693,8 @@ packages:
     resolution: {integrity: sha512-0eJJY6hXLGf1udHwfNftBqH+g73EU4B504nZeKpz1sYRKafAghwxEJunB2O7rDZkL4PGfsMVnTXZ2EjibbqcsA==}
     engines: {node: '>=14.0.0'}
 
-  openfn-api-specs@git+https://git@github.com:brandonjackson/openfn-api-specs.git#73efe3147a0b42dad2a805114027c874a57b0451:
-    resolution: {commit: 73efe3147a0b42dad2a805114027c874a57b0451, repo: git@github.com:brandonjackson/openfn-api-specs.git, type: git}
+  openfn-api-specs@https://codeload.github.com/brandonjackson/openfn-api-specs/tar.gz/0f661ae6cb42d76b714410077673b35e4e33644b:
+    resolution: {tarball: https://codeload.github.com/brandonjackson/openfn-api-specs/tar.gz/0f661ae6cb42d76b714410077673b35e4e33644b}
     version: 0.1.0
     engines: {node: '>=20'}
     hasBin: true
@@ -1419,7 +1419,7 @@ snapshots:
 
   on-exit-leak-free@2.1.2: {}
 
-  openfn-api-specs@git+https://git@github.com:brandonjackson/openfn-api-specs.git#73efe3147a0b42dad2a805114027c874a57b0451: {}
+  openfn-api-specs@https://codeload.github.com/brandonjackson/openfn-api-specs/tar.gz/0f661ae6cb42d76b714410077673b35e4e33644b: {}
 
   pathe@1.1.2: {}
 

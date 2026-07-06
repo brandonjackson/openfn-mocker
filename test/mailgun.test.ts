@@ -53,6 +53,24 @@ describe('mailgun (loads its reference spec at runtime)', () => {
     const sent = body.items.find((e: any) => e.recipient === 'unique-recipient@example.org');
     expect(sent).toBeTruthy();
     expect(sent.event).toBe('delivered');
+    // A delivered event carries the fields the live Mailgun events API returns.
+    expect(sent['log-level']).toBe('info');
+    expect(sent['delivery-status'].code).toBe(250);
+    expect(sent.message.size).toBeGreaterThan(0);
+    expect(Array.isArray(sent.message.attachments)).toBe(true);
+    expect(sent['recipient-domain']).toBe('example.org');
+    await app.close();
+  });
+
+  it('models bounces as failed (Mailgun has no "bounced" event type)', async () => {
+    const { app } = await createSystemServer(mailgun, config, { logLevel: 'silent' });
+    const res = await app.inject({ method: 'GET', url: EVENTS });
+    const items = res.json().items;
+    expect(items.some((e: any) => e.event === 'bounced')).toBe(false);
+    const failed = items.find((e: any) => e.event === 'failed');
+    expect(failed).toBeTruthy();
+    expect(failed.severity).toBe('permanent');
+    expect(failed['log-level']).toBe('error');
     await app.close();
   });
 
@@ -62,11 +80,17 @@ describe('mailgun (loads its reference spec at runtime)', () => {
     await app.close();
   });
 
-  it('GET stats/total returns a stats array', async () => {
+  it('GET stats/total returns a fully-shaped stats array', async () => {
     const { app } = await createSystemServer(mailgun, config, { logLevel: 'silent' });
     const res = await app.inject({ method: 'GET', url: STATS });
     expect(res.statusCode).toBe(200);
-    expect(Array.isArray(res.json().stats)).toBe(true);
+    const body = res.json();
+    expect(typeof body.description).toBe('string');
+    expect(Array.isArray(body.stats)).toBe(true);
+    const item = body.stats[0];
+    expect(item.delivered).toMatchObject({ smtp: expect.any(Number), http: expect.any(Number), optimized: expect.any(Number), total: expect.any(Number) });
+    expect(item.failed.permanent).toHaveProperty('suppress-bounce');
+    expect(item.failed.temporary).toHaveProperty('total');
     await app.close();
   });
 

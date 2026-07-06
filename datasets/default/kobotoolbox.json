@@ -1,49 +1,516 @@
 {
   "assets": {
     "aHousehold01Q1": {
+      "url": "http://localhost:4000/api/v2/assets/aHousehold01Q1/",
+      "owner": "http://localhost:4000/api/v2/users/fieldteam/",
+      "owner__username": "fieldteam",
+      "owner_label": "fieldteam",
+      "parent": null,
       "uid": "aHousehold01Q1",
+      "kind": "asset",
       "name": "Household Survey Q1",
       "asset_type": "survey",
-      "deployment__active": true,
-      "deployment__submission_count": 5,
-      "has_deployment": true,
+      "version_id": "vJQZBASEYEZ1BSER415mGwM",
+      "deployed_version_id": "vJQZBASEYEZ1BSER415mGwM",
+      "version__content_hash": "QULS1DgigmqtF9EI8QP89d",
+      "version_count": 1,
       "date_created": "2024-01-15T08:00:00.000Z",
       "date_modified": "2024-01-15T09:00:00.000Z",
-      "owner__username": "fieldteam",
-      "url": "http://localhost:4000/api/v2/assets/aHousehold01Q1/"
+      "date_deployed": "2024-01-15T09:00:00.000Z",
+      "summary": {
+        "geo": false,
+        "labels": [
+          "Household Survey Q1"
+        ],
+        "columns": [
+          "district",
+          "end",
+          "household_head_name",
+          "household_size",
+          "start",
+          "water_source"
+        ],
+        "lock_all": false,
+        "lock_any": false,
+        "languages": [
+          null
+        ],
+        "row_count": 6,
+        "default_translation": null
+      },
+      "settings": {
+        "sector": {
+          "label": "Public Health",
+          "value": "Public Health"
+        },
+        "country": [
+          {
+            "label": "Sierra Leone",
+            "value": "SLE"
+          }
+        ],
+        "description": "",
+        "organization": ""
+      },
+      "data_sharing": {},
+      "xform_link": "http://localhost:4000/api/v2/assets/aHousehold01Q1.xml",
+      "xls_link": "http://localhost:4000/api/v2/assets/aHousehold01Q1.xls",
+      "hooks_link": "http://localhost:4000/api/v2/assets/aHousehold01Q1/hooks/",
+      "data": "http://localhost:4000/api/v2/assets/aHousehold01Q1/data/",
+      "exports": "http://localhost:4000/api/v2/assets/aHousehold01Q1/exports/",
+      "export_settings": [],
+      "paired_data": "http://localhost:4000/api/v2/assets/aHousehold01Q1/paired-data/",
+      "files": [],
+      "downloads": [
+        {
+          "format": "xls",
+          "url": "http://localhost:4000/api/v2/assets/aHousehold01Q1.xls"
+        },
+        {
+          "format": "xml",
+          "url": "http://localhost:4000/api/v2/assets/aHousehold01Q1.xml"
+        }
+      ],
+      "embeds": [
+        {
+          "format": "xls",
+          "url": "http://localhost:4000/api/v2/assets/aHousehold01Q1/xls/"
+        },
+        {
+          "format": "xform",
+          "url": "http://localhost:4000/api/v2/assets/aHousehold01Q1/xform/"
+        }
+      ],
+      "assignable_permissions": [
+        {
+          "url": "http://localhost:4000/api/v2/permissions/view_asset/",
+          "label": "View form"
+        },
+        {
+          "url": "http://localhost:4000/api/v2/permissions/change_asset/",
+          "label": "Edit form"
+        },
+        {
+          "url": "http://localhost:4000/api/v2/permissions/view_submissions/",
+          "label": "View submissions"
+        },
+        {
+          "url": "http://localhost:4000/api/v2/permissions/add_submissions/",
+          "label": "Add submissions"
+        }
+      ],
+      "permissions": [
+        {
+          "url": "http://localhost:4000/api/v2/assets/aHousehold01Q1/permission-assignments/1/",
+          "user": "http://localhost:4000/api/v2/users/fieldteam/",
+          "permission": "http://localhost:4000/api/v2/permissions/manage_asset/",
+          "label": "Manage project"
+        }
+      ],
+      "effective_permissions": [
+        {
+          "codename": "manage_asset"
+        },
+        {
+          "codename": "view_asset"
+        },
+        {
+          "codename": "change_asset"
+        }
+      ],
+      "tag_string": "",
+      "access_types": null,
+      "children": {
+        "count": 0
+      },
+      "subscribers_count": 0,
+      "status": "shared",
+      "analysis_form_json": {
+        "engines": {},
+        "additional_fields": []
+      },
+      "report_styles": {
+        "default": {},
+        "specified": {},
+        "kuid_names": {}
+      },
+      "report_custom": {},
+      "map_styles": {},
+      "map_custom": {},
+      "advanced_features": {},
+      "advanced_submission_schema": {},
+      "created_by": "fieldteam",
+      "last_modified_by": "fieldteam",
+      "project_ownership": null,
+      "content": {},
+      "has_deployment": true,
+      "deployed_versions": {
+        "count": 1,
+        "next": null,
+        "previous": null,
+        "results": []
+      },
+      "deployment__identifier": "http://localhost:4000/api/v2/assets/aHousehold01Q1/",
+      "deployment__active": true,
+      "deployment_status": "deployed",
+      "deployment__links": {},
+      "deployment__data_download_links": {
+        "xls": "http://localhost:4000/api/v2/assets/aHousehold01Q1/data.xls",
+        "csv": "http://localhost:4000/api/v2/assets/aHousehold01Q1/data.csv"
+      },
+      "deployment__submission_count": 5,
+      "deployment__last_submission_time": "2024-01-15T09:15:00.000Z",
+      "deployment__uuid": "ORqMo2N5ARQtn8fTCftTCf",
+      "deployment__encrypted": false
     },
     "aClinicVisit02": {
+      "url": "http://localhost:4000/api/v2/assets/aClinicVisit02/",
+      "owner": "http://localhost:4000/api/v2/users/clinicteam/",
+      "owner__username": "clinicteam",
+      "owner_label": "clinicteam",
+      "parent": null,
       "uid": "aClinicVisit02",
+      "kind": "asset",
       "name": "Clinic Visit Log",
       "asset_type": "survey",
-      "deployment__active": true,
-      "deployment__submission_count": 3,
-      "has_deployment": true,
+      "version_id": "vJLrpvr4DaIFsMhcWGWeOLS",
+      "deployed_version_id": "vJLrpvr4DaIFsMhcWGWeOLS",
+      "version__content_hash": "QULNtrbRG1Wcn0yltN6ayA",
+      "version_count": 1,
       "date_created": "2024-01-15T08:00:00.000Z",
       "date_modified": "2024-01-15T09:00:00.000Z",
-      "owner__username": "clinicteam",
-      "url": "http://localhost:4000/api/v2/assets/aClinicVisit02/"
+      "date_deployed": "2024-01-15T09:00:00.000Z",
+      "summary": {
+        "geo": false,
+        "labels": [
+          "Clinic Visit Log"
+        ],
+        "columns": [
+          "age",
+          "diagnosis",
+          "end",
+          "patient_name",
+          "start",
+          "temperature"
+        ],
+        "lock_all": false,
+        "lock_any": false,
+        "languages": [
+          null
+        ],
+        "row_count": 6,
+        "default_translation": null
+      },
+      "settings": {
+        "sector": {
+          "label": "Public Health",
+          "value": "Public Health"
+        },
+        "country": [
+          {
+            "label": "Sierra Leone",
+            "value": "SLE"
+          }
+        ],
+        "description": "",
+        "organization": ""
+      },
+      "data_sharing": {},
+      "xform_link": "http://localhost:4000/api/v2/assets/aClinicVisit02.xml",
+      "xls_link": "http://localhost:4000/api/v2/assets/aClinicVisit02.xls",
+      "hooks_link": "http://localhost:4000/api/v2/assets/aClinicVisit02/hooks/",
+      "data": "http://localhost:4000/api/v2/assets/aClinicVisit02/data/",
+      "exports": "http://localhost:4000/api/v2/assets/aClinicVisit02/exports/",
+      "export_settings": [],
+      "paired_data": "http://localhost:4000/api/v2/assets/aClinicVisit02/paired-data/",
+      "files": [],
+      "downloads": [
+        {
+          "format": "xls",
+          "url": "http://localhost:4000/api/v2/assets/aClinicVisit02.xls"
+        },
+        {
+          "format": "xml",
+          "url": "http://localhost:4000/api/v2/assets/aClinicVisit02.xml"
+        }
+      ],
+      "embeds": [
+        {
+          "format": "xls",
+          "url": "http://localhost:4000/api/v2/assets/aClinicVisit02/xls/"
+        },
+        {
+          "format": "xform",
+          "url": "http://localhost:4000/api/v2/assets/aClinicVisit02/xform/"
+        }
+      ],
+      "assignable_permissions": [
+        {
+          "url": "http://localhost:4000/api/v2/permissions/view_asset/",
+          "label": "View form"
+        },
+        {
+          "url": "http://localhost:4000/api/v2/permissions/change_asset/",
+          "label": "Edit form"
+        },
+        {
+          "url": "http://localhost:4000/api/v2/permissions/view_submissions/",
+          "label": "View submissions"
+        },
+        {
+          "url": "http://localhost:4000/api/v2/permissions/add_submissions/",
+          "label": "Add submissions"
+        }
+      ],
+      "permissions": [
+        {
+          "url": "http://localhost:4000/api/v2/assets/aClinicVisit02/permission-assignments/1/",
+          "user": "http://localhost:4000/api/v2/users/clinicteam/",
+          "permission": "http://localhost:4000/api/v2/permissions/manage_asset/",
+          "label": "Manage project"
+        }
+      ],
+      "effective_permissions": [
+        {
+          "codename": "manage_asset"
+        },
+        {
+          "codename": "view_asset"
+        },
+        {
+          "codename": "change_asset"
+        }
+      ],
+      "tag_string": "",
+      "access_types": null,
+      "children": {
+        "count": 0
+      },
+      "subscribers_count": 0,
+      "status": "shared",
+      "analysis_form_json": {
+        "engines": {},
+        "additional_fields": []
+      },
+      "report_styles": {
+        "default": {},
+        "specified": {},
+        "kuid_names": {}
+      },
+      "report_custom": {},
+      "map_styles": {},
+      "map_custom": {},
+      "advanced_features": {},
+      "advanced_submission_schema": {},
+      "created_by": "clinicteam",
+      "last_modified_by": "clinicteam",
+      "project_ownership": null,
+      "content": {},
+      "has_deployment": true,
+      "deployed_versions": {
+        "count": 1,
+        "next": null,
+        "previous": null,
+        "results": []
+      },
+      "deployment__identifier": "http://localhost:4000/api/v2/assets/aClinicVisit02/",
+      "deployment__active": true,
+      "deployment_status": "deployed",
+      "deployment__links": {},
+      "deployment__data_download_links": {
+        "xls": "http://localhost:4000/api/v2/assets/aClinicVisit02/data.xls",
+        "csv": "http://localhost:4000/api/v2/assets/aClinicVisit02/data.csv"
+      },
+      "deployment__submission_count": 3,
+      "deployment__last_submission_time": "2024-01-15T08:45:00.000Z",
+      "deployment__uuid": "ORqMjuB09hv36M6Nfwm6F7",
+      "deployment__encrypted": false
     },
     "aWaterPoint03": {
+      "url": "http://localhost:4000/api/v2/assets/aWaterPoint03/",
+      "owner": "http://localhost:4000/api/v2/users/fieldteam/",
+      "owner__username": "fieldteam",
+      "owner_label": "fieldteam",
+      "parent": null,
       "uid": "aWaterPoint03",
+      "kind": "asset",
       "name": "Water Point Assessment",
       "asset_type": "survey",
-      "deployment__active": true,
-      "deployment__submission_count": 2,
-      "has_deployment": true,
+      "version_id": "vJ5g5m5Lh2LHAFPu200oHEI",
+      "deployed_version_id": "vJ5g5m5Lh2LHAFPu200oHEI",
+      "version__content_hash": "QUL7i72vnFSfl8n0pf8IMK",
+      "version_count": 1,
       "date_created": "2024-01-15T08:00:00.000Z",
       "date_modified": "2024-01-15T09:00:00.000Z",
-      "owner__username": "fieldteam",
-      "url": "http://localhost:4000/api/v2/assets/aWaterPoint03/"
+      "date_deployed": "2024-01-15T09:00:00.000Z",
+      "summary": {
+        "geo": true,
+        "labels": [
+          "Water Point Assessment"
+        ],
+        "columns": [
+          "end",
+          "functional",
+          "gps",
+          "point_name",
+          "start"
+        ],
+        "lock_all": false,
+        "lock_any": false,
+        "languages": [
+          null
+        ],
+        "row_count": 5,
+        "default_translation": null
+      },
+      "settings": {
+        "sector": {
+          "label": "Public Health",
+          "value": "Public Health"
+        },
+        "country": [
+          {
+            "label": "Sierra Leone",
+            "value": "SLE"
+          }
+        ],
+        "description": "",
+        "organization": ""
+      },
+      "data_sharing": {},
+      "xform_link": "http://localhost:4000/api/v2/assets/aWaterPoint03.xml",
+      "xls_link": "http://localhost:4000/api/v2/assets/aWaterPoint03.xls",
+      "hooks_link": "http://localhost:4000/api/v2/assets/aWaterPoint03/hooks/",
+      "data": "http://localhost:4000/api/v2/assets/aWaterPoint03/data/",
+      "exports": "http://localhost:4000/api/v2/assets/aWaterPoint03/exports/",
+      "export_settings": [],
+      "paired_data": "http://localhost:4000/api/v2/assets/aWaterPoint03/paired-data/",
+      "files": [],
+      "downloads": [
+        {
+          "format": "xls",
+          "url": "http://localhost:4000/api/v2/assets/aWaterPoint03.xls"
+        },
+        {
+          "format": "xml",
+          "url": "http://localhost:4000/api/v2/assets/aWaterPoint03.xml"
+        }
+      ],
+      "embeds": [
+        {
+          "format": "xls",
+          "url": "http://localhost:4000/api/v2/assets/aWaterPoint03/xls/"
+        },
+        {
+          "format": "xform",
+          "url": "http://localhost:4000/api/v2/assets/aWaterPoint03/xform/"
+        }
+      ],
+      "assignable_permissions": [
+        {
+          "url": "http://localhost:4000/api/v2/permissions/view_asset/",
+          "label": "View form"
+        },
+        {
+          "url": "http://localhost:4000/api/v2/permissions/change_asset/",
+          "label": "Edit form"
+        },
+        {
+          "url": "http://localhost:4000/api/v2/permissions/view_submissions/",
+          "label": "View submissions"
+        },
+        {
+          "url": "http://localhost:4000/api/v2/permissions/add_submissions/",
+          "label": "Add submissions"
+        }
+      ],
+      "permissions": [
+        {
+          "url": "http://localhost:4000/api/v2/assets/aWaterPoint03/permission-assignments/1/",
+          "user": "http://localhost:4000/api/v2/users/fieldteam/",
+          "permission": "http://localhost:4000/api/v2/permissions/manage_asset/",
+          "label": "Manage project"
+        }
+      ],
+      "effective_permissions": [
+        {
+          "codename": "manage_asset"
+        },
+        {
+          "codename": "view_asset"
+        },
+        {
+          "codename": "change_asset"
+        }
+      ],
+      "tag_string": "",
+      "access_types": null,
+      "children": {
+        "count": 0
+      },
+      "subscribers_count": 0,
+      "status": "shared",
+      "analysis_form_json": {
+        "engines": {},
+        "additional_fields": []
+      },
+      "report_styles": {
+        "default": {},
+        "specified": {},
+        "kuid_names": {}
+      },
+      "report_custom": {},
+      "map_styles": {},
+      "map_custom": {},
+      "advanced_features": {},
+      "advanced_submission_schema": {},
+      "created_by": "fieldteam",
+      "last_modified_by": "fieldteam",
+      "project_ownership": null,
+      "content": {},
+      "has_deployment": true,
+      "deployed_versions": {
+        "count": 1,
+        "next": null,
+        "previous": null,
+        "results": []
+      },
+      "deployment__identifier": "http://localhost:4000/api/v2/assets/aWaterPoint03/",
+      "deployment__active": true,
+      "deployment_status": "deployed",
+      "deployment__links": {},
+      "deployment__data_download_links": {
+        "xls": "http://localhost:4000/api/v2/assets/aWaterPoint03/data.xls",
+        "csv": "http://localhost:4000/api/v2/assets/aWaterPoint03/data.csv"
+      },
+      "deployment__submission_count": 2,
+      "deployment__last_submission_time": "2024-01-15T08:30:00.000Z",
+      "deployment__uuid": "ORqMDjhRNY9VdOiCSvw8DL",
+      "deployment__encrypted": false
     }
   },
   "submissions": {
     "12001": {
       "_id": 12001,
-      "_uuid": "573ca3b7-f433-4937-8f81-af2af17e37e8",
-      "_submission_time": "2024-01-15T08:15:00.000Z",
-      "_submitted_by": "fieldteam",
+      "formhub/uuid": "ORqMo2N5ARQtn8fTCftTCf",
+      "__version__": "vJQZBASEYEZ1BSER415mGwM",
+      "meta/instanceID": "uuid:1c5a13b5-ec62-4ef4-b76d-8eca7a4f1111",
+      "meta/rootUuid": "uuid:1c5a13b5-ec62-4ef4-b76d-8eca7a4f1111",
       "_xform_id_string": "aHousehold01Q1",
+      "_uuid": "1c5a13b5-ec62-4ef4-b76d-8eca7a4f1111",
+      "_attachments": [],
+      "_status": "submitted_via_web",
+      "_geolocation": [
+        null,
+        null
+      ],
+      "_submission_time": "2024-01-15T08:15:00.000Z",
+      "_tags": [],
+      "_notes": [],
+      "_validation_status": {},
+      "_submitted_by": "fieldteam",
+      "start": "2024-01-15T08:10:00.000Z",
+      "end": "2024-01-15T08:15:00.000Z",
       "household_head_name": "Jane Doe",
       "household_size": 5,
       "water_source": "borehole",
@@ -51,10 +518,25 @@
     },
     "12002": {
       "_id": 12002,
-      "_uuid": "d6cdee95-3292-41cc-bf37-d2e8554ee4aa",
-      "_submission_time": "2024-01-15T08:30:00.000Z",
-      "_submitted_by": "fieldteam",
+      "formhub/uuid": "ORqMo2N5ARQtn8fTCftTCf",
+      "__version__": "vJQZBASEYEZ1BSER415mGwM",
+      "meta/instanceID": "uuid:eef84e72-0581-4251-84ac-877600e2183d",
+      "meta/rootUuid": "uuid:eef84e72-0581-4251-84ac-877600e2183d",
       "_xform_id_string": "aHousehold01Q1",
+      "_uuid": "eef84e72-0581-4251-84ac-877600e2183d",
+      "_attachments": [],
+      "_status": "submitted_via_web",
+      "_geolocation": [
+        null,
+        null
+      ],
+      "_submission_time": "2024-01-15T08:30:00.000Z",
+      "_tags": [],
+      "_notes": [],
+      "_validation_status": {},
+      "_submitted_by": "fieldteam",
+      "start": "2024-01-15T08:25:00.000Z",
+      "end": "2024-01-15T08:30:00.000Z",
       "household_head_name": "John Smith",
       "household_size": 3,
       "water_source": "piped",
@@ -62,10 +544,25 @@
     },
     "12003": {
       "_id": 12003,
-      "_uuid": "c8859941-4edc-4982-bfbf-63d82811cdb3",
-      "_submission_time": "2024-01-15T08:45:00.000Z",
-      "_submitted_by": "fieldteam",
+      "formhub/uuid": "ORqMo2N5ARQtn8fTCftTCf",
+      "__version__": "vJQZBASEYEZ1BSER415mGwM",
+      "meta/instanceID": "uuid:6bc9a34f-a757-49f8-838b-fae0cf1c774e",
+      "meta/rootUuid": "uuid:6bc9a34f-a757-49f8-838b-fae0cf1c774e",
       "_xform_id_string": "aHousehold01Q1",
+      "_uuid": "6bc9a34f-a757-49f8-838b-fae0cf1c774e",
+      "_attachments": [],
+      "_status": "submitted_via_web",
+      "_geolocation": [
+        null,
+        null
+      ],
+      "_submission_time": "2024-01-15T08:45:00.000Z",
+      "_tags": [],
+      "_notes": [],
+      "_validation_status": {},
+      "_submitted_by": "fieldteam",
+      "start": "2024-01-15T08:40:00.000Z",
+      "end": "2024-01-15T08:45:00.000Z",
       "household_head_name": "Amina Kamara",
       "household_size": 7,
       "water_source": "well",
@@ -73,10 +570,25 @@
     },
     "12004": {
       "_id": 12004,
-      "_uuid": "41b27acc-8083-4101-a392-5da094715fbc",
-      "_submission_time": "2024-01-15T09:00:00.000Z",
-      "_submitted_by": "fieldteam",
+      "formhub/uuid": "ORqMo2N5ARQtn8fTCftTCf",
+      "__version__": "vJQZBASEYEZ1BSER415mGwM",
+      "meta/instanceID": "uuid:602cea7d-0e5f-4843-844d-615b6ea23ad3",
+      "meta/rootUuid": "uuid:602cea7d-0e5f-4843-844d-615b6ea23ad3",
       "_xform_id_string": "aHousehold01Q1",
+      "_uuid": "602cea7d-0e5f-4843-844d-615b6ea23ad3",
+      "_attachments": [],
+      "_status": "submitted_via_web",
+      "_geolocation": [
+        null,
+        null
+      ],
+      "_submission_time": "2024-01-15T09:00:00.000Z",
+      "_tags": [],
+      "_notes": [],
+      "_validation_status": {},
+      "_submitted_by": "fieldteam",
+      "start": "2024-01-15T08:55:00.000Z",
+      "end": "2024-01-15T09:00:00.000Z",
       "household_head_name": "Mohamed Sesay",
       "household_size": 4,
       "water_source": "borehole",
@@ -84,10 +596,25 @@
     },
     "12005": {
       "_id": 12005,
-      "_uuid": "064ccc30-b8be-4742-963e-41e1f785205f",
-      "_submission_time": "2024-01-15T09:15:00.000Z",
-      "_submitted_by": "fieldteam",
+      "formhub/uuid": "ORqMo2N5ARQtn8fTCftTCf",
+      "__version__": "vJQZBASEYEZ1BSER415mGwM",
+      "meta/instanceID": "uuid:fd9c0fde-9081-4f79-9d05-a8065b9fcb5c",
+      "meta/rootUuid": "uuid:fd9c0fde-9081-4f79-9d05-a8065b9fcb5c",
       "_xform_id_string": "aHousehold01Q1",
+      "_uuid": "fd9c0fde-9081-4f79-9d05-a8065b9fcb5c",
+      "_attachments": [],
+      "_status": "submitted_via_web",
+      "_geolocation": [
+        null,
+        null
+      ],
+      "_submission_time": "2024-01-15T09:15:00.000Z",
+      "_tags": [],
+      "_notes": [],
+      "_validation_status": {},
+      "_submitted_by": "fieldteam",
+      "start": "2024-01-15T09:10:00.000Z",
+      "end": "2024-01-15T09:15:00.000Z",
       "household_head_name": "Fatmata Bangura",
       "household_size": 6,
       "water_source": "river",
@@ -95,10 +622,25 @@
     },
     "12006": {
       "_id": 12006,
-      "_uuid": "c4c6bcb4-8755-4855-87b4-fa71932ae168",
-      "_submission_time": "2024-01-15T08:15:00.000Z",
-      "_submitted_by": "clinicteam",
+      "formhub/uuid": "ORqMjuB09hv36M6Nfwm6F7",
+      "__version__": "vJLrpvr4DaIFsMhcWGWeOLS",
+      "meta/instanceID": "uuid:efef2efa-1e87-44aa-b488-c471598b5384",
+      "meta/rootUuid": "uuid:efef2efa-1e87-44aa-b488-c471598b5384",
       "_xform_id_string": "aClinicVisit02",
+      "_uuid": "efef2efa-1e87-44aa-b488-c471598b5384",
+      "_attachments": [],
+      "_status": "submitted_via_web",
+      "_geolocation": [
+        null,
+        null
+      ],
+      "_submission_time": "2024-01-15T08:15:00.000Z",
+      "_tags": [],
+      "_notes": [],
+      "_validation_status": {},
+      "_submitted_by": "clinicteam",
+      "start": "2024-01-15T08:10:00.000Z",
+      "end": "2024-01-15T08:15:00.000Z",
       "patient_name": "Aisha Turay",
       "age": 28,
       "temperature": 37.2,
@@ -106,10 +648,25 @@
     },
     "12007": {
       "_id": 12007,
-      "_uuid": "68d896b6-dd6b-4b07-81df-3439b366dd1b",
-      "_submission_time": "2024-01-15T08:30:00.000Z",
-      "_submitted_by": "clinicteam",
+      "formhub/uuid": "ORqMjuB09hv36M6Nfwm6F7",
+      "__version__": "vJLrpvr4DaIFsMhcWGWeOLS",
+      "meta/instanceID": "uuid:7f22fc1b-c33e-4ba3-a00f-649dd350a9d5",
+      "meta/rootUuid": "uuid:7f22fc1b-c33e-4ba3-a00f-649dd350a9d5",
       "_xform_id_string": "aClinicVisit02",
+      "_uuid": "7f22fc1b-c33e-4ba3-a00f-649dd350a9d5",
+      "_attachments": [],
+      "_status": "submitted_via_web",
+      "_geolocation": [
+        null,
+        null
+      ],
+      "_submission_time": "2024-01-15T08:30:00.000Z",
+      "_tags": [],
+      "_notes": [],
+      "_validation_status": {},
+      "_submitted_by": "clinicteam",
+      "start": "2024-01-15T08:25:00.000Z",
+      "end": "2024-01-15T08:30:00.000Z",
       "patient_name": "Samuel Koroma",
       "age": 45,
       "temperature": 36.8,
@@ -117,10 +674,25 @@
     },
     "12008": {
       "_id": 12008,
-      "_uuid": "b227a813-178e-4ae7-b404-1e868672741f",
-      "_submission_time": "2024-01-15T08:45:00.000Z",
-      "_submitted_by": "clinicteam",
+      "formhub/uuid": "ORqMjuB09hv36M6Nfwm6F7",
+      "__version__": "vJLrpvr4DaIFsMhcWGWeOLS",
+      "meta/instanceID": "uuid:a08be550-4aa3-4813-b42b-25c9f642beca",
+      "meta/rootUuid": "uuid:a08be550-4aa3-4813-b42b-25c9f642beca",
       "_xform_id_string": "aClinicVisit02",
+      "_uuid": "a08be550-4aa3-4813-b42b-25c9f642beca",
+      "_attachments": [],
+      "_status": "submitted_via_web",
+      "_geolocation": [
+        null,
+        null
+      ],
+      "_submission_time": "2024-01-15T08:45:00.000Z",
+      "_tags": [],
+      "_notes": [],
+      "_validation_status": {},
+      "_submitted_by": "clinicteam",
+      "start": "2024-01-15T08:40:00.000Z",
+      "end": "2024-01-15T08:45:00.000Z",
       "patient_name": "Grace Williams",
       "age": 12,
       "temperature": 38.1,
@@ -128,20 +700,50 @@
     },
     "12009": {
       "_id": 12009,
-      "_uuid": "076d871e-3c3c-457e-9c43-95fe663fe9e9",
-      "_submission_time": "2024-01-15T08:15:00.000Z",
-      "_submitted_by": "fieldteam",
+      "formhub/uuid": "ORqMDjhRNY9VdOiCSvw8DL",
+      "__version__": "vJ5g5m5Lh2LHAFPu200oHEI",
+      "meta/instanceID": "uuid:e7fd2105-592a-49af-b707-7d457edeb269",
+      "meta/rootUuid": "uuid:e7fd2105-592a-49af-b707-7d457edeb269",
       "_xform_id_string": "aWaterPoint03",
+      "_uuid": "e7fd2105-592a-49af-b707-7d457edeb269",
+      "_attachments": [],
+      "_status": "submitted_via_web",
+      "_geolocation": [
+        7.9465,
+        -11.7382
+      ],
+      "_submission_time": "2024-01-15T08:15:00.000Z",
+      "_tags": [],
+      "_notes": [],
+      "_validation_status": {},
+      "_submitted_by": "fieldteam",
+      "start": "2024-01-15T08:10:00.000Z",
+      "end": "2024-01-15T08:15:00.000Z",
       "point_name": "Ngelehun Well 1",
       "functional": "yes",
       "gps": "7.9465 -11.7382"
     },
     "12010": {
       "_id": 12010,
-      "_uuid": "696b3abb-6daf-42ca-801c-45cabd44cb0f",
-      "_submission_time": "2024-01-15T08:30:00.000Z",
-      "_submitted_by": "fieldteam",
+      "formhub/uuid": "ORqMDjhRNY9VdOiCSvw8DL",
+      "__version__": "vJ5g5m5Lh2LHAFPu200oHEI",
+      "meta/instanceID": "uuid:30373c2a-da02-445f-b215-b2a7b36adcec",
+      "meta/rootUuid": "uuid:30373c2a-da02-445f-b215-b2a7b36adcec",
       "_xform_id_string": "aWaterPoint03",
+      "_uuid": "30373c2a-da02-445f-b215-b2a7b36adcec",
+      "_attachments": [],
+      "_status": "submitted_via_web",
+      "_geolocation": [
+        7.9501,
+        -11.7411
+      ],
+      "_submission_time": "2024-01-15T08:30:00.000Z",
+      "_tags": [],
+      "_notes": [],
+      "_validation_status": {},
+      "_submitted_by": "fieldteam",
+      "start": "2024-01-15T08:25:00.000Z",
+      "end": "2024-01-15T08:30:00.000Z",
       "point_name": "Ngelehun Borehole 2",
       "functional": "no",
       "gps": "7.9501 -11.7411"

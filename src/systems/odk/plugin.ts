@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 import type { FastifyInstance, FastifyRequest } from 'fastify';
 import type { MockSystemPlugin, SystemConfig } from '../types.js';
 import type { DataStore } from '../../store.js';
-import { seed, nowIso } from './seed.js';
+import { seed, nowIso, odkSystem } from './seed.js';
 import { usage } from './usage.js';
 import { guide } from './guide.js';
 
@@ -10,8 +10,8 @@ import { guide } from './guide.js';
  * ODK Central (Open Data Kit — a data-collection Digital Public Good).
  *
  * Faithful quirks the odk adaptor relies on:
- *  - Session auth: POST /v1/sessions returns `{ token, expiresAt }` and later
- *    calls send `Authorization: Bearer <token>` (accept-all here).
+ *  - Session auth: POST /v1/sessions returns `{ token, expiresAt, createdAt }`
+ *    and later calls send `Authorization: Bearer <token>` (accept-all here).
  *  - REST resources under /v1: projects and per-project forms are bare arrays.
  *  - Submissions are served through the OData endpoint
  *    GET /v1/projects/:id/forms/:xmlFormId.svc/Submissions, which returns
@@ -47,7 +47,8 @@ const plugin: MockSystemPlugin = {
     app.post('/v1/sessions', async (_req, reply) => {
       reply.code(200);
       return {
-        token: 'mock_odk_session_token',
+        // Real ODK session tokens are long, URL-safe bearer strings.
+        token: 'mockodkGZ4rF8pQ7wbN2vKcX1sYtLd6mHjE0auRoTp3ViSlB9nWfCkMbAgUeZ',
         expiresAt: new Date(Date.now() + 86_400_000).toISOString(),
         createdAt: nowIso(),
       };
@@ -109,15 +110,17 @@ const plugin: MockSystemPlugin = {
       const xmlFormId = String(formSvc).replace(/\.svc$/, '');
       const body = (req.body ?? {}) as Record<string, any>;
       const __id = typeof body.__id === 'string' && body.__id ? body.__id : `uuid:${randomUUID()}`;
+      const form = store.get('forms', `${(req.params as Record<string, any>).projectId}/${xmlFormId}`);
       const row = {
         ...body,
         __id,
-        __system: {
+        // Match the seed rows' shape: meta.instanceID + a full __system block.
+        meta: { instanceID: __id },
+        __system: odkSystem({
           submissionDate: nowIso(),
-          submitterId: '5',
           submitterName: (req.mockAuth as any)?.username ?? 'apiuser',
-          reviewState: null,
-        },
+          formVersion: form?.version ?? '1',
+        }),
         _formId: xmlFormId,
       };
       store.create('submissions', __id, row);

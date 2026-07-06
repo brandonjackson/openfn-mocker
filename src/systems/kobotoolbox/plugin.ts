@@ -3,7 +3,7 @@ import type { FastifyInstance } from 'fastify';
 import type { MockSystemPlugin, SystemConfig } from '../types.js';
 import type { DataStore } from '../../store.js';
 import { paginate } from '../../engine/response-generator.js';
-import { seed, assetUrl, makeAssetUid, DEFAULT_PORT } from './seed.js';
+import { seed, assetUrl, makeAssetUid, versionId, koboSubmissionMeta, buildAsset, DEFAULT_PORT } from './seed.js';
 import { usage } from './usage.js';
 import { guide } from './guide.js';
 
@@ -16,18 +16,25 @@ import { guide } from './guide.js';
  * DRF envelope is applied by hand. Auth is accept-all (handled globally).
  */
 
-/** Number of submissions belonging to an asset uid. */
-function submissionCount(store: DataStore, uid: string): number {
-  return store.list('submissions', (s) => s._xform_id_string === uid).length;
+/** Submissions belonging to an asset uid. */
+function assetSubmissions(store: DataStore, uid: string): any[] {
+  return store.list('submissions', (s) => s._xform_id_string === uid);
 }
 
-/** Return a copy of the asset with a live deployment__submission_count + url. */
+/** Number of submissions belonging to an asset uid. */
+function submissionCount(store: DataStore, uid: string): number {
+  return assetSubmissions(store, uid).length;
+}
+
+/**
+ * Rebuild the full KoboToolbox Asset serializer from a stored asset's core
+ * fields and its live submissions, so counts, the summary, and the self/data
+ * links always reflect the current store and port. The shared `buildAsset`
+ * definition (in seed.ts) is what the seed bakes in, so store dump and live
+ * response agree.
+ */
 function shapeAsset(store: DataStore, asset: any, port: number): any {
-  return {
-    ...asset,
-    deployment__submission_count: submissionCount(store, asset.uid),
-    url: assetUrl(port, asset.uid),
-  };
+  return buildAsset(asset, assetSubmissions(store, asset.uid), port);
 }
 
 /** Parse a positive integer query param, falling back to `fallback`. */
@@ -98,11 +105,15 @@ function applyKoboSort(items: any[], sort: any): any[] {
 
 /** Build the /deployment/ info object KoboToolbox returns for a deployed asset. */
 function deploymentInfo(store: DataStore, asset: any, port: number): Record<string, any> {
+  const shaped = shapeAsset(store, asset, port);
   return {
     backend: 'openrosa',
     active: asset.deployment__active ?? true,
-    version_id: asset.version_id ?? 'v1',
-    asset_version_id: asset.version_id ?? 'v1',
+    version_id: shaped.version_id,
+    // The real DeploymentResponse embeds the full Asset object (required field).
+    asset: shaped,
+    // Additive extras the getDeploymentInfo helper historically read.
+    asset_version_id: shaped.version_id,
     identifier: assetUrl(port, asset.uid),
     submission_count: submissionCount(store, asset.uid),
   };
@@ -339,13 +350,19 @@ const plugin: MockSystemPlugin = {
         .filter((n) => Number.isFinite(n));
       const newId = (existingIds.length ? Math.max(...existingIds) : 12000) + 1;
       const uuid = randomUUID();
+      const asset = store.get('assets', uid);
 
       const submission = {
-        _id: newId,
-        _uuid: uuid,
-        _submission_time: new Date().toISOString(),
-        _submitted_by: (req.mockAuth as any)?.username ?? 'apiuser',
-        _xform_id_string: uid,
+        ...koboSubmissionMeta({
+          id: newId,
+          uuid,
+          submissionTime: new Date().toISOString(),
+          submittedBy: (req.mockAuth as any)?.username ?? 'apiuser',
+          xformId: uid,
+          version: asset?.version_id ?? versionId(uid),
+          formhubUuid: asset?.deployment__uuid ?? versionId(`fh-${uid}`).slice(1),
+          fields: surveyFields,
+        }),
         ...surveyFields,
       };
       store.create('submissions', String(newId), submission);
