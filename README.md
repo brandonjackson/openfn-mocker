@@ -12,7 +12,7 @@
 
 ## Key use cases
 
-- **Develop workflows offline** — build and iterate on an OpenFn job without credentials for, or network access to, a live instance. The seed data is there on first boot.
+- **Develop workflows offline** — build and iterate on an OpenFn job without credentials for, or network access to, a live instance.
 - **Deterministic CI** — run integration tests against a stable, in-memory backend that resets on restart, so a test never depends on the state (or uptime) of someone else's DHIS2.
 - **Demos and training** — generate a dataset flavoured for a specific country or program (localized names, real facilities, in-language SMS) and demo an end-to-end flow that looks real. See [Seed datasets](#seed-datasets).
 - **Resilience & load testing** — dial in production-like [latency, error rates, and rate limits](#simulating-stochastic-behavior) per system to prove your workflow's timeout, retry, and backoff paths actually work — including under sustained load.
@@ -201,7 +201,7 @@ systems:
     # at /fhir/Patient (not /fhir/fhir/Patient).
     apiPath: ""
 
-  # Salesforce is a disabled placeholder (no plugin in v1).
+  # Every system is enabled by default; use enabled: false to leave one out.
   salesforce:
     enabled: false
 ```
@@ -215,7 +215,7 @@ plugin-specific keys. The framework keys are understood by every system:
 
 | Term | Type | Default | Meaning |
 |------|------|---------|---------|
-| `enabled` | bool | `true` | Mount this system. Registered systems mount even without a config block; `enabled: false` leaves one out (and is how `salesforce` ships as a placeholder). |
+| `enabled` | bool | `true` | Mount this system. Registered systems mount even without a config block; `enabled: false` leaves one out. |
 | `seed` | string | — | Reserved per-system seed selector; normally you pick data with the top-level `dataset` / `MOCKER_DATASET` instead. |
 | `latency` | map | — | Per-request response-time simulation. See [Simulating stochastic behavior](#simulating-stochastic-behavior). |
 | `error_rate` | number | `0` | Probability in `[0, 1]` that a request gets an injected failure instead of the real response. |
@@ -329,103 +329,29 @@ flaky as production, without touching a real instance or its rate limits. Point
 your load tool at it, drive traffic, and assert on the results — a stable
 baseline you can run on every push.
 
-The failure mode worth reproducing is **`429 Too Many Requests`** (throttling).
-Under sustained load, real external systems (DHIS2, Salesforce, Twilio) start
-rejecting excess requests, and a load test exists precisely to reach that regime,
-because it exercises your workflow's backoff/retry path. Use the `rate_limit`
-block for this rather than `error_rate`: a real service throttles as a function
-of *volume* (fine until you push too hard, then 429s), which the limiter models
-deterministically, whereas `error_rate` fails a fixed fraction of requests
-regardless of load. Keep `error_rate` for genuinely random faults (transient
-5xx, dropped connections). (Don't simulate `401 Unauthorized` here: a missing or
-invalid credential is a deterministic, built-in behavior the system should
-return on its own, not a fault to sprinkle into a load test.)
+The failure mode worth reproducing under load is **`429 Too Many Requests`**. Use
+the `rate_limit` block (throttling as a function of *volume*) rather than
+`error_rate` (a fixed fraction of failures regardless of load), so the test
+reliably drives your workflow's backoff/retry path. Don't inject `401` here: a
+missing credential is deterministic, built-in behavior, not a random fault.
 
-A GitHub Actions job that boots the mock with load-test tuning and runs
-[k6](https://k6.io) against it:
+Boot the mock with load-test tuning: production-like latency plus a real throttle
+so the workflow's 429 handling is on the hook once traffic climbs past the ceiling.
 
 ```yaml
-# .github/workflows/loadtest.yml
-name: load-test
-on: [push]
-
-jobs:
-  loadtest:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      # A config tuned for load: production-like latency, and a real throttle so
-      # the workflow's 429 handling is on the hook once traffic climbs past the
-      # ceiling.
-      - name: Write load-test config
-        run: |
-          cat > loadtest.config.yaml <<'YAML'
-          port: 4000
-          latency:
-            mean_ms: 250        # production-like average
-            stddev_ms: 80       # realistic jitter
-            min_ms: 20
-            max_ms: 3000
-          rate_limit:
-            max: 30             # serve up to 30 req/s per system...
-            window_ms: 1000     # ...then 429 the excess (Too Many Requests)
-          systems:
-            dhis2: { enabled: true }
-            fhir:  { enabled: true }
-          YAML
-
-      - name: Start openfn-mocker
-        run: |
-          docker build -t openfn-mocker .
-          docker run -d --name mocker -p 4000:4000 \
-            -e MOCKER_CONFIG=/app/loadtest.config.yaml \
-            -v "$PWD/loadtest.config.yaml:/app/loadtest.config.yaml:ro" \
-            openfn-mocker
-          # Wait for readiness on the aggregated admin route.
-          for i in $(seq 1 30); do curl -fs localhost:4000/_admin/systems && break; sleep 1; done
-
-      - name: Run k6 load test
-        uses: grafana/k6-action@v0.3.1
-        with:
-          filename: loadtest.js
-
-      - name: Mocker logs (on failure)
-        if: failure()
-        run: docker logs mocker
+# loadtest.config.yaml
+port: 4000
+latency: { mean_ms: 250, stddev_ms: 80, min_ms: 20, max_ms: 3000 }
+rate_limit: { max: 30, window_ms: 1000 }   # 30 req/s per system, then 429 the excess
 ```
 
-```js
-// loadtest.js — 50 concurrent users for 30s against the throttled mock.
-import http from 'k6/http';
-import { check } from 'k6';
-
-export const options = {
-  vus: 50,
-  duration: '30s',
-  thresholds: {
-    // Latency budget with headroom over the mock's ~250ms mean + jitter.
-    http_req_duration: ['p(95)<1500'],
-    // Once 50 VUs push past the 30 req/s ceiling the mock 429s the excess, which
-    // k6 counts as http_req_failed — expected under load, so allow slack; a
-    // higher failure rate means real errors (5xx / dropped connections).
-    http_req_failed: ['rate<0.4'],
-  },
-};
-
-export default function () {
-  const res = http.get('http://localhost:4000/dhis2/api/organisationUnits');
-  // 200 = served, 429 = throttled once over the rate limit (expected). A 5xx is
-  // a real failure.
-  check(res, { 'no server error': (r) => r.status < 500 });
-}
-```
-
-k6 counts the throttled 429s as `http_req_failed`, so the threshold accommodates
-however much of your offered load spills past the `rate_limit` ceiling; the `no
-server error` check catches anything that is a genuine fault rather than a
-throttle. Tighten the thresholds and raise `vus` to turn the mock into a
-regression gate on your workflow's latency and retry behavior.
+Then point a load tool at it, e.g. [k6](https://k6.io) hitting
+`/dhis2/api/organisationUnits` at 50 virtual users. The throttled 429s count as
+`http_req_failed`, so budget for the share of offered load that spills past the
+ceiling (say `http_req_failed: ['rate<0.4']`) and check `r.status < 500` to catch
+genuine faults rather than throttles; tighten the thresholds to make it a
+regression gate on your workflow's latency and retry behavior. In CI, run it after
+`docker run`-ing the image with `MOCKER_CONFIG` pointed at that config.
 
 ### Environment overrides
 
@@ -614,7 +540,7 @@ Root admin routes (`/_admin/systems`, `/_admin/reset-all`) and a `GET /` index l
 
 The mock never validates the *value* of a credential (any username/password/token works), but it does enforce that one is *present* where the real system requires it. Each plugin declares its own auth policy (`auth` in `MockSystemPlugin`), so this is core behavior, not a global assumption:
 
-- **Systems that require auth** (dhis2, openmrs, commcare, kobotoolbox, primero, mailgun, twilio) return **401 Unauthorized** — with a matching `WWW-Authenticate` header and `{ "error": "Unauthorized" }` body — when a request arrives with no credentials. Send any `Authorization` header (or api-key header) and the request proceeds.
+- **Systems whose real API requires credentials** (dhis2, openmrs, commcare, mailgun, twilio, and many more) return **401 Unauthorized** — with a matching `WWW-Authenticate` header and `{ "error": "Unauthorized" }` body — when a request arrives with no credentials. Send any `Authorization` header (or api-key header) and the request proceeds.
 - **Systems where auth is optional or absent** stay accept-all: **FHIR** (auth is none/Bearer) and **http-generic** (arbitrary endpoints) never reject for auth reasons. Not every system needs credentials, so the mock doesn't pretend they do.
 - **Exemptions**: each system's own admin API (`/<system>/_admin/*`) is never gated, and Primero's token-exchange endpoint (`POST /primero/api/v2/tokens`, returns `{ "token": "mock_primero_token" }`) stays open so you can obtain a token before you have one — every other Primero call then requires it.
 
@@ -824,25 +750,25 @@ Create (or edit) the credential for each adaptor and point its URL field at the 
 
 Each system implements the API surface its OpenFn adaptor actually calls (see [`openfn/adaptors`](https://github.com/OpenFn/adaptors)) with the real envelope shapes, status codes, and ID formats, so responses are structurally indistinguishable from the live system. Because several adaptors are *generic* clients (they build arbitrary paths rather than exposing one function per endpoint), those mocks cover a correspondingly broad surface:
 
-- **dhis2** — the new Tracker API (`POST/GET /api/tracker`), `/api/analytics`, `/api/schemas`, `/api/resourceTypes`, an optional `/api/{version}/` segment, and CRUD (list/get/create/PUT/PATCH/DELETE) for any resource type, alongside the classic tracker/metadata/dataValueSets endpoints.
-- **fhir** — searchset Bundles, reads, transaction/batch Bundles, plus the `/metadata` CapabilityStatement, resource `_history`, and a `Claim` for `getClaim()`.
-- **openmrs** — a generic REST API (any resource name, subresources like `patient/{uuid}/identifier`, POST-to-uuid updates, `?purge` delete, `startIndex`/`limit` paging), `/ws/rest/v1/session`, and a FHIR R4 module (Patient/Encounter/Observation/Condition).
-- **commcare** — the Tastypie `{ meta, objects }` Data API for any v0.5 resource (case/form/user/application/location), the configurable-report endpoint, the OpenRosa receiver, and the Excel/lookup-table bulk-upload endpoints.
-- **kobotoolbox** — `getForms` (`?asset_type=`), `getSubmissions` (`?query=`/`?sort=`), `getDeploymentInfo`, and generic `http.*` asset/data operations (create/update/delete, deploy, bulk data PATCH).
-- **primero** — token exchange, cases, case referrals (`GET/POST/PATCH .../referrals`), and the forms/lookups/locations reference data.
-- **godata** — token login (`POST /users/login`), then bare-array list/get/create/update for outbreaks, outbreak-scoped cases and contacts, locations and reference-data, with the `?filter=` Loopback query the `get*`/`upsert*` helpers depend on.
-- **rapidpro** — the `/api/v2` DRF API (`{ next, previous, results }`): `addContact`/`upsertContact` (`POST contacts.json`, dedup on `urn`/`uuid`), `startFlow` (`POST flow_starts.json`), `sendBroadcast` (`POST broadcasts.json`), plus flow/group/field reads.
+- **dhis2** — the new Tracker API (`POST/GET /api/tracker`), `/api/analytics`, `/api/schemas`, `/api/resourceTypes`, an optional `/api/{version}/` segment, and CRUD (list/get/create/PUT/PATCH/DELETE) for any resource type, alongside the classic tracker/metadata/dataValueSets endpoints. List responses use `{ pager, "<resourceType>": [...] }`; writes return an ImportSummary envelope.
+- **fhir** — searchset Bundles, reads, transaction/batch Bundles on `POST /fhir`, the `/metadata` CapabilityStatement, resource `_history`, and a `Claim` for `getClaim()`; errors come back as OperationOutcome.
+- **openmrs** — a generic REST API (any resource name, subresources like `patient/{uuid}/identifier`, POST-to-uuid updates, `?purge` delete, `startIndex`/`limit` paging), `/ws/rest/v1/session`, and a FHIR R4 module (Patient/Encounter/Observation/Condition); each seed patient is mirrored as both a REST record and a FHIR resource sharing one UUID.
+- **commcare** — the Tastypie `{ meta, objects }` Data API for any v0.5 resource (case/form/user/application/location), the configurable-report endpoint, the OpenRosa XML receiver, and the Excel/lookup-table bulk-upload endpoints. Note `fetchReportData(reportId, params, postUrl)`: the adaptor (via `language-common`) refuses an absolute `postUrl` whose origin differs from the credential's `hostUrl` and throws `BASE_URL_MISMATCH`, so point `postUrl` at a **relative, same-origin** path (e.g. `/a/test-project/api/v0.5/case/`), not an external `https://…` URL.
+- **kobotoolbox** — `getForms` (`?asset_type=`), `getSubmissions` (`?query=`/`?sort=`), `getDeploymentInfo`, and generic `http.*` asset/data operations (create/update/delete, deploy, bulk data PATCH); reads use the DRF `{ count, next, previous, results }` envelope.
+- **primero** — token exchange, cases, case referrals (`GET/POST/PATCH .../referrals`), and the forms/lookups/locations reference data, in a `{ data, metadata }` envelope with business fields nested under `data`.
+- **godata** — token login (`POST /users/login`), then bare-array (no envelope) list/get/create/update for outbreaks, outbreak-scoped cases and contacts, locations and reference-data, with the JSON Loopback `?filter=` query the `get*`/`upsert*` helpers depend on.
+- **rapidpro** — the `/api/v2` DRF API (`{ next, previous, results }`): `addContact`/`upsertContact` (`POST contacts.json`, dedup on `urn`/`uuid`, so re-posting an existing `urn` updates it with `200` rather than duplicating with `201`), `startFlow` (`POST flow_starts.json`), `sendBroadcast` (`POST broadcasts.json`), plus flow/group/field reads.
 - **odk** — ODK Central: session token (`POST /v1/sessions`), `getForms` (`/v1/projects/:id/forms`), and `getSubmissions` via the OData endpoint (`…/forms/{id}.svc/Submissions` → `{ value: [...] }`) with ODK `__id`/`__system` metadata.
-- **openlmis** — OpenLMIS v3: OAuth2 token (`POST /api/oauth/token`) and the Spring Data `{ content, totalElements, … }` page envelope for facilities, orderables, programs and requisitions (including `POST /api/requisitions/initiate`).
+- **openlmis** — OpenLMIS v3: OAuth2 token (`POST /api/oauth/token`) and the Spring Data `{ content, totalElements, totalPages, number, size }` page envelope for facilities, orderables, programs and requisitions (including `POST /api/requisitions/initiate`).
 - **openimis** — the `api_fhir_r4` FHIR server: token login (`POST /api/api_fhir_r4/login/`) then FHIR reads/writes where insurees are Patients, policies are Contracts and benefits are Coverages/Claims.
-- **openspp** — the Odoo XML-RPC external API the `odoo-await`-based adaptor calls: `authenticate`/`version` on `/xmlrpc/2/common` and `execute_kw` (`search_read`/`search`/`read`/`create`/`write`/`unlink`) on `/xmlrpc/2/object`, over `res.partner`, `g2p.program`, `spp.area`, `spp.service.point` and the membership models.
-- **opencrvs** — the GraphQL search API (`POST /graphql` → `{ data: { searchEvents } }`) alongside the events REST API (`POST /api/events/events`, `…/:id/notify`, `GET /api/events/locations`) and the `/notification` country-config hook.
+- **openspp** — the Odoo XML-RPC external API the `odoo-await`-based adaptor calls: `authenticate`/`version` on `/xmlrpc/2/common` and `execute_kw` (`search_read`/`search`/`read`/`create`/`write`/`unlink`) on `/xmlrpc/2/object`, over `res.partner`, `g2p.program`, `spp.area`, `spp.service.point` and the membership models. Payloads are XML `methodCall`/`methodResponse` documents, records carry integer ids, and many2one fields are `[id, label]` pairs.
+- **opencrvs** — the GraphQL search API (`POST /graphql` → `{ data: { searchEvents } }`) alongside the events REST API (`POST /api/events/events`, `…/:id/notify`, `GET /api/events/locations`) and the `/notification` country-config hook; an event advances through `create` → `notify`.
 - **openelis** — OpenELIS Global's FHIR R4 lab API under `/fhir`: ServiceRequests (orders), Specimens, Observations (results) and DiagnosticReports tied to a Patient.
-- **cht** — the Medic REST API (`POST /api/v1/people`, `/api/v1/places`, `GET`/`PUT /api/v1/settings`, `/api/v2/export/*`) and the underlying CouchDB (`/medic/:id`, `POST /medic/_bulk_docs`, `GET /medic/_changes`).
+- **cht** — the Medic REST API (`POST /api/v1/people`, `/api/v1/places`, `GET`/`PUT /api/v1/settings`, `/api/v2/export/*`) and the underlying CouchDB (`/medic/:id`, `POST /medic/_bulk_docs`, `GET /medic/_changes`), which returns write acks (`{ ok, id, rev }`) and filters `_changes` by `?since=`.
 - **openhim** — the OpenHIM Core API: channels, clients, tasks and (read-only) transactions as Mongo docs keyed by a 24-hex `_id`, plus a sample `/chw/encounter` mediator route.
-- **openboxes** — the OpenBoxes REST API under `/api` with token login (`POST /api/login`) and the `{ data: … }` envelope for products, locations and stock movements (with line items).
+- **openboxes** — the OpenBoxes REST API under `/api` with token login (`POST /api/login`) and the `{ data: … }` envelope for products, locations and stock movements (with line items); ids are 32-hex.
 - **ihris** — the iHRIS FHIR R4 workforce API under `/fhir`: Practitioners, PractitionerRoles, Organizations and Locations.
-- **twilio / mailgun** — the single send operation each adaptor exposes (`POST .../Messages.json`, `POST /v3/{domain}/messages`), plus extra read endpoints (Twilio messages/calls, Mailgun events/stats) for convenience.
+- **twilio / mailgun** — the single send operation each adaptor exposes (`POST .../Messages.json`, `POST /v3/{domain}/messages`), plus extra read endpoints (Twilio messages/calls, Mailgun events/stats). Twilio takes PascalCase form input, returns snake_case JSON, and auto-advances message status `queued` → `sent` → `delivered` on each read.
 - **http-generic** — a spec-less catch-all that answers any method/path, matching the generic `http` (`common`) adaptor.
 
 ## Admin API
@@ -1001,31 +927,6 @@ that instance and never collide with other systems on the shared port. Inside
 on the `mysystem` plugin serves it at `/mysystem/api/things`, and
 `request.mockAuth` is already available in every handler.
 
-Register the finished plugin in `src/systems/index.ts` under its `name` (the
-registry key is the mount path and must equal `plugin.name` — `test/registry.test.ts`
-guards both). A `mock.config.yaml` block is optional: every registered system is
-enabled by default, so add one only to disable the system or set overrides.
-
-### Notable per-system shapes
-
-Some systems are custom-shaped on purpose to match reality:
-
-- DHIS2 list responses use `{ pager, "<resourceType>": [...] }`; writes return an ImportSummary envelope.
-- CommCare uses the Tastypie `{ meta, objects }` envelope on domain-scoped paths and an OpenRosa XML receiver. Note `fetchReportData(reportId, params, postUrl)`: the adaptor (via `language-common`) refuses an absolute `postUrl` whose origin differs from the credential's `hostUrl` and throws `BASE_URL_MISMATCH`, so point `postUrl` at a **relative, same-origin** path on the mock (e.g. `/a/test-project/api/v0.5/case/`) rather than an external `https://…` URL.
-- OpenMRS mirrors each seed patient as both a REST record and a FHIR R4 resource sharing the same UUID.
-- FHIR returns searchset Bundles and OperationOutcome errors, with transaction/batch support on `POST /fhir`.
-- Kobotoolbox and Primero use DRF-style `{ count, next, previous, results }` and Primero's `{ data, metadata }` envelopes respectively; Primero nests business fields under `data`.
-- Twilio uses PascalCase form input, snake_case JSON output, and auto-advances message status queued -> sent -> delivered on each read.
-- Go.Data returns bare arrays (no envelope) and takes a JSON Loopback `?filter=` query; cases/contacts are outbreak-scoped under `/outbreaks/:id/...`.
-- RapidPro wraps reads in the DRF `{ next, previous, results }` envelope; posting a contact whose `urn` already exists updates it (200) instead of creating a duplicate (201).
-- ODK Central serves submissions through OData (`{ value: [...] }`) with `__id`/`__system` metadata, not plain REST.
-- OpenLMIS paginates with the Spring Data `{ content, totalElements, totalPages, number, size }` page envelope.
-- openIMIS, OpenELIS and iHRIS are FHIR R4 servers (searchset Bundles, `/metadata` CapabilityStatement, transaction Bundles) sharing one engine helper; openIMIS lives under `/api/api_fhir_r4`, the other two under `/fhir`.
-- OpenSPP is Odoo XML-RPC: requests/responses are XML `methodCall`/`methodResponse` documents, records carry integer ids, and many2one fields are `[id, label]` pairs.
-- OpenCRVS answers the same events over two shapes — a GraphQL `searchEvents` result and the REST events API — and advances an event's status through `create` -> `notify`.
-- CHT returns CouchDB write acks (`{ ok, id, rev }`), a `_changes` feed filterable by `?since=`, and `_bulk_docs` batch writes.
-- OpenHIM records are Mongo docs keyed by a 24-hex `_id`; OpenBoxes nests every payload under a `data` key with 32-hex ids.
-
 ## Testing usage examples end to end
 
 Each system's [sandbox](#browser-sandbox) **Usage** tab ships the exact OpenFn
@@ -1045,15 +946,10 @@ pnpm test:usage -- --keep             # keep the generated job/state/log files
 pnpm test:usage -- --no-warmup        # skip the adaptor-cache warm-up (see below)
 ```
 
-Before the timed loop the script **warms the adaptor cache**: one `openfn repo
-install` of the CLI and every target adaptor, up front. Each example is capped
-by a short per-run timeout to fail a hung job fast, but a cold machine would
-otherwise spend that budget on the one-time npm download of the CLI (via the
-`npx` fallback) plus its adaptor — so the *first* example would "time out" even
-though nothing is wrong, a spurious failure that gets re-investigated on every
-fresh run. Warming up moves that cost out of the timed loop, so the timeout only
-ever measures a job's execution. It's a no-op once the cache is warm; `--no-warmup`
-skips it.
+Before the timed loop the script **warms the adaptor cache** (one `openfn repo
+install` of the CLI and every target adaptor). Otherwise the one-time npm
+download would eat the first example's per-run timeout and fail a healthy job.
+It's a no-op once warm; `--no-warmup` skips it.
 
 For each example the script boots a single-system mock **mounted at the server
 root** on an ephemeral port, resolves the credential the sandbox would generate
