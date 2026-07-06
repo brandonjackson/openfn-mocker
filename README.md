@@ -67,15 +67,15 @@ systems:
 ```bash
 MOCKER_DATASET=rwanda-civil-registry MOCKER_SYSTEMS=dhis2,opencrvs pnpm start &
 
-# DHIS2 org units, now Rwandan provinces/districts:
-curl -s localhost:4000/dhis2/api/organisationUnits | jq '.organisationUnits[].name'
+# DHIS2 org units, now Rwandan provinces/districts (dhis2 requires auth; any user/token works):
+curl -s -u any:token localhost:4000/dhis2/api/organisationUnits | jq '.organisationUnits[].name'
 
-# OpenCRVS registration-office locations:
+# OpenCRVS registration-office locations (opencrvs is accept-all, no credentials needed):
 curl -s localhost:4000/opencrvs/api/events/locations | jq
 
 # Same request twice — note the stochastic latency:
-curl -o /dev/null -s -w 'first:  %{time_total}s\n' localhost:4000/dhis2/api/organisationUnits
-curl -o /dev/null -s -w 'second: %{time_total}s\n' localhost:4000/dhis2/api/organisationUnits
+curl -o /dev/null -s -u any:token -w 'first:  %{time_total}s\n' localhost:4000/dhis2/api/organisationUnits
+curl -o /dev/null -s -u any:token -w 'second: %{time_total}s\n' localhost:4000/dhis2/api/organisationUnits
 ```
 
 Point your OpenFn DHIS2 and OpenCRVS credentials at `http://localhost:4000/dhis2` and `http://localhost:4000/opencrvs` (any username/token works) and the workflow runs against this mock. See [Using with OpenFn](#using-with-openfn) for every credential shape.
@@ -525,8 +525,9 @@ pnpm generate-seed --name dominican-republic --config dr.yaml --dry-run
 pnpm generate-seed --name dominican-republic --config dr.yaml
 MOCKER_DATASET=dominican-republic MOCKER_SYSTEMS=dhis2,fhir pnpm start &
 
-# 3. See the DR-flavoured data come back through the real API envelopes:
-curl -s localhost:4000/dhis2/api/organisationUnits | jq '.organisationUnits[].name'
+# 3. See the DR-flavoured data come back through the real API envelopes
+#    (dhis2 requires auth, any user/token works; fhir is accept-all):
+curl -s -u any:token localhost:4000/dhis2/api/organisationUnits | jq '.organisationUnits[].name'
 curl -s localhost:4000/fhir/Patient | jq '.entry[].resource.name'
 ```
 
