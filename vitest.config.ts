@@ -11,5 +11,8 @@ export default defineConfig({
     globals: true,
     environment: 'node',
     include: ['test/**/*.test.ts', 'src/**/*.test.ts'],
+    // Tests read the bundled spec snapshot, never the network — deterministic
+    // and offline. Production leaves this unset so specs are fetched live.
+    env: { OPENFN_API_SPECS_DISABLE_CDN: '1' },
   },
 });
