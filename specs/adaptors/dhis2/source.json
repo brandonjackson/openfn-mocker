@@ -1,9 +1,0 @@
-{
-  "adaptor": "dhis2",
-  "npm": "@openfn/language-dhis2",
-  "origin": "generated",
-  "upstreamFormat": "docs",
-  "sources": ["https://docs.dhis2.org/en/develop/using-the-api/dhis-core-version-master/introduction.html"],
-  "capturedAt": "2026-07-06",
-  "notes": "Test fixture copied from existing specs/dhis2.openapi.json to validate seed-schema derivation."
-}
