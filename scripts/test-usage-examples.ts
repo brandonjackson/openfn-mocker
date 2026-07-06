@@ -40,11 +40,17 @@
  * spawns real subprocesses and hits npm, which is too heavy and network-bound
  * for the unit suite.
  *
+ * Before the timed loop it warms the adaptor cache (see `warmUp`): a one-time
+ * download of the CLI and every target adaptor, moved out of the per-example
+ * timeout so that cap only ever measures a job's execution, never a cold npm
+ * install. Skip it with `--no-warmup` if the cache is already warm.
+ *
  * Usage:
  *   pnpm test:usage                     # every system with usage examples
  *   pnpm test:usage -- --system openspp # one system (comma-separated for more)
  *   pnpm test:usage -- --list           # list discovered examples, run nothing
  *   pnpm test:usage -- --keep           # keep the temp job/state/log files
+ *   pnpm test:usage -- --no-warmup      # skip the adaptor-cache warm-up
  *   pnpm test:usage -- --cli "npx -y @openfn/cli"   # override the CLI command
  */
 import { spawn, spawnSync } from 'node:child_process';
@@ -74,16 +80,18 @@ interface Args {
   systems?: string[];
   list: boolean;
   keep: boolean;
+  warmup: boolean;
   cli?: string;
 }
 
 function parseArgs(argv: string[]): Args {
-  const args: Args = { list: false, keep: false };
+  const args: Args = { list: false, keep: false, warmup: true };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--') continue; // arg separator (pnpm forwards it through)
     else if (a === '--list') args.list = true;
     else if (a === '--keep') args.keep = true;
+    else if (a === '--no-warmup') args.warmup = false;
     else if (a === '--system' || a === '--systems') {
       args.systems = (argv[++i] ?? '').split(',').map((s) => s.trim()).filter(Boolean);
     } else if (a === '--cli') args.cli = argv[++i];
@@ -122,6 +130,17 @@ async function startSystem(system: string, plugin: MockSystemPlugin) {
   // port is only used for self-referential URL rewriting, which is gated on a
   // reverse-proxy header we never send — so its value is irrelevant here.
   const config: SystemConfig = { ...(fromFile ?? {}), port: 0 };
+
+  // Neutralize the fault-injection knobs from mock.config.yaml (e.g. the demo
+  // `dhis2.error_rate: 0.02`). A usage snippet runs exactly once, so an injected
+  // random 500 — or a 429 from rate_limit — would fail an otherwise-healthy
+  // example at random, making the suite nondeterministic and spawning spurious
+  // "it broke" investigations. This check verifies the snippet + mock behavior,
+  // not the mock's simulated flakiness, so faults must be off. Latency is kept:
+  // it's not a fault and stays well inside the per-example timeout.
+  delete config.error_rate;
+  delete config.error_status;
+  delete config.rate_limit;
 
   const { app } = await createSystemServer(plugin, config, { logLevel: 'warn', autoAuth: false });
   await app.listen({ port: 0, host: '127.0.0.1' });
@@ -286,6 +305,65 @@ async function resetMock(origin: string): Promise<void> {
   }
 }
 
+/**
+ * Pre-install the CLI and every target adaptor into the repo cache *before* the
+ * timed loop, so `EXAMPLE_TIMEOUT_MS` only ever measures a job's execution.
+ *
+ * That per-example cap exists to fail a hung run fast — but on a cold machine
+ * the first example also pays to download the CLI (when we fall back to `npx
+ * @openfn/cli`, which — unlike adaptors — isn't cached in the repo dir) plus its
+ * adaptor from npm. That one-time cost routinely blows past the cap and reports
+ * a misleading "timed out" on an otherwise-healthy example, which then gets
+ * re-investigated on every fresh run. Doing the install here moves it out of the
+ * timed loop. It's a single CLI invocation (positional package names install
+ * together) and a fast no-op once the cache is warm.
+ *
+ * A warm-up failure is non-fatal: we warn and let each example install on
+ * demand, exactly as before this step existed. `--no-warmup` skips it entirely.
+ */
+async function warmUp(cli: CliCmd, adaptors: string[], repoDir: string): Promise<void> {
+  if (!adaptors.length) return;
+  const packages = adaptors.map((a) => `@openfn/language-${a}`);
+  // Generous cap covering a possible cold CLI download plus one npm install of
+  // every adaptor; scales with the count and is never the tight per-example cap.
+  const timeoutMs = Math.max(120_000, adaptors.length * 15_000);
+  const started = Date.now();
+  process.stdout.write(`Warming adaptor cache (${adaptors.length}: ${adaptors.join(', ')}) … `);
+
+  const ok = await new Promise<boolean>((resolve) => {
+    // `detached` so the timeout can SIGKILL the whole tree (npx spawns the CLI
+    // as a grandchild), mirroring runExample's kill strategy.
+    const child = spawn(
+      cli.command,
+      [...cli.baseArgs, 'repo', 'install', ...packages, '--repo-dir', repoDir],
+      { detached: true, stdio: 'ignore', env: { ...process.env, OPENFN_REPO_DIR: repoDir } }
+    );
+    const timer = setTimeout(() => {
+      try {
+        if (child.pid) process.kill(-child.pid, 'SIGKILL');
+      } catch {
+        child.kill('SIGKILL');
+      }
+      resolve(false);
+    }, timeoutMs);
+    child.on('close', (code) => {
+      clearTimeout(timer);
+      resolve(code === 0);
+    });
+    child.on('error', () => {
+      clearTimeout(timer);
+      resolve(false);
+    });
+  });
+
+  const secs = ((Date.now() - started) / 1000).toFixed(1);
+  console.log(
+    ok
+      ? `done in ${secs}s`
+      : `WARN: failed after ${secs}s — examples will install on demand (the first may hit the ${EXAMPLE_TIMEOUT_MS / 1000}s cap).`
+  );
+}
+
 async function main(): Promise<void> {
   const args = parseArgs(process.argv.slice(2));
 
@@ -326,6 +404,13 @@ async function main(): Promise<void> {
   console.log(`OpenFn CLI: ${[cli.command, ...cli.baseArgs].join(' ')}`);
   console.log(`Adaptor cache: ${repoDir}`);
   console.log(`Testing: ${targets.join(', ')}\n`);
+
+  // Install the CLI + adaptors up front so the per-example timeout below only
+  // measures execution, never a one-time cold npm install (see warmUp).
+  if (args.warmup) {
+    await warmUp(cli, [...new Set(targets.map(adaptorFor))], repoDir);
+    console.log('');
+  }
 
   const results: RunResult[] = [];
 

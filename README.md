@@ -957,12 +957,23 @@ checks it succeeds — a true end-to-end test through the same adaptor a user
 runs, not a stub.
 
 ```bash
-npm i -g @openfn/cli          # or let the script fall back to `npx -y @openfn/cli`
+npm i -g @openfn/cli          # optional; the script falls back to `npx -y @openfn/cli`
 pnpm test:usage               # every system that has usage examples
 pnpm test:usage -- --system openspp   # just one (comma-separated for more)
 pnpm test:usage -- --list             # list discovered examples, run nothing
 pnpm test:usage -- --keep             # keep the generated job/state/log files
+pnpm test:usage -- --no-warmup        # skip the adaptor-cache warm-up (see below)
 ```
+
+Before the timed loop the script **warms the adaptor cache**: one `openfn repo
+install` of the CLI and every target adaptor, up front. Each example is capped
+by a short per-run timeout to fail a hung job fast, but a cold machine would
+otherwise spend that budget on the one-time npm download of the CLI (via the
+`npx` fallback) plus its adaptor — so the *first* example would "time out" even
+though nothing is wrong, a spurious failure that gets re-investigated on every
+fresh run. Warming up moves that cost out of the timed loop, so the timeout only
+ever measures a job's execution. It's a no-op once the cache is warm; `--no-warmup`
+skips it.
 
 For each example the script boots a single-system mock **mounted at the server
 root** on an ephemeral port, resolves the credential the sandbox would generate
@@ -973,6 +984,15 @@ the mock to pristine seed between examples. Mounting at the root (rather than
 ignore the URL path — openspp's `odoo-await`, for one, hardcodes `/xmlrpc/2/...`
 and would otherwise never reach a `/openspp`-prefixed mount. A run fails if the
 CLI exits non-zero or reports an error (its `✗` marker).
+
+The mock's **fault-injection knobs are neutralized** for the run: any
+`error_rate` / `error_status` / `rate_limit` a system carries in
+`mock.config.yaml` (for example the demo `dhis2.error_rate: 0.02`) is stripped
+before boot. A usage snippet runs exactly once, so an injected random `500` (or a
+`429`) would fail a healthy example at random and make the suite
+nondeterministic. This check is about whether the snippet and mock agree, not
+about the mock's simulated flakiness. Latency is left intact — it is not a fault
+and stays well inside the per-example timeout.
 
 The systems under test are discovered automatically from each plugin's `usage`
 examples (`MockSystemPlugin.usage`, authored per adaptor in a co-located
