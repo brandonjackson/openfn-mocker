@@ -45,10 +45,6 @@ systems:
     # /fhir/Patient (not /fhir/fhir/Patient).
     apiPath: ""
 
-  # Salesforce is a disabled placeholder (no plugin in v1).
-  salesforce:
-    enabled: false
-
   mailgun:
     domain: sandbox-test.mailgun.org
 

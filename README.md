@@ -4,7 +4,7 @@
 
 ## What it does
 
-- **Mocks 20+ systems OpenFn integrates with** — DHIS2, OpenCRVS, FHIR, CommCare, and [many more](#supported-systems) — with the real envelope shapes, status codes, and ID formats, so responses are structurally indistinguishable from the live system.
+- **Mocks 60+ systems OpenFn integrates with** — DHIS2, OpenCRVS, FHIR, CommCare, Salesforce, and [many more](#supported-systems) — with the real envelope shapes, status codes, and ID formats, so responses are structurally indistinguishable from the live system.
 - **Point-and-run** — every adaptor reads a base URL from its credential; set that URL to `http://localhost:<port>/<system>` (any username/token works) and your workflow runs against the mock.
 - **Stateful in memory** — a record you create is readable in a later step, and ships with seed data so queries work on first boot. State resets on restart.
 - **One port, one domain** — every system mounts under a path (`/dhis2`, `/opencrvs`, `/fhir`, ...) on a single shared port, so it deploys behind one public domain (Railway, Render, Fly, ...) with no wildcard DNS.
@@ -585,7 +585,26 @@ Every system is mounted at `/<name>` on the shared port. The credential URL fiel
 | ghana-bdr | `/ghana-bdr` | `baseUrl` | username & password | stable |
 | wigal-sms | `/wigal-sms` | `baseUrl` | API key | stable |
 | progres | `/progres` | `url` | API key | stable |
-| salesforce | `/salesforce` | — | — | planned |
+| salesforce | `/salesforce` | `loginUrl` | username & password | stable |
+| mailchimp | `/mailchimp` | `baseUrl` | API key | stable |
+| surveycto | `/surveycto` | `baseUrl` | username & password | stable |
+| collections | `/collections` | `collections_endpoint` | API key | stable |
+| memento | `/memento` | `baseUrl` | API key | stable |
+| asana | `/asana` | `baseUrl` | API key | stable |
+| inform | `/inform` | `baseUrl` | API key | stable |
+| sunbird-rc | `/sunbird-rc` | `baseUrl` | API key | stable |
+| ibipimo | `/ibipimo` | `baseUrl` | API key | stable |
+| msgraph | `/msgraph` | `baseUrl` | API key | stable |
+| stripe | `/stripe` | `baseUrl` | API key | stable |
+| googledrive | `/googledrive` | `baseUrl` | API key | stable |
+| zata | `/zata` | `baseUrl` | API key | stable |
+| azure-storage | `/azure-storage` | `baseUrl` | API key | stable |
+| beyonic | `/beyonic` | `apiUrl` | API key | stable |
+| dagu | `/dagu` | `baseUrl` | username & password | stable |
+| gemini | `/gemini` | `baseUrl` | API key | stable |
+| googlesheets | `/googlesheets` | `baseUrl` | API key | stable |
+| pesapal | `/pesapal` | `baseUrl` | OAuth client credentials | stable |
+| openfn | `/openfn` | `baseUrl` | API key | stable |
 <!-- END GENERATED: supported-systems -->
 
 Root admin routes (`/_admin/systems`, `/_admin/reset-all`) and a `GET /` index live on the shared port. Hitting `GET /` from a browser serves an interactive [API sandbox](#browser-sandbox); API clients get JSON.
@@ -739,6 +758,66 @@ Create (or edit) the credential for each adaptor and point its URL field at the 
 
 // UNHCR proGres v4  (API key)
 { "url": "http://localhost:4000/progres", "key": "<generated>", "cert": "<generated>", "token": "<generated>" }
+
+// Salesforce  (username & password)
+{ "loginUrl": "http://localhost:4000/salesforce", "username": "user@example.com", "password": "<generated>", "securityToken": "<generated>", "apiVersion": "50.0" }
+
+// Mailchimp Marketing  (API key)
+{ "baseUrl": "http://localhost:4000/mailchimp", "server": "us1", "apiKey": "<generated>" }
+
+// SurveyCTO  (username & password)
+{ "baseUrl": "http://localhost:4000/surveycto", "servername": "mockserver", "username": "user@example.com", "password": "<generated>", "apiVersion": "v1" }
+
+// OpenFn Collections  (API key)
+{ "collections_endpoint": "http://localhost:4000/collections", "collections_token": "<generated>", "project_id": "mock-project" }
+
+// Memento Database  (API key)
+{ "baseUrl": "http://localhost:4000/memento", "apiVersion": "v1", "token": "<generated>" }
+
+// Asana  (API key)
+{ "baseUrl": "http://localhost:4000/asana", "token": "<generated>", "workspaceGid": "12345" }
+
+// UNICEF InForm  (API key)
+{ "baseUrl": "http://localhost:4000/inform", "access_token": "<generated>", "apiVersion": "v2" }
+
+// Sunbird RC  (API key)
+{ "baseUrl": "http://localhost:4000/sunbird-rc", "token": "<generated>" }
+
+// Ibipimo  (API key)
+{ "baseUrl": "http://localhost:4000/ibipimo", "apiToken": "<generated>" }
+
+// Microsoft Graph  (API key)
+{ "baseUrl": "http://localhost:4000/msgraph", "access_token": "<generated>" }
+
+// Stripe  (API key)
+{ "baseUrl": "http://localhost:4000/stripe", "apiKey": "<generated>", "apiVersion": "v1" }
+
+// Google Drive  (API key)
+{ "baseUrl": "http://localhost:4000/googledrive", "access_token": "<generated>" }
+
+// Zata  (API key)
+{ "baseUrl": "http://localhost:4000/zata", "apiToken": "<generated>", "apiVersion": "v1" }
+
+// Azure Blob Storage  (API key)
+{ "baseUrl": "http://localhost:4000/azure-storage", "accountName": "mockaccount", "accountKey": "<generated>", "containerName": "mock-container" }
+
+// Beyonic  (API key)
+{ "apiUrl": "http://localhost:4000/beyonic", "apiToken": "<generated>" }
+
+// Dagu  (username & password)
+{ "baseUrl": "http://localhost:4000/dagu", "username": "admin", "password": "<generated>" }
+
+// Gemini  (API key)
+{ "baseUrl": "http://localhost:4000/gemini", "apiKey": "<generated>" }
+
+// Google Sheets  (API key)
+{ "baseUrl": "http://localhost:4000/googlesheets", "access_token": "<generated>" }
+
+// Pesapal (v3)  (OAuth client credentials)
+{ "baseUrl": "http://localhost:4000/pesapal", "consumer_key": "mock-consumer-key", "consumer_secret": "<generated>" }
+
+// OpenFn (Lightning)  (API key)
+{ "baseUrl": "http://localhost:4000/openfn", "access_token": "<generated>" }
 ```
 <!-- END GENERATED: credentials -->
 
@@ -1111,10 +1190,12 @@ box:
   `access_token` on FHIR / http / ODK, CommCare's `ApiKey <user>:<key>` header,
   and Salesforce's `securityToken`. Model these so both variants of each
   credential work.
-- **Salesforce plugin.** Listed as *planned* in
-  [Supported systems](#supported-systems) — the mount and credential
-  (`username`/`password`/`securityToken`, plus OAuth) exist on paper, but there
-  is no plugin yet.
+- **Salesforce end-to-end via jsforce.** Salesforce now has a plugin (REST Data
+  API — `sobjects`, `describe`, SOQL `query` — plus a SOAP login and OAuth token
+  stub), so its request/response surface is modelled and directly testable. The
+  stock adaptor authenticates through `jsforce`, whose login handshake and
+  instance-URL derivation still need alignment before it can be driven fully end
+  to end against a single-origin mount (`pnpm test:usage`).
 - **Primero `createReferrals` adaptor bug.** The stock adaptor passes `json: {
   data }` to `request`, which auto-parses the response body into an object —
   then the adaptor calls `JSON.parse()` on that already-parsed object anyway,

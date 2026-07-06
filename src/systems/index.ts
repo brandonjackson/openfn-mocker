@@ -42,6 +42,29 @@ import ghanaNia from './ghana-nia/plugin.js';
 import ghanaBdr from './ghana-bdr/plugin.js';
 import wigalSms from './wigal-sms/plugin.js';
 import progres from './progres/plugin.js';
+// Third expansion: more systems OpenFn has adaptors for, chosen to maximise the
+// adaptor-function surface each mock exercises (payments, CRM/ERP, cloud drives,
+// registries, messaging, LLMs and data platforms).
+import salesforce from './salesforce/plugin.js';
+import mailchimp from './mailchimp/plugin.js';
+import surveycto from './surveycto/plugin.js';
+import collections from './collections/plugin.js';
+import memento from './memento/plugin.js';
+import asana from './asana/plugin.js';
+import inform from './inform/plugin.js';
+import sunbirdRc from './sunbird-rc/plugin.js';
+import ibipimo from './ibipimo/plugin.js';
+import msgraph from './msgraph/plugin.js';
+import stripe from './stripe/plugin.js';
+import googledrive from './googledrive/plugin.js';
+import zata from './zata/plugin.js';
+import azureStorage from './azure-storage/plugin.js';
+import beyonic from './beyonic/plugin.js';
+import dagu from './dagu/plugin.js';
+import gemini from './gemini/plugin.js';
+import googlesheets from './googlesheets/plugin.js';
+import pesapal from './pesapal/plugin.js';
+import openfn from './openfn/plugin.js';
 
 /** Registry of all mock system plugins, keyed by system name (== config key). */
 export const plugins: Record<string, MockSystemPlugin> = {
@@ -89,4 +112,25 @@ export const plugins: Record<string, MockSystemPlugin> = {
   'ghana-bdr': ghanaBdr,
   'wigal-sms': wigalSms,
   progres,
+  // Third expansion (see imports above).
+  salesforce,
+  mailchimp,
+  surveycto,
+  collections,
+  memento,
+  asana,
+  inform,
+  'sunbird-rc': sunbirdRc,
+  ibipimo,
+  msgraph,
+  stripe,
+  googledrive,
+  zata,
+  'azure-storage': azureStorage,
+  beyonic,
+  dagu,
+  gemini,
+  googlesheets,
+  pesapal,
+  openfn,
 };

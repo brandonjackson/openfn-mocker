@@ -44,7 +44,30 @@ describe('per-plugin credential spec', () => {
     // Exactly the systems whose plugin enforces auth carry an authHeader.
     const enforced = Object.keys(plugins).filter((n) => plugins[n].auth?.required).sort();
     expect(enforced).toEqual(
-      ['commcare', 'dhis2', 'kobotoolbox', 'mailgun', 'openmrs', 'primero', 'twilio'].sort()
+      [
+        'asana',
+        'beyonic',
+        'collections',
+        'commcare',
+        'dagu',
+        'dhis2',
+        'googledrive',
+        'googlesheets',
+        'ibipimo',
+        'inform',
+        'kobotoolbox',
+        'mailchimp',
+        'mailgun',
+        'msgraph',
+        'openfn',
+        'openmrs',
+        'pesapal',
+        'primero',
+        'stripe',
+        'surveycto',
+        'twilio',
+        'zata',
+      ].sort()
     );
   });
 
