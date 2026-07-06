@@ -17,8 +17,8 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/mock.config.yaml ./mock.config.yaml
-# The server reads spec JSON from specs/ at runtime.
-COPY --from=builder /app/specs ./specs
+# Adaptor API specs are read at runtime from the openfn-api-specs package
+# (already present under the copied node_modules), not from a local specs/ dir.
 # Seed datasets. The image ships the committed `default` (served from the
 # built-in seeds); a custom dataset can be baked in by committing/copying it too.
 COPY --from=builder /app/datasets ./datasets

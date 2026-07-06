@@ -105,7 +105,6 @@ function segmentsOf(req: FastifyRequest): string[] {
 
 const plugin: MockSystemPlugin = {
   name: 'openmrs',
-  specFile: 'openmrs.schema.json',
   // OpenMRS uses HTTP Basic auth; reject requests with no credentials.
   auth: { required: true, schemes: ['basic'] },
   credential: {

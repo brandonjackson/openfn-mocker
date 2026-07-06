@@ -1,7 +1,3 @@
-import { readFileSync, existsSync } from 'node:fs';
-import { dirname, join, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
-
 /** A single API operation extracted from an OpenAPI spec. */
 export interface ParsedOperation {
   method: string; // upper-case HTTP verb, e.g. 'GET'
@@ -22,48 +18,7 @@ export interface ParsedSpec {
   resolveRef(ref: string): any;
 }
 
-const HERE = dirname(fileURLToPath(import.meta.url));
 const HTTP_METHODS = ['get', 'post', 'put', 'patch', 'delete', 'head', 'options'] as const;
-
-/** Candidate absolute paths to try when resolving a spec file name. */
-function candidateSpecPaths(specFileName: string): string[] {
-  const candidates: string[] = [
-    resolve(process.cwd(), 'specs', specFileName),
-    resolve(process.cwd(), specFileName),
-  ];
-  // Walk up from this module's directory (works whether running from src/ or dist/).
-  let dir = HERE;
-  for (let i = 0; i < 8; i++) {
-    candidates.push(join(dir, 'specs', specFileName));
-    const parent = dirname(dir);
-    if (parent === dir) break;
-    dir = parent;
-  }
-  return candidates;
-}
-
-/**
- * Read + JSON.parse a spec file from specs/<specFileName>. Path resolution is
- * robust to running from either src/ (tsx) or dist/ (compiled) and to the
- * current working directory. Throws a clear error listing the searched paths
- * if the file is missing or unparseable.
- */
-export function loadSpec(specFileName: string): any {
-  const candidates = candidateSpecPaths(specFileName);
-  for (const p of candidates) {
-    if (existsSync(p)) {
-      const text = readFileSync(p, 'utf8');
-      try {
-        return JSON.parse(text);
-      } catch (e) {
-        throw new Error(`Failed to parse spec "${specFileName}" at ${p}: ${(e as Error).message}`);
-      }
-    }
-  }
-  throw new Error(
-    `Spec file "${specFileName}" not found. Searched:\n  ${candidates.join('\n  ')}`
-  );
-}
 
 /**
  * Parse a raw OpenAPI document into a ParsedSpec: extract components.schemas,

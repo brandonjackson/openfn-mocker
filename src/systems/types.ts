@@ -99,14 +99,6 @@ export interface MockSystemPlugin {
    */
   adaptorName?: string;
   /**
-   * Reference spec in specs/ documenting the API surface this mock covers
-   * (an OpenAPI/JSON-schema subset of the real API). Authoring reference, not
-   * runtime configuration — a plugin may choose to load it for response
-   * shaping (mailgun does), but nothing loads it automatically. Omit for
-   * systems with no reference spec.
-   */
-  specFile?: string;
-  /**
    * How this system treats authentication. Enforced automatically by
    * registerSystem (via `enforceAuth`) before any route runs. Omit — or set
    * `{ required: false }` — for systems that accept unauthenticated requests

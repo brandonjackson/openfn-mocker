@@ -17,6 +17,9 @@ importers:
       fastify:
         specifier: ^4
         version: 4.29.1
+      openfn-api-specs:
+        specifier: github:brandonjackson/openfn-api-specs
+        version: git+https://git@github.com:brandonjackson/openfn-api-specs.git#de3dd97aa9f9038bcc9ade12bc30a155a15d5023
       yaml:
         specifier: ^2
         version: 2.9.0
@@ -689,6 +692,12 @@ packages:
   on-exit-leak-free@2.1.2:
     resolution: {integrity: sha512-0eJJY6hXLGf1udHwfNftBqH+g73EU4B504nZeKpz1sYRKafAghwxEJunB2O7rDZkL4PGfsMVnTXZ2EjibbqcsA==}
     engines: {node: '>=14.0.0'}
+
+  openfn-api-specs@git+https://git@github.com:brandonjackson/openfn-api-specs.git#de3dd97aa9f9038bcc9ade12bc30a155a15d5023:
+    resolution: {commit: de3dd97aa9f9038bcc9ade12bc30a155a15d5023, repo: git@github.com:brandonjackson/openfn-api-specs.git, type: git}
+    version: 0.1.0
+    engines: {node: '>=20'}
+    hasBin: true
 
   pathe@1.1.2:
     resolution: {integrity: sha512-whLdWMYL2TwI08hn8/ZqAbrVemu0LNaNNJZX73O6qaIdCTfXutsLhMkjdENX0qhsQ9uIimo4/aQOmXkoon2nDQ==}
@@ -1409,6 +1418,8 @@ snapshots:
   nanoid@3.3.15: {}
 
   on-exit-leak-free@2.1.2: {}
+
+  openfn-api-specs@git+https://git@github.com:brandonjackson/openfn-api-specs.git#de3dd97aa9f9038bcc9ade12bc30a155a15d5023: {}
 
   pathe@1.1.2: {}
 

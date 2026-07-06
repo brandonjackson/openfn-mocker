@@ -65,7 +65,6 @@ function tastypie(
 
 const plugin: MockSystemPlugin = {
   name: 'commcare',
-  specFile: 'commcare.schema.json',
   // CommCare accepts HTTP Basic or an `Authorization: ApiKey <user>:<key>` header.
   auth: { required: true, schemes: ['basic', 'apikey'] },
   credential: {

@@ -41,7 +41,6 @@ function nextStatus(current: string): string | undefined {
 
 const plugin: MockSystemPlugin = {
   name: 'twilio',
-  specFile: 'twilio.openapi.json',
   // Twilio uses HTTP Basic auth (`accountSid:authToken`); reject anonymous requests.
   auth: { required: true, schemes: ['basic'] },
   credential: {
