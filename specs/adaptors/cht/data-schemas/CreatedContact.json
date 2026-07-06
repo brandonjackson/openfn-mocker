@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cht/CreatedContact",
+  "title": "CreatedContact",
+  "x-openfn-adaptor": "cht",
+  "x-source": {
+    "openapi": "#/components/schemas/CreatedContact",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "Result of creating a contact via the legacy people/places endpoints.",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "rev": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "rev"
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "adaptor": "lamisplus",
+  "capturedAt": "2026-07-06",
+  "dialect": "https://json-schema.org/draft/2020-12/schema",
+  "source": "openapi.json",
+  "resources": [
+    "Biometric",
+    "Encounter",
+    "LoginResponse",
+    "Patient",
+    "PatientListResponse",
+    "Visit",
+    "VisitListResponse"
+  ],
+  "objects": [
+    {
+      "name": "Biometric",
+      "file": "Biometric.json",
+      "resource": true
+    },
+    {
+      "name": "Encounter",
+      "file": "Encounter.json",
+      "resource": true
+    },
+    {
+      "name": "LoginResponse",
+      "file": "LoginResponse.json",
+      "resource": true
+    },
+    {
+      "name": "Patient",
+      "file": "Patient.json",
+      "resource": true
+    },
+    {
+      "name": "PatientListResponse",
+      "file": "PatientListResponse.json",
+      "resource": true
+    },
+    {
+      "name": "Visit",
+      "file": "Visit.json",
+      "resource": true
+    },
+    {
+      "name": "VisitListResponse",
+      "file": "VisitListResponse.json",
+      "resource": true
+    }
+  ]
+}

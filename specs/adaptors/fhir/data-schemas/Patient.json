@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fhir/Patient",
+  "title": "Patient",
+  "x-openfn-adaptor": "fhir",
+  "x-source": {
+    "openapi": "#/components/schemas/Patient",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "required": [
+    "resourceType"
+  ],
+  "properties": {
+    "resourceType": {
+      "type": "string",
+      "enum": [
+        "Patient"
+      ]
+    },
+    "id": {
+      "type": "string"
+    },
+    "identifier": {
+      "type": "array",
+      "items": {
+        "$ref": "Identifier.json"
+      }
+    },
+    "active": {
+      "type": "boolean"
+    },
+    "name": {
+      "type": "array",
+      "items": {
+        "$ref": "HumanName.json"
+      }
+    },
+    "gender": {
+      "type": "string",
+      "enum": [
+        "male",
+        "female",
+        "other",
+        "unknown"
+      ]
+    },
+    "birthDate": {
+      "type": "string",
+      "format": "date"
+    },
+    "telecom": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "address": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    }
+  }
+}

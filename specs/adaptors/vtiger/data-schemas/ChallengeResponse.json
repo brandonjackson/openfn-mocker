@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "vtiger/ChallengeResponse",
+  "title": "ChallengeResponse",
+  "x-openfn-adaptor": "vtiger",
+  "x-source": {
+    "openapi": "#/components/schemas/ChallengeResponse",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "success": {
+      "type": "boolean",
+      "example": true
+    },
+    "result": {
+      "$ref": "ChallengeResult.json"
+    }
+  },
+  "required": [
+    "success",
+    "result"
+  ]
+}

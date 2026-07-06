@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openimis/Identifier",
+  "title": "Identifier",
+  "x-openfn-adaptor": "openimis",
+  "x-source": {
+    "openapi": "#/components/schemas/Identifier",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "use": {
+      "type": "string"
+    },
+    "type": {
+      "$ref": "CodeableConcept.json"
+    },
+    "system": {
+      "type": "string"
+    },
+    "value": {
+      "type": "string"
+    }
+  }
+}

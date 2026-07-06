@@ -1,0 +1,49 @@
+{
+  "adaptor": "claude",
+  "capturedAt": "2026-07-06",
+  "dialect": "https://json-schema.org/draft/2020-12/schema",
+  "source": "openapi.json",
+  "resources": [
+    "Message",
+    "MessageBatch",
+    "Model",
+    "TokenCount"
+  ],
+  "objects": [
+    {
+      "name": "ContentBlock",
+      "file": "ContentBlock.json",
+      "resource": false
+    },
+    {
+      "name": "Message",
+      "file": "Message.json",
+      "resource": true
+    },
+    {
+      "name": "MessageBatch",
+      "file": "MessageBatch.json",
+      "resource": true
+    },
+    {
+      "name": "Model",
+      "file": "Model.json",
+      "resource": true
+    },
+    {
+      "name": "RequestCounts",
+      "file": "RequestCounts.json",
+      "resource": false
+    },
+    {
+      "name": "TokenCount",
+      "file": "TokenCount.json",
+      "resource": true
+    },
+    {
+      "name": "Usage",
+      "file": "Usage.json",
+      "resource": false
+    }
+  ]
+}

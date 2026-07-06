@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cht/ContactList",
+  "title": "ContactList",
+  "x-openfn-adaptor": "cht",
+  "x-source": {
+    "openapi": "#/components/schemas/ContactList",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "array",
+  "description": "A list of contact records (from the export endpoint).",
+  "items": {
+    "$ref": "Contact.json"
+  }
+}

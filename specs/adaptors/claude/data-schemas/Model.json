@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "claude/Model",
+  "title": "Model",
+  "x-openfn-adaptor": "claude",
+  "x-source": {
+    "openapi": "#/components/schemas/Model",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "required": [
+    "id",
+    "type",
+    "display_name",
+    "created_at"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "example": "claude-opus-4-6"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "model"
+      ],
+      "example": "model"
+    },
+    "display_name": {
+      "type": "string",
+      "example": "Claude Opus 4.6"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2026-02-04T00:00:00Z"
+    }
+  }
+}

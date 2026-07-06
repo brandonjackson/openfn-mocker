@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "intuit/MetaData",
+  "title": "MetaData",
+  "x-openfn-adaptor": "intuit",
+  "x-source": {
+    "openapi": "#/components/schemas/MetaData",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "CreateTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "LastUpdatedTime": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

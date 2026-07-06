@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "monnify/Transaction",
+  "title": "Transaction",
+  "x-openfn-adaptor": "monnify",
+  "x-source": {
+    "openapi": "#/components/schemas/Transaction",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "transactionReference": {
+      "type": "string",
+      "example": "MNFY|20250101|000123"
+    },
+    "paymentReference": {
+      "type": "string",
+      "example": "PAY-REF-001"
+    },
+    "amountPaid": {
+      "type": "number",
+      "example": 5000
+    },
+    "totalPayable": {
+      "type": "number",
+      "example": 5000
+    },
+    "paymentStatus": {
+      "type": "string",
+      "example": "PAID"
+    },
+    "currencyCode": {
+      "type": "string",
+      "example": "NGN"
+    },
+    "customer": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "example": "customer@example.com"
+        },
+        "name": {
+          "type": "string",
+          "example": "Ada Lovelace"
+        }
+      }
+    },
+    "createdOn": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

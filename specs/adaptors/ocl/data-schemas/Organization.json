@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ocl/Organization",
+  "title": "Organization",
+  "x-openfn-adaptor": "ocl",
+  "x-source": {
+    "openapi": "#/components/schemas/Organization",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "example": "MSFOCG"
+    },
+    "uuid": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string",
+      "example": "Medecins Sans Frontieres"
+    },
+    "type": {
+      "type": "string",
+      "example": "Organization"
+    },
+    "company": {
+      "type": "string"
+    },
+    "website": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "public_access": {
+      "type": "string",
+      "example": "View"
+    },
+    "logo_url": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "url": {
+      "type": "string",
+      "example": "/orgs/MSFOCG/"
+    },
+    "sources_url": {
+      "type": "string"
+    },
+    "collections_url": {
+      "type": "string"
+    },
+    "public_sources": {
+      "type": "integer"
+    },
+    "public_collections": {
+      "type": "integer"
+    },
+    "created_on": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_on": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "extras": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openimis/LoginResponse",
+  "title": "LoginResponse",
+  "x-openfn-adaptor": "openimis",
+  "x-source": {
+    "openapi": "#/components/schemas/LoginResponse",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "token": {
+      "type": "string",
+      "description": "JWT bearer token"
+    },
+    "exp": {
+      "type": "integer",
+      "description": "Expiry timestamp"
+    }
+  },
+  "required": [
+    "token"
+  ]
+}

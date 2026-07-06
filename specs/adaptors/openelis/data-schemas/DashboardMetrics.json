@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openelis/DashboardMetrics",
+  "title": "DashboardMetrics",
+  "x-openfn-adaptor": "openelis",
+  "x-source": {
+    "openapi": "#/components/schemas/DashboardMetrics",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "ordersInProgress": {
+      "type": "integer",
+      "example": 12
+    },
+    "ordersReadyForValidation": {
+      "type": "integer",
+      "example": 4
+    },
+    "ordersCompletedToday": {
+      "type": "integer",
+      "example": 20
+    },
+    "averageTurnAroundTime": {
+      "type": "number",
+      "example": 3.5
+    }
+  }
+}

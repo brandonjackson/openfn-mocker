@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "facebook/SendResponse",
+  "title": "SendResponse",
+  "x-openfn-adaptor": "facebook",
+  "x-source": {
+    "openapi": "#/components/schemas/SendResponse",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "recipient_id": {
+      "type": "string"
+    },
+    "message_id": {
+      "type": "string"
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "gemini/Blob",
+  "title": "Blob",
+  "x-openfn-adaptor": "gemini",
+  "x-source": {
+    "openapi": "#/components/schemas/Blob",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "mimeType": {
+      "type": "string"
+    },
+    "data": {
+      "type": "string",
+      "description": "Base64-encoded inline data"
+    }
+  }
+}

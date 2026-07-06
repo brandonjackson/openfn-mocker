@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "arcgis/FeatureSet",
+  "title": "FeatureSet",
+  "x-openfn-adaptor": "arcgis",
+  "x-source": {
+    "openapi": "#/components/schemas/FeatureSet",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "objectIdFieldName": {
+      "type": "string",
+      "example": "OBJECTID"
+    },
+    "geometryType": {
+      "type": "string",
+      "example": "esriGeometryPoint"
+    },
+    "spatialReference": {
+      "type": "object",
+      "properties": {
+        "wkid": {
+          "type": "integer",
+          "example": 4326
+        }
+      }
+    },
+    "fields": {
+      "type": "array",
+      "items": {
+        "$ref": "Field.json"
+      }
+    },
+    "features": {
+      "type": "array",
+      "items": {
+        "$ref": "Feature.json"
+      }
+    },
+    "exceededTransferLimit": {
+      "type": "boolean"
+    }
+  }
+}

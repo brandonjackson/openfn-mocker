@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "memento/EntryFieldValue",
+  "title": "EntryFieldValue",
+  "x-openfn-adaptor": "memento",
+  "x-source": {
+    "openapi": "#/components/schemas/EntryFieldValue",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer",
+      "example": 1
+    },
+    "name": {
+      "type": "string",
+      "example": "Name"
+    },
+    "type": {
+      "type": "string",
+      "example": "text"
+    },
+    "value": {
+      "example": "Record 1"
+    }
+  }
+}

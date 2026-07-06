@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openfn/Run",
+  "title": "Run",
+  "x-openfn-adaptor": "openfn",
+  "x-source": {
+    "openapi": "#/components/schemas/Run",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "example": "e6f7a8b9-0005-4a2b-9c3d-000000000005"
+    },
+    "job_id": {
+      "type": "string",
+      "example": "b3c4d5e6-0003-4a2b-9c3d-000000000003"
+    },
+    "workflow_id": {
+      "type": "string",
+      "example": "a2b3c4d5-0002-4a2b-9c3d-000000000002"
+    },
+    "dataclip_id": {
+      "type": "string",
+      "example": "f7a8b9c0-0006-4a2b-9c3d-000000000006"
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "available",
+        "claimed",
+        "started",
+        "success",
+        "failed",
+        "crashed"
+      ],
+      "example": "success"
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2026-06-01T08:00:00Z"
+    },
+    "finished_at": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2026-06-01T08:00:03Z"
+    }
+  }
+}

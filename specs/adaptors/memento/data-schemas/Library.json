@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "memento/Library",
+  "title": "Library",
+  "x-openfn-adaptor": "memento",
+  "x-source": {
+    "openapi": "#/components/schemas/Library",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "example": "HyZV7AYk0"
+    },
+    "name": {
+      "type": "string",
+      "example": "Patients"
+    },
+    "owner": {
+      "type": "string"
+    },
+    "createdTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "revision": {
+      "type": "integer"
+    },
+    "size": {
+      "type": "integer"
+    },
+    "fields": {
+      "type": "array",
+      "items": {
+        "$ref": "Field.json"
+      }
+    }
+  }
+}

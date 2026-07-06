@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "chatgpt/CompletionChoice",
+  "title": "CompletionChoice",
+  "x-openfn-adaptor": "chatgpt",
+  "x-source": {
+    "openapi": "#/components/schemas/CompletionChoice",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "A single legacy completion choice.",
+  "properties": {
+    "index": {
+      "type": "integer"
+    },
+    "text": {
+      "type": "string"
+    },
+    "finish_reason": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "stop",
+        "length",
+        "content_filter"
+      ]
+    },
+    "logprobs": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": true
+    }
+  },
+  "required": [
+    "index",
+    "text",
+    "finish_reason"
+  ]
+}

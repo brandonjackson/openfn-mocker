@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "bigquery/JobConfigurationLoad",
+  "title": "JobConfigurationLoad",
+  "x-openfn-adaptor": "bigquery",
+  "x-source": {
+    "openapi": "#/components/schemas/JobConfigurationLoad",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "sourceUris": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "destinationTable": {
+      "$ref": "TableReference.json"
+    },
+    "schema": {
+      "$ref": "TableSchema.json"
+    },
+    "sourceFormat": {
+      "type": "string",
+      "example": "CSV"
+    },
+    "skipLeadingRows": {
+      "type": "integer"
+    },
+    "writeDisposition": {
+      "type": "string",
+      "example": "WRITE_APPEND"
+    },
+    "createDisposition": {
+      "type": "string",
+      "example": "CREATE_IF_NEEDED"
+    },
+    "schemaUpdateOptions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "autodetect": {
+      "type": "boolean"
+    }
+  }
+}

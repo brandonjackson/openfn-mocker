@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "twilio/Message",
+  "title": "Message",
+  "x-openfn-adaptor": "twilio",
+  "x-source": {
+    "openapi": "#/components/schemas/Message",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "A Twilio Message resource.",
+  "properties": {
+    "sid": {
+      "type": "string",
+      "description": "The unique string identifying the Message resource.",
+      "pattern": "^(SM|MM)[0-9a-fA-F]{32}$"
+    },
+    "account_sid": {
+      "type": "string",
+      "description": "The SID of the Account that sent the message.",
+      "pattern": "^AC[0-9a-fA-F]{32}$"
+    },
+    "messaging_service_sid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "The SID of the Messaging Service used, if any."
+    },
+    "body": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "The text content of the message."
+    },
+    "num_segments": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "The number of segments that make up the complete message."
+    },
+    "num_media": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "The number of media files associated with the message."
+    },
+    "direction": {
+      "$ref": "MessageDirection.json"
+    },
+    "from": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "The sender's phone number, alphanumeric sender ID, short code, or channel address."
+    },
+    "to": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "The recipient's phone number or channel address."
+    },
+    "date_created": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "RFC 2822 timestamp (GMT) of when the resource was created."
+    },
+    "date_updated": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "RFC 2822 timestamp (GMT) of when the resource was last updated."
+    },
+    "date_sent": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "RFC 2822 timestamp (GMT) of when the message was sent."
+    },
+    "status": {
+      "$ref": "MessageStatus.json"
+    },
+    "error_code": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "description": "The error code if the message status is failed or undelivered."
+    },
+    "error_message": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "The description of the error_code, if any."
+    },
+    "price": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "The amount billed for the message in the currency specified by price_unit."
+    },
+    "price_unit": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "The currency the price is measured in (ISO 4217)."
+    },
+    "api_version": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "The API version used to process the message."
+    },
+    "uri": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "The URI of the resource relative to https://api.twilio.com."
+    },
+    "subresource_uris": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "A map of related subresources (e.g. media, feedback)."
+    }
+  }
+}

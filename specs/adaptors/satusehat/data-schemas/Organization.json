@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "satusehat/Organization",
+  "title": "Organization",
+  "x-openfn-adaptor": "satusehat",
+  "x-source": {
+    "openapi": "#/components/schemas/Organization",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "required": [
+    "resourceType"
+  ],
+  "properties": {
+    "resourceType": {
+      "type": "string",
+      "enum": [
+        "Organization"
+      ]
+    },
+    "id": {
+      "type": "string"
+    },
+    "identifier": {
+      "type": "array",
+      "items": {
+        "$ref": "Identifier.json"
+      }
+    },
+    "active": {
+      "type": "boolean"
+    },
+    "type": {
+      "type": "array",
+      "items": {
+        "$ref": "CodeableConcept.json"
+      }
+    },
+    "name": {
+      "type": "string"
+    },
+    "partOf": {
+      "$ref": "Reference.json"
+    }
+  }
+}

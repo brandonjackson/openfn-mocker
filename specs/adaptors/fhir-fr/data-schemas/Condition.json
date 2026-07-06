@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fhir-fr/Condition",
+  "title": "Condition",
+  "x-openfn-adaptor": "fhir-fr",
+  "x-source": {
+    "openapi": "#/components/schemas/Condition",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "required": [
+    "resourceType"
+  ],
+  "properties": {
+    "resourceType": {
+      "type": "string",
+      "enum": [
+        "Condition"
+      ]
+    },
+    "id": {
+      "type": "string"
+    },
+    "meta": {
+      "$ref": "Meta.json"
+    },
+    "identifier": {
+      "type": "array",
+      "items": {
+        "$ref": "Identifier.json"
+      }
+    },
+    "clinicalStatus": {
+      "$ref": "CodeableConcept.json"
+    },
+    "code": {
+      "$ref": "CodeableConcept.json"
+    },
+    "subject": {
+      "$ref": "Reference.json"
+    },
+    "encounter": {
+      "$ref": "Reference.json"
+    },
+    "recordedDate": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

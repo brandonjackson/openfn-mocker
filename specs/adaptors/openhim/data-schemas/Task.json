@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openhim/Task",
+  "title": "Task",
+  "x-openfn-adaptor": "openhim",
+  "x-source": {
+    "openapi": "#/components/schemas/Task",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "A batch job to rerun a set of transactions.",
+  "properties": {
+    "_id": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "NotStarted",
+        "Queued",
+        "Processing",
+        "Paused",
+        "Cancelled",
+        "Completed"
+      ]
+    },
+    "transactions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "tid": {
+            "type": "string"
+          },
+          "tstatus": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "totalTransactions": {
+      "type": "integer"
+    },
+    "remainingTransactions": {
+      "type": "integer"
+    },
+    "batchSize": {
+      "type": "integer"
+    },
+    "user": {
+      "type": "string"
+    },
+    "created": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "completed": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

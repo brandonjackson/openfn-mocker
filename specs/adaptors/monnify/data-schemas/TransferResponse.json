@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "monnify/TransferResponse",
+  "title": "TransferResponse",
+  "x-openfn-adaptor": "monnify",
+  "x-source": {
+    "openapi": "#/components/schemas/TransferResponse",
+    "capturedAt": "2026-07-06"
+  },
+  "allOf": [
+    {
+      "$ref": "MonnifyEnvelope.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "responseBody": {
+          "$ref": "Transfer.json"
+        }
+      }
+    }
+  ]
+}

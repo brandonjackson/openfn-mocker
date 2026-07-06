@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "opencrvs/SearchEventsResponse",
+  "title": "SearchEventsResponse",
+  "x-openfn-adaptor": "opencrvs",
+  "x-source": {
+    "openapi": "#/components/schemas/SearchEventsResponse",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "data": {
+      "type": "object",
+      "properties": {
+        "searchEvents": {
+          "type": "object",
+          "properties": {
+            "totalItems": {
+              "type": "integer",
+              "example": 1
+            },
+            "results": {
+              "type": "array",
+              "items": {
+                "$ref": "EventSearchResult.json"
+              }
+            }
+          }
+        }
+      }
+    },
+    "errors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

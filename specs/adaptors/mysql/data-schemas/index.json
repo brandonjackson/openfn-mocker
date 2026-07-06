@@ -1,0 +1,27 @@
+{
+  "adaptor": "mysql",
+  "capturedAt": "2026-07-06",
+  "dialect": "https://json-schema.org/draft/2020-12/schema",
+  "source": "openapi.json",
+  "resources": [
+    "MutationResult",
+    "QueryResult"
+  ],
+  "objects": [
+    {
+      "name": "MutationResult",
+      "file": "MutationResult.json",
+      "resource": true
+    },
+    {
+      "name": "QueryResult",
+      "file": "QueryResult.json",
+      "resource": true
+    },
+    {
+      "name": "Row",
+      "file": "Row.json",
+      "resource": false
+    }
+  ]
+}

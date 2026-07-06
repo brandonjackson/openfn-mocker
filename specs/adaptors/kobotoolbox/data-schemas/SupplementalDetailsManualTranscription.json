@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "kobotoolbox/SupplementalDetailsManualTranscription",
+  "title": "SupplementalDetailsManualTranscription",
+  "x-openfn-adaptor": "kobotoolbox",
+  "x-source": {
+    "openapi": "#/components/schemas/SupplementalDetailsManualTranscription",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "Manual transcription supplemental details",
+  "additionalProperties": {
+    "type": "object",
+    "properties": {
+      "manual_transcription": {
+        "$ref": "SupplementalDataManualTranscription.json"
+      }
+    },
+    "required": [
+      "manual_transcription"
+    ]
+  }
+}

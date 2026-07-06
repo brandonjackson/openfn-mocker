@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fhir/OperationOutcome",
+  "title": "OperationOutcome",
+  "x-openfn-adaptor": "fhir",
+  "x-source": {
+    "openapi": "#/components/schemas/OperationOutcome",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "resourceType": {
+      "type": "string",
+      "enum": [
+        "OperationOutcome"
+      ]
+    },
+    "issue": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "severity": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "diagnostics": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

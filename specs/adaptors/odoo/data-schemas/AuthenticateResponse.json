@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "odoo/AuthenticateResponse",
+  "title": "AuthenticateResponse",
+  "x-openfn-adaptor": "odoo",
+  "x-source": {
+    "openapi": "#/components/schemas/AuthenticateResponse",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "jsonrpc": {
+      "type": "string",
+      "example": "2.0"
+    },
+    "id": {
+      "type": "integer",
+      "example": 1
+    },
+    "result": {
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "integer",
+          "example": 2
+        },
+        "db": {
+          "type": "string",
+          "example": "odoo"
+        },
+        "username": {
+          "type": "string",
+          "example": "admin"
+        },
+        "name": {
+          "type": "string",
+          "example": "Mitchell Admin"
+        },
+        "server_version": {
+          "type": "string",
+          "example": "16.0"
+        }
+      }
+    }
+  }
+}

@@ -1,5 +1,5 @@
 import type { AdaptorInfo } from './adaptors.js';
-import { openapiPath, seedSchemaPath, sourcePath } from './paths.js';
+import { dataSchemasDir, openapiPath, sourcePath } from './paths.js';
 
 /**
  * The "finding" step is deliberately agentic: this module does not scrape the
@@ -25,13 +25,13 @@ export function instructionsFor(adaptor: AdaptorInfo): string {
   lines.push('## Goal');
   lines.push(
     'Produce an OpenAPI 3.x document describing the external API this adaptor talks to, ' +
-      'covering (at minimum) every endpoint the adaptor actually calls. Then derive the ' +
-      'seed-data schema mocker needs. Save three files:'
+      'covering (at minimum) every endpoint the adaptor actually calls. Then extract the ' +
+      'standalone data-object schemas from it. Save:'
   );
   lines.push('');
   lines.push(`  - ${openapiPath(name)}`);
   lines.push(`  - ${sourcePath(name)}`);
-  lines.push(`  - ${seedSchemaPath(name)}   (or run \`pnpm specs seed-schema ${name}\` after)`);
+  lines.push(`  - ${dataSchemasDir(name)}/   (run \`pnpm specs data-objects ${name}\` after)`);
   lines.push('');
   lines.push('## Step 1 — understand what the adaptor calls');
   lines.push(
@@ -91,10 +91,12 @@ export function instructionsFor(adaptor: AdaptorInfo): string {
     )
   );
   lines.push('');
-  lines.push('## Step 4 — seed schema');
+  lines.push('## Step 4 — data objects');
   lines.push(
-    `After openapi.json exists, run \`pnpm specs seed-schema ${name}\` to derive the seed-data ` +
-      'schema from the response component schemas. Review it; hand-edit if the resource set is off.'
+    `After openapi.json exists, run \`pnpm specs data-objects ${name}\` to extract one standalone ` +
+      'JSON Schema per data object (the closure of the API\'s response resources) into ' +
+      'data-schemas/. These are the clean type source for downstream tooling and carry no ' +
+      'seed/mocker artifacts; review the object set and hand-edit openapi.json if a resource is missing.'
   );
 
   return lines.join('\n');

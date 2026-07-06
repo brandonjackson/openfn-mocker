@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "hubtel/MessageStatus",
+  "title": "MessageStatus",
+  "x-openfn-adaptor": "hubtel",
+  "x-source": {
+    "openapi": "#/components/schemas/MessageStatus",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "MessageId": {
+      "type": "string",
+      "example": "43cceb19d2a242f58fb338692e12c0bb"
+    },
+    "Status": {
+      "type": "string",
+      "example": "Delivered"
+    },
+    "From": {
+      "type": "string",
+      "example": "OpenFn-Test-01"
+    },
+    "To": {
+      "type": "string",
+      "example": "233538675309"
+    },
+    "Content": {
+      "type": "string"
+    },
+    "Rate": {
+      "type": "number",
+      "example": 0.03
+    },
+    "NetworkId": {
+      "type": "string",
+      "example": "62001"
+    },
+    "UpdatedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

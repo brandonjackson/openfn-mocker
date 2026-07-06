@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "intuit/Account",
+  "title": "Account",
+  "x-openfn-adaptor": "intuit",
+  "x-source": {
+    "openapi": "#/components/schemas/Account",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "Id": {
+      "type": "string",
+      "example": "33"
+    },
+    "SyncToken": {
+      "type": "string",
+      "example": "0"
+    },
+    "Name": {
+      "type": "string",
+      "example": "Accounts Payable"
+    },
+    "AccountType": {
+      "type": "string",
+      "example": "Accounts Payable"
+    },
+    "AccountSubType": {
+      "type": "string",
+      "example": "AccountsPayable"
+    },
+    "Classification": {
+      "type": "string",
+      "example": "Liability"
+    },
+    "CurrentBalance": {
+      "type": "number",
+      "example": 1602.67
+    },
+    "Active": {
+      "type": "boolean",
+      "example": true
+    },
+    "MetaData": {
+      "$ref": "MetaData.json"
+    }
+  }
+}

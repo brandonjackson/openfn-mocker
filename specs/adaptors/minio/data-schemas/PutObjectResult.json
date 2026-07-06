@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "minio/PutObjectResult",
+  "title": "PutObjectResult",
+  "x-openfn-adaptor": "minio",
+  "x-source": {
+    "openapi": "#/components/schemas/PutObjectResult",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "etag": {
+      "type": "string",
+      "example": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    "versionId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  }
+}

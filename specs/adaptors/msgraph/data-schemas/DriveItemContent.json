@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "msgraph/DriveItemContent",
+  "title": "DriveItemContent",
+  "x-openfn-adaptor": "msgraph",
+  "x-source": {
+    "openapi": "#/components/schemas/DriveItemContent",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "JSON representation of a downloaded driveItem's content (mock seed shape; the real endpoint streams application/octet-stream bytes).",
+  "properties": {
+    "id": {
+      "type": "string",
+      "example": "01ABC..."
+    },
+    "name": {
+      "type": "string",
+      "example": "report.txt"
+    },
+    "contentType": {
+      "type": "string",
+      "example": "text/plain"
+    },
+    "content": {
+      "type": "string",
+      "example": "file body contents"
+    }
+  }
+}

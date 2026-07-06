@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "kobotoolbox/SupplementalDetailsAutomaticTranscription",
+  "title": "SupplementalDetailsAutomaticTranscription",
+  "x-openfn-adaptor": "kobotoolbox",
+  "x-source": {
+    "openapi": "#/components/schemas/SupplementalDetailsAutomaticTranscription",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "Automatic transcription supplemental details",
+  "additionalProperties": {
+    "type": "object",
+    "properties": {
+      "automatic_google_transcription": {
+        "$ref": "SupplementalDataAutomaticTranscription.json"
+      }
+    },
+    "required": [
+      "automatic_google_transcription"
+    ]
+  }
+}

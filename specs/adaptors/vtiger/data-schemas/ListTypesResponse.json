@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "vtiger/ListTypesResponse",
+  "title": "ListTypesResponse",
+  "x-openfn-adaptor": "vtiger",
+  "x-source": {
+    "openapi": "#/components/schemas/ListTypesResponse",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "success": {
+      "type": "boolean",
+      "example": true
+    },
+    "result": {
+      "$ref": "ListTypesResult.json"
+    }
+  },
+  "required": [
+    "success",
+    "result"
+  ]
+}

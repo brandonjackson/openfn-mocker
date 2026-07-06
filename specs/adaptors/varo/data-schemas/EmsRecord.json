@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "varo/EmsRecord",
+  "title": "EmsRecord",
+  "x-openfn-adaptor": "varo",
+  "x-source": {
+    "openapi": "#/components/schemas/EmsRecord",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "An EMS-compliant atomic sensor reading.",
+  "properties": {
+    "ASER": {
+      "type": "string",
+      "description": "Asset/device serial identifier."
+    },
+    "ABST": {
+      "type": "string",
+      "description": "Absolute ISO-8601 timestamp of the reading, e.g. \"2024-10-08T08:15:00.000Z\"."
+    },
+    "TVC": {
+      "type": "number",
+      "description": "Temperature value in degrees Celsius."
+    },
+    "ALRM": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Optional alarm flag, e.g. \"HEAT\" or \"FRZE\"."
+    },
+    "zdescription": {
+      "type": "string",
+      "description": "Human-readable label for context."
+    }
+  }
+}

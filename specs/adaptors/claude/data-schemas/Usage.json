@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "claude/Usage",
+  "title": "Usage",
+  "x-openfn-adaptor": "claude",
+  "x-source": {
+    "openapi": "#/components/schemas/Usage",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "input_tokens": {
+      "type": "integer",
+      "example": 12
+    },
+    "output_tokens": {
+      "type": "integer",
+      "example": 68
+    },
+    "cache_creation_input_tokens": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "cache_read_input_tokens": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "service_tier": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "standard",
+        "priority",
+        "batch"
+      ]
+    }
+  }
+}

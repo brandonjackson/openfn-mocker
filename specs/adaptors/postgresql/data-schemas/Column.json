@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "postgresql/Column",
+  "title": "Column",
+  "x-openfn-adaptor": "postgresql",
+  "x-source": {
+    "openapi": "#/components/schemas/Column",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "column_name": {
+      "type": "string"
+    },
+    "data_type": {
+      "type": "string",
+      "example": "character varying"
+    },
+    "is_nullable": {
+      "type": "string",
+      "example": "YES"
+    },
+    "column_default": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  }
+}

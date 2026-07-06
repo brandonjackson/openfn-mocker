@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "arcgis/TokenResponse",
+  "title": "TokenResponse",
+  "x-openfn-adaptor": "arcgis",
+  "x-source": {
+    "openapi": "#/components/schemas/TokenResponse",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "token": {
+      "type": "string"
+    },
+    "expires": {
+      "type": "integer",
+      "format": "int64"
+    },
+    "ssl": {
+      "type": "boolean"
+    }
+  }
+}

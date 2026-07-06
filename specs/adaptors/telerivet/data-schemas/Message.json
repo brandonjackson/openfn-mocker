@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "telerivet/Message",
+  "title": "Message",
+  "x-openfn-adaptor": "telerivet",
+  "x-source": {
+    "openapi": "#/components/schemas/Message",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "A Telerivet message object.",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "object": {
+      "type": "string",
+      "example": "message"
+    },
+    "direction": {
+      "type": "string",
+      "enum": [
+        "incoming",
+        "outgoing"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "example": "queued"
+    },
+    "message_type": {
+      "type": "string",
+      "example": "sms"
+    },
+    "source": {
+      "type": "string"
+    },
+    "time_created": {
+      "type": "integer",
+      "description": "Unix timestamp"
+    },
+    "time_sent": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "from_number": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "to_number": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "content": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "starred": {
+      "type": "boolean"
+    },
+    "simulated": {
+      "type": "boolean"
+    },
+    "label_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "vars": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "route_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "phone_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "contact_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "project_id": {
+      "type": "string"
+    }
+  }
+}

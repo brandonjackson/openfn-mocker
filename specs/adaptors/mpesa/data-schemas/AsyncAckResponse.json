@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "mpesa/AsyncAckResponse",
+  "title": "AsyncAckResponse",
+  "x-openfn-adaptor": "mpesa",
+  "x-source": {
+    "openapi": "#/components/schemas/AsyncAckResponse",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "Standard synchronous acknowledgement for asynchronous Daraja requests (transaction status, B2B). The final result is posted to ResultURL.",
+  "properties": {
+    "OriginatorConversationID": {
+      "type": "string",
+      "example": "5118-111210482-1"
+    },
+    "ConversationID": {
+      "type": "string",
+      "example": "AG_20230206_00007bb3f2a5b3f2a5b3"
+    },
+    "ResponseCode": {
+      "type": "string",
+      "example": "0"
+    },
+    "ResponseDescription": {
+      "type": "string",
+      "example": "Accept the service request successfully."
+    }
+  }
+}

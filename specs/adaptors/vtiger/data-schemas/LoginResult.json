@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "vtiger/LoginResult",
+  "title": "LoginResult",
+  "x-openfn-adaptor": "vtiger",
+  "x-source": {
+    "openapi": "#/components/schemas/LoginResult",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "Session details returned on successful login.",
+  "properties": {
+    "sessionName": {
+      "type": "string",
+      "description": "Session id used to authenticate subsequent calls."
+    },
+    "sessionId": {
+      "type": "string",
+      "description": "Alias of sessionName in some Vtiger versions."
+    },
+    "userId": {
+      "type": "string",
+      "description": "Webservice id of the logged-in user, e.g. \"19x1\"."
+    },
+    "version": {
+      "type": "string",
+      "description": "Webservice API version."
+    },
+    "vtigerVersion": {
+      "type": "string",
+      "description": "CRM version."
+    }
+  },
+  "required": [
+    "sessionName"
+  ]
+}

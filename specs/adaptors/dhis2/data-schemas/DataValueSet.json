@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "dhis2/DataValueSet",
+  "title": "DataValueSet",
+  "x-openfn-adaptor": "dhis2",
+  "x-source": {
+    "openapi": "#/components/schemas/DataValueSet",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "dataSet": {
+      "type": "string",
+      "example": "pBOMPrpg1QX"
+    },
+    "period": {
+      "type": "string",
+      "example": "202401"
+    },
+    "orgUnit": {
+      "type": "string",
+      "example": "DiszpKrYNg8"
+    },
+    "dataValues": {
+      "type": "array",
+      "items": {
+        "$ref": "DataValue.json"
+      }
+    }
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "formsg/DecryptedSubmission",
+  "title": "DecryptedSubmission",
+  "x-openfn-adaptor": "formsg",
+  "x-source": {
+    "openapi": "#/components/schemas/DecryptedSubmission",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "Output of decryptSubmission / processWebhook.",
+  "properties": {
+    "submissionId": {
+      "type": "string"
+    },
+    "responses": {
+      "type": "array",
+      "items": {
+        "$ref": "FormResponse.json"
+      }
+    },
+    "verified": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": true
+    },
+    "attachments": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "filename": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string",
+            "description": "Decrypted attachment bytes (base64)"
+          }
+        }
+      }
+    }
+  }
+}

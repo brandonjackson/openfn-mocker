@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openimis/Bundle",
+  "title": "Bundle",
+  "x-openfn-adaptor": "openimis",
+  "x-source": {
+    "openapi": "#/components/schemas/Bundle",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "FHIR searchset Bundle returned for resource-type searches.",
+  "properties": {
+    "resourceType": {
+      "type": "string",
+      "enum": [
+        "Bundle"
+      ]
+    },
+    "id": {
+      "type": "string"
+    },
+    "meta": {
+      "$ref": "Meta.json"
+    },
+    "type": {
+      "type": "string",
+      "example": "searchset"
+    },
+    "total": {
+      "type": "integer"
+    },
+    "link": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "relation": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "entry": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "fullUrl": {
+            "type": "string"
+          },
+          "resource": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "resourceType",
+    "type"
+  ]
+}

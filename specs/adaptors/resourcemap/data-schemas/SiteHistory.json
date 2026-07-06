@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "resourcemap/SiteHistory",
+  "title": "SiteHistory",
+  "x-openfn-adaptor": "resourcemap",
+  "x-source": {
+    "openapi": "#/components/schemas/SiteHistory",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "integer",
+      "example": 2
+    },
+    "name": {
+      "type": "string"
+    },
+    "lat": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "format": "double"
+    },
+    "lng": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "format": "double"
+    },
+    "valid_since": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "valid_to": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "user": {
+      "type": "string",
+      "format": "email",
+      "example": "user@example.org"
+    },
+    "properties": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  }
+}

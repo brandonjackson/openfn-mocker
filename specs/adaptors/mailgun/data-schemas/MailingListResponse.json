@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "mailgun/MailingListResponse",
+  "title": "The mailing list response",
+  "x-openfn-adaptor": "mailgun",
+  "x-source": {
+    "openapi": "#/components/schemas/MailingListResponse",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "address": {
+      "type": "string",
+      "description": "The email address of the mailing list"
+    },
+    "name": {
+      "type": "string",
+      "description": "The name of the mailing list"
+    },
+    "description": {
+      "type": "string",
+      "description": "A description of the mailing list"
+    },
+    "access_level": {
+      "type": "string",
+      "description": "List access level, one of: readonly, members, everyone"
+    },
+    "reply_preference": {
+      "type": "string",
+      "description": "Set where replies should go: list or sender"
+    },
+    "created_at": {
+      "type": "string",
+      "description": "Timestamp indicating the mailing list creation time in RFC 5322 format"
+    },
+    "members_count": {
+      "type": "integer",
+      "description": "The number of members on the mailing list"
+    }
+  },
+  "examples": [
+    {
+      "address": "developers@mailgun.net",
+      "name": "Developers",
+      "description": "Describe the mailing list",
+      "access_level": "readonly",
+      "reply_preference": "list",
+      "created_at": "Tue, 09 Aug 2011 20:50:27 -0000",
+      "members_count": 2
+    }
+  ]
+}

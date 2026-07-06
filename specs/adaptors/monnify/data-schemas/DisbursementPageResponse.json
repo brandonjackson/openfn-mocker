@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "monnify/DisbursementPageResponse",
+  "title": "DisbursementPageResponse",
+  "x-openfn-adaptor": "monnify",
+  "x-source": {
+    "openapi": "#/components/schemas/DisbursementPageResponse",
+    "capturedAt": "2026-07-06"
+  },
+  "allOf": [
+    {
+      "$ref": "MonnifyEnvelope.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "responseBody": {
+          "type": "object",
+          "properties": {
+            "content": {
+              "type": "array",
+              "items": {
+                "$ref": "Transfer.json"
+              }
+            },
+            "totalElements": {
+              "type": "integer",
+              "example": 1
+            },
+            "totalPages": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        }
+      }
+    }
+  ]
+}

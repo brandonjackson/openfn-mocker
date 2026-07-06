@@ -1,0 +1,34 @@
+{
+  "adaptor": "wigal-sms",
+  "capturedAt": "2026-07-06",
+  "dialect": "https://json-schema.org/draft/2020-12/schema",
+  "source": "openapi.json",
+  "resources": [
+    "BalanceResponse",
+    "HistoryResponse",
+    "OtpResponse",
+    "SendSmsResponse"
+  ],
+  "objects": [
+    {
+      "name": "BalanceResponse",
+      "file": "BalanceResponse.json",
+      "resource": true
+    },
+    {
+      "name": "HistoryResponse",
+      "file": "HistoryResponse.json",
+      "resource": true
+    },
+    {
+      "name": "OtpResponse",
+      "file": "OtpResponse.json",
+      "resource": true
+    },
+    {
+      "name": "SendSmsResponse",
+      "file": "SendSmsResponse.json",
+      "resource": true
+    }
+  ]
+}

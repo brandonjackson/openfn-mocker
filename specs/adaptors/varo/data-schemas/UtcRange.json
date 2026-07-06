@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "varo/UtcRange",
+  "title": "UtcRange",
+  "x-openfn-adaptor": "varo",
+  "x-source": {
+    "openapi": "#/components/schemas/UtcRange",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "A UTC datetime range derived from a wall-clock timezone window.",
+  "properties": {
+    "wallClock": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Current local datetime in the specified timezone."
+    },
+    "startUtc": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC start of range (inclusive)."
+    },
+    "endUtc": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC end of range (exclusive)."
+    },
+    "collectionKeys": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Wildcard patterns matching UTC dates in range, e.g. \"*20250624*\"."
+    }
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "khanacademy/Topic",
+  "title": "Topic",
+  "x-openfn-adaptor": "khanacademy",
+  "x-source": {
+    "openapi": "#/components/schemas/Topic",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "A node in the Khan Academy content topic tree.",
+  "properties": {
+    "kind": {
+      "type": "string",
+      "example": "Topic"
+    },
+    "id": {
+      "type": "string",
+      "example": "x2e352b1a2d21e07e"
+    },
+    "slug": {
+      "type": "string",
+      "example": "algebra"
+    },
+    "title": {
+      "type": "string",
+      "example": "Algebra"
+    },
+    "description": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "node_slug": {
+      "type": "string",
+      "example": "math/algebra"
+    },
+    "extended_slug": {
+      "type": "string",
+      "example": "math/algebra"
+    },
+    "relative_url": {
+      "type": "string",
+      "example": "/math/algebra"
+    },
+    "ka_url": {
+      "type": "string",
+      "example": "https://www.khanacademy.org/math/algebra"
+    },
+    "render_type": {
+      "type": "string",
+      "example": "Subject"
+    },
+    "icon_src": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "hide": {
+      "type": "boolean"
+    },
+    "children": {
+      "type": "array",
+      "items": {
+        "$ref": "Topic.json"
+      }
+    }
+  },
+  "required": [
+    "kind",
+    "id",
+    "slug",
+    "title"
+  ]
+}

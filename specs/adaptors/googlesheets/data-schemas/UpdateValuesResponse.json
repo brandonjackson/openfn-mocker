@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "googlesheets/UpdateValuesResponse",
+  "title": "UpdateValuesResponse",
+  "x-openfn-adaptor": "googlesheets",
+  "x-source": {
+    "openapi": "#/components/schemas/UpdateValuesResponse",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "The result of updating a range of values.",
+  "properties": {
+    "spreadsheetId": {
+      "type": "string",
+      "example": "1BxiMVs0XRA5nFMdKvBd_B4hhaZ"
+    },
+    "updatedRange": {
+      "type": "string",
+      "example": "Sheet1!A4:B4"
+    },
+    "updatedRows": {
+      "type": "integer",
+      "format": "int32",
+      "example": 1
+    },
+    "updatedColumns": {
+      "type": "integer",
+      "format": "int32",
+      "example": 2
+    },
+    "updatedCells": {
+      "type": "integer",
+      "format": "int32",
+      "example": 2
+    },
+    "updatedData": {
+      "$ref": "ValueRange.json"
+    }
+  }
+}

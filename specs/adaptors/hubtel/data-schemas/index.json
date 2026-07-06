@@ -1,0 +1,22 @@
+{
+  "adaptor": "hubtel",
+  "capturedAt": "2026-07-06",
+  "dialect": "https://json-schema.org/draft/2020-12/schema",
+  "source": "openapi.json",
+  "resources": [
+    "MessageResponse",
+    "MessageStatus"
+  ],
+  "objects": [
+    {
+      "name": "MessageResponse",
+      "file": "MessageResponse.json",
+      "resource": true
+    },
+    {
+      "name": "MessageStatus",
+      "file": "MessageStatus.json",
+      "resource": true
+    }
+  ]
+}

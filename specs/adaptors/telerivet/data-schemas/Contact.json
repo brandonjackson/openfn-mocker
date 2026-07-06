@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "telerivet/Contact",
+  "title": "Contact",
+  "x-openfn-adaptor": "telerivet",
+  "x-source": {
+    "openapi": "#/components/schemas/Contact",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "A Telerivet contact object.",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "object": {
+      "type": "string",
+      "example": "contact"
+    },
+    "name": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "phone_number": {
+      "type": "string"
+    },
+    "time_created": {
+      "type": "integer",
+      "description": "Unix timestamp"
+    },
+    "time_updated": {
+      "type": "integer"
+    },
+    "send_blocked": {
+      "type": "boolean"
+    },
+    "conversation_status": {
+      "type": "string"
+    },
+    "last_message_time": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "last_incoming_message_time": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "last_outgoing_message_time": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "message_count": {
+      "type": "integer"
+    },
+    "group_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "vars": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "default_route_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "project_id": {
+      "type": "string"
+    }
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "medicmobile/Report",
+  "title": "Report",
+  "x-openfn-adaptor": "medicmobile",
+  "x-source": {
+    "openapi": "#/components/schemas/Report",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "_id": {
+      "type": "string",
+      "example": "abc-123-xyz"
+    },
+    "_rev": {
+      "type": "string",
+      "example": "1-967a00dff5e02add41819138abb3284d"
+    },
+    "type": {
+      "type": "string",
+      "example": "data_record"
+    },
+    "form": {
+      "type": "string",
+      "example": "pregnancy"
+    },
+    "reported_date": {
+      "type": "integer",
+      "format": "int64",
+      "example": 1656460800000
+    },
+    "contact": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "fields": {
+      "$ref": "ReportFields.json"
+    }
+  }
+}

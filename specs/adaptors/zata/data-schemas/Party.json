@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "zata/Party",
+  "title": "Party",
+  "x-openfn-adaptor": "zata",
+  "x-source": {
+    "openapi": "#/components/schemas/Party",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "customer",
+        "supplier"
+      ]
+    },
+    "name": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string",
+      "format": "email"
+    },
+    "tin": {
+      "type": "string"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openlmis/PageMeta",
+  "title": "PageMeta",
+  "x-openfn-adaptor": "openlmis",
+  "x-source": {
+    "openapi": "#/components/schemas/PageMeta",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "Spring Data style pagination metadata shared by list endpoints.",
+  "properties": {
+    "totalElements": {
+      "type": "integer"
+    },
+    "totalPages": {
+      "type": "integer"
+    },
+    "number": {
+      "type": "integer",
+      "description": "Zero-based page index"
+    },
+    "numberOfElements": {
+      "type": "integer"
+    },
+    "size": {
+      "type": "integer"
+    },
+    "first": {
+      "type": "boolean"
+    },
+    "last": {
+      "type": "boolean"
+    }
+  }
+}

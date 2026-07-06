@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cht/Contact",
+  "title": "Contact",
+  "x-openfn-adaptor": "cht",
+  "x-source": {
+    "openapi": "#/components/schemas/Contact",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "A contact record which may be a person or a place.",
+  "properties": {
+    "_id": {
+      "type": "string"
+    },
+    "_rev": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string"
+    },
+    "contact_type": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "parent": {
+      "$ref": "NormalizedParent.json"
+    },
+    "reported_date": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "_id",
+    "type"
+  ],
+  "additionalProperties": true
+}

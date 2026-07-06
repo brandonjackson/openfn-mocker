@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "kobotoolbox/SupplementalDataQualDataAutomatic",
+  "title": "SupplementalDataQualDataAutomatic",
+  "x-openfn-adaptor": "kobotoolbox",
+  "x-source": {
+    "openapi": "#/components/schemas/SupplementalDataQualDataAutomatic",
+    "capturedAt": "2026-07-06"
+  },
+  "oneOf": [
+    {
+      "$ref": "DataSupplementAutomaticQualDataIntegerResponse.json"
+    },
+    {
+      "$ref": "DataSupplementAutomaticQualDataTextResponse.json"
+    },
+    {
+      "$ref": "DataSupplementAutomaticQualDataSelectOneResponse.json"
+    },
+    {
+      "$ref": "DataSupplementAutomaticQualDataSelectMultipleResponse.json"
+    }
+  ]
+}

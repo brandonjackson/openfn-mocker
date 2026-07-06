@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "beyonic/Contact",
+  "title": "Contact",
+  "x-openfn-adaptor": "beyonic",
+  "x-source": {
+    "openapi": "#/components/schemas/Contact",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "organization": {
+      "type": "integer"
+    },
+    "first_name": {
+      "type": "string"
+    },
+    "last_name": {
+      "type": "string"
+    },
+    "email": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "phone_number": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "phone_is_supported": {
+      "type": "string"
+    },
+    "phone_is_mm_registered": {
+      "type": "string"
+    },
+    "network_name": {
+      "type": "string"
+    },
+    "created": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "author": {
+      "type": "integer"
+    },
+    "modified": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_by": {
+      "type": "integer"
+    }
+  }
+}

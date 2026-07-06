@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "kobotoolbox/DataSupplementAutomaticQualDataIntegerResponse",
+  "title": "DataSupplementAutomaticQualDataIntegerResponse",
+  "x-openfn-adaptor": "kobotoolbox",
+  "x-source": {
+    "openapi": "#/components/schemas/DataSupplementAutomaticQualDataIntegerResponse",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "additionalProperties": false,
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "uuid": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "value": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "const": "complete"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "uuid",
+        "value"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "uuid": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "status": {
+          "type": "string",
+          "const": "failed"
+        },
+        "error": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "error",
+        "status",
+        "uuid"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sftp/PutResult",
+  "title": "PutResult",
+  "x-openfn-adaptor": "sftp",
+  "x-source": {
+    "openapi": "#/components/schemas/PutResult",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "Result of uploading data to the remote server.",
+  "properties": {
+    "remoteFilePath": {
+      "type": "string",
+      "example": "/uploads/out.csv"
+    },
+    "bytesWritten": {
+      "type": "integer",
+      "example": 2048
+    },
+    "message": {
+      "type": "string",
+      "example": "Uploaded data to /uploads/out.csv"
+    }
+  },
+  "required": [
+    "remoteFilePath"
+  ]
+}

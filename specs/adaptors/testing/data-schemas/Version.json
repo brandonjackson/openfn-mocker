@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "testing/Version",
+  "title": "Version",
+  "x-openfn-adaptor": "testing",
+  "x-source": {
+    "openapi": "#/components/schemas/Version",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "Adaptor package version information.",
+  "properties": {
+    "name": {
+      "type": "string",
+      "example": "@openfn/language-testing"
+    },
+    "version": {
+      "type": "string",
+      "example": "1.0.0"
+    }
+  },
+  "required": [
+    "name",
+    "version"
+  ]
+}

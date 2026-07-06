@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "memento/Field",
+  "title": "Field",
+  "x-openfn-adaptor": "memento",
+  "x-source": {
+    "openapi": "#/components/schemas/Field",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer",
+      "example": 1
+    },
+    "name": {
+      "type": "string",
+      "example": "Name"
+    },
+    "type": {
+      "type": "string",
+      "example": "text"
+    }
+  }
+}

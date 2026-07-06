@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "surveycto/DatasetRecord",
+  "title": "DatasetRecord",
+  "x-openfn-adaptor": "surveycto",
+  "x-source": {
+    "openapi": "#/components/schemas/DatasetRecord",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "A single dataset record. Fields are dynamic per dataset; id is always present.",
+  "additionalProperties": true,
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Record id."
+    }
+  },
+  "required": [
+    "id"
+  ]
+}

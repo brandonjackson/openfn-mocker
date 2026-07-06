@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "dhis2/Program",
+  "title": "Program",
+  "x-openfn-adaptor": "dhis2",
+  "x-source": {
+    "openapi": "#/components/schemas/Program",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "example": "IpHINAT79UW"
+    },
+    "name": {
+      "type": "string",
+      "example": "Child Programme"
+    },
+    "shortName": {
+      "type": "string",
+      "example": "Child Programme"
+    },
+    "programType": {
+      "type": "string",
+      "example": "WITH_REGISTRATION"
+    },
+    "trackedEntityType": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "example": "nEenWmSyUEp"
+        }
+      }
+    },
+    "programStages": {
+      "type": "array",
+      "items": {
+        "$ref": "ProgramStage.json"
+      }
+    }
+  }
+}

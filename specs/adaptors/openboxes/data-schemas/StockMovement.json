@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openboxes/StockMovement",
+  "title": "StockMovement",
+  "x-openfn-adaptor": "openboxes",
+  "x-source": {
+    "openapi": "#/components/schemas/StockMovement",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "identifier": {
+      "type": "string",
+      "example": "0000A"
+    },
+    "origin": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "destination": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "stockMovementType": {
+      "type": "string",
+      "example": "OUTBOUND"
+    },
+    "dateRequested": {
+      "type": "string",
+      "description": "MM/DD/YYYY",
+      "example": "06/10/2024"
+    },
+    "requestedBy": {
+      "$ref": "UserRef.json"
+    },
+    "statusCode": {
+      "type": "string",
+      "example": "PENDING"
+    },
+    "status": {
+      "type": "string"
+    },
+    "lineItems": {
+      "type": "array",
+      "items": {
+        "$ref": "StockMovementLineItem.json"
+      }
+    }
+  }
+}

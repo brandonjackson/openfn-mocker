@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "msgraph/FileFacet",
+  "title": "FileFacet",
+  "x-openfn-adaptor": "msgraph",
+  "x-source": {
+    "openapi": "#/components/schemas/FileFacet",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "mimeType": {
+      "type": "string"
+    },
+    "hashes": {
+      "$ref": "Hashes.json"
+    }
+  }
+}

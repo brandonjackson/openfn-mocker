@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "vtiger/Field",
+  "title": "Field",
+  "x-openfn-adaptor": "vtiger",
+  "x-source": {
+    "openapi": "#/components/schemas/Field",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "A single field definition within a module description.",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "label": {
+      "type": "string"
+    },
+    "mandatory": {
+      "type": "boolean"
+    },
+    "type": {
+      "$ref": "FieldType.json"
+    },
+    "editable": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

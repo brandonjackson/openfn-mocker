@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "dynamics/Contact",
+  "title": "Contact",
+  "x-openfn-adaptor": "dynamics",
+  "x-source": {
+    "openapi": "#/components/schemas/Contact",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "contactid": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "firstname": {
+      "type": "string"
+    },
+    "lastname": {
+      "type": "string"
+    },
+    "fullname": {
+      "type": "string"
+    },
+    "emailaddress1": {
+      "type": "string"
+    },
+    "telephone1": {
+      "type": "string"
+    },
+    "jobtitle": {
+      "type": "string"
+    },
+    "parentcustomerid_account@odata.bind": {
+      "type": "string"
+    }
+  }
+}

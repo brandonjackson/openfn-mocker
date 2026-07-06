@@ -1,0 +1,52 @@
+{
+  "adaptor": "khanacademy",
+  "capturedAt": "2026-07-06",
+  "dialect": "https://json-schema.org/draft/2020-12/schema",
+  "source": "openapi.json",
+  "resources": [
+    "Badge",
+    "BadgeCategory",
+    "Exercise",
+    "Playlist",
+    "Topic",
+    "User",
+    "Video"
+  ],
+  "objects": [
+    {
+      "name": "Badge",
+      "file": "Badge.json",
+      "resource": true
+    },
+    {
+      "name": "BadgeCategory",
+      "file": "BadgeCategory.json",
+      "resource": true
+    },
+    {
+      "name": "Exercise",
+      "file": "Exercise.json",
+      "resource": true
+    },
+    {
+      "name": "Playlist",
+      "file": "Playlist.json",
+      "resource": true
+    },
+    {
+      "name": "Topic",
+      "file": "Topic.json",
+      "resource": true
+    },
+    {
+      "name": "User",
+      "file": "User.json",
+      "resource": true
+    },
+    {
+      "name": "Video",
+      "file": "Video.json",
+      "resource": true
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "intuit/VendorResponse",
+  "title": "VendorResponse",
+  "x-openfn-adaptor": "intuit",
+  "x-source": {
+    "openapi": "#/components/schemas/VendorResponse",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "Vendor": {
+      "$ref": "Vendor.json"
+    },
+    "time": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

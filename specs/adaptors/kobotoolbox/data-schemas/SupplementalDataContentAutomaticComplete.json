@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "kobotoolbox/SupplementalDataContentAutomaticComplete",
+  "title": "SupplementalDataContentAutomaticComplete",
+  "x-openfn-adaptor": "kobotoolbox",
+  "x-source": {
+    "openapi": "#/components/schemas/SupplementalDataContentAutomaticComplete",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "language": {
+      "type": "string"
+    },
+    "locale": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "const": "complete"
+    },
+    "value": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "language",
+    "status",
+    "value"
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openfn/Job",
+  "title": "Job",
+  "x-openfn-adaptor": "openfn",
+  "x-source": {
+    "openapi": "#/components/schemas/Job",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "example": "b3c4d5e6-0003-4a2b-9c3d-000000000003"
+    },
+    "name": {
+      "type": "string",
+      "example": "test job"
+    },
+    "body": {
+      "type": "string",
+      "example": "fn(state => state)"
+    },
+    "adaptor": {
+      "type": "string",
+      "example": "@openfn/language-http@latest"
+    },
+    "trigger_id": {
+      "type": "string",
+      "example": "d5e6f7a8-0004-4a2b-9c3d-000000000004"
+    },
+    "project_id": {
+      "type": "string",
+      "example": "c1f2e3d4-0001-4a2b-9c3d-000000000001"
+    },
+    "workflow_id": {
+      "type": "string",
+      "example": "a2b3c4d5-0002-4a2b-9c3d-000000000002"
+    },
+    "enabled": {
+      "type": "boolean",
+      "example": true
+    }
+  }
+}

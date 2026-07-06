@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "kobotoolbox/DataSupplementManualQualDataSelectMultiple",
+  "title": "DataSupplementManualQualDataSelectMultiple",
+  "x-openfn-adaptor": "kobotoolbox",
+  "x-source": {
+    "openapi": "#/components/schemas/DataSupplementManualQualDataSelectMultiple",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "value": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      }
+    },
+    "uuid": {
+      "type": "string",
+      "format": "uuid"
+    }
+  },
+  "required": [
+    "uuid",
+    "value"
+  ]
+}

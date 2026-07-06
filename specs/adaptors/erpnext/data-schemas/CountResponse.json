@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "erpnext/CountResponse",
+  "title": "CountResponse",
+  "x-openfn-adaptor": "erpnext",
+  "x-source": {
+    "openapi": "#/components/schemas/CountResponse",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "message": {
+      "type": "integer"
+    }
+  }
+}

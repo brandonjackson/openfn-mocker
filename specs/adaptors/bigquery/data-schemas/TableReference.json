@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "bigquery/TableReference",
+  "title": "TableReference",
+  "x-openfn-adaptor": "bigquery",
+  "x-source": {
+    "openapi": "#/components/schemas/TableReference",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "projectId": {
+      "type": "string"
+    },
+    "datasetId": {
+      "type": "string"
+    },
+    "tableId": {
+      "type": "string"
+    }
+  }
+}

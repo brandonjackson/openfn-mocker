@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "kobotoolbox/DataSupplementManualQualDataSelectOne",
+  "title": "DataSupplementManualQualDataSelectOne",
+  "x-openfn-adaptor": "kobotoolbox",
+  "x-source": {
+    "openapi": "#/components/schemas/DataSupplementManualQualDataSelectOne",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "value": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "uuid": {
+      "type": "string",
+      "format": "uuid"
+    }
+  },
+  "required": [
+    "uuid",
+    "value"
+  ]
+}

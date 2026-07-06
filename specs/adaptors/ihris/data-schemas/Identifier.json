@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ihris/Identifier",
+  "title": "Identifier",
+  "x-openfn-adaptor": "ihris",
+  "x-source": {
+    "openapi": "#/components/schemas/Identifier",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "use": {
+      "type": "string",
+      "example": "official"
+    },
+    "system": {
+      "type": "string",
+      "example": "https://ihris.example.com/identifier/employee"
+    },
+    "value": {
+      "type": "string",
+      "example": "EMP-0001"
+    }
+  }
+}

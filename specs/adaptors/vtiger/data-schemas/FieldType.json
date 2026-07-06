@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "vtiger/FieldType",
+  "title": "FieldType",
+  "x-openfn-adaptor": "vtiger",
+  "x-source": {
+    "openapi": "#/components/schemas/FieldType",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "Data type descriptor for a module field.",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Field type name, e.g. string, picklist, reference."
+    },
+    "picklistValues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "refersTo": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "For reference fields, the modules referenced."
+    }
+  }
+}

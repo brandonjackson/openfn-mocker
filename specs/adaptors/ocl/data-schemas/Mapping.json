@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ocl/Mapping",
+  "title": "Mapping",
+  "x-openfn-adaptor": "ocl",
+  "x-source": {
+    "openapi": "#/components/schemas/Mapping",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "uuid": {
+      "type": "string"
+    },
+    "external_id": {
+      "type": "string"
+    },
+    "map_type": {
+      "type": "string",
+      "example": "SAME-AS"
+    },
+    "retired": {
+      "type": "boolean"
+    },
+    "source": {
+      "type": "string"
+    },
+    "owner": {
+      "type": "string",
+      "example": "MSFOCG"
+    },
+    "owner_type": {
+      "type": "string",
+      "example": "Organization"
+    },
+    "url": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "version_url": {
+      "type": "string"
+    },
+    "is_latest_version": {
+      "type": "boolean"
+    },
+    "type": {
+      "type": "string",
+      "example": "Mapping"
+    },
+    "sort_weight": {
+      "type": "number"
+    },
+    "from_concept_code": {
+      "type": "string"
+    },
+    "from_concept_name": {
+      "type": "string"
+    },
+    "from_concept_url": {
+      "type": "string"
+    },
+    "to_concept_code": {
+      "type": "string"
+    },
+    "to_concept_name": {
+      "type": "string"
+    },
+    "to_concept_url": {
+      "type": "string"
+    },
+    "from_source_owner": {
+      "type": "string"
+    },
+    "from_source_name": {
+      "type": "string"
+    },
+    "from_source_url": {
+      "type": "string"
+    },
+    "to_source_owner": {
+      "type": "string"
+    },
+    "to_source_name": {
+      "type": "string"
+    },
+    "to_source_url": {
+      "type": "string"
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "adaptor": "et-mfr",
+  "capturedAt": "2026-07-06",
+  "dialect": "https://json-schema.org/draft/2020-12/schema",
+  "source": "openapi.json",
+  "resources": [
+    "Facility",
+    "Region"
+  ],
+  "objects": [
+    {
+      "name": "Facility",
+      "file": "Facility.json",
+      "resource": true
+    },
+    {
+      "name": "Region",
+      "file": "Region.json",
+      "resource": true
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "kobotoolbox/DataValidationStatusUidEnum",
+  "title": "DataValidationStatusUidEnum",
+  "x-openfn-adaptor": "kobotoolbox",
+  "x-source": {
+    "openapi": "#/components/schemas/DataValidationStatusUidEnum",
+    "capturedAt": "2026-07-06"
+  },
+  "enum": [
+    "validation_status_not_approved",
+    "validation_status_approved",
+    "validation_status_on_hold"
+  ]
+}

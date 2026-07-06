@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fhir-fr/HumanName",
+  "title": "HumanName",
+  "x-openfn-adaptor": "fhir-fr",
+  "x-source": {
+    "openapi": "#/components/schemas/HumanName",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "use": {
+      "type": "string"
+    },
+    "family": {
+      "type": "string"
+    },
+    "given": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "text": {
+      "type": "string"
+    }
+  }
+}

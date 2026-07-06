@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cht/Form",
+  "title": "Form",
+  "x-openfn-adaptor": "cht",
+  "x-source": {
+    "openapi": "#/components/schemas/Form",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "A configured form available on the instance.",
+  "properties": {
+    "_id": {
+      "type": "string"
+    },
+    "internalId": {
+      "type": "string"
+    },
+    "code": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": true
+}

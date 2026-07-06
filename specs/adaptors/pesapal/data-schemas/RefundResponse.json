@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "pesapal/RefundResponse",
+  "title": "RefundResponse",
+  "x-openfn-adaptor": "pesapal",
+  "x-source": {
+    "openapi": "#/components/schemas/RefundResponse",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "status": {
+      "type": "string"
+    },
+    "message": {
+      "type": "string"
+    }
+  }
+}

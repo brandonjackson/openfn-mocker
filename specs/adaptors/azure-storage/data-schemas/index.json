@@ -1,0 +1,28 @@
+{
+  "adaptor": "azure-storage",
+  "capturedAt": "2026-07-06",
+  "dialect": "https://json-schema.org/draft/2020-12/schema",
+  "source": "openapi.json",
+  "resources": [
+    "BlobProperties",
+    "DownloadBlobResult",
+    "UploadBlobResult"
+  ],
+  "objects": [
+    {
+      "name": "BlobProperties",
+      "file": "BlobProperties.json",
+      "resource": true
+    },
+    {
+      "name": "DownloadBlobResult",
+      "file": "DownloadBlobResult.json",
+      "resource": true
+    },
+    {
+      "name": "UploadBlobResult",
+      "file": "UploadBlobResult.json",
+      "resource": true
+    }
+  ]
+}

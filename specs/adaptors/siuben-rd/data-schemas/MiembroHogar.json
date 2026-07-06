@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "siuben-rd/MiembroHogar",
+  "title": "MiembroHogar",
+  "x-openfn-adaptor": "siuben-rd",
+  "x-source": {
+    "openapi": "#/components/schemas/MiembroHogar",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "cedula": {
+      "type": "string"
+    },
+    "nombres": {
+      "type": "string"
+    },
+    "apellidos": {
+      "type": "string"
+    },
+    "parentesco": {
+      "type": "string",
+      "description": "Relationship to the head of household.",
+      "example": "HIJO"
+    },
+    "edad": {
+      "type": "integer"
+    }
+  }
+}

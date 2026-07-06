@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "kobotoolbox/DataValidationStatusUpdateResponse",
+  "title": "DataValidationStatusUpdateResponse",
+  "x-openfn-adaptor": "kobotoolbox",
+  "x-source": {
+    "openapi": "#/components/schemas/DataValidationStatusUpdateResponse",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "uid": {
+      "type": "string"
+    },
+    "by_whom": {
+      "type": "string"
+    },
+    "label": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "by_whom",
+    "label",
+    "timestamp",
+    "uid"
+  ]
+}

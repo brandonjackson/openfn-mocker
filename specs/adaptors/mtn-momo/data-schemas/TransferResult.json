@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "mtn-momo/TransferResult",
+  "title": "TransferResult",
+  "x-openfn-adaptor": "mtn-momo",
+  "x-source": {
+    "openapi": "#/components/schemas/TransferResult",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "amount": {
+      "type": "string",
+      "example": "100"
+    },
+    "currency": {
+      "type": "string",
+      "example": "EUR"
+    },
+    "financialTransactionId": {
+      "type": "string",
+      "example": "23503452"
+    },
+    "externalId": {
+      "type": "string",
+      "example": "6353636"
+    },
+    "payee": {
+      "$ref": "Party.json"
+    },
+    "payerMessage": {
+      "type": "string",
+      "example": "Salary payment"
+    },
+    "payeeNote": {
+      "type": "string",
+      "example": "March salary"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "PENDING",
+        "SUCCESSFUL",
+        "FAILED"
+      ],
+      "example": "SUCCESSFUL"
+    },
+    "reason": {
+      "type": "string",
+      "example": "PAYEE_NOT_FOUND"
+    }
+  },
+  "required": [
+    "amount",
+    "currency",
+    "externalId",
+    "payee",
+    "status"
+  ]
+}

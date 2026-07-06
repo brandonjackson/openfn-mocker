@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "monnify/AuthResponse",
+  "title": "AuthResponse",
+  "x-openfn-adaptor": "monnify",
+  "x-source": {
+    "openapi": "#/components/schemas/AuthResponse",
+    "capturedAt": "2026-07-06"
+  },
+  "allOf": [
+    {
+      "$ref": "MonnifyEnvelope.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "responseBody": {
+          "type": "object",
+          "properties": {
+            "accessToken": {
+              "type": "string",
+              "example": "eyJhbGciOiJIUzUxMiJ9..."
+            },
+            "expiresIn": {
+              "type": "integer",
+              "example": 3600
+            }
+          }
+        }
+      }
+    }
+  ]
+}

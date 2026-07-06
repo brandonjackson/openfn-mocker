@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "commcare/Fixture",
+  "title": "Fixture",
+  "x-openfn-adaptor": "commcare",
+  "x-source": {
+    "openapi": "#/components/schemas/Fixture",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "A CommCare fixture (lookup table) item.",
+  "properties": {
+    "id": {
+      "type": "string",
+      "example": "fix-001"
+    },
+    "fixture_type": {
+      "type": "string",
+      "example": "district"
+    },
+    "fields": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "The lookup table row field values.",
+      "example": {
+        "name": "North",
+        "code": "N01"
+      }
+    },
+    "resource_uri": {
+      "type": "string",
+      "example": "/a/demo/api/v0.5/fixture/fix-001/"
+    }
+  }
+}

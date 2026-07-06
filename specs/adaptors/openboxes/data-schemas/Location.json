@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openboxes/Location",
+  "title": "Location",
+  "x-openfn-adaptor": "openboxes",
+  "x-source": {
+    "openapi": "#/components/schemas/Location",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string",
+      "example": "Boston Depot"
+    },
+    "description": {
+      "type": "string"
+    },
+    "locationNumber": {
+      "type": "string"
+    },
+    "locationType": {
+      "$ref": "LocationType.json"
+    },
+    "locationTypeCode": {
+      "type": "string",
+      "example": "DEPOT"
+    },
+    "parentLocation": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

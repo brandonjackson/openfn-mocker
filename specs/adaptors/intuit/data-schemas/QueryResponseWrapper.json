@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "intuit/QueryResponseWrapper",
+  "title": "QueryResponseWrapper",
+  "x-openfn-adaptor": "intuit",
+  "x-source": {
+    "openapi": "#/components/schemas/QueryResponseWrapper",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "QueryResponse": {
+      "type": "object",
+      "properties": {
+        "startPosition": {
+          "type": "integer",
+          "example": 1
+        },
+        "maxResults": {
+          "type": "integer",
+          "example": 10
+        },
+        "Customer": {
+          "type": "array",
+          "items": {
+            "$ref": "Customer.json"
+          }
+        },
+        "Invoice": {
+          "type": "array",
+          "items": {
+            "$ref": "Invoice.json"
+          }
+        },
+        "Item": {
+          "type": "array",
+          "items": {
+            "$ref": "Item.json"
+          }
+        },
+        "Account": {
+          "type": "array",
+          "items": {
+            "$ref": "Account.json"
+          }
+        },
+        "Vendor": {
+          "type": "array",
+          "items": {
+            "$ref": "Vendor.json"
+          }
+        }
+      }
+    },
+    "time": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

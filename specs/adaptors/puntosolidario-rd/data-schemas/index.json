@@ -1,0 +1,28 @@
+{
+  "adaptor": "puntosolidario-rd",
+  "capturedAt": "2026-07-06",
+  "dialect": "https://json-schema.org/draft/2020-12/schema",
+  "source": "openapi.json",
+  "resources": [
+    "Beneficiary",
+    "Subsidy",
+    "Transaction"
+  ],
+  "objects": [
+    {
+      "name": "Beneficiary",
+      "file": "Beneficiary.json",
+      "resource": true
+    },
+    {
+      "name": "Subsidy",
+      "file": "Subsidy.json",
+      "resource": true
+    },
+    {
+      "name": "Transaction",
+      "file": "Transaction.json",
+      "resource": true
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fhir-eswatini/CodeableConcept",
+  "title": "CodeableConcept",
+  "x-openfn-adaptor": "fhir-eswatini",
+  "x-source": {
+    "openapi": "#/components/schemas/CodeableConcept",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "coding": {
+      "type": "array",
+      "items": {
+        "$ref": "Coding.json"
+      }
+    },
+    "text": {
+      "type": "string"
+    }
+  }
+}

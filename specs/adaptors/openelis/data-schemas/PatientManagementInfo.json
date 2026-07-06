@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openelis/PatientManagementInfo",
+  "title": "PatientManagementInfo",
+  "x-openfn-adaptor": "openelis",
+  "x-source": {
+    "openapi": "#/components/schemas/PatientManagementInfo",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "patientUpdateStatus": {
+      "type": "string",
+      "enum": [
+        "ADD",
+        "UPDATE",
+        "NO_ACTION"
+      ],
+      "example": "ADD"
+    },
+    "patientPK": {
+      "type": "string"
+    },
+    "firstName": {
+      "type": "string",
+      "example": "Jane"
+    },
+    "lastName": {
+      "type": "string",
+      "example": "Doe"
+    },
+    "gender": {
+      "type": "string",
+      "example": "F"
+    },
+    "birthDateForDisplay": {
+      "type": "string",
+      "example": "01/05/1990"
+    },
+    "nationalId": {
+      "type": "string",
+      "example": "NID12345"
+    },
+    "subjectNumber": {
+      "type": "string"
+    },
+    "STnumber": {
+      "type": "string"
+    },
+    "guid": {
+      "type": "string"
+    },
+    "primaryPhone": {
+      "type": "string"
+    },
+    "streetAddress": {
+      "type": "string"
+    },
+    "city": {
+      "type": "string"
+    }
+  }
+}

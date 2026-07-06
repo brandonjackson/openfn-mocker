@@ -39,13 +39,17 @@ export interface ManifestEntry {
   npm: string;
   rest: boolean;
   hasOpenapi: boolean;
-  hasSeedSchema: boolean;
+  hasDataSchemas: boolean;
   origin?: SpecOrigin;
   upstreamFormat?: string;
   /** Number of path+method operations in the OpenAPI spec. */
   operations?: number;
-  /** Number of top-level component schemas (candidate seed collections). */
+  /** Number of top-level component schemas in the OpenAPI spec. */
   schemas?: number;
+  /** Number of standalone data-object files extracted (closure of resources). */
+  dataObjects?: number;
+  /** Number of those that are top-level response resources. */
+  resources?: number;
   capturedAt?: string;
   note?: string;
 }
@@ -56,7 +60,8 @@ export interface Manifest {
   totals: {
     adaptors: number;
     withOpenapi: number;
-    withSeedSchema: number;
+    withDataSchemas: number;
+    dataObjects: number;
     byOrigin: Record<string, number>;
   };
   adaptors: ManifestEntry[];

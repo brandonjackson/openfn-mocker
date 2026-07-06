@@ -1,0 +1,51 @@
+{
+  "adaptor": "ocl",
+  "capturedAt": "2026-07-06",
+  "dialect": "https://json-schema.org/draft/2020-12/schema",
+  "source": "openapi.json",
+  "resources": [
+    "Collection",
+    "Concept",
+    "Mapping",
+    "Organization",
+    "Source",
+    "User"
+  ],
+  "objects": [
+    {
+      "name": "Collection",
+      "file": "Collection.json",
+      "resource": true
+    },
+    {
+      "name": "Concept",
+      "file": "Concept.json",
+      "resource": true
+    },
+    {
+      "name": "LocalizedText",
+      "file": "LocalizedText.json",
+      "resource": false
+    },
+    {
+      "name": "Mapping",
+      "file": "Mapping.json",
+      "resource": true
+    },
+    {
+      "name": "Organization",
+      "file": "Organization.json",
+      "resource": true
+    },
+    {
+      "name": "Source",
+      "file": "Source.json",
+      "resource": true
+    },
+    {
+      "name": "User",
+      "file": "User.json",
+      "resource": true
+    }
+  ]
+}

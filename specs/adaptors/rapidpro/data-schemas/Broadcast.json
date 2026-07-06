@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "rapidpro/Broadcast",
+  "title": "Broadcast",
+  "x-openfn-adaptor": "rapidpro",
+  "x-source": {
+    "openapi": "#/components/schemas/Broadcast",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "urns": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "contacts": {
+      "type": "array",
+      "items": {
+        "$ref": "ObjectRef.json"
+      }
+    },
+    "groups": {
+      "type": "array",
+      "items": {
+        "$ref": "ObjectRef.json"
+      }
+    },
+    "text": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "status": {
+      "type": "string",
+      "example": "queued"
+    },
+    "created_on": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

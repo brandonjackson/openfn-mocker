@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "mtn-momo/AccountHolderActive",
+  "title": "AccountHolderActive",
+  "x-openfn-adaptor": "mtn-momo",
+  "x-source": {
+    "openapi": "#/components/schemas/AccountHolderActive",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "result": {
+      "type": "boolean",
+      "example": true
+    }
+  },
+  "required": [
+    "result"
+  ]
+}

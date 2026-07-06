@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openfn/WorkflowList",
+  "title": "WorkflowList",
+  "x-openfn-adaptor": "openfn",
+  "x-source": {
+    "openapi": "#/components/schemas/WorkflowList",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "workflows": {
+      "type": "array",
+      "items": {
+        "$ref": "Workflow.json"
+      }
+    }
+  }
+}

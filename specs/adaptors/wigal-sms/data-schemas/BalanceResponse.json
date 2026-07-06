@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wigal-sms/BalanceResponse",
+  "title": "BalanceResponse",
+  "x-openfn-adaptor": "wigal-sms",
+  "x-source": {
+    "openapi": "#/components/schemas/BalanceResponse",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "status": {
+      "type": "string",
+      "example": "SUCCESS"
+    },
+    "message": {
+      "type": "string",
+      "example": "SUCCESS"
+    },
+    "data": {
+      "type": "object",
+      "properties": {
+        "paidcashbalance": {
+          "type": "number",
+          "example": 0
+        },
+        "cashbalance": {
+          "type": "number",
+          "example": 677.56
+        },
+        "bundles": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "number"
+          },
+          "example": {
+            "VOICE": 15,
+            "KYCVERIFY": 12,
+            "SIMACTIVE": 123,
+            "SMS": 82,
+            "USSD": 100
+          }
+        },
+        "invoicesummary": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "invoicetype": {
+                "type": "string",
+                "example": "TOPUP"
+              },
+              "count": {
+                "type": "integer",
+                "example": 2
+              },
+              "totalamount": {
+                "type": "number",
+                "example": 2
+              }
+            }
+          }
+        },
+        "activebundleinvoices": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "example": 387
+              },
+              "description": {
+                "type": "string",
+                "example": "Mashup Bundle dash"
+              },
+              "enddate": {
+                "type": "string",
+                "example": "2024-08-30"
+              },
+              "invoicetype": {
+                "type": "string",
+                "example": "BUNDLE"
+              },
+              "details": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "service": {
+                      "type": "string",
+                      "example": "KYCVERIFY"
+                    },
+                    "quantity": {
+                      "type": "integer",
+                      "example": 12
+                    },
+                    "used": {
+                      "type": "integer",
+                      "example": 0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

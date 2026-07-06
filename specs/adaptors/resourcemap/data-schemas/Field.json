@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "resourcemap/Field",
+  "title": "Field",
+  "x-openfn-adaptor": "resourcemap",
+  "x-source": {
+    "openapi": "#/components/schemas/Field",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer",
+      "example": 45
+    },
+    "es_code": {
+      "type": "string",
+      "example": "45"
+    },
+    "code": {
+      "type": "string",
+      "example": "phone"
+    },
+    "name": {
+      "type": "string",
+      "example": "Phone"
+    },
+    "kind": {
+      "type": "string",
+      "description": "Field type",
+      "example": "text",
+      "enum": [
+        "text",
+        "numeric",
+        "yes_no",
+        "select_one",
+        "select_many",
+        "date",
+        "site",
+        "user",
+        "email",
+        "phone",
+        "hierarchy"
+      ]
+    },
+    "config": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": true
+    }
+  }
+}

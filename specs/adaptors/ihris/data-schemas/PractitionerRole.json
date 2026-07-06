@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ihris/PractitionerRole",
+  "title": "PractitionerRole",
+  "x-openfn-adaptor": "ihris",
+  "x-source": {
+    "openapi": "#/components/schemas/PractitionerRole",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "required": [
+    "resourceType"
+  ],
+  "properties": {
+    "resourceType": {
+      "type": "string",
+      "enum": [
+        "PractitionerRole"
+      ],
+      "example": "PractitionerRole"
+    },
+    "id": {
+      "type": "string",
+      "example": "456"
+    },
+    "active": {
+      "type": "boolean",
+      "example": true
+    },
+    "practitioner": {
+      "$ref": "Reference.json"
+    },
+    "organization": {
+      "$ref": "Reference.json"
+    },
+    "location": {
+      "type": "array",
+      "items": {
+        "$ref": "Reference.json"
+      }
+    },
+    "code": {
+      "type": "array",
+      "items": {
+        "$ref": "CodeableConcept.json"
+      }
+    },
+    "specialty": {
+      "type": "array",
+      "items": {
+        "$ref": "CodeableConcept.json"
+      }
+    }
+  }
+}

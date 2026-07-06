@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openlmis/SupervisoryNodePage",
+  "title": "SupervisoryNodePage",
+  "x-openfn-adaptor": "openlmis",
+  "x-source": {
+    "openapi": "#/components/schemas/SupervisoryNodePage",
+    "capturedAt": "2026-07-06"
+  },
+  "allOf": [
+    {
+      "$ref": "PageMeta.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "content": {
+          "type": "array",
+          "items": {
+            "$ref": "SupervisoryNode.json"
+          }
+        }
+      }
+    }
+  ]
+}

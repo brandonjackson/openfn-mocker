@@ -1,0 +1,50 @@
+{
+  "adaptor": "opencrvs",
+  "capturedAt": "2026-07-06",
+  "dialect": "https://json-schema.org/draft/2020-12/schema",
+  "source": "openapi.json",
+  "resources": [
+    "Event",
+    "Location",
+    "NotificationResponse",
+    "SearchEventsResponse",
+    "TokenResponse"
+  ],
+  "objects": [
+    {
+      "name": "Event",
+      "file": "Event.json",
+      "resource": true
+    },
+    {
+      "name": "EventSearchResult",
+      "file": "EventSearchResult.json",
+      "resource": false
+    },
+    {
+      "name": "HumanName",
+      "file": "HumanName.json",
+      "resource": false
+    },
+    {
+      "name": "Location",
+      "file": "Location.json",
+      "resource": true
+    },
+    {
+      "name": "NotificationResponse",
+      "file": "NotificationResponse.json",
+      "resource": true
+    },
+    {
+      "name": "SearchEventsResponse",
+      "file": "SearchEventsResponse.json",
+      "resource": true
+    },
+    {
+      "name": "TokenResponse",
+      "file": "TokenResponse.json",
+      "resource": true
+    }
+  ]
+}

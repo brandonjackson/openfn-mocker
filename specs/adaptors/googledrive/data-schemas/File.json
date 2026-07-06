@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "googledrive/File",
+  "title": "File",
+  "x-openfn-adaptor": "googledrive",
+  "x-source": {
+    "openapi": "#/components/schemas/File",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "The metadata for a Google Drive file.",
+  "properties": {
+    "kind": {
+      "type": "string",
+      "example": "drive#file"
+    },
+    "id": {
+      "type": "string",
+      "example": "1a2B3c4D5e6F7g8H9i0JkLmNoPqRsTuVwX"
+    },
+    "name": {
+      "type": "string",
+      "example": "report.csv"
+    },
+    "mimeType": {
+      "type": "string",
+      "example": "text/csv"
+    },
+    "description": {
+      "type": "string"
+    },
+    "parents": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "example": [
+        "0AJk9LmNoPqRsUk9PVA"
+      ]
+    },
+    "webViewLink": {
+      "type": "string",
+      "example": "https://drive.google.com/file/d/1a2B3c4D5e6F7g8H9i0JkLmNoPqRsTuVwX/view"
+    },
+    "webContentLink": {
+      "type": "string"
+    },
+    "iconLink": {
+      "type": "string"
+    },
+    "size": {
+      "type": "string",
+      "description": "Size in bytes, as a string.",
+      "example": "10240"
+    },
+    "createdTime": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2024-03-04T10:00:00.000Z"
+    },
+    "modifiedTime": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2024-03-05T12:30:00.000Z"
+    },
+    "trashed": {
+      "type": "boolean",
+      "example": false
+    },
+    "starred": {
+      "type": "boolean",
+      "example": false
+    },
+    "shared": {
+      "type": "boolean",
+      "example": false
+    },
+    "md5Checksum": {
+      "type": "string"
+    },
+    "owners": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "example": "drive#user"
+          },
+          "displayName": {
+            "type": "string",
+            "example": "Ama Mensah"
+          },
+          "emailAddress": {
+            "type": "string",
+            "example": "ama@example.org"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "odk/ODataSystem",
+  "title": "ODataSystem",
+  "x-openfn-adaptor": "odk",
+  "x-source": {
+    "openapi": "#/components/schemas/ODataSystem",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "submissionDate": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedAt": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "deletedAt": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "submitterId": {
+      "type": "string",
+      "example": "5"
+    },
+    "submitterName": {
+      "type": "string",
+      "example": "Data Collector"
+    },
+    "attachmentsPresent": {
+      "type": "integer",
+      "example": 0
+    },
+    "attachmentsExpected": {
+      "type": "integer",
+      "example": 0
+    },
+    "status": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "reviewState": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "deviceId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "edits": {
+      "type": "integer",
+      "example": 0
+    },
+    "formVersion": {
+      "type": "string",
+      "example": "1"
+    }
+  }
+}

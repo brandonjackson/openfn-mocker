@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "msupply/ItemStats",
+  "title": "ItemStats",
+  "x-openfn-adaptor": "msupply",
+  "x-source": {
+    "openapi": "#/components/schemas/ItemStats",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "Per-store stock statistics for a catalogue item.",
+  "properties": {
+    "averageMonthlyConsumption": {
+      "type": "number"
+    },
+    "availableStockOnHand": {
+      "type": "number"
+    },
+    "availableMonthsOfStockOnHand": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "monthsOfStockOnHand": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "totalConsumption": {
+      "type": "number"
+    },
+    "stockOnHand": {
+      "type": "number"
+    }
+  }
+}

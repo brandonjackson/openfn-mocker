@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "whatsapp/SuccessResponse",
+  "title": "SuccessResponse",
+  "x-openfn-adaptor": "whatsapp",
+  "x-source": {
+    "openapi": "#/components/schemas/SuccessResponse",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "Generic boolean success response used by register, deregister, and delete-media.",
+  "properties": {
+    "success": {
+      "type": "boolean",
+      "example": true
+    }
+  }
+}

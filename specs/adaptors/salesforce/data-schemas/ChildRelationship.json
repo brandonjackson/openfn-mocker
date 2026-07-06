@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "salesforce/ChildRelationship",
+  "title": "ChildRelationship",
+  "x-openfn-adaptor": "salesforce",
+  "x-source": {
+    "openapi": "#/components/schemas/ChildRelationship",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "field": {
+      "type": "string",
+      "example": "AccountId"
+    },
+    "childSObject": {
+      "type": "string",
+      "example": "Contact"
+    },
+    "relationshipName": {
+      "type": "string",
+      "example": "Contacts"
+    },
+    "cascadeDelete": {
+      "type": "boolean",
+      "example": true
+    }
+  }
+}

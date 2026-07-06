@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openelis/AccessionResultsRestResponse",
+  "title": "AccessionResultsRestResponse",
+  "x-openfn-adaptor": "openelis",
+  "x-source": {
+    "openapi": "#/components/schemas/AccessionResultsRestResponse",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "accessionNumber": {
+      "type": "string",
+      "example": "0000000123"
+    },
+    "searchFinished": {
+      "type": "boolean"
+    },
+    "error": {
+      "type": "boolean"
+    },
+    "firstName": {
+      "type": "string"
+    },
+    "lastName": {
+      "type": "string"
+    },
+    "dob": {
+      "type": "string"
+    },
+    "gender": {
+      "type": "string"
+    },
+    "nationalId": {
+      "type": "string"
+    },
+    "subjectNumber": {
+      "type": "string"
+    },
+    "testResult": {
+      "type": "array",
+      "items": {
+        "$ref": "TestResultItem.json"
+      }
+    }
+  }
+}

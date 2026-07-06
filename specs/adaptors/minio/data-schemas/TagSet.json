@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "minio/TagSet",
+  "title": "TagSet",
+  "x-openfn-adaptor": "minio",
+  "x-source": {
+    "openapi": "#/components/schemas/TagSet",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "tags": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "example": {
+        "source": "openmrs",
+        "status": "raw"
+      }
+    }
+  }
+}

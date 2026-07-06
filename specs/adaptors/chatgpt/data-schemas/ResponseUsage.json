@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "chatgpt/ResponseUsage",
+  "title": "ResponseUsage",
+  "x-openfn-adaptor": "chatgpt",
+  "x-source": {
+    "openapi": "#/components/schemas/ResponseUsage",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "Token usage details for a Responses API call.",
+  "properties": {
+    "input_tokens": {
+      "type": "integer"
+    },
+    "output_tokens": {
+      "type": "integer"
+    },
+    "total_tokens": {
+      "type": "integer"
+    }
+  },
+  "required": [
+    "input_tokens",
+    "output_tokens",
+    "total_tokens"
+  ]
+}

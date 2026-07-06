@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openspp/Program",
+  "title": "Program",
+  "x-openfn-adaptor": "openspp",
+  "x-source": {
+    "openapi": "#/components/schemas/Program",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "A g2p.program social-protection program.",
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "program_id": {
+      "type": "string",
+      "example": "PROG_2023_00000001"
+    },
+    "name": {
+      "type": "string",
+      "example": "Cash Transfer 2023"
+    },
+    "eligible_beneficiaries_count": {
+      "type": "integer"
+    },
+    "cycles_count": {
+      "type": "integer"
+    },
+    "state": {
+      "type": "string",
+      "example": "active"
+    },
+    "target_type": {
+      "type": "string",
+      "example": "group"
+    }
+  }
+}

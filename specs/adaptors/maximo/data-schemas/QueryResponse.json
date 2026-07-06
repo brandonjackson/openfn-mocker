@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "maximo/QueryResponse",
+  "title": "QueryResponse",
+  "x-openfn-adaptor": "maximo",
+  "x-source": {
+    "openapi": "#/components/schemas/QueryResponse",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "Generic query response wrapper returned by object structure queries.",
+  "properties": {
+    "rsStart": {
+      "type": "integer",
+      "description": "Index of the first returned record."
+    },
+    "rsCount": {
+      "type": "integer",
+      "description": "Number of records in this response."
+    },
+    "rsTotal": {
+      "type": "integer",
+      "description": "Total number of matching records."
+    },
+    "member": {
+      "type": "array",
+      "description": "The returned records.",
+      "items": {
+        "$ref": "GenericRecord.json"
+      }
+    }
+  }
+}

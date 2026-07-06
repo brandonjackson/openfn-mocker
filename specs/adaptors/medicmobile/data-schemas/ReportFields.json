@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "medicmobile/ReportFields",
+  "title": "ReportFields",
+  "x-openfn-adaptor": "medicmobile",
+  "x-source": {
+    "openapi": "#/components/schemas/ReportFields",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "patient_name": {
+      "type": "string",
+      "example": "Jane Doe"
+    },
+    "meta": {
+      "type": "object",
+      "properties": {
+        "instanceID": {
+          "type": "string",
+          "example": "uuid:abc-123-xyz"
+        }
+      }
+    }
+  }
+}

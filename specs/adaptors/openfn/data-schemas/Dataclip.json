@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openfn/Dataclip",
+  "title": "Dataclip",
+  "x-openfn-adaptor": "openfn",
+  "x-source": {
+    "openapi": "#/components/schemas/Dataclip",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "example": "f7a8b9c0-0006-4a2b-9c3d-000000000006"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "http_request",
+        "global",
+        "step_result",
+        "saved_input"
+      ],
+      "example": "http_request"
+    },
+    "body": {
+      "type": "object",
+      "additionalProperties": true,
+      "example": {
+        "name": "Jane Doe",
+        "age": 33
+      }
+    },
+    "project_id": {
+      "type": "string",
+      "example": "c1f2e3d4-0001-4a2b-9c3d-000000000001"
+    },
+    "inserted_at": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2026-06-01T07:59:00Z"
+    }
+  }
+}

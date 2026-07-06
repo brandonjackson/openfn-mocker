@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "lamisplus/Encounter",
+  "title": "Encounter",
+  "x-openfn-adaptor": "lamisplus",
+  "x-source": {
+    "openapi": "#/components/schemas/Encounter",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "uuid": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "visitId": {
+      "type": "integer"
+    },
+    "patientId": {
+      "type": "integer"
+    },
+    "encounterType": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "encounterDate": {
+      "type": "string",
+      "format": "date"
+    },
+    "formData": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": true
+    }
+  }
+}

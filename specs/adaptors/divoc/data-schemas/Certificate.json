@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "divoc/Certificate",
+  "title": "Certificate",
+  "x-openfn-adaptor": "divoc",
+  "x-source": {
+    "openapi": "#/components/schemas/Certificate",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "certificateId": {
+      "type": "string"
+    },
+    "preEnrollmentCode": {
+      "type": "string"
+    },
+    "issuedDate": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "status": {
+      "type": "string"
+    },
+    "signedCertificate": {
+      "type": "object"
+    },
+    "qrCode": {
+      "type": "string"
+    }
+  }
+}

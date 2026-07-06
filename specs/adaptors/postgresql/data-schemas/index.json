@@ -1,0 +1,45 @@
+{
+  "adaptor": "postgresql",
+  "capturedAt": "2026-07-06",
+  "dialect": "https://json-schema.org/draft/2020-12/schema",
+  "source": "openapi.json",
+  "resources": [
+    "ColumnList",
+    "FindValueResult",
+    "QueryResult",
+    "TableResult",
+    "WriteResult"
+  ],
+  "objects": [
+    {
+      "name": "Column",
+      "file": "Column.json",
+      "resource": false
+    },
+    {
+      "name": "ColumnList",
+      "file": "ColumnList.json",
+      "resource": true
+    },
+    {
+      "name": "FindValueResult",
+      "file": "FindValueResult.json",
+      "resource": true
+    },
+    {
+      "name": "QueryResult",
+      "file": "QueryResult.json",
+      "resource": true
+    },
+    {
+      "name": "TableResult",
+      "file": "TableResult.json",
+      "resource": true
+    },
+    {
+      "name": "WriteResult",
+      "file": "WriteResult.json",
+      "resource": true
+    }
+  ]
+}

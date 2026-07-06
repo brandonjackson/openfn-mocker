@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "lamisplus/PatientListResponse",
+  "title": "PatientListResponse",
+  "x-openfn-adaptor": "lamisplus",
+  "x-source": {
+    "openapi": "#/components/schemas/PatientListResponse",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "data": {
+      "type": "object",
+      "properties": {
+        "patients": {
+          "type": "array",
+          "items": {
+            "$ref": "Patient.json"
+          }
+        },
+        "totalRecords": {
+          "type": "integer"
+        },
+        "pageSize": {
+          "type": "integer"
+        },
+        "currentPage": {
+          "type": "integer"
+        }
+      }
+    },
+    "message": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "status": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  }
+}

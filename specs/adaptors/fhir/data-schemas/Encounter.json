@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fhir/Encounter",
+  "title": "Encounter",
+  "x-openfn-adaptor": "fhir",
+  "x-source": {
+    "openapi": "#/components/schemas/Encounter",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "required": [
+    "resourceType",
+    "status"
+  ],
+  "properties": {
+    "resourceType": {
+      "type": "string",
+      "enum": [
+        "Encounter"
+      ]
+    },
+    "id": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    },
+    "class": {
+      "type": "object"
+    },
+    "subject": {
+      "$ref": "Reference.json"
+    },
+    "period": {
+      "type": "object",
+      "properties": {
+        "start": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "end": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "adaptor": "pdfshift",
+  "capturedAt": "2026-07-06",
+  "dialect": "https://json-schema.org/draft/2020-12/schema",
+  "source": "openapi.json",
+  "resources": [
+    "Account",
+    "ConversionResult",
+    "Credits"
+  ],
+  "objects": [
+    {
+      "name": "Account",
+      "file": "Account.json",
+      "resource": true
+    },
+    {
+      "name": "ConversionResult",
+      "file": "ConversionResult.json",
+      "resource": true
+    },
+    {
+      "name": "Credits",
+      "file": "Credits.json",
+      "resource": true
+    }
+  ]
+}

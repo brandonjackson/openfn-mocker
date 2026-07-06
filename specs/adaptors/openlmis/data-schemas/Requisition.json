@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openlmis/Requisition",
+  "title": "Requisition",
+  "x-openfn-adaptor": "openlmis",
+  "x-source": {
+    "openapi": "#/components/schemas/Requisition",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "facility": {
+      "$ref": "ObjectReference.json"
+    },
+    "program": {
+      "$ref": "ObjectReference.json"
+    },
+    "processingPeriod": {
+      "$ref": "ObjectReference.json"
+    },
+    "supervisoryNode": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "INITIATED",
+        "SUBMITTED",
+        "AUTHORIZED",
+        "IN_APPROVAL",
+        "APPROVED",
+        "RELEASED",
+        "REJECTED",
+        "SKIPPED"
+      ]
+    },
+    "emergency": {
+      "type": "boolean"
+    },
+    "reportOnly": {
+      "type": "boolean"
+    },
+    "createdDate": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "modifiedDate": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "requisitionLineItems": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "orderable": {
+            "$ref": "ObjectReference.json"
+          },
+          "beginningBalance": {
+            "type": "integer"
+          },
+          "totalReceivedQuantity": {
+            "type": "integer"
+          },
+          "totalConsumedQuantity": {
+            "type": "integer"
+          },
+          "stockOnHand": {
+            "type": "integer"
+          },
+          "requestedQuantity": {
+            "type": "integer"
+          },
+          "approvedQuantity": {
+            "type": "integer"
+          }
+        }
+      }
+    }
+  }
+}

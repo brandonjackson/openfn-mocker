@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cht/UserList",
+  "title": "UserList",
+  "x-openfn-adaptor": "cht",
+  "x-source": {
+    "openapi": "#/components/schemas/UserList",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "array",
+  "items": {
+    "$ref": "User.json"
+  }
+}

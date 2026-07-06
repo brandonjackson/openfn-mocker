@@ -1,0 +1,66 @@
+{
+  "adaptor": "salesforce",
+  "capturedAt": "2026-07-06",
+  "dialect": "https://json-schema.org/draft/2020-12/schema",
+  "source": "openapi.json",
+  "resources": [
+    "CreateResult",
+    "DescribeGlobalResult",
+    "DescribeSObjectResult",
+    "SObject",
+    "SaveResult",
+    "UpsertResult"
+  ],
+  "objects": [
+    {
+      "name": "ChildRelationship",
+      "file": "ChildRelationship.json",
+      "resource": false
+    },
+    {
+      "name": "CreateResult",
+      "file": "CreateResult.json",
+      "resource": true
+    },
+    {
+      "name": "DescribeGlobalResult",
+      "file": "DescribeGlobalResult.json",
+      "resource": true
+    },
+    {
+      "name": "DescribeGlobalSObject",
+      "file": "DescribeGlobalSObject.json",
+      "resource": false
+    },
+    {
+      "name": "DescribeSObjectResult",
+      "file": "DescribeSObjectResult.json",
+      "resource": true
+    },
+    {
+      "name": "Error",
+      "file": "Error.json",
+      "resource": false
+    },
+    {
+      "name": "Field",
+      "file": "Field.json",
+      "resource": false
+    },
+    {
+      "name": "SObject",
+      "file": "SObject.json",
+      "resource": true
+    },
+    {
+      "name": "SaveResult",
+      "file": "SaveResult.json",
+      "resource": true
+    },
+    {
+      "name": "UpsertResult",
+      "file": "UpsertResult.json",
+      "resource": true
+    }
+  ]
+}

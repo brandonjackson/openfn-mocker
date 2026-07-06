@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openspp/GroupMember",
+  "title": "GroupMember",
+  "x-openfn-adaptor": "openspp",
+  "x-source": {
+    "openapi": "#/components/schemas/GroupMember",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "A g2p.group.membership record linking an individual to a group.",
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "individual": {
+      "description": "Linked individual (many2one, [id, name])",
+      "example": [
+        42,
+        "Jane Doe"
+      ]
+    },
+    "group": {
+      "description": "Linked group (many2one, [id, name])",
+      "example": [
+        7,
+        "Doe Household"
+      ]
+    },
+    "kind": {
+      "description": "Membership roles (many2many)",
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "example": [
+        "Head"
+      ]
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "ended_date": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date"
+    },
+    "is_ended": {
+      "type": "boolean"
+    },
+    "individual_birthdate": {
+      "type": "string",
+      "format": "date"
+    },
+    "individual_gender": {
+      "type": "string"
+    }
+  }
+}

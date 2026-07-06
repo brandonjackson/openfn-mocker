@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openboxes/Category",
+  "title": "Category",
+  "x-openfn-adaptor": "openboxes",
+  "x-source": {
+    "openapi": "#/components/schemas/Category",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string",
+      "example": "Medicines"
+    },
+    "parentCategory": {
+      "$ref": "CategoryRef.json"
+    }
+  }
+}

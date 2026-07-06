@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "odk/Dataset",
+  "title": "Dataset",
+  "x-openfn-adaptor": "odk",
+  "x-source": {
+    "openapi": "#/components/schemas/Dataset",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "example": "people"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "projectId": {
+      "type": "integer",
+      "example": 22
+    },
+    "approvalRequired": {
+      "type": "boolean"
+    },
+    "ownerOnly": {
+      "type": "boolean"
+    }
+  }
+}

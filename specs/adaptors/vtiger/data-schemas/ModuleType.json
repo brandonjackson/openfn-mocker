@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "vtiger/ModuleType",
+  "title": "ModuleType",
+  "x-openfn-adaptor": "vtiger",
+  "x-source": {
+    "openapi": "#/components/schemas/ModuleType",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "Metadata for a single CRM module (element type).",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Module name, e.g. Contacts."
+    },
+    "label": {
+      "type": "string",
+      "description": "Human-readable module label."
+    },
+    "singular": {
+      "type": "string",
+      "description": "Singular label."
+    },
+    "isEntity": {
+      "type": "boolean",
+      "description": "Whether the module represents an entity with records."
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

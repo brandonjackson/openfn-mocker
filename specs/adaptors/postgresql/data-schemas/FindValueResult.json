@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "postgresql/FindValueResult",
+  "title": "FindValueResult",
+  "x-openfn-adaptor": "postgresql",
+  "x-source": {
+    "openapi": "#/components/schemas/FindValueResult",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "value": {
+      "description": "The matched value, or null when no row matched"
+    }
+  }
+}

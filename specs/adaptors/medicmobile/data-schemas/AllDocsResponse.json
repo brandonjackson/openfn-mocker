@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "medicmobile/AllDocsResponse",
+  "title": "AllDocsResponse",
+  "x-openfn-adaptor": "medicmobile",
+  "x-source": {
+    "openapi": "#/components/schemas/AllDocsResponse",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "total_rows": {
+      "type": "integer",
+      "example": 1
+    },
+    "offset": {
+      "type": "integer",
+      "example": 0
+    },
+    "rows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "key": {
+            "type": "string"
+          },
+          "value": {
+            "type": "object",
+            "properties": {
+              "rev": {
+                "type": "string"
+              }
+            }
+          },
+          "doc": {
+            "$ref": "Report.json"
+          }
+        }
+      }
+    }
+  }
+}

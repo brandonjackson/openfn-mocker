@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "mtn-momo/ApiKey",
+  "title": "ApiKey",
+  "x-openfn-adaptor": "mtn-momo",
+  "x-source": {
+    "openapi": "#/components/schemas/ApiKey",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "apiKey": {
+      "type": "string",
+      "example": "f1db798c98df4bcf83b538175893bbf0"
+    }
+  },
+  "required": [
+    "apiKey"
+  ]
+}

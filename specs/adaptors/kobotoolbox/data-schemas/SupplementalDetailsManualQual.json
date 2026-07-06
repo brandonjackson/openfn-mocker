@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "kobotoolbox/SupplementalDetailsManualQual",
+  "title": "SupplementalDetailsManualQual",
+  "x-openfn-adaptor": "kobotoolbox",
+  "x-source": {
+    "openapi": "#/components/schemas/SupplementalDetailsManualQual",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "Manual qualitative supplemental details",
+  "additionalProperties": {
+    "type": "object",
+    "properties": {
+      "manual_qual": {
+        "$ref": "SupplementalDataManualQual.json"
+      }
+    },
+    "required": [
+      "manual_qual"
+    ]
+  }
+}

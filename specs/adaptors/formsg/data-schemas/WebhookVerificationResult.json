@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "formsg/WebhookVerificationResult",
+  "title": "WebhookVerificationResult",
+  "x-openfn-adaptor": "formsg",
+  "x-source": {
+    "openapi": "#/components/schemas/WebhookVerificationResult",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "Output of verifyWebhook: whether the X-FormSG-Signature header is authentic.",
+  "properties": {
+    "verified": {
+      "type": "boolean"
+    },
+    "epoch": {
+      "type": "integer"
+    },
+    "submissionId": {
+      "type": "string"
+    },
+    "formId": {
+      "type": "string"
+    }
+  }
+}

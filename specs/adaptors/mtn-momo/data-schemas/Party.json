@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "mtn-momo/Party",
+  "title": "Party",
+  "x-openfn-adaptor": "mtn-momo",
+  "x-source": {
+    "openapi": "#/components/schemas/Party",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "Identifies an account holder (payer or payee).",
+  "properties": {
+    "partyIdType": {
+      "type": "string",
+      "enum": [
+        "MSISDN",
+        "EMAIL",
+        "PARTY_CODE"
+      ],
+      "example": "MSISDN"
+    },
+    "partyId": {
+      "type": "string",
+      "example": "46733123450"
+    }
+  },
+  "required": [
+    "partyIdType",
+    "partyId"
+  ]
+}

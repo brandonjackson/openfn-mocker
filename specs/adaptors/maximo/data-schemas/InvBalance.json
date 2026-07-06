@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "maximo/InvBalance",
+  "title": "InvBalance",
+  "x-openfn-adaptor": "maximo",
+  "x-source": {
+    "openapi": "#/components/schemas/InvBalance",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "Inventory balance record (INVBALANCES MBO).",
+  "properties": {
+    "INVBALANCESID": {
+      "type": "integer"
+    },
+    "ITEMNUM": {
+      "type": "string"
+    },
+    "ITEMSETID": {
+      "type": "string"
+    },
+    "LOCATION": {
+      "type": "string"
+    },
+    "BINNUM": {
+      "type": "string"
+    },
+    "LOTNUM": {
+      "type": "string"
+    },
+    "SITEID": {
+      "type": "string"
+    },
+    "CURBAL": {
+      "type": "number",
+      "description": "Current balance."
+    },
+    "PHYSCNT": {
+      "type": "number",
+      "description": "Physical count."
+    },
+    "PHYSCNTDATE": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "_rowstamp": {
+      "type": "string"
+    },
+    "href": {
+      "type": "string"
+    }
+  }
+}

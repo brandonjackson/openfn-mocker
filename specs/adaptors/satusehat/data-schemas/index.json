@@ -1,0 +1,93 @@
+{
+  "adaptor": "satusehat",
+  "capturedAt": "2026-07-06",
+  "dialect": "https://json-schema.org/draft/2020-12/schema",
+  "source": "openapi.json",
+  "resources": [
+    "Bundle",
+    "Condition",
+    "Encounter",
+    "Location",
+    "Observation",
+    "Organization",
+    "Patient",
+    "TokenResponse"
+  ],
+  "objects": [
+    {
+      "name": "Bundle",
+      "file": "Bundle.json",
+      "resource": true
+    },
+    {
+      "name": "CodeableConcept",
+      "file": "CodeableConcept.json",
+      "resource": false
+    },
+    {
+      "name": "Coding",
+      "file": "Coding.json",
+      "resource": false
+    },
+    {
+      "name": "Condition",
+      "file": "Condition.json",
+      "resource": true
+    },
+    {
+      "name": "Encounter",
+      "file": "Encounter.json",
+      "resource": true
+    },
+    {
+      "name": "HumanName",
+      "file": "HumanName.json",
+      "resource": false
+    },
+    {
+      "name": "Identifier",
+      "file": "Identifier.json",
+      "resource": false
+    },
+    {
+      "name": "Location",
+      "file": "Location.json",
+      "resource": true
+    },
+    {
+      "name": "Observation",
+      "file": "Observation.json",
+      "resource": true
+    },
+    {
+      "name": "Organization",
+      "file": "Organization.json",
+      "resource": true
+    },
+    {
+      "name": "Patient",
+      "file": "Patient.json",
+      "resource": true
+    },
+    {
+      "name": "Period",
+      "file": "Period.json",
+      "resource": false
+    },
+    {
+      "name": "Quantity",
+      "file": "Quantity.json",
+      "resource": false
+    },
+    {
+      "name": "Reference",
+      "file": "Reference.json",
+      "resource": false
+    },
+    {
+      "name": "TokenResponse",
+      "file": "TokenResponse.json",
+      "resource": true
+    }
+  ]
+}

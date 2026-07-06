@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "pdfshift/ConversionResult",
+  "title": "ConversionResult",
+  "x-openfn-adaptor": "pdfshift",
+  "x-source": {
+    "openapi": "#/components/schemas/ConversionResult",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "JSON result returned by a conversion endpoint when filename/webhook is used or encode is true.",
+  "required": [
+    "success",
+    "url",
+    "filesize",
+    "duration",
+    "response",
+    "executed"
+  ],
+  "properties": {
+    "success": {
+      "type": "boolean",
+      "description": "Whether the conversion succeeded."
+    },
+    "url": {
+      "type": "string",
+      "format": "uri",
+      "description": "Temporary download URL for the generated document (when filename/webhook is used)."
+    },
+    "filesize": {
+      "type": "integer",
+      "description": "Size of the generated document in bytes."
+    },
+    "duration": {
+      "type": "integer",
+      "description": "Total time taken to generate the document, in milliseconds."
+    },
+    "response": {
+      "type": "object",
+      "description": "Details about loading the source document.",
+      "properties": {
+        "duration": {
+          "type": "integer",
+          "description": "Milliseconds spent loading the source."
+        },
+        "status-code": {
+          "type": "integer",
+          "description": "HTTP status code PDFShift received when loading an HTTP source."
+        }
+      }
+    },
+    "executed": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp at which the conversion ran."
+    },
+    "pdf_pages": {
+      "type": "integer",
+      "description": "Total number of pages in the generated PDF."
+    }
+  }
+}

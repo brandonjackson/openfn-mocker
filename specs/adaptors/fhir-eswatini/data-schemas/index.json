@@ -1,0 +1,124 @@
+{
+  "adaptor": "fhir-eswatini",
+  "capturedAt": "2026-07-06",
+  "dialect": "https://json-schema.org/draft/2020-12/schema",
+  "source": "openapi.json",
+  "resources": [
+    "Address",
+    "Bundle",
+    "BundleEntry",
+    "CodeableConcept",
+    "Coding",
+    "Condition",
+    "ContactPoint",
+    "Encounter",
+    "HumanName",
+    "Identifier",
+    "Meta",
+    "Observation",
+    "OperationOutcome",
+    "Organization",
+    "Patient",
+    "Period",
+    "Practitioner",
+    "Quantity",
+    "Reference"
+  ],
+  "objects": [
+    {
+      "name": "Address",
+      "file": "Address.json",
+      "resource": true
+    },
+    {
+      "name": "Bundle",
+      "file": "Bundle.json",
+      "resource": true
+    },
+    {
+      "name": "BundleEntry",
+      "file": "BundleEntry.json",
+      "resource": true
+    },
+    {
+      "name": "CodeableConcept",
+      "file": "CodeableConcept.json",
+      "resource": true
+    },
+    {
+      "name": "Coding",
+      "file": "Coding.json",
+      "resource": true
+    },
+    {
+      "name": "Condition",
+      "file": "Condition.json",
+      "resource": true
+    },
+    {
+      "name": "ContactPoint",
+      "file": "ContactPoint.json",
+      "resource": true
+    },
+    {
+      "name": "Encounter",
+      "file": "Encounter.json",
+      "resource": true
+    },
+    {
+      "name": "HumanName",
+      "file": "HumanName.json",
+      "resource": true
+    },
+    {
+      "name": "Identifier",
+      "file": "Identifier.json",
+      "resource": true
+    },
+    {
+      "name": "Meta",
+      "file": "Meta.json",
+      "resource": true
+    },
+    {
+      "name": "Observation",
+      "file": "Observation.json",
+      "resource": true
+    },
+    {
+      "name": "OperationOutcome",
+      "file": "OperationOutcome.json",
+      "resource": true
+    },
+    {
+      "name": "Organization",
+      "file": "Organization.json",
+      "resource": true
+    },
+    {
+      "name": "Patient",
+      "file": "Patient.json",
+      "resource": true
+    },
+    {
+      "name": "Period",
+      "file": "Period.json",
+      "resource": true
+    },
+    {
+      "name": "Practitioner",
+      "file": "Practitioner.json",
+      "resource": true
+    },
+    {
+      "name": "Quantity",
+      "file": "Quantity.json",
+      "resource": true
+    },
+    {
+      "name": "Reference",
+      "file": "Reference.json",
+      "resource": true
+    }
+  ]
+}

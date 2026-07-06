@@ -1,0 +1,276 @@
+{
+  "adaptor": "kobotoolbox",
+  "capturedAt": "2026-07-06",
+  "dialect": "https://json-schema.org/draft/2020-12/schema",
+  "source": "openapi.json",
+  "resources": [
+    "Asset",
+    "AssetMetadataResponse",
+    "DataBulkUpdateResponse",
+    "DataResponse",
+    "DataValidationStatusUpdateResponse",
+    "DeploymentResponse"
+  ],
+  "objects": [
+    {
+      "name": "Asset",
+      "file": "Asset.json",
+      "resource": true
+    },
+    {
+      "name": "AssetDeploymentStatusEnum",
+      "file": "AssetDeploymentStatusEnum.json",
+      "resource": false
+    },
+    {
+      "name": "AssetExportSettings",
+      "file": "AssetExportSettings.json",
+      "resource": false
+    },
+    {
+      "name": "AssetMetadataResponse",
+      "file": "AssetMetadataResponse.json",
+      "resource": true
+    },
+    {
+      "name": "AssetTypeEnum",
+      "file": "AssetTypeEnum.json",
+      "resource": false
+    },
+    {
+      "name": "DataBulkUpdateResponse",
+      "file": "DataBulkUpdateResponse.json",
+      "resource": true
+    },
+    {
+      "name": "DataResponse",
+      "file": "DataResponse.json",
+      "resource": true
+    },
+    {
+      "name": "DataSupplementAutomaticQualDataIntegerResponse",
+      "file": "DataSupplementAutomaticQualDataIntegerResponse.json",
+      "resource": false
+    },
+    {
+      "name": "DataSupplementAutomaticQualDataSelectMultipleResponse",
+      "file": "DataSupplementAutomaticQualDataSelectMultipleResponse.json",
+      "resource": false
+    },
+    {
+      "name": "DataSupplementAutomaticQualDataSelectOneResponse",
+      "file": "DataSupplementAutomaticQualDataSelectOneResponse.json",
+      "resource": false
+    },
+    {
+      "name": "DataSupplementAutomaticQualDataTextResponse",
+      "file": "DataSupplementAutomaticQualDataTextResponse.json",
+      "resource": false
+    },
+    {
+      "name": "DataSupplementManualQualDataInteger",
+      "file": "DataSupplementManualQualDataInteger.json",
+      "resource": false
+    },
+    {
+      "name": "DataSupplementManualQualDataSelectMultiple",
+      "file": "DataSupplementManualQualDataSelectMultiple.json",
+      "resource": false
+    },
+    {
+      "name": "DataSupplementManualQualDataSelectOne",
+      "file": "DataSupplementManualQualDataSelectOne.json",
+      "resource": false
+    },
+    {
+      "name": "DataSupplementManualQualDataTags",
+      "file": "DataSupplementManualQualDataTags.json",
+      "resource": false
+    },
+    {
+      "name": "DataSupplementManualQualDataText",
+      "file": "DataSupplementManualQualDataText.json",
+      "resource": false
+    },
+    {
+      "name": "DataValidationStatus",
+      "file": "DataValidationStatus.json",
+      "resource": false
+    },
+    {
+      "name": "DataValidationStatusLabelEnum",
+      "file": "DataValidationStatusLabelEnum.json",
+      "resource": false
+    },
+    {
+      "name": "DataValidationStatusUidEnum",
+      "file": "DataValidationStatusUidEnum.json",
+      "resource": false
+    },
+    {
+      "name": "DataValidationStatusUpdateResponse",
+      "file": "DataValidationStatusUpdateResponse.json",
+      "resource": true
+    },
+    {
+      "name": "DeploymentResponse",
+      "file": "DeploymentResponse.json",
+      "resource": true
+    },
+    {
+      "name": "SupplementalDataAutomaticQual",
+      "file": "SupplementalDataAutomaticQual.json",
+      "resource": false
+    },
+    {
+      "name": "SupplementalDataAutomaticQualItem",
+      "file": "SupplementalDataAutomaticQualItem.json",
+      "resource": false
+    },
+    {
+      "name": "SupplementalDataAutomaticTranscription",
+      "file": "SupplementalDataAutomaticTranscription.json",
+      "resource": false
+    },
+    {
+      "name": "SupplementalDataAutomaticTranslation",
+      "file": "SupplementalDataAutomaticTranslation.json",
+      "resource": false
+    },
+    {
+      "name": "SupplementalDataAutomaticTranslationItem",
+      "file": "SupplementalDataAutomaticTranslationItem.json",
+      "resource": false
+    },
+    {
+      "name": "SupplementalDataContentAutomatic",
+      "file": "SupplementalDataContentAutomatic.json",
+      "resource": false
+    },
+    {
+      "name": "SupplementalDataContentAutomaticComplete",
+      "file": "SupplementalDataContentAutomaticComplete.json",
+      "resource": false
+    },
+    {
+      "name": "SupplementalDataContentAutomaticDeleted",
+      "file": "SupplementalDataContentAutomaticDeleted.json",
+      "resource": false
+    },
+    {
+      "name": "SupplementalDataContentAutomaticFailed",
+      "file": "SupplementalDataContentAutomaticFailed.json",
+      "resource": false
+    },
+    {
+      "name": "SupplementalDataContentAutomaticInProgress",
+      "file": "SupplementalDataContentAutomaticInProgress.json",
+      "resource": false
+    },
+    {
+      "name": "SupplementalDataContentManual",
+      "file": "SupplementalDataContentManual.json",
+      "resource": false
+    },
+    {
+      "name": "SupplementalDataDependency",
+      "file": "SupplementalDataDependency.json",
+      "resource": false
+    },
+    {
+      "name": "SupplementalDataManualQual",
+      "file": "SupplementalDataManualQual.json",
+      "resource": false
+    },
+    {
+      "name": "SupplementalDataManualQualItem",
+      "file": "SupplementalDataManualQualItem.json",
+      "resource": false
+    },
+    {
+      "name": "SupplementalDataManualTranscription",
+      "file": "SupplementalDataManualTranscription.json",
+      "resource": false
+    },
+    {
+      "name": "SupplementalDataManualTranslation",
+      "file": "SupplementalDataManualTranslation.json",
+      "resource": false
+    },
+    {
+      "name": "SupplementalDataManualTranslationItem",
+      "file": "SupplementalDataManualTranslationItem.json",
+      "resource": false
+    },
+    {
+      "name": "SupplementalDataQualData",
+      "file": "SupplementalDataQualData.json",
+      "resource": false
+    },
+    {
+      "name": "SupplementalDataQualDataAutomatic",
+      "file": "SupplementalDataQualDataAutomatic.json",
+      "resource": false
+    },
+    {
+      "name": "SupplementalDataVersionItemAutomatic",
+      "file": "SupplementalDataVersionItemAutomatic.json",
+      "resource": false
+    },
+    {
+      "name": "SupplementalDataVersionItemAutomaticWithDep",
+      "file": "SupplementalDataVersionItemAutomaticWithDep.json",
+      "resource": false
+    },
+    {
+      "name": "SupplementalDataVersionItemManual",
+      "file": "SupplementalDataVersionItemManual.json",
+      "resource": false
+    },
+    {
+      "name": "SupplementalDataVersionItemManualWithDep",
+      "file": "SupplementalDataVersionItemManualWithDep.json",
+      "resource": false
+    },
+    {
+      "name": "SupplementalDataVersionItemQual",
+      "file": "SupplementalDataVersionItemQual.json",
+      "resource": false
+    },
+    {
+      "name": "SupplementalDataVersionItemQualAutomatic",
+      "file": "SupplementalDataVersionItemQualAutomatic.json",
+      "resource": false
+    },
+    {
+      "name": "SupplementalDetailsAutomaticQual",
+      "file": "SupplementalDetailsAutomaticQual.json",
+      "resource": false
+    },
+    {
+      "name": "SupplementalDetailsAutomaticTranscription",
+      "file": "SupplementalDetailsAutomaticTranscription.json",
+      "resource": false
+    },
+    {
+      "name": "SupplementalDetailsAutomaticTranslation",
+      "file": "SupplementalDetailsAutomaticTranslation.json",
+      "resource": false
+    },
+    {
+      "name": "SupplementalDetailsManualQual",
+      "file": "SupplementalDetailsManualQual.json",
+      "resource": false
+    },
+    {
+      "name": "SupplementalDetailsManualTranscription",
+      "file": "SupplementalDetailsManualTranscription.json",
+      "resource": false
+    },
+    {
+      "name": "SupplementalDetailsManualTranslation",
+      "file": "SupplementalDetailsManualTranslation.json",
+      "resource": false
+    }
+  ]
+}

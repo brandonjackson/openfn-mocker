@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "kobotoolbox/SupplementalDataDependency",
+  "title": "SupplementalDataDependency",
+  "x-openfn-adaptor": "kobotoolbox",
+  "x-source": {
+    "openapi": "#/components/schemas/SupplementalDataDependency",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "_actionId": {
+      "type": "string"
+    },
+    "_uuid": {
+      "type": "string",
+      "format": "uuid"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "_actionId",
+    "_uuid"
+  ]
+}

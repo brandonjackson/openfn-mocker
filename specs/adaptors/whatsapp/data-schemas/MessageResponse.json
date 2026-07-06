@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "whatsapp/MessageResponse",
+  "title": "MessageResponse",
+  "x-openfn-adaptor": "whatsapp",
+  "x-source": {
+    "openapi": "#/components/schemas/MessageResponse",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "Successful response from POST /{phoneNumberId}/messages.",
+  "properties": {
+    "messaging_product": {
+      "type": "string",
+      "example": "whatsapp"
+    },
+    "contacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "input": {
+            "type": "string",
+            "description": "The number provided in the request."
+          },
+          "wa_id": {
+            "type": "string",
+            "description": "The normalized WhatsApp ID for the contact."
+          }
+        }
+      }
+    },
+    "messages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The message ID (wamid...)."
+          },
+          "message_status": {
+            "type": "string",
+            "enum": [
+              "accepted",
+              "held_for_quality_assessment",
+              "paused"
+            ],
+            "description": "Status of the message when a template quality pause is in effect."
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "dynamics/Account",
+  "title": "Account",
+  "x-openfn-adaptor": "dynamics",
+  "x-source": {
+    "openapi": "#/components/schemas/Account",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "accountid": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "name": {
+      "type": "string"
+    },
+    "accountnumber": {
+      "type": "string"
+    },
+    "telephone1": {
+      "type": "string"
+    },
+    "emailaddress1": {
+      "type": "string"
+    },
+    "websiteurl": {
+      "type": "string"
+    },
+    "address1_city": {
+      "type": "string"
+    },
+    "revenue": {
+      "type": "number"
+    },
+    "statecode": {
+      "type": "integer"
+    }
+  }
+}

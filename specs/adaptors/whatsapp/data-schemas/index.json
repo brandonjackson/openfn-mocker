@@ -1,0 +1,34 @@
+{
+  "adaptor": "whatsapp",
+  "capturedAt": "2026-07-06",
+  "dialect": "https://json-schema.org/draft/2020-12/schema",
+  "source": "openapi.json",
+  "resources": [
+    "MediaInfo",
+    "MediaUploadResponse",
+    "MessageResponse",
+    "SuccessResponse"
+  ],
+  "objects": [
+    {
+      "name": "MediaInfo",
+      "file": "MediaInfo.json",
+      "resource": true
+    },
+    {
+      "name": "MediaUploadResponse",
+      "file": "MediaUploadResponse.json",
+      "resource": true
+    },
+    {
+      "name": "MessageResponse",
+      "file": "MessageResponse.json",
+      "resource": true
+    },
+    {
+      "name": "SuccessResponse",
+      "file": "SuccessResponse.json",
+      "resource": true
+    }
+  ]
+}

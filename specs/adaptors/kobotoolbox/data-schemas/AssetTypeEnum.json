@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "kobotoolbox/AssetTypeEnum",
+  "title": "AssetTypeEnum",
+  "x-openfn-adaptor": "kobotoolbox",
+  "x-source": {
+    "openapi": "#/components/schemas/AssetTypeEnum",
+    "capturedAt": "2026-07-06"
+  },
+  "enum": [
+    "text",
+    "empty",
+    "question",
+    "block",
+    "survey",
+    "template",
+    "collection"
+  ],
+  "type": "string",
+  "description": "* `text` - text\n* `empty` - empty\n* `question` - question\n* `block` - block\n* `survey` - survey\n* `template` - template\n* `collection` - collection"
+}

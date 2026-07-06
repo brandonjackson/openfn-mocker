@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "memento/LibraryList",
+  "title": "LibraryList",
+  "x-openfn-adaptor": "memento",
+  "x-source": {
+    "openapi": "#/components/schemas/LibraryList",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "libraries": {
+      "type": "array",
+      "items": {
+        "$ref": "Library.json"
+      }
+    }
+  }
+}

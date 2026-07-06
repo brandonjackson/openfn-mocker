@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "senaite/APIResponse",
+  "title": "APIResponse",
+  "x-openfn-adaptor": "senaite",
+  "x-source": {
+    "openapi": "#/components/schemas/APIResponse",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "Standard paged JSON API response envelope.",
+  "properties": {
+    "count": {
+      "type": "integer",
+      "description": "Number of items in the current page."
+    },
+    "pagesize": {
+      "type": "integer"
+    },
+    "page": {
+      "type": "integer"
+    },
+    "pages": {
+      "type": "integer"
+    },
+    "_runtime": {
+      "type": "number",
+      "description": "Server processing time in seconds."
+    },
+    "next": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "URL of the next page."
+    },
+    "previous": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "URL of the previous page."
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "$ref": "CatalogItem.json"
+      }
+    }
+  }
+}

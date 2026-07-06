@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cartodb/ImportJob",
+  "title": "ImportJob",
+  "x-openfn-adaptor": "cartodb",
+  "x-source": {
+    "openapi": "#/components/schemas/ImportJob",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "State of an asynchronous import job.",
+  "properties": {
+    "id": {
+      "type": "string",
+      "example": "5e35bbec-4a48-4bf0-b95a-99a67cb0d6f2"
+    },
+    "item_queue_id": {
+      "type": "string",
+      "example": "5e35bbec-4a48-4bf0-b95a-99a67cb0d6f2"
+    },
+    "user_id": {
+      "type": "string",
+      "example": "0d3f0dfa-1e12-4b2a-9b1a-000000000000"
+    },
+    "table_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "state": {
+      "type": "string",
+      "description": "Job lifecycle state.",
+      "enum": [
+        "enqueued",
+        "pending",
+        "uploading",
+        "importing",
+        "complete",
+        "failure"
+      ],
+      "example": "complete"
+    },
+    "success": {
+      "type": "boolean",
+      "example": true
+    },
+    "table_name": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "example": "my_dataset"
+    },
+    "tables_created_count": {
+      "type": "integer",
+      "example": 1
+    },
+    "queue_id": {
+      "type": "string",
+      "example": "5e35bbec-4a48-4bf0-b95a-99a67cb0d6f2"
+    },
+    "error_code": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "example": null
+    },
+    "get_error_text": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "what_about": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        }
+      }
+    },
+    "warnings": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

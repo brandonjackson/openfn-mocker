@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "dhis2/TrackedEntityInstance",
+  "title": "TrackedEntityInstance",
+  "x-openfn-adaptor": "dhis2",
+  "x-source": {
+    "openapi": "#/components/schemas/TrackedEntityInstance",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "trackedEntityInstance": {
+      "type": "string",
+      "example": "PgmUFEQYZGz"
+    },
+    "trackedEntityType": {
+      "type": "string",
+      "example": "nEenWmSyUEp"
+    },
+    "orgUnit": {
+      "type": "string",
+      "example": "DiszpKrYNg8"
+    },
+    "attributes": {
+      "type": "array",
+      "items": {
+        "$ref": "Attribute.json"
+      }
+    }
+  }
+}

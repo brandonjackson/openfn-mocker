@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "mysql/MutationResult",
+  "title": "MutationResult",
+  "x-openfn-adaptor": "mysql",
+  "x-source": {
+    "openapi": "#/components/schemas/MutationResult",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "mysql2 OkPacket returned for INSERT/UPDATE/UPSERT statements.",
+  "properties": {
+    "fieldCount": {
+      "type": "integer",
+      "example": 0
+    },
+    "affectedRows": {
+      "type": "integer",
+      "example": 1
+    },
+    "insertId": {
+      "type": "integer",
+      "example": 42
+    },
+    "serverStatus": {
+      "type": "integer",
+      "example": 2
+    },
+    "warningCount": {
+      "type": "integer",
+      "example": 0
+    },
+    "changedRows": {
+      "type": "integer",
+      "example": 0
+    }
+  }
+}

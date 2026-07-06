@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ghana-nia/NationalIdResponse",
+  "title": "NationalIdResponse",
+  "x-openfn-adaptor": "ghana-nia",
+  "x-source": {
+    "openapi": "#/components/schemas/NationalIdResponse",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "Successful registration response with generated national ID PINs.",
+  "properties": {
+    "data": {
+      "type": "object",
+      "properties": {
+        "babyPin": {
+          "type": "string",
+          "example": "GHA-000000000-1"
+        },
+        "voucherPin": {
+          "type": "string",
+          "example": "GHA-000000000-4"
+        },
+        "etrackerLightwaveId": {
+          "type": "string",
+          "example": "00000000/24-03"
+        },
+        "lightwaveEtrackerId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "example": null
+        }
+      }
+    },
+    "success": {
+      "type": "boolean",
+      "example": true
+    },
+    "code": {
+      "type": "string",
+      "example": "00"
+    },
+    "msg": {
+      "type": "string",
+      "example": "Saved Successfully"
+    }
+  }
+}

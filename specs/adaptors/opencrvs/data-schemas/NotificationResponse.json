@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "opencrvs/NotificationResponse",
+  "title": "NotificationResponse",
+  "x-openfn-adaptor": "opencrvs",
+  "x-source": {
+    "openapi": "#/components/schemas/NotificationResponse",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "resourceType": {
+      "type": "string",
+      "example": "Bundle"
+    },
+    "type": {
+      "type": "string",
+      "example": "transaction-response"
+    },
+    "entry": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "response": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "example": "201 Created"
+              },
+              "location": {
+                "type": "string",
+                "example": "Composition/abcde/_history/1"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

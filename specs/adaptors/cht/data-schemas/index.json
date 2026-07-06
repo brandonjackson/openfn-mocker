@@ -1,0 +1,108 @@
+{
+  "adaptor": "cht",
+  "capturedAt": "2026-07-06",
+  "dialect": "https://json-schema.org/draft/2020-12/schema",
+  "source": "openapi.json",
+  "resources": [
+    "Contact",
+    "ContactList",
+    "CreatedContact",
+    "DhisDataValueSet",
+    "FormList",
+    "Monitoring",
+    "Person",
+    "Place",
+    "RecordSuccess",
+    "Settings",
+    "SettingsUpdateResult",
+    "UserCreateResult",
+    "UserList"
+  ],
+  "objects": [
+    {
+      "name": "Contact",
+      "file": "Contact.json",
+      "resource": true
+    },
+    {
+      "name": "ContactList",
+      "file": "ContactList.json",
+      "resource": true
+    },
+    {
+      "name": "CreatedContact",
+      "file": "CreatedContact.json",
+      "resource": true
+    },
+    {
+      "name": "DhisDataValueSet",
+      "file": "DhisDataValueSet.json",
+      "resource": true
+    },
+    {
+      "name": "DocRef",
+      "file": "DocRef.json",
+      "resource": false
+    },
+    {
+      "name": "Form",
+      "file": "Form.json",
+      "resource": false
+    },
+    {
+      "name": "FormList",
+      "file": "FormList.json",
+      "resource": true
+    },
+    {
+      "name": "Monitoring",
+      "file": "Monitoring.json",
+      "resource": true
+    },
+    {
+      "name": "NormalizedParent",
+      "file": "NormalizedParent.json",
+      "resource": false
+    },
+    {
+      "name": "Person",
+      "file": "Person.json",
+      "resource": true
+    },
+    {
+      "name": "Place",
+      "file": "Place.json",
+      "resource": true
+    },
+    {
+      "name": "RecordSuccess",
+      "file": "RecordSuccess.json",
+      "resource": true
+    },
+    {
+      "name": "Settings",
+      "file": "Settings.json",
+      "resource": true
+    },
+    {
+      "name": "SettingsUpdateResult",
+      "file": "SettingsUpdateResult.json",
+      "resource": true
+    },
+    {
+      "name": "User",
+      "file": "User.json",
+      "resource": false
+    },
+    {
+      "name": "UserCreateResult",
+      "file": "UserCreateResult.json",
+      "resource": true
+    },
+    {
+      "name": "UserList",
+      "file": "UserList.json",
+      "resource": true
+    }
+  ]
+}

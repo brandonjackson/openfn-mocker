@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "mpesa/TokenResponse",
+  "title": "TokenResponse",
+  "x-openfn-adaptor": "mpesa",
+  "x-source": {
+    "openapi": "#/components/schemas/TokenResponse",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "OAuth token issued by /oauth/v1/generate.",
+  "properties": {
+    "access_token": {
+      "type": "string",
+      "example": "c9SQxWWhmdVRlyh0zh8gZDTkubVF"
+    },
+    "expires_in": {
+      "type": "string",
+      "example": "3599"
+    }
+  }
+}

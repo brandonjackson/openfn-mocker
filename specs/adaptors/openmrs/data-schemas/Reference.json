@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openmrs/Reference",
+  "title": "Reference",
+  "x-openfn-adaptor": "openmrs",
+  "x-source": {
+    "openapi": "#/components/schemas/Reference",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "Lightweight reference to another OpenMRS resource",
+  "properties": {
+    "uuid": {
+      "type": "string",
+      "example": "8d871386-c2cc-11de-8d13-0010c6dffd0f"
+    },
+    "display": {
+      "type": "string",
+      "example": "Adult Initial"
+    },
+    "links": {
+      "type": "array",
+      "items": {
+        "$ref": "Link.json"
+      }
+    }
+  }
+}

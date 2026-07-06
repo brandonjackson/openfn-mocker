@@ -1,0 +1,66 @@
+{
+  "adaptor": "openboxes",
+  "capturedAt": "2026-07-06",
+  "dialect": "https://json-schema.org/draft/2020-12/schema",
+  "source": "openapi.json",
+  "resources": [
+    "Category",
+    "GenericRecord",
+    "InventoryItem",
+    "Location",
+    "Product",
+    "StockMovement"
+  ],
+  "objects": [
+    {
+      "name": "Category",
+      "file": "Category.json",
+      "resource": true
+    },
+    {
+      "name": "CategoryRef",
+      "file": "CategoryRef.json",
+      "resource": false
+    },
+    {
+      "name": "GenericRecord",
+      "file": "GenericRecord.json",
+      "resource": true
+    },
+    {
+      "name": "InventoryItem",
+      "file": "InventoryItem.json",
+      "resource": true
+    },
+    {
+      "name": "Location",
+      "file": "Location.json",
+      "resource": true
+    },
+    {
+      "name": "LocationType",
+      "file": "LocationType.json",
+      "resource": false
+    },
+    {
+      "name": "Product",
+      "file": "Product.json",
+      "resource": true
+    },
+    {
+      "name": "StockMovement",
+      "file": "StockMovement.json",
+      "resource": true
+    },
+    {
+      "name": "StockMovementLineItem",
+      "file": "StockMovementLineItem.json",
+      "resource": false
+    },
+    {
+      "name": "UserRef",
+      "file": "UserRef.json",
+      "resource": false
+    }
+  ]
+}

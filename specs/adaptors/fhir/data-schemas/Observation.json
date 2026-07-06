@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fhir/Observation",
+  "title": "Observation",
+  "x-openfn-adaptor": "fhir",
+  "x-source": {
+    "openapi": "#/components/schemas/Observation",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "required": [
+    "resourceType",
+    "status",
+    "code"
+  ],
+  "properties": {
+    "resourceType": {
+      "type": "string",
+      "enum": [
+        "Observation"
+      ]
+    },
+    "id": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    },
+    "code": {
+      "$ref": "CodeableConcept.json"
+    },
+    "subject": {
+      "$ref": "Reference.json"
+    },
+    "encounter": {
+      "$ref": "Reference.json"
+    },
+    "effectiveDateTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "valueQuantity": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "number"
+        },
+        "unit": {
+          "type": "string"
+        },
+        "system": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

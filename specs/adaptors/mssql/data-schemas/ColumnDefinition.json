@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "mssql/ColumnDefinition",
+  "title": "ColumnDefinition",
+  "x-openfn-adaptor": "mssql",
+  "x-source": {
+    "openapi": "#/components/schemas/ColumnDefinition",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "example": "id"
+    },
+    "type": {
+      "type": "string",
+      "example": "INT"
+    },
+    "identity": {
+      "type": "boolean",
+      "example": true
+    },
+    "default": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "example": null
+    }
+  }
+}

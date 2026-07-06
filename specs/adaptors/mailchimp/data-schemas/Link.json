@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "mailchimp/Link",
+  "title": "Link",
+  "x-openfn-adaptor": "mailchimp",
+  "x-source": {
+    "openapi": "#/components/schemas/Link",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "rel": {
+      "type": "string"
+    },
+    "href": {
+      "type": "string"
+    },
+    "method": {
+      "type": "string"
+    },
+    "targetSchema": {
+      "type": "string"
+    },
+    "schema": {
+      "type": "string"
+    }
+  }
+}

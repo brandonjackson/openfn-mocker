@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ping/PingResult",
+  "title": "PingResult",
+  "x-openfn-adaptor": "ping",
+  "x-source": {
+    "openapi": "#/components/schemas/PingResult",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "status": {
+      "type": "string",
+      "example": "ok"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

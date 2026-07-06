@@ -1,0 +1,69 @@
+{
+  "adaptor": "openelis",
+  "capturedAt": "2026-07-06",
+  "dialect": "https://json-schema.org/draft/2020-12/schema",
+  "source": "openapi.json",
+  "resources": [
+    "AccessionResultsRestResponse",
+    "DashboardMetrics",
+    "IdValuePair",
+    "OrderDisplayBean",
+    "PatientDashBoardForm",
+    "PatientManagementInfo",
+    "PatientSearchResults",
+    "ResultsForm",
+    "SampleEntryResponse"
+  ],
+  "objects": [
+    {
+      "name": "AccessionResultsRestResponse",
+      "file": "AccessionResultsRestResponse.json",
+      "resource": true
+    },
+    {
+      "name": "DashboardMetrics",
+      "file": "DashboardMetrics.json",
+      "resource": true
+    },
+    {
+      "name": "IdValuePair",
+      "file": "IdValuePair.json",
+      "resource": true
+    },
+    {
+      "name": "OrderDisplayBean",
+      "file": "OrderDisplayBean.json",
+      "resource": true
+    },
+    {
+      "name": "PatientDashBoardForm",
+      "file": "PatientDashBoardForm.json",
+      "resource": true
+    },
+    {
+      "name": "PatientManagementInfo",
+      "file": "PatientManagementInfo.json",
+      "resource": true
+    },
+    {
+      "name": "PatientSearchResults",
+      "file": "PatientSearchResults.json",
+      "resource": true
+    },
+    {
+      "name": "ResultsForm",
+      "file": "ResultsForm.json",
+      "resource": true
+    },
+    {
+      "name": "SampleEntryResponse",
+      "file": "SampleEntryResponse.json",
+      "resource": true
+    },
+    {
+      "name": "TestResultItem",
+      "file": "TestResultItem.json",
+      "resource": false
+    }
+  ]
+}

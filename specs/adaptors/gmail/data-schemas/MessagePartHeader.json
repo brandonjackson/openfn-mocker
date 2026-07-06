@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "gmail/MessagePartHeader",
+  "title": "MessagePartHeader",
+  "x-openfn-adaptor": "gmail",
+  "x-source": {
+    "openapi": "#/components/schemas/MessagePartHeader",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "example": "From"
+    },
+    "value": {
+      "type": "string",
+      "example": "Someone <someone@example.com>"
+    }
+  }
+}

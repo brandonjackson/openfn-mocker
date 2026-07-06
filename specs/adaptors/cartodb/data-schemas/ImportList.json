@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cartodb/ImportList",
+  "title": "ImportList",
+  "x-openfn-adaptor": "cartodb",
+  "x-source": {
+    "openapi": "#/components/schemas/ImportList",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "success": {
+      "type": "boolean",
+      "example": true
+    },
+    "imports": {
+      "type": "array",
+      "description": "Identifiers of import jobs.",
+      "items": {
+        "type": "string"
+      },
+      "example": [
+        "5e35bbec-4a48-4bf0-b95a-99a67cb0d6f2"
+      ]
+    }
+  }
+}

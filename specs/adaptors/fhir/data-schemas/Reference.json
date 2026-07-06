@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fhir/Reference",
+  "title": "Reference",
+  "x-openfn-adaptor": "fhir",
+  "x-source": {
+    "openapi": "#/components/schemas/Reference",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "reference": {
+      "type": "string"
+    },
+    "display": {
+      "type": "string"
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openmrs/Link",
+  "title": "Link",
+  "x-openfn-adaptor": "openmrs",
+  "x-source": {
+    "openapi": "#/components/schemas/Link",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "rel": {
+      "type": "string",
+      "example": "self"
+    },
+    "uri": {
+      "type": "string",
+      "example": "https://demo.openmrs.org/openmrs/ws/rest/v1/patient/da7f524f-27ce-4bb2-86d6-6d1d05312bd5"
+    }
+  }
+}

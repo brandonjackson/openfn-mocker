@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "commcare/Group",
+  "title": "Group",
+  "x-openfn-adaptor": "commcare",
+  "x-source": {
+    "openapi": "#/components/schemas/Group",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "A CommCare group.",
+  "properties": {
+    "id": {
+      "type": "string",
+      "example": "grp-001"
+    },
+    "name": {
+      "type": "string",
+      "example": "Field Team"
+    },
+    "domain": {
+      "type": "string",
+      "example": "demo"
+    },
+    "case_sharing": {
+      "type": "boolean",
+      "example": true
+    },
+    "reporting": {
+      "type": "boolean",
+      "example": true
+    },
+    "users": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "example": [
+        "a1b2c3d4e5f6"
+      ]
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true,
+      "example": {}
+    },
+    "resource_uri": {
+      "type": "string",
+      "example": "/a/demo/api/v0.5/group/grp-001/"
+    }
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "salesforce/Field",
+  "title": "Field",
+  "x-openfn-adaptor": "salesforce",
+  "x-source": {
+    "openapi": "#/components/schemas/Field",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "Metadata describing a single field on an sObject.",
+  "properties": {
+    "name": {
+      "type": "string",
+      "example": "Name"
+    },
+    "label": {
+      "type": "string",
+      "example": "Account Name"
+    },
+    "type": {
+      "type": "string",
+      "example": "string"
+    },
+    "length": {
+      "type": "integer",
+      "example": 255
+    },
+    "custom": {
+      "type": "boolean",
+      "example": false
+    },
+    "nillable": {
+      "type": "boolean",
+      "example": false
+    },
+    "createable": {
+      "type": "boolean",
+      "example": true
+    },
+    "updateable": {
+      "type": "boolean",
+      "example": true
+    },
+    "unique": {
+      "type": "boolean",
+      "example": false
+    },
+    "externalId": {
+      "type": "boolean",
+      "example": false
+    },
+    "picklistValues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "referenceTo": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

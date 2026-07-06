@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "satusehat/Encounter",
+  "title": "Encounter",
+  "x-openfn-adaptor": "satusehat",
+  "x-source": {
+    "openapi": "#/components/schemas/Encounter",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "required": [
+    "resourceType"
+  ],
+  "properties": {
+    "resourceType": {
+      "type": "string",
+      "enum": [
+        "Encounter"
+      ]
+    },
+    "id": {
+      "type": "string"
+    },
+    "identifier": {
+      "type": "array",
+      "items": {
+        "$ref": "Identifier.json"
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "planned",
+        "arrived",
+        "in-progress",
+        "finished",
+        "cancelled"
+      ]
+    },
+    "class": {
+      "$ref": "Coding.json"
+    },
+    "subject": {
+      "$ref": "Reference.json"
+    },
+    "participant": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "array",
+            "items": {
+              "$ref": "CodeableConcept.json"
+            }
+          },
+          "individual": {
+            "$ref": "Reference.json"
+          }
+        }
+      }
+    },
+    "period": {
+      "$ref": "Period.json"
+    },
+    "serviceProvider": {
+      "$ref": "Reference.json"
+    }
+  }
+}

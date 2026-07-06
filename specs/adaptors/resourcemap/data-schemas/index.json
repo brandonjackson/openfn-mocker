@@ -1,0 +1,57 @@
+{
+  "adaptor": "resourcemap",
+  "capturedAt": "2026-07-06",
+  "dialect": "https://json-schema.org/draft/2020-12/schema",
+  "source": "openapi.json",
+  "resources": [
+    "Collection",
+    "CollectionDetail",
+    "Layer",
+    "Membership",
+    "Site",
+    "SiteHistory",
+    "StatusResponse"
+  ],
+  "objects": [
+    {
+      "name": "Collection",
+      "file": "Collection.json",
+      "resource": true
+    },
+    {
+      "name": "CollectionDetail",
+      "file": "CollectionDetail.json",
+      "resource": true
+    },
+    {
+      "name": "Field",
+      "file": "Field.json",
+      "resource": false
+    },
+    {
+      "name": "Layer",
+      "file": "Layer.json",
+      "resource": true
+    },
+    {
+      "name": "Membership",
+      "file": "Membership.json",
+      "resource": true
+    },
+    {
+      "name": "Site",
+      "file": "Site.json",
+      "resource": true
+    },
+    {
+      "name": "SiteHistory",
+      "file": "SiteHistory.json",
+      "resource": true
+    },
+    {
+      "name": "StatusResponse",
+      "file": "StatusResponse.json",
+      "resource": true
+    }
+  ]
+}

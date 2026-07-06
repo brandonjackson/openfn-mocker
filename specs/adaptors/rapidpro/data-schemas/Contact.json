@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "rapidpro/Contact",
+  "title": "Contact",
+  "x-openfn-adaptor": "rapidpro",
+  "x-source": {
+    "openapi": "#/components/schemas/Contact",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "uuid": {
+      "type": "string"
+    },
+    "name": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "language": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "urns": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "example": [
+        "tel:+250788123123"
+      ]
+    },
+    "groups": {
+      "type": "array",
+      "items": {
+        "$ref": "ObjectRef.json"
+      }
+    },
+    "fields": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "blocked": {
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
+    "stopped": {
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
+    "created_on": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "modified_on": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

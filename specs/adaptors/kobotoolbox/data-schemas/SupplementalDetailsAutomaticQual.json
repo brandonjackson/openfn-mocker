@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "kobotoolbox/SupplementalDetailsAutomaticQual",
+  "title": "SupplementalDetailsAutomaticQual",
+  "x-openfn-adaptor": "kobotoolbox",
+  "x-source": {
+    "openapi": "#/components/schemas/SupplementalDetailsAutomaticQual",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "Automatic qualitative supplemental details",
+  "additionalProperties": {
+    "type": "object",
+    "properties": {
+      "automatic_bedrock_qual": {
+        "$ref": "SupplementalDataAutomaticQual.json"
+      }
+    },
+    "required": [
+      "automatic_bedrock_qual"
+    ]
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "khanacademy/Badge",
+  "title": "Badge",
+  "x-openfn-adaptor": "khanacademy",
+  "x-source": {
+    "openapi": "#/components/schemas/Badge",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "A Khan Academy achievement badge.",
+  "properties": {
+    "name": {
+      "type": "string",
+      "example": "challenge_patch_algebra"
+    },
+    "description": {
+      "type": "string",
+      "example": "Algebra Master"
+    },
+    "safe_extended_description": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "translated_description": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "points": {
+      "type": "integer",
+      "example": 0
+    },
+    "badge_category": {
+      "type": "integer",
+      "example": 4
+    },
+    "category_description": {
+      "type": "string",
+      "example": "Challenge Patches"
+    },
+    "is_owned": {
+      "type": "boolean"
+    },
+    "absolute_url": {
+      "type": "string",
+      "example": "https://www.khanacademy.org/badges"
+    },
+    "relative_url": {
+      "type": "string",
+      "example": "/badges"
+    },
+    "icons": {
+      "type": "object",
+      "properties": {
+        "small": {
+          "type": "string"
+        },
+        "compact": {
+          "type": "string"
+        },
+        "large": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "required": [
+    "name",
+    "description"
+  ]
+}

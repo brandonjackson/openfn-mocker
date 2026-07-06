@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openelis/PatientSearchResults",
+  "title": "PatientSearchResults",
+  "x-openfn-adaptor": "openelis",
+  "x-source": {
+    "openapi": "#/components/schemas/PatientSearchResults",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "example": "42"
+    },
+    "GUID": {
+      "type": "string"
+    },
+    "firstName": {
+      "type": "string",
+      "example": "Jane"
+    },
+    "lastName": {
+      "type": "string",
+      "example": "Doe"
+    },
+    "gender": {
+      "type": "string",
+      "example": "F"
+    },
+    "birthdate": {
+      "type": "string",
+      "example": "01/05/1990"
+    },
+    "nationalId": {
+      "type": "string"
+    },
+    "externalId": {
+      "type": "string"
+    },
+    "stNumber": {
+      "type": "string"
+    },
+    "subjectNumber": {
+      "type": "string"
+    },
+    "mothersName": {
+      "type": "string"
+    },
+    "contactPhone": {
+      "type": "string"
+    }
+  }
+}

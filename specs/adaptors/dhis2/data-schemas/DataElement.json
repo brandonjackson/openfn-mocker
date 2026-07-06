@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "dhis2/DataElement",
+  "title": "DataElement",
+  "x-openfn-adaptor": "dhis2",
+  "x-source": {
+    "openapi": "#/components/schemas/DataElement",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "example": "fbfJHSPpUQD"
+    },
+    "name": {
+      "type": "string",
+      "example": "ANC 1st visit"
+    },
+    "shortName": {
+      "type": "string",
+      "example": "ANC 1st visit"
+    },
+    "valueType": {
+      "type": "string",
+      "example": "NUMBER"
+    },
+    "domainType": {
+      "type": "string",
+      "example": "AGGREGATE"
+    }
+  }
+}

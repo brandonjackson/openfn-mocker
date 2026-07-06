@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "pesapal/PesapalError",
+  "title": "PesapalError",
+  "x-openfn-adaptor": "pesapal",
+  "x-source": {
+    "openapi": "#/components/schemas/PesapalError",
+    "capturedAt": "2026-07-06"
+  },
+  "type": [
+    "object",
+    "null"
+  ],
+  "properties": {
+    "error_type": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "code": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "message": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "call_back_url": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  }
+}

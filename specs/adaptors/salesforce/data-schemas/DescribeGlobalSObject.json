@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "salesforce/DescribeGlobalSObject",
+  "title": "DescribeGlobalSObject",
+  "x-openfn-adaptor": "salesforce",
+  "x-source": {
+    "openapi": "#/components/schemas/DescribeGlobalSObject",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "example": "Account"
+    },
+    "label": {
+      "type": "string",
+      "example": "Account"
+    },
+    "labelPlural": {
+      "type": "string",
+      "example": "Accounts"
+    },
+    "keyPrefix": {
+      "type": "string",
+      "example": "001"
+    },
+    "custom": {
+      "type": "boolean",
+      "example": false
+    },
+    "queryable": {
+      "type": "boolean",
+      "example": true
+    },
+    "createable": {
+      "type": "boolean",
+      "example": true
+    },
+    "updateable": {
+      "type": "boolean",
+      "example": true
+    },
+    "deletable": {
+      "type": "boolean",
+      "example": true
+    },
+    "urls": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    }
+  }
+}

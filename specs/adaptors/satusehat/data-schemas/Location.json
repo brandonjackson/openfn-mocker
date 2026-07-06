@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "satusehat/Location",
+  "title": "Location",
+  "x-openfn-adaptor": "satusehat",
+  "x-source": {
+    "openapi": "#/components/schemas/Location",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "required": [
+    "resourceType"
+  ],
+  "properties": {
+    "resourceType": {
+      "type": "string",
+      "enum": [
+        "Location"
+      ]
+    },
+    "id": {
+      "type": "string"
+    },
+    "identifier": {
+      "type": "array",
+      "items": {
+        "$ref": "Identifier.json"
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "suspended",
+        "inactive"
+      ]
+    },
+    "name": {
+      "type": "string"
+    },
+    "physicalType": {
+      "$ref": "CodeableConcept.json"
+    },
+    "managingOrganization": {
+      "$ref": "Reference.json"
+    }
+  }
+}

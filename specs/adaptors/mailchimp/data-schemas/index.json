@@ -1,0 +1,28 @@
+{
+  "adaptor": "mailchimp",
+  "capturedAt": "2026-07-06",
+  "dialect": "https://json-schema.org/draft/2020-12/schema",
+  "source": "openapi.json",
+  "resources": [
+    "Link",
+    "Member",
+    "MemberTag"
+  ],
+  "objects": [
+    {
+      "name": "Link",
+      "file": "Link.json",
+      "resource": true
+    },
+    {
+      "name": "Member",
+      "file": "Member.json",
+      "resource": true
+    },
+    {
+      "name": "MemberTag",
+      "file": "MemberTag.json",
+      "resource": true
+    }
+  ]
+}

@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openmrs/Obs",
+  "title": "Obs",
+  "x-openfn-adaptor": "openmrs",
+  "x-source": {
+    "openapi": "#/components/schemas/Obs",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "uuid": {
+      "type": "string",
+      "example": "f9a4c1e2-27ce-4bb2-86d6-6d1d05312bd5"
+    },
+    "display": {
+      "type": "string",
+      "example": "Weight (kg): 72.0"
+    },
+    "concept": {
+      "$ref": "Reference.json"
+    },
+    "person": {
+      "$ref": "Reference.json"
+    },
+    "obsDatetime": {
+      "type": "string",
+      "example": "2024-04-01T09:35:00.000+0000"
+    },
+    "accessionNumber": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "example": null
+    },
+    "obsGroup": {
+      "$ref": "Reference.json"
+    },
+    "value": {
+      "description": "Value: numeric, text, or a coded concept reference",
+      "example": 72
+    },
+    "valueModifier": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "example": null
+    },
+    "comment": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "example": null
+    },
+    "location": {
+      "$ref": "Reference.json"
+    },
+    "encounter": {
+      "$ref": "Reference.json"
+    },
+    "groupMembers": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "Obs.json"
+      }
+    },
+    "voided": {
+      "type": "boolean",
+      "example": false
+    },
+    "links": {
+      "type": "array",
+      "items": {
+        "$ref": "Link.json"
+      }
+    }
+  }
+}

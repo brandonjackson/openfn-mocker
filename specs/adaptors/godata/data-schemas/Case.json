@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "godata/Case",
+  "title": "Case",
+  "x-openfn-adaptor": "godata",
+  "x-source": {
+    "openapi": "#/components/schemas/Case",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "A Go.Data case.",
+  "properties": {
+    "id": {
+      "type": "string",
+      "example": "a1b2c3d4-e5f6-7890-1234-567890abcdef"
+    },
+    "firstName": {
+      "type": "string",
+      "example": "Kwame"
+    },
+    "middleName": {
+      "type": "string"
+    },
+    "lastName": {
+      "type": "string",
+      "example": "Owusu"
+    },
+    "gender": {
+      "type": "string",
+      "example": "LNG_REFERENCE_DATA_CATEGORY_GENDER_MALE"
+    },
+    "dob": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date"
+    },
+    "age": {
+      "type": "object",
+      "properties": {
+        "years": {
+          "type": "integer",
+          "example": 42
+        },
+        "months": {
+          "type": "integer",
+          "example": 0
+        }
+      }
+    },
+    "classification": {
+      "type": "string",
+      "example": "LNG_REFERENCE_DATA_CATEGORY_CASE_CLASSIFICATION_CONFIRMED"
+    },
+    "dateOfReporting": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2024-01-15T00:00:00.000Z"
+    },
+    "dateOfOnset": {
+      "type": "string",
+      "format": "date-time",
+      "example": "2024-01-10T00:00:00.000Z"
+    },
+    "outcomeId": {
+      "type": "string",
+      "example": "LNG_REFERENCE_DATA_CATEGORY_OUTCOME_ALIVE"
+    },
+    "visualId": {
+      "type": "string",
+      "example": "CASE-0001"
+    },
+    "addresses": {
+      "type": "array",
+      "items": {
+        "$ref": "Address.json"
+      }
+    },
+    "documents": {
+      "type": "array",
+      "items": {
+        "$ref": "Document.json"
+      }
+    },
+    "outbreakId": {
+      "type": "string"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "deleted": {
+      "type": "boolean",
+      "example": false
+    }
+  }
+}

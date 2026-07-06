@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "pesapal/IpnRegistration",
+  "title": "IpnRegistration",
+  "x-openfn-adaptor": "pesapal",
+  "x-source": {
+    "openapi": "#/components/schemas/IpnRegistration",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "url": {
+      "type": "string",
+      "format": "uri"
+    },
+    "created_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "ipn_id": {
+      "type": "string"
+    },
+    "notification_type": {
+      "type": "integer"
+    },
+    "ipn_notification_type_description": {
+      "type": "string"
+    },
+    "ipn_status": {
+      "type": "integer"
+    },
+    "ipn_status_description": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "example": "200"
+    },
+    "error": {
+      "$ref": "PesapalError.json"
+    }
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "lamisplus/Patient",
+  "title": "Patient",
+  "x-openfn-adaptor": "lamisplus",
+  "x-source": {
+    "openapi": "#/components/schemas/Patient",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "uuid": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "hospitalNumber": {
+      "type": "string",
+      "description": "Facility patient/hospital number"
+    },
+    "firstName": {
+      "type": "string"
+    },
+    "surname": {
+      "type": "string"
+    },
+    "otherName": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "sex": {
+      "type": "string",
+      "enum": [
+        "Male",
+        "Female"
+      ]
+    },
+    "dateOfBirth": {
+      "type": "string",
+      "format": "date"
+    },
+    "maritalStatus": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "phoneNumber": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "address": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "facilityId": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "dateOfRegistration": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date"
+    },
+    "archived": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}

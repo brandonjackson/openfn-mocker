@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "bigquery/JobReference",
+  "title": "JobReference",
+  "x-openfn-adaptor": "bigquery",
+  "x-source": {
+    "openapi": "#/components/schemas/JobReference",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "projectId": {
+      "type": "string"
+    },
+    "jobId": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    }
+  }
+}

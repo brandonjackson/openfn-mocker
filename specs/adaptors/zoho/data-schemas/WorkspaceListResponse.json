@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "zoho/WorkspaceListResponse",
+  "title": "WorkspaceListResponse",
+  "x-openfn-adaptor": "zoho",
+  "x-source": {
+    "openapi": "#/components/schemas/WorkspaceListResponse",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "Envelope listing the workspaces/databases owned by the user.",
+  "required": [
+    "response"
+  ],
+  "properties": {
+    "response": {
+      "type": "object",
+      "properties": {
+        "uri": {
+          "type": "string"
+        },
+        "action": {
+          "type": "string",
+          "example": "USERDATABASES"
+        },
+        "result": {
+          "type": "object",
+          "properties": {
+            "dbList": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "additionalProperties": true
+        }
+      }
+    }
+  }
+}

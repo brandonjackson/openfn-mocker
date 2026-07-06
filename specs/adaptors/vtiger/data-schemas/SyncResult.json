@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "vtiger/SyncResult",
+  "title": "SyncResult",
+  "x-openfn-adaptor": "vtiger",
+  "x-source": {
+    "openapi": "#/components/schemas/SyncResult",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "Result of a sync call.",
+  "properties": {
+    "updated": {
+      "type": "array",
+      "items": {
+        "$ref": "Element.json"
+      },
+      "description": "Records created or updated since modifiedTime."
+    },
+    "deleted": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Webservice ids of deleted records."
+    },
+    "lastModifiedTime": {
+      "type": "integer",
+      "format": "int64",
+      "description": "Cursor to pass to the next sync call."
+    },
+    "more": {
+      "type": "boolean",
+      "description": "Whether additional pages remain."
+    }
+  }
+}

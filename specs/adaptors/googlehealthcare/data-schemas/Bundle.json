@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "googlehealthcare/Bundle",
+  "title": "Bundle",
+  "x-openfn-adaptor": "googlehealthcare",
+  "x-source": {
+    "openapi": "#/components/schemas/Bundle",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "A FHIR Bundle (searchset).",
+  "required": [
+    "resourceType"
+  ],
+  "properties": {
+    "resourceType": {
+      "type": "string",
+      "example": "Bundle"
+    },
+    "type": {
+      "type": "string",
+      "example": "searchset"
+    },
+    "total": {
+      "type": "integer",
+      "format": "int32",
+      "example": 1
+    },
+    "link": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "relation": {
+            "type": "string",
+            "example": "self"
+          },
+          "url": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "entry": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "fullUrl": {
+            "type": "string"
+          },
+          "resource": {
+            "$ref": "FhirResource.json"
+          },
+          "search": {
+            "type": "object",
+            "properties": {
+              "mode": {
+                "type": "string",
+                "example": "match"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

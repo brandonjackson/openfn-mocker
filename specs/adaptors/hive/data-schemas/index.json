@@ -1,0 +1,21 @@
+{
+  "adaptor": "hive",
+  "capturedAt": "2026-07-06",
+  "dialect": "https://json-schema.org/draft/2020-12/schema",
+  "source": "openapi.json",
+  "resources": [
+    "QueryResult"
+  ],
+  "objects": [
+    {
+      "name": "QueryResult",
+      "file": "QueryResult.json",
+      "resource": true
+    },
+    {
+      "name": "QueryRow",
+      "file": "QueryRow.json",
+      "resource": false
+    }
+  ]
+}

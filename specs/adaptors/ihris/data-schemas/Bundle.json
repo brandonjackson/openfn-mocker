@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ihris/Bundle",
+  "title": "Bundle",
+  "x-openfn-adaptor": "ihris",
+  "x-source": {
+    "openapi": "#/components/schemas/Bundle",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "required": [
+    "resourceType"
+  ],
+  "properties": {
+    "resourceType": {
+      "type": "string",
+      "enum": [
+        "Bundle"
+      ],
+      "example": "Bundle"
+    },
+    "type": {
+      "type": "string",
+      "example": "searchset"
+    },
+    "total": {
+      "type": "integer",
+      "example": 1
+    },
+    "link": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "relation": {
+            "type": "string",
+            "example": "self"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          }
+        }
+      }
+    },
+    "entry": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "fullUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "resource": {
+            "$ref": "Practitioner.json"
+          },
+          "search": {
+            "type": "object",
+            "properties": {
+              "mode": {
+                "type": "string",
+                "example": "match"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

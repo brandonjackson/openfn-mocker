@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "aws-s3/PutObjectResult",
+  "title": "PutObjectResult",
+  "x-openfn-adaptor": "aws-s3",
+  "x-source": {
+    "openapi": "#/components/schemas/PutObjectResult",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "bucket": {
+      "type": "string"
+    },
+    "key": {
+      "type": "string"
+    },
+    "ETag": {
+      "type": "string",
+      "example": "\"9b2cf535f27731c974343645a3985328\""
+    },
+    "VersionId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "ServerSideEncryption": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  }
+}

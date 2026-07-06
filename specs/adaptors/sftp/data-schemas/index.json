@@ -1,0 +1,44 @@
+{
+  "adaptor": "sftp",
+  "capturedAt": "2026-07-06",
+  "dialect": "https://json-schema.org/draft/2020-12/schema",
+  "source": "openapi.json",
+  "resources": [
+    "CSVRows",
+    "DirListing",
+    "FileContent",
+    "PutResult"
+  ],
+  "objects": [
+    {
+      "name": "CSVRow",
+      "file": "CSVRow.json",
+      "resource": false
+    },
+    {
+      "name": "CSVRows",
+      "file": "CSVRows.json",
+      "resource": true
+    },
+    {
+      "name": "DirListing",
+      "file": "DirListing.json",
+      "resource": true
+    },
+    {
+      "name": "FileContent",
+      "file": "FileContent.json",
+      "resource": true
+    },
+    {
+      "name": "FileEntry",
+      "file": "FileEntry.json",
+      "resource": false
+    },
+    {
+      "name": "PutResult",
+      "file": "PutResult.json",
+      "resource": true
+    }
+  ]
+}

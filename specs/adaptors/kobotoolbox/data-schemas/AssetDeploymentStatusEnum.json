@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "kobotoolbox/AssetDeploymentStatusEnum",
+  "title": "AssetDeploymentStatusEnum",
+  "x-openfn-adaptor": "kobotoolbox",
+  "x-source": {
+    "openapi": "#/components/schemas/AssetDeploymentStatusEnum",
+    "capturedAt": "2026-07-06"
+  },
+  "enum": [
+    "archived",
+    "deployed",
+    "draft",
+    "-"
+  ],
+  "type": "string",
+  "description": "* `archived` - Archived\n* `deployed` - Deployed\n* `draft` - Draft\n* `-` - -"
+}

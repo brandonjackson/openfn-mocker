@@ -1,0 +1,44 @@
+{
+  "adaptor": "surveycto",
+  "capturedAt": "2026-07-06",
+  "dialect": "https://json-schema.org/draft/2020-12/schema",
+  "source": "openapi.json",
+  "resources": [
+    "Dataset",
+    "DatasetRecord",
+    "Submission",
+    "UploadResult"
+  ],
+  "objects": [
+    {
+      "name": "Dataset",
+      "file": "Dataset.json",
+      "resource": true
+    },
+    {
+      "name": "DatasetRecord",
+      "file": "DatasetRecord.json",
+      "resource": true
+    },
+    {
+      "name": "IdFormatOptions",
+      "file": "IdFormatOptions.json",
+      "resource": false
+    },
+    {
+      "name": "LocationContext",
+      "file": "LocationContext.json",
+      "resource": false
+    },
+    {
+      "name": "Submission",
+      "file": "Submission.json",
+      "resource": true
+    },
+    {
+      "name": "UploadResult",
+      "file": "UploadResult.json",
+      "resource": true
+    }
+  ]
+}

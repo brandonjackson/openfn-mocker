@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "nexmo/SMSResponse",
+  "title": "SMSResponse",
+  "x-openfn-adaptor": "nexmo",
+  "x-source": {
+    "openapi": "#/components/schemas/SMSResponse",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "message-count": {
+      "type": "string",
+      "description": "Number of message parts",
+      "example": "1"
+    },
+    "messages": {
+      "type": "array",
+      "items": {
+        "$ref": "SMSMessage.json"
+      }
+    }
+  }
+}

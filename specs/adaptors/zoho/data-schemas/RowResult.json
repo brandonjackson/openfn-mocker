@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "zoho/RowResult",
+  "title": "RowResult",
+  "x-openfn-adaptor": "zoho",
+  "x-source": {
+    "openapi": "#/components/schemas/RowResult",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "Row data payload returned inside a response result: column ordering plus row values.",
+  "properties": {
+    "column_order": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "rows": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    }
+  }
+}

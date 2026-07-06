@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "redis/HashResult",
+  "title": "HashResult",
+  "x-openfn-adaptor": "redis",
+  "x-source": {
+    "openapi": "#/components/schemas/HashResult",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "Result carrying a hash as an object of field/value pairs.",
+  "properties": {
+    "data": {
+      "type": "object",
+      "description": "The hash fields and their values.",
+      "additionalProperties": {
+        "type": "string"
+      }
+    }
+  }
+}

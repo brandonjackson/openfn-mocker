@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "gemini/UsageMetadata",
+  "title": "UsageMetadata",
+  "x-openfn-adaptor": "gemini",
+  "x-source": {
+    "openapi": "#/components/schemas/UsageMetadata",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "promptTokenCount": {
+      "type": "integer"
+    },
+    "candidatesTokenCount": {
+      "type": "integer"
+    },
+    "totalTokenCount": {
+      "type": "integer"
+    }
+  }
+}

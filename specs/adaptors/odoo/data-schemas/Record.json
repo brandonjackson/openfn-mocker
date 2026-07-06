@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "odoo/Record",
+  "title": "Record",
+  "x-openfn-adaptor": "odoo",
+  "x-source": {
+    "openapi": "#/components/schemas/Record",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "A generic Odoo model record. Always includes an integer id; other fields depend on the model and the requested field list.",
+  "properties": {
+    "id": {
+      "type": "integer",
+      "example": 54
+    },
+    "display_name": {
+      "type": "string",
+      "example": "Kool Keith"
+    },
+    "create_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "write_date": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "additionalProperties": true
+}

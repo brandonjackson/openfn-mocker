@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "zata/TransactionItem",
+  "title": "TransactionItem",
+  "x-openfn-adaptor": "zata",
+  "x-source": {
+    "openapi": "#/components/schemas/TransactionItem",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "productID": {
+      "type": "integer"
+    },
+    "units": {
+      "type": "number"
+    },
+    "unitPrice": {
+      "type": "number"
+    },
+    "discountRate": {
+      "type": "number"
+    },
+    "batchNumber": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "productID",
+    "units",
+    "unitPrice"
+  ]
+}

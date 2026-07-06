@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "pdfshift/Credits",
+  "title": "Credits",
+  "x-openfn-adaptor": "pdfshift",
+  "x-source": {
+    "openapi": "#/components/schemas/Credits",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "Current credit usage for the account.",
+  "properties": {
+    "credits": {
+      "type": "object",
+      "properties": {
+        "base": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Default credit limit from the current plan."
+        },
+        "remaining": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Credits still available for the current period."
+        },
+        "total": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Total credit limit (may exceed base if overage is enabled)."
+        },
+        "used": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Credits consumed so far this period."
+        }
+      }
+    },
+    "success": {
+      "type": "boolean"
+    }
+  }
+}

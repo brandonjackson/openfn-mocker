@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "mojatax/TokenResponse",
+  "title": "TokenResponse",
+  "x-openfn-adaptor": "mojatax",
+  "x-source": {
+    "openapi": "#/components/schemas/TokenResponse",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "access_token": {
+      "type": "string",
+      "example": "eyJhbGciOiJIUzI1NiIs..."
+    },
+    "token_type": {
+      "type": "string",
+      "example": "Bearer"
+    },
+    "expires_in": {
+      "type": "integer",
+      "example": 3600
+    }
+  }
+}

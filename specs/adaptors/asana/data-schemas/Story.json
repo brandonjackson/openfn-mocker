@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "asana/Story",
+  "title": "Story",
+  "x-openfn-adaptor": "asana",
+  "x-source": {
+    "openapi": "#/components/schemas/Story",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "gid": {
+      "type": "string"
+    },
+    "resource_type": {
+      "type": "string"
+    },
+    "resource_subtype": {
+      "type": "string"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "created_by": {
+      "$ref": "UserCompact.json"
+    },
+    "text": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string"
+    },
+    "hearted": {
+      "type": "boolean"
+    },
+    "num_hearts": {
+      "type": "integer"
+    }
+  }
+}

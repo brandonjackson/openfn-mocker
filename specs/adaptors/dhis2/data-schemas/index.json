@@ -1,0 +1,91 @@
+{
+  "adaptor": "dhis2",
+  "capturedAt": "2026-07-06",
+  "dialect": "https://json-schema.org/draft/2020-12/schema",
+  "source": "openapi.json",
+  "resources": [
+    "DataElement",
+    "DataValueSet",
+    "Enrollment",
+    "Event",
+    "ImportSummaryResponse",
+    "MetadataImportResponse",
+    "OrganisationUnit",
+    "Program",
+    "SystemInfo",
+    "TrackedEntityInstance",
+    "TrackedEntityType"
+  ],
+  "objects": [
+    {
+      "name": "Attribute",
+      "file": "Attribute.json",
+      "resource": false
+    },
+    {
+      "name": "DataElement",
+      "file": "DataElement.json",
+      "resource": true
+    },
+    {
+      "name": "DataValue",
+      "file": "DataValue.json",
+      "resource": false
+    },
+    {
+      "name": "DataValueSet",
+      "file": "DataValueSet.json",
+      "resource": true
+    },
+    {
+      "name": "Enrollment",
+      "file": "Enrollment.json",
+      "resource": true
+    },
+    {
+      "name": "Event",
+      "file": "Event.json",
+      "resource": true
+    },
+    {
+      "name": "ImportSummaryResponse",
+      "file": "ImportSummaryResponse.json",
+      "resource": true
+    },
+    {
+      "name": "MetadataImportResponse",
+      "file": "MetadataImportResponse.json",
+      "resource": true
+    },
+    {
+      "name": "OrganisationUnit",
+      "file": "OrganisationUnit.json",
+      "resource": true
+    },
+    {
+      "name": "Program",
+      "file": "Program.json",
+      "resource": true
+    },
+    {
+      "name": "ProgramStage",
+      "file": "ProgramStage.json",
+      "resource": false
+    },
+    {
+      "name": "SystemInfo",
+      "file": "SystemInfo.json",
+      "resource": true
+    },
+    {
+      "name": "TrackedEntityInstance",
+      "file": "TrackedEntityInstance.json",
+      "resource": true
+    },
+    {
+      "name": "TrackedEntityType",
+      "file": "TrackedEntityType.json",
+      "resource": true
+    }
+  ]
+}

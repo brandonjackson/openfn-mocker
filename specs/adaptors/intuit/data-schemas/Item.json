@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "intuit/Item",
+  "title": "Item",
+  "x-openfn-adaptor": "intuit",
+  "x-source": {
+    "openapi": "#/components/schemas/Item",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "Id": {
+      "type": "string",
+      "example": "1"
+    },
+    "SyncToken": {
+      "type": "string",
+      "example": "0"
+    },
+    "Name": {
+      "type": "string",
+      "example": "Pest Control"
+    },
+    "Description": {
+      "type": "string",
+      "example": "Pest Control Services"
+    },
+    "Active": {
+      "type": "boolean",
+      "example": true
+    },
+    "Type": {
+      "type": "string",
+      "example": "Service"
+    },
+    "UnitPrice": {
+      "type": "number",
+      "example": 35
+    },
+    "IncomeAccountRef": {
+      "$ref": "ReferenceType.json"
+    },
+    "MetaData": {
+      "$ref": "MetaData.json"
+    }
+  }
+}

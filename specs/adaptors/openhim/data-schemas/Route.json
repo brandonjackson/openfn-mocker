@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openhim/Route",
+  "title": "Route",
+  "x-openfn-adaptor": "openhim",
+  "x-source": {
+    "openapi": "#/components/schemas/Route",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "required": [
+    "name",
+    "host",
+    "port"
+  ],
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "host": {
+      "type": "string"
+    },
+    "port": {
+      "type": "integer"
+    },
+    "path": {
+      "type": "string"
+    },
+    "pathTransform": {
+      "type": "string"
+    },
+    "primary": {
+      "type": "boolean"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "http",
+        "tcp",
+        "mllp"
+      ]
+    },
+    "secured": {
+      "type": "boolean"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "enabled",
+        "disabled"
+      ]
+    }
+  }
+}

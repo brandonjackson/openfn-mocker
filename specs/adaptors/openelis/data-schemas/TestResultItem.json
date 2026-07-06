@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openelis/TestResultItem",
+  "title": "TestResultItem",
+  "x-openfn-adaptor": "openelis",
+  "x-source": {
+    "openapi": "#/components/schemas/TestResultItem",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "accessionNumber": {
+      "type": "string",
+      "example": "0000000123"
+    },
+    "sequenceNumber": {
+      "type": "string"
+    },
+    "testId": {
+      "type": "string"
+    },
+    "testName": {
+      "type": "string",
+      "example": "Hemoglobin"
+    },
+    "testMethod": {
+      "type": "string"
+    },
+    "resultValue": {
+      "type": "string",
+      "example": "13.5"
+    },
+    "resultType": {
+      "type": "string",
+      "example": "N"
+    },
+    "unitsOfMeasure": {
+      "type": "string",
+      "example": "g/dL"
+    },
+    "normalRange": {
+      "type": "string",
+      "example": "12.0-16.0"
+    },
+    "testDate": {
+      "type": "string"
+    },
+    "analysisId": {
+      "type": "string"
+    },
+    "analysisStatusId": {
+      "type": "string"
+    },
+    "resultId": {
+      "type": "string"
+    },
+    "patientName": {
+      "type": "string"
+    },
+    "nationalId": {
+      "type": "string"
+    },
+    "technician": {
+      "type": "string"
+    },
+    "note": {
+      "type": "string"
+    },
+    "reportable": {
+      "type": "boolean"
+    },
+    "valid": {
+      "type": "boolean"
+    },
+    "normal": {
+      "type": "boolean"
+    },
+    "referralReasons": {
+      "type": "array",
+      "items": {
+        "$ref": "IdValuePair.json"
+      }
+    },
+    "dictionaryResults": {
+      "type": "array",
+      "items": {
+        "$ref": "IdValuePair.json"
+      }
+    }
+  }
+}

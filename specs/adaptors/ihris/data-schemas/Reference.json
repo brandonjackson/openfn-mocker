@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ihris/Reference",
+  "title": "Reference",
+  "x-openfn-adaptor": "ihris",
+  "x-source": {
+    "openapi": "#/components/schemas/Reference",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "reference": {
+      "type": "string",
+      "example": "Practitioner/123"
+    },
+    "display": {
+      "type": "string"
+    }
+  }
+}

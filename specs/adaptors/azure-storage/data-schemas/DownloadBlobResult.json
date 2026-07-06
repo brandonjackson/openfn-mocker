@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "azure-storage/DownloadBlobResult",
+  "title": "DownloadBlobResult",
+  "x-openfn-adaptor": "azure-storage",
+  "x-source": {
+    "openapi": "#/components/schemas/DownloadBlobResult",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "containerName": {
+      "type": "string"
+    },
+    "blobName": {
+      "type": "string"
+    },
+    "contentType": {
+      "type": "string"
+    },
+    "contentLength": {
+      "type": "integer"
+    },
+    "etag": {
+      "type": "string"
+    },
+    "lastModified": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "content": {
+      "type": "string",
+      "description": "Blob content as string"
+    },
+    "base64": {
+      "type": "string",
+      "description": "Base64 content when downloadAs is base64"
+    }
+  }
+}

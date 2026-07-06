@@ -1,0 +1,22 @@
+{
+  "adaptor": "dynamics",
+  "capturedAt": "2026-07-06",
+  "dialect": "https://json-schema.org/draft/2020-12/schema",
+  "source": "openapi.json",
+  "resources": [
+    "Account",
+    "Contact"
+  ],
+  "objects": [
+    {
+      "name": "Account",
+      "file": "Account.json",
+      "resource": true
+    },
+    {
+      "name": "Contact",
+      "file": "Contact.json",
+      "resource": true
+    }
+  ]
+}

@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "mailgun/github.com-mailgun-influx-httpapi-GetMessageResponseBasicExample",
+  "title": "github.com-mailgun-influx-httpapi-GetMessageResponseBasicExample",
+  "x-openfn-adaptor": "mailgun",
+  "x-source": {
+    "openapi": "#/components/schemas/github.com-mailgun-influx-httpapi-GetMessageResponseBasicExample",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "Content-Transfer-Encoding": {
+      "type": "string",
+      "description": "The content transfer encoding if enabled"
+    },
+    "Content-Type": {
+      "type": "string",
+      "description": "The content type sent with the message with a possible boundary"
+    },
+    "From": {
+      "type": "string",
+      "description": "The full 'From' email address entry of the email"
+    },
+    "Message-Id": {
+      "type": "string",
+      "description": "The unique identifier of the message as defined by [RFC-2392](https://datatracker.ietf.org/doc/html/rfc2392)"
+    },
+    "Mime-Version": {
+      "type": "string",
+      "description": "The MIME version of the email"
+    },
+    "Subject": {
+      "type": "string",
+      "description": "Subject of the email"
+    },
+    "To": {
+      "type": "string",
+      "description": "The full 'To' email address entries"
+    },
+    "X-Mailgun-Tag": {
+      "type": "string",
+      "description": "The raw tags of the message if provided"
+    },
+    "sender": {
+      "type": "string",
+      "description": "Just the email address from the provided 'From'' field"
+    },
+    "recipients": {
+      "type": "string",
+      "description": "A list of email addresses from the 'To'' field"
+    },
+    "body-html": {
+      "type": "string",
+      "description": "The full HTML body of the full message"
+    },
+    "body-plain": {
+      "type": "string",
+      "description": "The plain text body of the full message"
+    },
+    "stripped-html": {
+      "type": "string",
+      "description": "Only the body of the email in HTML"
+    },
+    "stripped-text": {
+      "type": "string",
+      "description": "Only the body of the email in plain text"
+    },
+    "stripped-signature": {
+      "type": "string",
+      "description": "The signature stripped from the body"
+    },
+    "message-headers": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "description": "The full list of headers of the MIME upon send"
+    },
+    "X-Mailgun-Template-Name": {
+      "type": "string",
+      "description": "The name of the template if one was used"
+    },
+    "X-Mailgun-Template-Variables": {
+      "type": "string",
+      "description": "The variables used in the template if one was used"
+    }
+  },
+  "required": [
+    "Content-Transfer-Encoding",
+    "Content-Type",
+    "From",
+    "Message-Id",
+    "Mime-Version",
+    "Subject",
+    "To",
+    "X-Mailgun-Tag",
+    "sender",
+    "recipients",
+    "body-html",
+    "body-plain",
+    "stripped-html",
+    "stripped-text",
+    "stripped-signature",
+    "message-headers",
+    "X-Mailgun-Template-Name",
+    "X-Mailgun-Template-Variables"
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "gemini/Part",
+  "title": "Part",
+  "x-openfn-adaptor": "gemini",
+  "x-source": {
+    "openapi": "#/components/schemas/Part",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "text": {
+      "type": "string"
+    },
+    "inlineData": {
+      "$ref": "Blob.json"
+    }
+  }
+}

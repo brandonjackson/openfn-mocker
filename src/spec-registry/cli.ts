@@ -4,25 +4,26 @@
  * The system is a loop with an agentic "finding" step:
  *
  *   1. list      — pull the adaptor list from openfn/adaptors (cached).
- *   2. status    — which adaptors have an OpenAPI spec + seed schema, which don't.
+ *   2. status    — which adaptors have an OpenAPI spec + data-object schemas.
  *   3. instructions <a|--missing|--all>
  *                — emit a per-adaptor work order. An AI agent executes it: find
  *                  an official OpenAPI spec online (save), find another standard
  *                  (save + convert), or do a documenting pass over the vendor
  *                  docs (generate). It writes openapi.json + source.json.
- *   4. seed-schema <a|--all>
- *                — derive the mocker seed-data schema from each openapi.json.
+ *   4. data-objects <a|--all>
+ *                — extract one standalone JSON Schema per data object (the
+ *                  closure of the API's response resources) into data-schemas/.
  *   5. manifest  — rebuild the aggregate index/coverage report.
  *
  * See specs/adaptors/README.md for the on-disk layout.
  */
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { dirname } from 'node:path';
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
 import { loadAdaptors, type AdaptorInfo } from './adaptors.js';
+import { extractDataObjects } from './data-objects.js';
 import { instructionsFor } from './instructions.js';
 import { buildManifest } from './manifest.js';
-import { manifestPath, openapiPath, seedSchemaPath } from './paths.js';
-import { deriveSeedSchema } from './seed-schema.js';
+import { dataSchemasDir, dataSchemasIndexPath, manifestPath, openapiPath } from './paths.js';
 
 const today = (): string => new Date().toISOString().slice(0, 10);
 
@@ -63,7 +64,7 @@ async function cmdStatus(argv: string[]): Promise<void> {
     name: a.name,
     rest: a.rest,
     openapi: has(openapiPath(a.name)),
-    seed: has(seedSchemaPath(a.name)),
+    dataSchemas: has(dataSchemasIndexPath(a.name)),
   }));
 
   if (argv.includes('--json')) {
@@ -73,13 +74,13 @@ async function cmdStatus(argv: string[]): Promise<void> {
 
   for (const r of rows) {
     const o = r.openapi ? '✓' : '✗';
-    const s = r.seed ? '✓' : '✗';
-    console.log(`  openapi:${o}  seed:${s}  ${r.name}`);
+    const d = r.dataSchemas ? '✓' : '✗';
+    console.log(`  openapi:${o}  data-schemas:${d}  ${r.name}`);
   }
   const withO = rows.filter((r) => r.openapi).length;
-  const withS = rows.filter((r) => r.seed).length;
+  const withD = rows.filter((r) => r.dataSchemas).length;
   console.log(`\n${'─'.repeat(50)}`);
-  console.log(`  ${withO}/${rows.length} have OpenAPI, ${withS}/${rows.length} have seed schema`);
+  console.log(`  ${withO}/${rows.length} have OpenAPI, ${withD}/${rows.length} have data-schemas`);
 }
 
 async function cmdMissing(): Promise<void> {
@@ -97,7 +98,7 @@ async function cmdInstructions(argv: string[]): Promise<void> {
   console.log(targets.map(instructionsFor).join('\n\n' + '═'.repeat(72) + '\n\n'));
 }
 
-async function cmdSeedSchema(argv: string[]): Promise<void> {
+async function cmdDataObjects(argv: string[]): Promise<void> {
   const adaptors = await loadAdaptors();
   const targets = argv.includes('--all')
     ? adaptors.filter((a) => has(openapiPath(a.name)))
@@ -111,9 +112,17 @@ async function cmdSeedSchema(argv: string[]): Promise<void> {
       continue;
     }
     const raw = JSON.parse(readFileSync(p, 'utf8'));
-    const { schema, collections } = deriveSeedSchema(raw, a.name, today());
-    writeJson(seedSchemaPath(a.name), schema);
-    console.log(`  ✓ ${a.name}: ${collections} collection(s) → seed-schema.json`);
+    const { objects, index } = extractDataObjects(raw, a.name, today());
+
+    // Rewrite the folder from scratch so a shrunk object set leaves no stragglers.
+    const dir = dataSchemasDir(a.name);
+    rmSync(dir, { recursive: true, force: true });
+    mkdirSync(dir, { recursive: true });
+    for (const obj of objects) writeJson(join(dir, obj.file), obj.schema);
+    writeJson(dataSchemasIndexPath(a.name), index);
+
+    const res = index.resources.length;
+    console.log(`  ✓ ${a.name}: ${objects.length} data object(s) (${res} resource(s)) → data-schemas/`);
   }
 }
 
@@ -121,19 +130,22 @@ async function cmdManifest(): Promise<void> {
   const adaptors = await loadAdaptors();
   const manifest = buildManifest(adaptors, new Date().toISOString());
   writeJson(manifestPath(), manifest);
-  const { withOpenapi, withSeedSchema, adaptors: n } = manifest.totals;
-  console.log(`manifest.json: ${n} adaptors, ${withOpenapi} with OpenAPI, ${withSeedSchema} with seed schema`);
+  const { withOpenapi, withDataSchemas, dataObjects, adaptors: n } = manifest.totals;
+  console.log(
+    `manifest.json: ${n} adaptors, ${withOpenapi} with OpenAPI, ${withDataSchemas} with data-schemas ` +
+      `(${dataObjects} data objects total)`
+  );
   console.log(`  by origin: ${JSON.stringify(manifest.totals.byOrigin)}`);
 }
 
 const USAGE = `Usage: pnpm specs <command>
 
   list [--refresh]              List adaptors from openfn/adaptors (cached).
-  status [--json]               Coverage: which adaptors have openapi + seed schema.
+  status [--json]               Coverage: which adaptors have openapi + data-schemas.
   missing                       Print adaptors with no OpenAPI spec (newline-separated).
   instructions <a…|--missing|--all>
                                 Emit agentic work order(s) for finding/generating specs.
-  seed-schema <a…|--all>        Derive seed-data schema from each openapi.json.
+  data-objects <a…|--all>       Extract standalone data-object schemas into data-schemas/.
   manifest                      Rebuild specs/adaptors/manifest.json.
 `;
 
@@ -148,8 +160,8 @@ async function main(): Promise<void> {
       return cmdMissing();
     case 'instructions':
       return cmdInstructions(argv);
-    case 'seed-schema':
-      return cmdSeedSchema(argv);
+    case 'data-objects':
+      return cmdDataObjects(argv);
     case 'manifest':
       return cmdManifest();
     case undefined:

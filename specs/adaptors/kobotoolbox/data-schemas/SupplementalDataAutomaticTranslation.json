@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "kobotoolbox/SupplementalDataAutomaticTranslation",
+  "title": "SupplementalDataAutomaticTranslation",
+  "x-openfn-adaptor": "kobotoolbox",
+  "x-source": {
+    "openapi": "#/components/schemas/SupplementalDataAutomaticTranslation",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "Map of language codes to automatic translation objects",
+  "additionalProperties": {
+    "$ref": "SupplementalDataAutomaticTranslationItem.json"
+  }
+}

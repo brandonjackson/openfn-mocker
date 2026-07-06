@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "kobotoolbox/SupplementalDataManualQual",
+  "title": "SupplementalDataManualQual",
+  "x-openfn-adaptor": "kobotoolbox",
+  "x-source": {
+    "openapi": "#/components/schemas/SupplementalDataManualQual",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "Map of manual qualitative question UUIDs to their action objects",
+  "additionalProperties": {
+    "$ref": "SupplementalDataManualQualItem.json"
+  },
+  "patternProperties": {
+    "^[0-9a-fA-F-]{36}$": {
+      "$ref": "SupplementalDataManualQualItem.json"
+    }
+  }
+}

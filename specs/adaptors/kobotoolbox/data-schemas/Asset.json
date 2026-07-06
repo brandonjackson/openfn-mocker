@@ -1,0 +1,531 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "kobotoolbox/Asset",
+  "title": "Asset",
+  "x-openfn-adaptor": "kobotoolbox",
+  "x-source": {
+    "openapi": "#/components/schemas/Asset",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "url": {
+      "type": "string",
+      "format": "uri",
+      "example": "https://kf.kobotoolbox.org/api/v2/assets/aBeA23YCYjkGTFvYVHuAyU/",
+      "readOnly": true
+    },
+    "owner": {
+      "type": "string",
+      "format": "uri",
+      "example": "https://kf.kobotoolbox.org/api/v2/users/bob/",
+      "readOnly": true
+    },
+    "owner__username": {
+      "type": "string",
+      "description": "Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.",
+      "readOnly": true
+    },
+    "parent": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "uri",
+      "example": "https://kf.kobotoolbox.org/api/v2/assets/a3C9wWefqZVkChNLKqqXVZ/"
+    },
+    "settings": {
+      "type": "object",
+      "properties": {
+        "sector": {
+          "type": "object"
+        },
+        "country": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "description": {
+          "type": "string"
+        },
+        "collects_pii": {
+          "type": "string"
+        },
+        "organization": {
+          "type": "string"
+        },
+        "country_codes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "operational_purpose": {
+          "type": "string"
+        }
+      }
+    },
+    "asset_type": {
+      "$ref": "AssetTypeEnum.json"
+    },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "readOnly": true
+    },
+    "summary": {
+      "type": "object",
+      "properties": {
+        "geo": {
+          "type": "boolean"
+        },
+        "labels": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "columns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "lock_all": {
+          "type": "boolean"
+        },
+        "lock_any": {
+          "type": "boolean"
+        },
+        "languages": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "row_count": {
+          "type": "integer"
+        },
+        "name_quality": {
+          "type": "object"
+        },
+        "default_translation": {
+          "type": "string"
+        }
+      },
+      "readOnly": true
+    },
+    "date_created": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "date_modified": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "date_deployed": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "version_id": {
+      "type": "string",
+      "readOnly": true
+    },
+    "version__content_hash": {
+      "type": "string",
+      "readOnly": true
+    },
+    "version_count": {
+      "type": "integer",
+      "readOnly": true
+    },
+    "has_deployment": {
+      "type": "boolean",
+      "readOnly": true
+    },
+    "deployed_version_id": {
+      "type": "string",
+      "readOnly": true
+    },
+    "deployed_versions": {
+      "type": "object",
+      "properties": {
+        "count": {
+          "type": "integer"
+        },
+        "next": {
+          "type": "string"
+        },
+        "previous": {
+          "type": "string"
+        },
+        "results": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "uid": {
+                "type": "string"
+              },
+              "url": {
+                "type": "string",
+                "format": "uri",
+                "example": "https://kf.kobotoolbox.org/api/v2/assets/aBeA23YCYjkGTFvYVHuAyU/versions/vBeA23YCYjkGTFvYVHuAyU/"
+              },
+              "content_hash": {
+                "type": "string"
+              },
+              "date_deployed": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "date_modified": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        }
+      },
+      "readOnly": true
+    },
+    "deployment__links": {
+      "type": "object",
+      "readOnly": true
+    },
+    "deployment__active": {
+      "type": "boolean",
+      "readOnly": true
+    },
+    "deployment__data_download_links": {
+      "type": "object",
+      "readOnly": true
+    },
+    "deployment__submission_count": {
+      "type": "integer",
+      "readOnly": true
+    },
+    "deployment__last_submission_time": {
+      "type": "string",
+      "format": "date-time",
+      "readOnly": true
+    },
+    "deployment__encrypted": {
+      "type": "boolean",
+      "readOnly": true
+    },
+    "deployment__uuid": {
+      "type": "string",
+      "readOnly": true
+    },
+    "deployment_status": {
+      "allOf": [
+        {
+          "$ref": "AssetDeploymentStatusEnum.json"
+        }
+      ],
+      "readOnly": true
+    },
+    "report_styles": {
+      "type": "object",
+      "properties": {
+        "default": {
+          "type": "object"
+        },
+        "specified": {
+          "type": "object",
+          "properties": {
+            "end": {
+              "type": "object"
+            },
+            "start": {
+              "type": "object"
+            }
+          }
+        },
+        "kuid_names": {
+          "type": "object",
+          "properties": {
+            "end": {
+              "type": "string"
+            },
+            "start": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "report_custom": {
+      "type": "object"
+    },
+    "advanced_features": {
+      "type": "object"
+    },
+    "map_styles": {
+      "type": "object"
+    },
+    "map_custom": {
+      "type": "object"
+    },
+    "content": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "type": "string"
+        },
+        "survey": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "settings": {
+          "type": "object"
+        },
+        "translated": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "translations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "downloads": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "format": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        }
+      },
+      "readOnly": true
+    },
+    "embeds": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "format": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        }
+      },
+      "readOnly": true
+    },
+    "analysis_form_json": {
+      "type": "object",
+      "properties": {
+        "additional_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "readOnly": true
+    },
+    "xform_link": {
+      "type": "string",
+      "format": "uri",
+      "example": "https://kf.kobotoolbox.org/api/v2/assets/aBeA23YCYjkGTFvYVHuAyU/xform/",
+      "readOnly": true
+    },
+    "hooks_link": {
+      "type": "string",
+      "format": "uri",
+      "example": "https://kf.kobotoolbox.org/api/v2/assets/aBeA23YCYjkGTFvYVHuAyU/hooks/",
+      "readOnly": true
+    },
+    "tag_string": {
+      "type": "string"
+    },
+    "uid": {
+      "type": "string",
+      "readOnly": true
+    },
+    "kind": {
+      "type": "string",
+      "readOnly": true
+    },
+    "xls_link": {
+      "type": "string",
+      "format": "uri",
+      "example": "https://kf.kobotoolbox.org/api/v2/assets/aBeA23YCYjkGTFvYVHuAyU.xls",
+      "readOnly": true
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 255
+    },
+    "assignable_permissions": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "readOnly": true
+    },
+    "permissions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "readOnly": true
+    },
+    "effective_permissions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "codename": {
+            "type": "string"
+          }
+        }
+      },
+      "readOnly": true
+    },
+    "exports": {
+      "type": "string",
+      "format": "uri",
+      "example": "https://kf.kobotoolbox.org/api/v2/assets/aBeA23YCYjkGTFvYVHuAyU/exports/",
+      "readOnly": true
+    },
+    "export_settings": {
+      "type": "array",
+      "items": {
+        "$ref": "AssetExportSettings.json"
+      },
+      "readOnly": true
+    },
+    "data": {
+      "type": "string",
+      "format": "uri",
+      "example": "https://kf.kobotoolbox.org/api/v2/assets/aBeA23YCYjkGTFvYVHuAyU/data/",
+      "readOnly": true
+    },
+    "children": {
+      "type": "object",
+      "properties": {
+        "count": {
+          "type": "integer"
+        }
+      },
+      "readOnly": true
+    },
+    "subscribers_count": {
+      "type": "integer",
+      "readOnly": true
+    },
+    "status": {
+      "type": "string",
+      "readOnly": true
+    },
+    "access_types": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "readOnly": true
+    },
+    "data_sharing": {
+      "type": "object"
+    },
+    "paired_data": {
+      "type": "string",
+      "format": "uri",
+      "example": "https://kf.kobotoolbox.org/api/v2/assets/aBeA23YCYjkGTFvYVHuAyU/paired-data/",
+      "readOnly": true
+    },
+    "project_ownership": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": {},
+      "readOnly": true
+    },
+    "owner_label": {
+      "type": "string",
+      "readOnly": true
+    },
+    "last_modified_by": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "readOnly": true
+    },
+    "created_by": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "readOnly": true
+    }
+  },
+  "required": [
+    "access_types",
+    "analysis_form_json",
+    "asset_type",
+    "assignable_permissions",
+    "children",
+    "created_by",
+    "data",
+    "deployed_version_id",
+    "deployed_versions",
+    "deployment__active",
+    "deployment__data_download_links",
+    "deployment__encrypted",
+    "deployment__last_submission_time",
+    "deployment__links",
+    "deployment__submission_count",
+    "deployment__uuid",
+    "deployment_status",
+    "downloads",
+    "effective_permissions",
+    "embeds",
+    "export_settings",
+    "exports",
+    "files",
+    "has_deployment",
+    "hooks_link",
+    "kind",
+    "last_modified_by",
+    "owner",
+    "owner__username",
+    "owner_label",
+    "paired_data",
+    "permissions",
+    "project_ownership",
+    "status",
+    "subscribers_count",
+    "summary",
+    "uid",
+    "url",
+    "version__content_hash",
+    "version_count",
+    "version_id",
+    "xform_link",
+    "xls_link"
+  ]
+}

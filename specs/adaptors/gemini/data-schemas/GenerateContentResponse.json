@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "gemini/GenerateContentResponse",
+  "title": "GenerateContentResponse",
+  "x-openfn-adaptor": "gemini",
+  "x-source": {
+    "openapi": "#/components/schemas/GenerateContentResponse",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "candidates": {
+      "type": "array",
+      "items": {
+        "$ref": "Candidate.json"
+      }
+    },
+    "usageMetadata": {
+      "$ref": "UsageMetadata.json"
+    },
+    "modelVersion": {
+      "type": "string"
+    }
+  }
+}

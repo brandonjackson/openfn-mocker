@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from 'node:fs';
 import type { AdaptorInfo } from './adaptors.js';
-import { openapiPath, seedSchemaPath, sourcePath } from './paths.js';
+import { dataSchemasIndexPath, openapiPath, sourcePath } from './paths.js';
 import type { Manifest, ManifestEntry, SpecSource } from './types.js';
 
 const HTTP_METHODS = ['get', 'post', 'put', 'patch', 'delete', 'head', 'options'];
@@ -30,19 +30,25 @@ function countOperations(openapi: any): number {
 export function buildEntry(info: AdaptorInfo): ManifestEntry {
   const openapi = readJson<any>(openapiPath(info.name));
   const source = readJson<SpecSource>(sourcePath(info.name));
-  const seed = readJson<any>(seedSchemaPath(info.name));
+  const index = readJson<{ objects?: unknown[]; resources?: unknown[] }>(
+    dataSchemasIndexPath(info.name)
+  );
 
   const entry: ManifestEntry = {
     adaptor: info.name,
     npm: info.npm,
     rest: info.rest,
     hasOpenapi: openapi !== undefined,
-    hasSeedSchema: seed !== undefined,
+    hasDataSchemas: index !== undefined,
   };
   if (info.note) entry.note = info.note;
   if (openapi) {
     entry.operations = countOperations(openapi);
     entry.schemas = Object.keys(openapi?.components?.schemas ?? {}).length;
+  }
+  if (index) {
+    entry.dataObjects = index.objects?.length ?? 0;
+    entry.resources = index.resources?.length ?? 0;
   }
   if (source) {
     entry.origin = source.origin;
@@ -64,7 +70,8 @@ export function buildManifest(adaptors: AdaptorInfo[], generatedAt: string): Man
     totals: {
       adaptors: entries.length,
       withOpenapi: entries.filter((e) => e.hasOpenapi).length,
-      withSeedSchema: entries.filter((e) => e.hasSeedSchema).length,
+      withDataSchemas: entries.filter((e) => e.hasDataSchemas).length,
+      dataObjects: entries.reduce((n, e) => n + (e.dataObjects ?? 0), 0),
       byOrigin,
     },
     adaptors: entries,

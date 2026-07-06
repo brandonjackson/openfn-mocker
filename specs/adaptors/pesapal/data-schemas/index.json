@@ -1,0 +1,51 @@
+{
+  "adaptor": "pesapal",
+  "capturedAt": "2026-07-06",
+  "dialect": "https://json-schema.org/draft/2020-12/schema",
+  "source": "openapi.json",
+  "resources": [
+    "AuthResponse",
+    "CancelOrderResponse",
+    "IpnRegistration",
+    "OrderResponse",
+    "RefundResponse",
+    "TransactionStatus"
+  ],
+  "objects": [
+    {
+      "name": "AuthResponse",
+      "file": "AuthResponse.json",
+      "resource": true
+    },
+    {
+      "name": "CancelOrderResponse",
+      "file": "CancelOrderResponse.json",
+      "resource": true
+    },
+    {
+      "name": "IpnRegistration",
+      "file": "IpnRegistration.json",
+      "resource": true
+    },
+    {
+      "name": "OrderResponse",
+      "file": "OrderResponse.json",
+      "resource": true
+    },
+    {
+      "name": "PesapalError",
+      "file": "PesapalError.json",
+      "resource": false
+    },
+    {
+      "name": "RefundResponse",
+      "file": "RefundResponse.json",
+      "resource": true
+    },
+    {
+      "name": "TransactionStatus",
+      "file": "TransactionStatus.json",
+      "resource": true
+    }
+  ]
+}

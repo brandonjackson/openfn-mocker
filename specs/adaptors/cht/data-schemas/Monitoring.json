@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cht/Monitoring",
+  "title": "Monitoring",
+  "x-openfn-adaptor": "cht",
+  "x-source": {
+    "openapi": "#/components/schemas/Monitoring",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "Instance monitoring metrics.",
+  "properties": {
+    "version": {
+      "type": "object",
+      "properties": {
+        "app": {
+          "type": "string"
+        },
+        "node": {
+          "type": "string"
+        },
+        "couchdb": {
+          "type": "string"
+        }
+      }
+    },
+    "couchdb": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "update_sequence": {
+            "type": "number"
+          },
+          "doc_count": {
+            "type": "number"
+          },
+          "doc_del_count": {
+            "type": "number"
+          },
+          "fragmentation": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "date": {
+      "type": "object",
+      "properties": {
+        "current": {
+          "type": "number"
+        },
+        "uptime": {
+          "type": "number"
+        }
+      }
+    },
+    "sentinel": {
+      "type": "object",
+      "properties": {
+        "backlog": {
+          "type": "number"
+        }
+      }
+    }
+  },
+  "additionalProperties": true
+}

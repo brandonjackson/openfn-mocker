@@ -1,0 +1,76 @@
+{
+  "adaptor": "fhir",
+  "capturedAt": "2026-07-06",
+  "dialect": "https://json-schema.org/draft/2020-12/schema",
+  "source": "openapi.json",
+  "resources": [
+    "Bundle",
+    "BundleEntry",
+    "Claim",
+    "CodeableConcept",
+    "Encounter",
+    "HumanName",
+    "Identifier",
+    "Observation",
+    "OperationOutcome",
+    "Patient",
+    "Reference"
+  ],
+  "objects": [
+    {
+      "name": "Bundle",
+      "file": "Bundle.json",
+      "resource": true
+    },
+    {
+      "name": "BundleEntry",
+      "file": "BundleEntry.json",
+      "resource": true
+    },
+    {
+      "name": "Claim",
+      "file": "Claim.json",
+      "resource": true
+    },
+    {
+      "name": "CodeableConcept",
+      "file": "CodeableConcept.json",
+      "resource": true
+    },
+    {
+      "name": "Encounter",
+      "file": "Encounter.json",
+      "resource": true
+    },
+    {
+      "name": "HumanName",
+      "file": "HumanName.json",
+      "resource": true
+    },
+    {
+      "name": "Identifier",
+      "file": "Identifier.json",
+      "resource": true
+    },
+    {
+      "name": "Observation",
+      "file": "Observation.json",
+      "resource": true
+    },
+    {
+      "name": "OperationOutcome",
+      "file": "OperationOutcome.json",
+      "resource": true
+    },
+    {
+      "name": "Patient",
+      "file": "Patient.json",
+      "resource": true
+    },
+    {
+      "name": "Reference",
+      "file": "Reference.json",
+      "resource": true
+    }
+  ]
+}

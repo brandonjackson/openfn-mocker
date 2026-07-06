@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "pesapal/OrderResponse",
+  "title": "OrderResponse",
+  "x-openfn-adaptor": "pesapal",
+  "x-source": {
+    "openapi": "#/components/schemas/OrderResponse",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "order_tracking_id": {
+      "type": "string"
+    },
+    "merchant_reference": {
+      "type": "string"
+    },
+    "redirect_url": {
+      "type": "string",
+      "format": "uri"
+    },
+    "error": {
+      "$ref": "PesapalError.json"
+    },
+    "status": {
+      "type": "string",
+      "example": "200"
+    }
+  }
+}

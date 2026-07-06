@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "monnify/ReservedAccount",
+  "title": "ReservedAccount",
+  "x-openfn-adaptor": "monnify",
+  "x-source": {
+    "openapi": "#/components/schemas/ReservedAccount",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "accountReference": {
+      "type": "string",
+      "example": "cust-001-ref"
+    },
+    "accountName": {
+      "type": "string",
+      "example": "Ada Lovelace"
+    },
+    "reservationReference": {
+      "type": "string",
+      "example": "RSV-0001"
+    },
+    "currencyCode": {
+      "type": "string",
+      "example": "NGN"
+    },
+    "customerEmail": {
+      "type": "string",
+      "example": "customer@example.com"
+    },
+    "accounts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "bankCode": {
+            "type": "string",
+            "example": "035"
+          },
+          "bankName": {
+            "type": "string",
+            "example": "Wema Bank"
+          },
+          "accountNumber": {
+            "type": "string",
+            "example": "1234567890"
+          }
+        }
+      }
+    }
+  }
+}

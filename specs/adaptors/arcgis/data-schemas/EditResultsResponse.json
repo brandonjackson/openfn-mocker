@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "arcgis/EditResultsResponse",
+  "title": "EditResultsResponse",
+  "x-openfn-adaptor": "arcgis",
+  "x-source": {
+    "openapi": "#/components/schemas/EditResultsResponse",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "addResults": {
+      "type": "array",
+      "items": {
+        "$ref": "EditResult.json"
+      }
+    },
+    "updateResults": {
+      "type": "array",
+      "items": {
+        "$ref": "EditResult.json"
+      }
+    },
+    "deleteResults": {
+      "type": "array",
+      "items": {
+        "$ref": "EditResult.json"
+      }
+    }
+  }
+}

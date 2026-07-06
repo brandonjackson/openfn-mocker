@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "salesforce/DescribeSObjectResult",
+  "title": "DescribeSObjectResult",
+  "x-openfn-adaptor": "salesforce",
+  "x-source": {
+    "openapi": "#/components/schemas/DescribeSObjectResult",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "Full metadata describing a single sObject type.",
+  "properties": {
+    "name": {
+      "type": "string",
+      "example": "Account"
+    },
+    "label": {
+      "type": "string",
+      "example": "Account"
+    },
+    "labelPlural": {
+      "type": "string",
+      "example": "Accounts"
+    },
+    "keyPrefix": {
+      "type": "string",
+      "example": "001"
+    },
+    "custom": {
+      "type": "boolean",
+      "example": false
+    },
+    "createable": {
+      "type": "boolean",
+      "example": true
+    },
+    "updateable": {
+      "type": "boolean",
+      "example": true
+    },
+    "deletable": {
+      "type": "boolean",
+      "example": true
+    },
+    "queryable": {
+      "type": "boolean",
+      "example": true
+    },
+    "fields": {
+      "type": "array",
+      "items": {
+        "$ref": "Field.json"
+      }
+    },
+    "childRelationships": {
+      "type": "array",
+      "items": {
+        "$ref": "ChildRelationship.json"
+      }
+    },
+    "recordTypeInfos": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "urls": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    }
+  }
+}

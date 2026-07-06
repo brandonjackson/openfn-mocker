@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "primero/Referral",
+  "title": "Referral",
+  "x-openfn-adaptor": "primero",
+  "x-source": {
+    "openapi": "#/components/schemas/Referral",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "record_id": {
+      "type": "string"
+    },
+    "record_type": {
+      "type": "string",
+      "example": "cases"
+    },
+    "transitioned_to": {
+      "type": "string"
+    },
+    "transitioned_by": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

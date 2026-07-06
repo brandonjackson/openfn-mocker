@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "nexmo/SMSMessage",
+  "title": "SMSMessage",
+  "x-openfn-adaptor": "nexmo",
+  "x-source": {
+    "openapi": "#/components/schemas/SMSMessage",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "to": {
+      "type": "string",
+      "example": "447700900000"
+    },
+    "message-id": {
+      "type": "string",
+      "example": "0A0000000123ABCD1"
+    },
+    "status": {
+      "type": "string",
+      "description": "0 indicates success; any other value is an error code",
+      "example": "0"
+    },
+    "remaining-balance": {
+      "type": "string",
+      "example": "3.14159265"
+    },
+    "message-price": {
+      "type": "string",
+      "example": "0.03330000"
+    },
+    "network": {
+      "type": "string",
+      "example": "12345"
+    },
+    "client-ref": {
+      "type": "string"
+    },
+    "account-ref": {
+      "type": "string"
+    },
+    "error-text": {
+      "type": "string",
+      "description": "Present when status is non-zero"
+    }
+  }
+}

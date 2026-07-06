@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "kobotoolbox/DeploymentResponse",
+  "title": "DeploymentResponse",
+  "x-openfn-adaptor": "kobotoolbox",
+  "x-source": {
+    "openapi": "#/components/schemas/DeploymentResponse",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "backend": {
+      "type": "string"
+    },
+    "active": {
+      "type": "boolean"
+    },
+    "version_id": {
+      "type": "string"
+    },
+    "asset": {
+      "$ref": "Asset.json"
+    }
+  },
+  "required": [
+    "active",
+    "asset",
+    "backend",
+    "version_id"
+  ]
+}

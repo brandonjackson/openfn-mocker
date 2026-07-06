@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "senaite/User",
+  "title": "User",
+  "x-openfn-adaptor": "senaite",
+  "x-source": {
+    "openapi": "#/components/schemas/User",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "A SENAITE user account.",
+  "properties": {
+    "username": {
+      "type": "string"
+    },
+    "userid": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "fullname": {
+      "type": "string"
+    },
+    "roles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "groups": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "authenticated": {
+      "type": "boolean"
+    },
+    "api_url": {
+      "type": "string"
+    }
+  }
+}

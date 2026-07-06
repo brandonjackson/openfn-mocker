@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "intuit/InvoiceLine",
+  "title": "InvoiceLine",
+  "x-openfn-adaptor": "intuit",
+  "x-source": {
+    "openapi": "#/components/schemas/InvoiceLine",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "Id": {
+      "type": "string",
+      "example": "1"
+    },
+    "LineNum": {
+      "type": "integer",
+      "example": 1
+    },
+    "Amount": {
+      "type": "number",
+      "example": 150
+    },
+    "DetailType": {
+      "type": "string",
+      "example": "SalesItemLineDetail"
+    },
+    "Description": {
+      "type": "string",
+      "example": "Pest Control Services"
+    },
+    "SalesItemLineDetail": {
+      "type": "object",
+      "properties": {
+        "ItemRef": {
+          "$ref": "ReferenceType.json"
+        },
+        "Qty": {
+          "type": "number",
+          "example": 1
+        },
+        "UnitPrice": {
+          "type": "number",
+          "example": 150
+        }
+      }
+    }
+  }
+}

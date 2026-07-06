@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wigal-sms/OtpResponse",
+  "title": "OtpResponse",
+  "x-openfn-adaptor": "wigal-sms",
+  "x-source": {
+    "openapi": "#/components/schemas/OtpResponse",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "status": {
+      "type": "string",
+      "description": "Result status code.",
+      "example": "SUCCESS"
+    },
+    "message": {
+      "type": "string",
+      "description": "Human-readable result message.",
+      "example": "OTP processed for delivery"
+    }
+  }
+}

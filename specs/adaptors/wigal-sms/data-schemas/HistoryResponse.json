@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wigal-sms/HistoryResponse",
+  "title": "HistoryResponse",
+  "x-openfn-adaptor": "wigal-sms",
+  "x-source": {
+    "openapi": "#/components/schemas/HistoryResponse",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "status": {
+      "type": "string",
+      "example": "SUCCESS"
+    },
+    "message": {
+      "type": "string",
+      "example": "Success"
+    },
+    "data": {
+      "type": "object",
+      "properties": {
+        "content": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "apimessageid": {
+                "type": "string",
+                "example": "MGS1010101"
+              },
+              "status": {
+                "type": "string",
+                "example": "DELIVRD"
+              },
+              "recipient": {
+                "type": "string",
+                "example": "233542709210"
+              },
+              "statusdate": {
+                "type": "string",
+                "example": "2024-06-26T13:06:14.087856"
+              },
+              "charge": {
+                "type": "number",
+                "example": 0.03
+              },
+              "service": {
+                "type": "string",
+                "example": "SMS"
+              },
+              "servicetype": {
+                "type": "string",
+                "example": "TEXT"
+              }
+            }
+          }
+        },
+        "totalElements": {
+          "type": "integer",
+          "example": 3
+        },
+        "totalPages": {
+          "type": "integer",
+          "example": 1
+        }
+      }
+    }
+  }
+}

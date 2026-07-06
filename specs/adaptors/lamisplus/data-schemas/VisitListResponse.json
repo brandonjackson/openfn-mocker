@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "lamisplus/VisitListResponse",
+  "title": "VisitListResponse",
+  "x-openfn-adaptor": "lamisplus",
+  "x-source": {
+    "openapi": "#/components/schemas/VisitListResponse",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "data": {
+      "type": "object",
+      "properties": {
+        "visits": {
+          "type": "array",
+          "items": {
+            "$ref": "Visit.json"
+          }
+        },
+        "totalRecords": {
+          "type": "integer"
+        }
+      }
+    }
+  }
+}

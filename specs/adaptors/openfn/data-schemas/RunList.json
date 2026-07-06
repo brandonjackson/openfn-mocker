@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openfn/RunList",
+  "title": "RunList",
+  "x-openfn-adaptor": "openfn",
+  "x-source": {
+    "openapi": "#/components/schemas/RunList",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "runs": {
+      "type": "array",
+      "items": {
+        "$ref": "Run.json"
+      }
+    }
+  }
+}

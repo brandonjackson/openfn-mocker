@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "vtiger/LogoutResponse",
+  "title": "LogoutResponse",
+  "x-openfn-adaptor": "vtiger",
+  "x-source": {
+    "openapi": "#/components/schemas/LogoutResponse",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "success": {
+      "type": "boolean",
+      "example": true
+    },
+    "result": {
+      "type": "object",
+      "description": "Empty or informational result object on logout.",
+      "additionalProperties": true
+    }
+  },
+  "required": [
+    "success"
+  ]
+}

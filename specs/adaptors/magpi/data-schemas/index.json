@@ -1,0 +1,27 @@
+{
+  "adaptor": "magpi",
+  "capturedAt": "2026-07-06",
+  "dialect": "https://json-schema.org/draft/2020-12/schema",
+  "source": "openapi.json",
+  "resources": [
+    "SurveyDataList",
+    "UploadResponse"
+  ],
+  "objects": [
+    {
+      "name": "SurveyData",
+      "file": "SurveyData.json",
+      "resource": false
+    },
+    {
+      "name": "SurveyDataList",
+      "file": "SurveyDataList.json",
+      "resource": true
+    },
+    {
+      "name": "UploadResponse",
+      "file": "UploadResponse.json",
+      "resource": true
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "chatgpt/ChatCompletion",
+  "title": "ChatCompletion",
+  "x-openfn-adaptor": "chatgpt",
+  "x-source": {
+    "openapi": "#/components/schemas/ChatCompletion",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "Represents a chat completion response returned by the model.",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "A unique identifier for the chat completion."
+    },
+    "object": {
+      "type": "string",
+      "enum": [
+        "chat.completion"
+      ],
+      "description": "The object type."
+    },
+    "created": {
+      "type": "integer",
+      "description": "The Unix timestamp (in seconds) of when the chat completion was created."
+    },
+    "model": {
+      "type": "string",
+      "description": "The model used for the chat completion."
+    },
+    "system_fingerprint": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Fingerprint representing the backend configuration."
+    },
+    "choices": {
+      "type": "array",
+      "items": {
+        "$ref": "ChatCompletionChoice.json"
+      }
+    },
+    "usage": {
+      "$ref": "CompletionUsage.json"
+    }
+  },
+  "required": [
+    "id",
+    "object",
+    "created",
+    "model",
+    "choices"
+  ]
+}

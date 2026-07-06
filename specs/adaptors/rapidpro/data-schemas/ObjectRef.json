@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "rapidpro/ObjectRef",
+  "title": "ObjectRef",
+  "x-openfn-adaptor": "rapidpro",
+  "x-source": {
+    "openapi": "#/components/schemas/ObjectRef",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "uuid": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    }
+  }
+}

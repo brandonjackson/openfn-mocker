@@ -1,0 +1,85 @@
+{
+  "adaptor": "msupply",
+  "capturedAt": "2026-07-06",
+  "dialect": "https://json-schema.org/draft/2020-12/schema",
+  "source": "openapi.json",
+  "resources": [
+    "AuthTokenResponse",
+    "BatchOutboundShipmentResponse",
+    "GraphQLResponse",
+    "InsertOutboundShipmentResponse",
+    "ItemsResponse"
+  ],
+  "objects": [
+    {
+      "name": "AuthToken",
+      "file": "AuthToken.json",
+      "resource": false
+    },
+    {
+      "name": "AuthTokenResponse",
+      "file": "AuthTokenResponse.json",
+      "resource": true
+    },
+    {
+      "name": "BatchMutationResult",
+      "file": "BatchMutationResult.json",
+      "resource": false
+    },
+    {
+      "name": "BatchOutboundShipmentResponse",
+      "file": "BatchOutboundShipmentResponse.json",
+      "resource": true
+    },
+    {
+      "name": "BatchOutboundShipmentResult",
+      "file": "BatchOutboundShipmentResult.json",
+      "resource": false
+    },
+    {
+      "name": "GraphQLError",
+      "file": "GraphQLError.json",
+      "resource": false
+    },
+    {
+      "name": "GraphQLResponse",
+      "file": "GraphQLResponse.json",
+      "resource": true
+    },
+    {
+      "name": "GraphQLTypedError",
+      "file": "GraphQLTypedError.json",
+      "resource": false
+    },
+    {
+      "name": "InsertOutboundShipmentResponse",
+      "file": "InsertOutboundShipmentResponse.json",
+      "resource": true
+    },
+    {
+      "name": "InvoiceNode",
+      "file": "InvoiceNode.json",
+      "resource": false
+    },
+    {
+      "name": "ItemConnector",
+      "file": "ItemConnector.json",
+      "resource": false
+    },
+    {
+      "name": "ItemNode",
+      "file": "ItemNode.json",
+      "resource": false
+    },
+    {
+      "name": "ItemStats",
+      "file": "ItemStats.json",
+      "resource": false
+    },
+    {
+      "name": "ItemsResponse",
+      "file": "ItemsResponse.json",
+      "resource": true
+    }
+  ]
+}

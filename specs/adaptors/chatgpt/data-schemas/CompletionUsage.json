@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "chatgpt/CompletionUsage",
+  "title": "CompletionUsage",
+  "x-openfn-adaptor": "chatgpt",
+  "x-source": {
+    "openapi": "#/components/schemas/CompletionUsage",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "Usage statistics for the completion request.",
+  "properties": {
+    "prompt_tokens": {
+      "type": "integer",
+      "description": "Number of tokens in the prompt."
+    },
+    "completion_tokens": {
+      "type": "integer",
+      "description": "Number of tokens in the generated completion."
+    },
+    "total_tokens": {
+      "type": "integer",
+      "description": "Total number of tokens used in the request (prompt + completion)."
+    }
+  },
+  "required": [
+    "prompt_tokens",
+    "completion_tokens",
+    "total_tokens"
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fhir-fr/Period",
+  "title": "Period",
+  "x-openfn-adaptor": "fhir-fr",
+  "x-source": {
+    "openapi": "#/components/schemas/Period",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "start": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "end": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

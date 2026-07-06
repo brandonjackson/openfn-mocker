@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openspp/Group",
+  "title": "Group",
+  "x-openfn-adaptor": "openspp",
+  "x-source": {
+    "openapi": "#/components/schemas/Group",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "A group registrant (household/family) — res.partner with is_group=true, is_registrant=true.",
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "Odoo database id"
+    },
+    "spp_id": {
+      "type": "string",
+      "example": "GRP_Q4VGGZPF"
+    },
+    "name": {
+      "type": "string",
+      "example": "Doe Household"
+    },
+    "address": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "kind": {
+      "description": "Group kind (many2one, [id, name])",
+      "example": [
+        1,
+        "Household"
+      ]
+    },
+    "registration_date": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

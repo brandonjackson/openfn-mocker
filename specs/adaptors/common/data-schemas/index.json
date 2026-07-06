@@ -1,0 +1,22 @@
+{
+  "adaptor": "common",
+  "capturedAt": "2026-07-06",
+  "dialect": "https://json-schema.org/draft/2020-12/schema",
+  "source": "openapi.json",
+  "resources": [
+    "Resource",
+    "Response"
+  ],
+  "objects": [
+    {
+      "name": "Resource",
+      "file": "Resource.json",
+      "resource": true
+    },
+    {
+      "name": "Response",
+      "file": "Response.json",
+      "resource": true
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ocl/LocalizedText",
+  "title": "LocalizedText",
+  "x-openfn-adaptor": "ocl",
+  "x-source": {
+    "openapi": "#/components/schemas/LocalizedText",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "uuid": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "external_id": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string"
+    },
+    "locale": {
+      "type": "string",
+      "example": "en"
+    },
+    "locale_preferred": {
+      "type": "boolean"
+    },
+    "name_type": {
+      "type": "string",
+      "example": "Fully Specified"
+    },
+    "description_type": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    }
+  }
+}

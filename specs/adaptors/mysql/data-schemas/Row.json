@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "mysql/Row",
+  "title": "Row",
+  "x-openfn-adaptor": "mysql",
+  "x-source": {
+    "openapi": "#/components/schemas/Row",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "A table row / record. Columns are dynamic; example fields shown.",
+  "additionalProperties": true,
+  "properties": {
+    "id": {
+      "type": "integer",
+      "example": 1
+    },
+    "name": {
+      "type": "string",
+      "example": "Alice"
+    },
+    "email": {
+      "type": "string",
+      "example": "alice@example.com"
+    }
+  }
+}

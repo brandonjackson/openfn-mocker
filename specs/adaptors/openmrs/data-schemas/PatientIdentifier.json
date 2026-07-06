@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openmrs/PatientIdentifier",
+  "title": "PatientIdentifier",
+  "x-openfn-adaptor": "openmrs",
+  "x-source": {
+    "openapi": "#/components/schemas/PatientIdentifier",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "uuid": {
+      "type": "string",
+      "example": "857c1c53-c2cc-11de-8d13-0010c6dffd0f"
+    },
+    "display": {
+      "type": "string",
+      "example": "OpenMRS ID = 10000X"
+    },
+    "identifier": {
+      "type": "string",
+      "example": "10000X"
+    },
+    "identifierType": {
+      "$ref": "Reference.json"
+    },
+    "location": {
+      "$ref": "Reference.json"
+    },
+    "preferred": {
+      "type": "boolean",
+      "example": true
+    },
+    "voided": {
+      "type": "boolean",
+      "example": false
+    }
+  }
+}

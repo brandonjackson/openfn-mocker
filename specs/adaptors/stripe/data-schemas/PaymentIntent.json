@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "stripe/PaymentIntent",
+  "title": "PaymentIntent",
+  "x-openfn-adaptor": "stripe",
+  "x-source": {
+    "openapi": "#/components/schemas/PaymentIntent",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "A Stripe payment intent object.",
+  "required": [
+    "id",
+    "object"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "example": "pi_3RxS5EEAUr6ipfDB0aKo3moC"
+    },
+    "object": {
+      "type": "string",
+      "enum": [
+        "payment_intent"
+      ]
+    },
+    "amount": {
+      "type": "integer"
+    },
+    "amount_capturable": {
+      "type": "integer"
+    },
+    "amount_received": {
+      "type": "integer"
+    },
+    "canceled_at": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "cancellation_reason": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "capture_method": {
+      "type": "string",
+      "enum": [
+        "automatic",
+        "automatic_async",
+        "manual"
+      ]
+    },
+    "client_secret": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "confirmation_method": {
+      "type": "string",
+      "enum": [
+        "automatic",
+        "manual"
+      ]
+    },
+    "created": {
+      "type": "integer"
+    },
+    "currency": {
+      "type": "string"
+    },
+    "customer": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "description": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "latest_charge": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "livemode": {
+      "type": "boolean"
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "payment_method": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "receipt_email": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "requires_payment_method",
+        "requires_confirmation",
+        "requires_action",
+        "processing",
+        "requires_capture",
+        "canceled",
+        "succeeded"
+      ]
+    }
+  }
+}

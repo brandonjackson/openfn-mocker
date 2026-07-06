@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "senaite/CatalogListResponse",
+  "title": "CatalogListResponse",
+  "x-openfn-adaptor": "senaite",
+  "x-source": {
+    "openapi": "#/components/schemas/CatalogListResponse",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "APIResponse.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "Catalog.json"
+          }
+        }
+      }
+    }
+  ]
+}

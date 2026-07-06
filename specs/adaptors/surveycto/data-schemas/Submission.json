@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "surveycto/Submission",
+  "title": "Submission",
+  "x-openfn-adaptor": "surveycto",
+  "x-source": {
+    "openapi": "#/components/schemas/Submission",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "A single form submission in wide format. Fields are dynamic per form; the metadata fields below are always present.",
+  "additionalProperties": true,
+  "properties": {
+    "KEY": {
+      "type": "string",
+      "description": "Unique submission instance key (uuid)."
+    },
+    "SubmissionDate": {
+      "type": "string",
+      "description": "Timestamp the submission was received, SurveyCTO format."
+    },
+    "CompletionDate": {
+      "type": "string",
+      "description": "Timestamp the form was completed on the device."
+    },
+    "review_status": {
+      "type": "string",
+      "description": "Review status of the submission.",
+      "example": "approved"
+    },
+    "formdef_version": {
+      "type": "string",
+      "description": "Version of the form definition used."
+    }
+  }
+}

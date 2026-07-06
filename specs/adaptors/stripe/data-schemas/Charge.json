@@ -1,0 +1,115 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "stripe/Charge",
+  "title": "Charge",
+  "x-openfn-adaptor": "stripe",
+  "x-source": {
+    "openapi": "#/components/schemas/Charge",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "A Stripe charge object.",
+  "required": [
+    "id",
+    "object"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "example": "ch_3RxS5EEAUr6ipfDB0aKo3moC"
+    },
+    "object": {
+      "type": "string",
+      "enum": [
+        "charge"
+      ]
+    },
+    "amount": {
+      "type": "integer",
+      "description": "Amount intended to be collected, in the smallest currency unit."
+    },
+    "amount_captured": {
+      "type": "integer"
+    },
+    "amount_refunded": {
+      "type": "integer"
+    },
+    "balance_transaction": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "captured": {
+      "type": "boolean"
+    },
+    "created": {
+      "type": "integer"
+    },
+    "currency": {
+      "type": "string"
+    },
+    "customer": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "description": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "disputed": {
+      "type": "boolean"
+    },
+    "livemode": {
+      "type": "boolean"
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "paid": {
+      "type": "boolean"
+    },
+    "payment_intent": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "payment_method": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "receipt_email": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "receipt_url": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "refunded": {
+      "type": "boolean"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "succeeded",
+        "pending",
+        "failed"
+      ]
+    }
+  }
+}

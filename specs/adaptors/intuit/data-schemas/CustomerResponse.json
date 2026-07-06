@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "intuit/CustomerResponse",
+  "title": "CustomerResponse",
+  "x-openfn-adaptor": "intuit",
+  "x-source": {
+    "openapi": "#/components/schemas/CustomerResponse",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "Customer": {
+      "$ref": "Customer.json"
+    },
+    "time": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

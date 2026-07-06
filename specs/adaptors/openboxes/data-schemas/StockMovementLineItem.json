@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openboxes/StockMovementLineItem",
+  "title": "StockMovementLineItem",
+  "x-openfn-adaptor": "openboxes",
+  "x-source": {
+    "openapi": "#/components/schemas/StockMovementLineItem",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "productCode": {
+      "type": "string"
+    },
+    "product": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "productCode": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "statusCode": {
+      "type": "string"
+    },
+    "quantityRequested": {
+      "type": "integer"
+    },
+    "quantityAllowed": {
+      "type": "integer"
+    },
+    "quantityAvailable": {
+      "type": "integer"
+    },
+    "quantityCanceled": {
+      "type": "integer"
+    },
+    "quantityRevised": {
+      "type": "integer"
+    },
+    "reasonCode": {
+      "type": "string"
+    },
+    "comments": {
+      "type": "string"
+    },
+    "sortOrder": {
+      "type": "integer"
+    }
+  }
+}

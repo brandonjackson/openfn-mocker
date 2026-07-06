@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fhir-ndr-et/Meta",
+  "title": "Meta",
+  "x-openfn-adaptor": "fhir-ndr-et",
+  "x-source": {
+    "openapi": "#/components/schemas/Meta",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "versionId": {
+      "type": "string"
+    },
+    "lastUpdated": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "profile": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uri"
+      }
+    }
+  }
+}

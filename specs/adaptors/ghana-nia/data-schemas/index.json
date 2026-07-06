@@ -1,0 +1,16 @@
+{
+  "adaptor": "ghana-nia",
+  "capturedAt": "2026-07-06",
+  "dialect": "https://json-schema.org/draft/2020-12/schema",
+  "source": "openapi.json",
+  "resources": [
+    "NationalIdResponse"
+  ],
+  "objects": [
+    {
+      "name": "NationalIdResponse",
+      "file": "NationalIdResponse.json",
+      "resource": true
+    }
+  ]
+}

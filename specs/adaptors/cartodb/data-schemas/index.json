@@ -1,0 +1,44 @@
+{
+  "adaptor": "cartodb",
+  "capturedAt": "2026-07-06",
+  "dialect": "https://json-schema.org/draft/2020-12/schema",
+  "source": "openapi.json",
+  "resources": [
+    "ImportCreatedResponse",
+    "ImportJob",
+    "ImportList",
+    "SqlResponse"
+  ],
+  "objects": [
+    {
+      "name": "ImportCreatedResponse",
+      "file": "ImportCreatedResponse.json",
+      "resource": true
+    },
+    {
+      "name": "ImportJob",
+      "file": "ImportJob.json",
+      "resource": true
+    },
+    {
+      "name": "ImportList",
+      "file": "ImportList.json",
+      "resource": true
+    },
+    {
+      "name": "SqlField",
+      "file": "SqlField.json",
+      "resource": false
+    },
+    {
+      "name": "SqlResponse",
+      "file": "SqlResponse.json",
+      "resource": true
+    },
+    {
+      "name": "SqlRow",
+      "file": "SqlRow.json",
+      "resource": false
+    }
+  ]
+}

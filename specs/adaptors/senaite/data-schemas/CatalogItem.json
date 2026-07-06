@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "senaite/CatalogItem",
+  "title": "CatalogItem",
+  "x-openfn-adaptor": "senaite",
+  "x-source": {
+    "openapi": "#/components/schemas/CatalogItem",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "Generic SENAITE content object summary as returned in items[].",
+  "properties": {
+    "uid": {
+      "type": "string"
+    },
+    "id": {
+      "type": "string"
+    },
+    "portal_type": {
+      "type": "string"
+    },
+    "url": {
+      "type": "string"
+    },
+    "api_url": {
+      "type": "string"
+    },
+    "path": {
+      "type": "string"
+    },
+    "parent_id": {
+      "type": "string"
+    },
+    "parent_uid": {
+      "type": "string"
+    },
+    "parent_path": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "created": {
+      "type": "string"
+    },
+    "modified": {
+      "type": "string"
+    },
+    "review_state": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

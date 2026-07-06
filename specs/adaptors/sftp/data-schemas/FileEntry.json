@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sftp/FileEntry",
+  "title": "FileEntry",
+  "x-openfn-adaptor": "sftp",
+  "x-source": {
+    "openapi": "#/components/schemas/FileEntry",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "A single entry returned by an SFTP directory listing.",
+  "properties": {
+    "type": {
+      "type": "string",
+      "description": "Entry type: '-' file, 'd' directory, 'l' symlink.",
+      "example": "-"
+    },
+    "name": {
+      "type": "string",
+      "example": "foo.txt"
+    },
+    "size": {
+      "type": "integer",
+      "example": 1024
+    },
+    "modifyTime": {
+      "type": "integer",
+      "description": "Last modified time in epoch milliseconds.",
+      "example": 1720000000000
+    },
+    "accessTime": {
+      "type": "integer",
+      "description": "Last access time in epoch milliseconds.",
+      "example": 1720000000000
+    },
+    "rights": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "type": "string",
+          "example": "rw"
+        },
+        "group": {
+          "type": "string",
+          "example": "r"
+        },
+        "other": {
+          "type": "string",
+          "example": "r"
+        }
+      }
+    },
+    "owner": {
+      "type": "integer",
+      "example": 1000
+    },
+    "group": {
+      "type": "integer",
+      "example": 1000
+    }
+  },
+  "required": [
+    "type",
+    "name",
+    "size"
+  ]
+}

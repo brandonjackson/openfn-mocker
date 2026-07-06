@@ -1,0 +1,16 @@
+{
+  "adaptor": "googledrive",
+  "capturedAt": "2026-07-06",
+  "dialect": "https://json-schema.org/draft/2020-12/schema",
+  "source": "openapi.json",
+  "resources": [
+    "File"
+  ],
+  "objects": [
+    {
+      "name": "File",
+      "file": "File.json",
+      "resource": true
+    }
+  ]
+}

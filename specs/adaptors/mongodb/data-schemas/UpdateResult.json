@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "mongodb/UpdateResult",
+  "title": "UpdateResult",
+  "x-openfn-adaptor": "mongodb",
+  "x-source": {
+    "openapi": "#/components/schemas/UpdateResult",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "acknowledged": {
+      "type": "boolean",
+      "example": true
+    },
+    "matchedCount": {
+      "type": "integer",
+      "example": 1
+    },
+    "modifiedCount": {
+      "type": "integer",
+      "example": 1
+    },
+    "upsertedCount": {
+      "type": "integer",
+      "example": 0
+    },
+    "upsertedId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  }
+}

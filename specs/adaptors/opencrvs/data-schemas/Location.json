@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "opencrvs/Location",
+  "title": "Location",
+  "x-openfn-adaptor": "opencrvs",
+  "x-source": {
+    "openapi": "#/components/schemas/Location",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "OpenCRVS location (administrative structure or facility).",
+  "properties": {
+    "statisticalID": {
+      "type": "string",
+      "example": "ADMIN_STRUCTURE_1"
+    },
+    "name": {
+      "type": "string",
+      "example": "Ibombo"
+    },
+    "alias": {
+      "type": "string",
+      "example": "Ibombo"
+    },
+    "partOf": {
+      "type": "string",
+      "example": "Location/0"
+    },
+    "code": {
+      "type": "string",
+      "example": "ADMIN_STRUCTURE"
+    },
+    "jurisdictionType": {
+      "type": "string",
+      "example": "DISTRICT"
+    },
+    "statistics": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "year": {
+            "type": "integer",
+            "example": 2021
+          },
+          "male_population": {
+            "type": "integer"
+          },
+          "female_population": {
+            "type": "integer"
+          },
+          "population": {
+            "type": "integer"
+          },
+          "crude_birth_rate": {
+            "type": "number"
+          }
+        }
+      }
+    }
+  }
+}

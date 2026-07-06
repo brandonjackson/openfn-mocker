@@ -1,0 +1,33 @@
+{
+  "adaptor": "mongodb",
+  "capturedAt": "2026-07-06",
+  "dialect": "https://json-schema.org/draft/2020-12/schema",
+  "source": "openapi.json",
+  "resources": [
+    "FindResult",
+    "InsertResult",
+    "UpdateResult"
+  ],
+  "objects": [
+    {
+      "name": "Document",
+      "file": "Document.json",
+      "resource": false
+    },
+    {
+      "name": "FindResult",
+      "file": "FindResult.json",
+      "resource": true
+    },
+    {
+      "name": "InsertResult",
+      "file": "InsertResult.json",
+      "resource": true
+    },
+    {
+      "name": "UpdateResult",
+      "file": "UpdateResult.json",
+      "resource": true
+    }
+  ]
+}

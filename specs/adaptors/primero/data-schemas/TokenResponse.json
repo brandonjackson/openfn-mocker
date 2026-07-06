@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "primero/TokenResponse",
+  "title": "TokenResponse",
+  "x-openfn-adaptor": "primero",
+  "x-source": {
+    "openapi": "#/components/schemas/TokenResponse",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "token": {
+      "type": "string"
+    },
+    "id": {
+      "type": "integer"
+    },
+    "user_name": {
+      "type": "string"
+    }
+  }
+}

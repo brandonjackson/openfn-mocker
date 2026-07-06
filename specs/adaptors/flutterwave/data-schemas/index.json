@@ -1,0 +1,28 @@
+{
+  "adaptor": "flutterwave",
+  "capturedAt": "2026-07-06",
+  "dialect": "https://json-schema.org/draft/2020-12/schema",
+  "source": "openapi.json",
+  "resources": [
+    "Charge",
+    "Customer",
+    "PaymentMethod"
+  ],
+  "objects": [
+    {
+      "name": "Charge",
+      "file": "Charge.json",
+      "resource": true
+    },
+    {
+      "name": "Customer",
+      "file": "Customer.json",
+      "resource": true
+    },
+    {
+      "name": "PaymentMethod",
+      "file": "PaymentMethod.json",
+      "resource": true
+    }
+  ]
+}

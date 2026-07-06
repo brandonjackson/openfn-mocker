@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "nexmo/AccountBalance",
+  "title": "AccountBalance",
+  "x-openfn-adaptor": "nexmo",
+  "x-source": {
+    "openapi": "#/components/schemas/AccountBalance",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "value": {
+      "type": "number",
+      "format": "float",
+      "example": 3.14159265
+    },
+    "autoReload": {
+      "type": "boolean",
+      "example": false
+    }
+  }
+}

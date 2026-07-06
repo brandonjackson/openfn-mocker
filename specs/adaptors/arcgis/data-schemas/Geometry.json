@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "arcgis/Geometry",
+  "title": "Geometry",
+  "x-openfn-adaptor": "arcgis",
+  "x-source": {
+    "openapi": "#/components/schemas/Geometry",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "x": {
+      "type": "number"
+    },
+    "y": {
+      "type": "number"
+    },
+    "spatialReference": {
+      "type": "object",
+      "properties": {
+        "wkid": {
+          "type": "integer",
+          "example": 4326
+        }
+      }
+    }
+  }
+}

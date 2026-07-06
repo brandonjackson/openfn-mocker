@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "puntosolidario-rd/Subsidy",
+  "title": "Subsidy",
+  "x-openfn-adaptor": "puntosolidario-rd",
+  "x-source": {
+    "openapi": "#/components/schemas/Subsidy",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "codigo": {
+      "type": "string",
+      "example": "BONOGAS"
+    },
+    "nombre": {
+      "type": "string",
+      "example": "Bonogás Hogar"
+    },
+    "monto": {
+      "type": "number"
+    },
+    "moneda": {
+      "type": "string",
+      "example": "DOP"
+    },
+    "activo": {
+      "type": "boolean"
+    }
+  }
+}

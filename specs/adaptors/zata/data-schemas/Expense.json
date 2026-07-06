@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "zata/Expense",
+  "title": "Expense",
+  "x-openfn-adaptor": "zata",
+  "x-source": {
+    "openapi": "#/components/schemas/Expense",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "categoryId": {
+      "type": "integer"
+    },
+    "amount": {
+      "type": "number"
+    },
+    "description": {
+      "type": "string"
+    },
+    "expenseDate": {
+      "type": "string",
+      "format": "date"
+    },
+    "supplierTIN": {
+      "type": "string"
+    }
+  }
+}

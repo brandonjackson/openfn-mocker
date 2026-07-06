@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fhir-eswatini/Quantity",
+  "title": "Quantity",
+  "x-openfn-adaptor": "fhir-eswatini",
+  "x-source": {
+    "openapi": "#/components/schemas/Quantity",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "value": {
+      "type": "number"
+    },
+    "unit": {
+      "type": "string"
+    },
+    "system": {
+      "type": "string",
+      "format": "uri"
+    },
+    "code": {
+      "type": "string"
+    }
+  }
+}

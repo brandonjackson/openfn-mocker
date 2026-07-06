@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cht/NormalizedParent",
+  "title": "NormalizedParent",
+  "x-openfn-adaptor": "cht",
+  "x-source": {
+    "openapi": "#/components/schemas/NormalizedParent",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "A minified parent lineage reference.",
+  "properties": {
+    "_id": {
+      "type": "string"
+    },
+    "parent": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "odoo/JsonRpcResponse",
+  "title": "JsonRpcResponse",
+  "x-openfn-adaptor": "odoo",
+  "x-source": {
+    "openapi": "#/components/schemas/JsonRpcResponse",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "jsonrpc": {
+      "type": "string",
+      "example": "2.0"
+    },
+    "id": {
+      "type": "integer",
+      "example": 2
+    },
+    "result": {
+      "description": "Method result. Type depends on the called model method (id, boolean, or list of records/ids).",
+      "oneOf": [
+        {
+          "type": "integer",
+          "description": "New record id (create)"
+        },
+        {
+          "type": "boolean",
+          "description": "write / unlink success"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "description": "search: matching ids"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "Record.json"
+          },
+          "description": "read / search_read: records"
+        }
+      ]
+    },
+    "error": {
+      "$ref": "JsonRpcError.json"
+    }
+  }
+}

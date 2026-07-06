@@ -1,0 +1,27 @@
+{
+  "adaptor": "motherduck",
+  "capturedAt": "2026-07-06",
+  "dialect": "https://json-schema.org/draft/2020-12/schema",
+  "source": "openapi.json",
+  "resources": [
+    "MutationResult",
+    "Row"
+  ],
+  "objects": [
+    {
+      "name": "MutationResult",
+      "file": "MutationResult.json",
+      "resource": true
+    },
+    {
+      "name": "ResultMetadata",
+      "file": "ResultMetadata.json",
+      "resource": false
+    },
+    {
+      "name": "Row",
+      "file": "Row.json",
+      "resource": true
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "redis/JsonArrayResult",
+  "title": "JsonArrayResult",
+  "x-openfn-adaptor": "redis",
+  "x-source": {
+    "openapi": "#/components/schemas/JsonArrayResult",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "Result carrying an array of JSON documents.",
+  "properties": {
+    "data": {
+      "type": "array",
+      "description": "One JSON document per requested key.",
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": true
+          },
+          {
+            "type": "array",
+            "items": {}
+          },
+          {
+            "type": "string"
+          }
+        ]
+      }
+    }
+  }
+}

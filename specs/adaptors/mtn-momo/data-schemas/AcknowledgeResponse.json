@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "mtn-momo/AcknowledgeResponse",
+  "title": "AcknowledgeResponse",
+  "x-openfn-adaptor": "mtn-momo",
+  "x-source": {
+    "openapi": "#/components/schemas/AcknowledgeResponse",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "Acknowledgement returned for asynchronous operations (201/202) whose real bodies are empty. Modeled here so mocker can return a JSON payload.",
+  "properties": {
+    "referenceId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "status": {
+      "type": "string",
+      "example": "ACCEPTED"
+    }
+  }
+}

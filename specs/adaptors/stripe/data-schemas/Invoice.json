@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "stripe/Invoice",
+  "title": "Invoice",
+  "x-openfn-adaptor": "stripe",
+  "x-source": {
+    "openapi": "#/components/schemas/Invoice",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "A Stripe invoice object.",
+  "required": [
+    "id",
+    "object"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "example": "in_1RxS5EEAUr6ipfDB0aKo3moC"
+    },
+    "object": {
+      "type": "string",
+      "enum": [
+        "invoice"
+      ]
+    },
+    "amount_due": {
+      "type": "integer"
+    },
+    "amount_paid": {
+      "type": "integer"
+    },
+    "amount_remaining": {
+      "type": "integer"
+    },
+    "created": {
+      "type": "integer"
+    },
+    "currency": {
+      "type": "string"
+    },
+    "customer": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "customer_email": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "customer_name": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "description": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "due_date": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "hosted_invoice_url": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "livemode": {
+      "type": "boolean"
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "number": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "paid": {
+      "type": "boolean"
+    },
+    "status": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "draft",
+        "open",
+        "paid",
+        "uncollectible",
+        "void"
+      ]
+    },
+    "subtotal": {
+      "type": "integer"
+    },
+    "total": {
+      "type": "integer"
+    }
+  }
+}

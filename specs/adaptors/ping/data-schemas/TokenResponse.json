@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ping/TokenResponse",
+  "title": "TokenResponse",
+  "x-openfn-adaptor": "ping",
+  "x-source": {
+    "openapi": "#/components/schemas/TokenResponse",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "access_token": {
+      "type": "string"
+    },
+    "token_type": {
+      "type": "string",
+      "example": "Bearer"
+    },
+    "expires_in": {
+      "type": "integer",
+      "example": 3600
+    },
+    "scope": {
+      "type": "string"
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "adaptor": "dagu",
+  "capturedAt": "2026-07-06",
+  "dialect": "https://json-schema.org/draft/2020-12/schema",
+  "source": "openapi.json",
+  "resources": [
+    "DispensingRequest",
+    "Prescription",
+    "StockOutItem"
+  ],
+  "objects": [
+    {
+      "name": "DispensingRequest",
+      "file": "DispensingRequest.json",
+      "resource": true
+    },
+    {
+      "name": "Prescription",
+      "file": "Prescription.json",
+      "resource": true
+    },
+    {
+      "name": "StockOutItem",
+      "file": "StockOutItem.json",
+      "resource": true
+    }
+  ]
+}

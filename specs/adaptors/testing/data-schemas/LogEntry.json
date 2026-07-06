@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "testing/LogEntry",
+  "title": "LogEntry",
+  "x-openfn-adaptor": "testing",
+  "x-source": {
+    "openapi": "#/components/schemas/LogEntry",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "A recorded log entry.",
+  "properties": {
+    "message": {
+      "type": "string"
+    },
+    "level": {
+      "type": "string"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "message",
+    "timestamp"
+  ]
+}

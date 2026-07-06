@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "surveycto/IdFormatOptions",
+  "title": "IdFormatOptions",
+  "x-openfn-adaptor": "surveycto",
+  "x-source": {
+    "openapi": "#/components/schemas/IdFormatOptions",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "Auto-generated id format configuration for dataset records.",
+  "properties": {
+    "prefix": {
+      "type": "string"
+    },
+    "suffix": {
+      "type": "string"
+    },
+    "numberOfDigits": {
+      "type": "string"
+    },
+    "allowCapitalLetters": {
+      "type": "boolean"
+    }
+  }
+}

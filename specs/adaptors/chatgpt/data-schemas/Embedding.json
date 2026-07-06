@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "chatgpt/Embedding",
+  "title": "Embedding",
+  "x-openfn-adaptor": "chatgpt",
+  "x-source": {
+    "openapi": "#/components/schemas/Embedding",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "Represents an embedding vector returned by the embeddings endpoint.",
+  "properties": {
+    "index": {
+      "type": "integer",
+      "description": "The index of the embedding in the list."
+    },
+    "object": {
+      "type": "string",
+      "enum": [
+        "embedding"
+      ]
+    },
+    "embedding": {
+      "type": "array",
+      "description": "The embedding vector.",
+      "items": {
+        "type": "number"
+      }
+    }
+  },
+  "required": [
+    "index",
+    "object",
+    "embedding"
+  ]
+}

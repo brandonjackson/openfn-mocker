@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openhim/Client",
+  "title": "Client",
+  "x-openfn-adaptor": "openhim",
+  "x-source": {
+    "openapi": "#/components/schemas/Client",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "A registered client that authenticates to OpenHIM to submit requests.",
+  "required": [
+    "clientID",
+    "name"
+  ],
+  "properties": {
+    "_id": {
+      "type": "string"
+    },
+    "clientID": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "roles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "passwordAlgorithm": {
+      "type": "string"
+    },
+    "passwordSalt": {
+      "type": "string"
+    },
+    "passwordHash": {
+      "type": "string"
+    },
+    "certFingerprint": {
+      "type": "string"
+    },
+    "organization": {
+      "type": "string"
+    },
+    "contactPerson": {
+      "type": "string"
+    }
+  }
+}

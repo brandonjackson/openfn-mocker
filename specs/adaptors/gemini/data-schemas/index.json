@@ -1,0 +1,52 @@
+{
+  "adaptor": "gemini",
+  "capturedAt": "2026-07-06",
+  "dialect": "https://json-schema.org/draft/2020-12/schema",
+  "source": "openapi.json",
+  "resources": [
+    "GenerateContentResponse",
+    "PredictImageResponse"
+  ],
+  "objects": [
+    {
+      "name": "Blob",
+      "file": "Blob.json",
+      "resource": false
+    },
+    {
+      "name": "Candidate",
+      "file": "Candidate.json",
+      "resource": false
+    },
+    {
+      "name": "Content",
+      "file": "Content.json",
+      "resource": false
+    },
+    {
+      "name": "GenerateContentResponse",
+      "file": "GenerateContentResponse.json",
+      "resource": true
+    },
+    {
+      "name": "GroundingMetadata",
+      "file": "GroundingMetadata.json",
+      "resource": false
+    },
+    {
+      "name": "Part",
+      "file": "Part.json",
+      "resource": false
+    },
+    {
+      "name": "PredictImageResponse",
+      "file": "PredictImageResponse.json",
+      "resource": true
+    },
+    {
+      "name": "UsageMetadata",
+      "file": "UsageMetadata.json",
+      "resource": false
+    }
+  ]
+}

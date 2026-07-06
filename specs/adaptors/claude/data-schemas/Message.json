@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "claude/Message",
+  "title": "Message",
+  "x-openfn-adaptor": "claude",
+  "x-source": {
+    "openapi": "#/components/schemas/Message",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "A Message returned by the Messages API.",
+  "required": [
+    "id",
+    "type",
+    "role",
+    "content",
+    "model",
+    "usage"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "example": "msg_01XFDUDYJgAACzvnptvVoYEL"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "message"
+      ],
+      "example": "message"
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "assistant"
+      ],
+      "example": "assistant"
+    },
+    "model": {
+      "type": "string",
+      "example": "claude-opus-4-6"
+    },
+    "content": {
+      "type": "array",
+      "items": {
+        "$ref": "ContentBlock.json"
+      }
+    },
+    "stop_reason": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "end_turn",
+        "max_tokens",
+        "stop_sequence",
+        "tool_use",
+        "pause_turn",
+        "refusal"
+      ],
+      "example": "end_turn"
+    },
+    "stop_sequence": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "usage": {
+      "$ref": "Usage.json"
+    }
+  }
+}

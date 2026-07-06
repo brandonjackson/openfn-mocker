@@ -1,0 +1,102 @@
+{
+  "adaptor": "intuit",
+  "capturedAt": "2026-07-06",
+  "dialect": "https://json-schema.org/draft/2020-12/schema",
+  "source": "openapi.json",
+  "resources": [
+    "AccountResponse",
+    "CustomerResponse",
+    "InvoiceResponse",
+    "ItemResponse",
+    "PaymentResponse",
+    "QueryResponseWrapper",
+    "VendorResponse"
+  ],
+  "objects": [
+    {
+      "name": "Account",
+      "file": "Account.json",
+      "resource": false
+    },
+    {
+      "name": "AccountResponse",
+      "file": "AccountResponse.json",
+      "resource": true
+    },
+    {
+      "name": "Customer",
+      "file": "Customer.json",
+      "resource": false
+    },
+    {
+      "name": "CustomerResponse",
+      "file": "CustomerResponse.json",
+      "resource": true
+    },
+    {
+      "name": "Invoice",
+      "file": "Invoice.json",
+      "resource": false
+    },
+    {
+      "name": "InvoiceLine",
+      "file": "InvoiceLine.json",
+      "resource": false
+    },
+    {
+      "name": "InvoiceResponse",
+      "file": "InvoiceResponse.json",
+      "resource": true
+    },
+    {
+      "name": "Item",
+      "file": "Item.json",
+      "resource": false
+    },
+    {
+      "name": "ItemResponse",
+      "file": "ItemResponse.json",
+      "resource": true
+    },
+    {
+      "name": "MetaData",
+      "file": "MetaData.json",
+      "resource": false
+    },
+    {
+      "name": "Payment",
+      "file": "Payment.json",
+      "resource": false
+    },
+    {
+      "name": "PaymentResponse",
+      "file": "PaymentResponse.json",
+      "resource": true
+    },
+    {
+      "name": "PhysicalAddress",
+      "file": "PhysicalAddress.json",
+      "resource": false
+    },
+    {
+      "name": "QueryResponseWrapper",
+      "file": "QueryResponseWrapper.json",
+      "resource": true
+    },
+    {
+      "name": "ReferenceType",
+      "file": "ReferenceType.json",
+      "resource": false
+    },
+    {
+      "name": "Vendor",
+      "file": "Vendor.json",
+      "resource": false
+    },
+    {
+      "name": "VendorResponse",
+      "file": "VendorResponse.json",
+      "resource": true
+    }
+  ]
+}

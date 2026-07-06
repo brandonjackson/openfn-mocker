@@ -1,0 +1,60 @@
+{
+  "adaptor": "monnify",
+  "capturedAt": "2026-07-06",
+  "dialect": "https://json-schema.org/draft/2020-12/schema",
+  "source": "openapi.json",
+  "resources": [
+    "AuthResponse",
+    "DisbursementPageResponse",
+    "ReservedAccountResponse",
+    "TransactionPageResponse",
+    "TransferResponse"
+  ],
+  "objects": [
+    {
+      "name": "AuthResponse",
+      "file": "AuthResponse.json",
+      "resource": true
+    },
+    {
+      "name": "DisbursementPageResponse",
+      "file": "DisbursementPageResponse.json",
+      "resource": true
+    },
+    {
+      "name": "MonnifyEnvelope",
+      "file": "MonnifyEnvelope.json",
+      "resource": false
+    },
+    {
+      "name": "ReservedAccount",
+      "file": "ReservedAccount.json",
+      "resource": false
+    },
+    {
+      "name": "ReservedAccountResponse",
+      "file": "ReservedAccountResponse.json",
+      "resource": true
+    },
+    {
+      "name": "Transaction",
+      "file": "Transaction.json",
+      "resource": false
+    },
+    {
+      "name": "TransactionPageResponse",
+      "file": "TransactionPageResponse.json",
+      "resource": true
+    },
+    {
+      "name": "Transfer",
+      "file": "Transfer.json",
+      "resource": false
+    },
+    {
+      "name": "TransferResponse",
+      "file": "TransferResponse.json",
+      "resource": true
+    }
+  ]
+}

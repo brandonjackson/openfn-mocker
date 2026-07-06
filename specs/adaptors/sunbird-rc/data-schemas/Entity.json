@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sunbird-rc/Entity",
+  "title": "Entity",
+  "x-openfn-adaptor": "sunbird-rc",
+  "x-source": {
+    "openapi": "#/components/schemas/Entity",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "A generic registry entity. The concrete attributes depend on the entity's registered schema. osid is assigned by the registry.",
+  "properties": {
+    "osid": {
+      "type": "string",
+      "description": "Registry-assigned object id"
+    },
+    "osOwner": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": true
+}

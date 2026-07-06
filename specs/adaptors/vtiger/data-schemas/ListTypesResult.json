@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "vtiger/ListTypesResult",
+  "title": "ListTypesResult",
+  "x-openfn-adaptor": "vtiger",
+  "x-source": {
+    "openapi": "#/components/schemas/ListTypesResult",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "Result of listTypes: accessible module names plus per-module info.",
+  "properties": {
+    "types": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Accessible module names."
+    },
+    "information": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "ModuleType.json"
+      },
+      "description": "Map of module name to module metadata."
+    }
+  }
+}

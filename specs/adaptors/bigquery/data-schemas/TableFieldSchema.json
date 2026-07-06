@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "bigquery/TableFieldSchema",
+  "title": "TableFieldSchema",
+  "x-openfn-adaptor": "bigquery",
+  "x-source": {
+    "openapi": "#/components/schemas/TableFieldSchema",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "example": "STRING"
+    },
+    "mode": {
+      "type": "string",
+      "example": "NULLABLE"
+    },
+    "description": {
+      "type": "string"
+    }
+  }
+}

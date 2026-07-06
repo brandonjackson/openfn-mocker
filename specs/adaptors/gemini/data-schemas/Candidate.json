@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "gemini/Candidate",
+  "title": "Candidate",
+  "x-openfn-adaptor": "gemini",
+  "x-source": {
+    "openapi": "#/components/schemas/Candidate",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "content": {
+      "$ref": "Content.json"
+    },
+    "finishReason": {
+      "type": "string"
+    },
+    "index": {
+      "type": "integer"
+    },
+    "groundingMetadata": {
+      "$ref": "GroundingMetadata.json"
+    }
+  }
+}

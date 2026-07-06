@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openspp/Area",
+  "title": "Area",
+  "x-openfn-adaptor": "openspp",
+  "x-source": {
+    "openapi": "#/components/schemas/Area",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "A spp.area administrative area.",
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "parent_id": {
+      "description": "Parent area (many2one, [id, name])",
+      "example": [
+        1,
+        "Country"
+      ]
+    },
+    "name": {
+      "type": "string",
+      "example": "Central District"
+    },
+    "code": {
+      "type": "string"
+    },
+    "altnames": {
+      "type": "string"
+    },
+    "area_level": {
+      "type": "integer"
+    },
+    "kind": {
+      "description": "Area kind (many2one, [id, name])",
+      "example": [
+        2,
+        "District"
+      ]
+    }
+  }
+}

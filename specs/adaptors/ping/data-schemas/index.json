@@ -1,0 +1,28 @@
+{
+  "adaptor": "ping",
+  "capturedAt": "2026-07-06",
+  "dialect": "https://json-schema.org/draft/2020-12/schema",
+  "source": "openapi.json",
+  "resources": [
+    "PingResult",
+    "Record",
+    "TokenResponse"
+  ],
+  "objects": [
+    {
+      "name": "PingResult",
+      "file": "PingResult.json",
+      "resource": true
+    },
+    {
+      "name": "Record",
+      "file": "Record.json",
+      "resource": true
+    },
+    {
+      "name": "TokenResponse",
+      "file": "TokenResponse.json",
+      "resource": true
+    }
+  ]
+}

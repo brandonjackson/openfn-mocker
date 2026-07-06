@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openspp/CreateResult",
+  "title": "CreateResult",
+  "x-openfn-adaptor": "openspp",
+  "x-source": {
+    "openapi": "#/components/schemas/CreateResult",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "Result of a create — the new registrant's spp_id.",
+  "properties": {
+    "spp_id": {
+      "type": "string",
+      "example": "IND_Q4VGGZPF"
+    }
+  }
+}

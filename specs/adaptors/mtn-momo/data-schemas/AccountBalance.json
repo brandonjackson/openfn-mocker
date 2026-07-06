@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "mtn-momo/AccountBalance",
+  "title": "AccountBalance",
+  "x-openfn-adaptor": "mtn-momo",
+  "x-source": {
+    "openapi": "#/components/schemas/AccountBalance",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "availableBalance": {
+      "type": "string",
+      "example": "1200.50"
+    },
+    "currency": {
+      "type": "string",
+      "example": "EUR"
+    }
+  },
+  "required": [
+    "availableBalance",
+    "currency"
+  ]
+}

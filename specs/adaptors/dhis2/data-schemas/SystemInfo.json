@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "dhis2/SystemInfo",
+  "title": "SystemInfo",
+  "x-openfn-adaptor": "dhis2",
+  "x-source": {
+    "openapi": "#/components/schemas/SystemInfo",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "string",
+      "example": "2.39"
+    },
+    "revision": {
+      "type": "string",
+      "example": "9d9dcf1"
+    },
+    "serverDate": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "contextPath": {
+      "type": "string",
+      "example": "http://localhost:4010"
+    }
+  }
+}

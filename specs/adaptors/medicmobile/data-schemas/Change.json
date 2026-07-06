@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "medicmobile/Change",
+  "title": "Change",
+  "x-openfn-adaptor": "medicmobile",
+  "x-source": {
+    "openapi": "#/components/schemas/Change",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "seq": {
+      "type": "string",
+      "example": "334-g1AAAA"
+    },
+    "id": {
+      "type": "string",
+      "example": "abc-123-xyz"
+    },
+    "changes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "rev": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "doc": {
+      "$ref": "Report.json"
+    }
+  }
+}

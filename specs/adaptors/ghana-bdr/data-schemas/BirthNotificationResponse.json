@@ -1,0 +1,152 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ghana-bdr/BirthNotificationResponse",
+  "title": "BirthNotificationResponse",
+  "x-openfn-adaptor": "ghana-bdr",
+  "x-source": {
+    "openapi": "#/components/schemas/BirthNotificationResponse",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "Birth registry record returned after a successful notification.",
+  "properties": {
+    "birth_certificate_number": {
+      "type": "string",
+      "example": "000000-00-2024"
+    },
+    "first_name": {
+      "type": "string",
+      "example": "Test"
+    },
+    "middle_name": {
+      "type": "string",
+      "example": ""
+    },
+    "Surname": {
+      "type": "string",
+      "example": "sample surname"
+    },
+    "birth_date": {
+      "type": "string",
+      "example": "04 Mar 2024"
+    },
+    "national_id_number": {
+      "type": "string",
+      "example": ""
+    },
+    "place_of_delivery": {
+      "type": "string",
+      "example": "MATERNITY HOME"
+    },
+    "Health_facility": {
+      "type": "string",
+      "example": ""
+    },
+    "birth_type": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "example": null
+    },
+    "gender": {
+      "type": "string",
+      "example": "MALE"
+    },
+    "house_number": {
+      "type": "string",
+      "example": ""
+    },
+    "street_name": {
+      "type": "string",
+      "example": ""
+    },
+    "district": {
+      "type": "string",
+      "example": ""
+    },
+    "region": {
+      "type": "string",
+      "example": ""
+    },
+    "town_or_village": {
+      "type": "string",
+      "example": ""
+    },
+    "m_first_name": {
+      "type": "string",
+      "example": "sample mom"
+    },
+    "m_middle_name": {
+      "type": "string",
+      "example": ""
+    },
+    "m_maiden_name": {
+      "type": "string",
+      "example": "sample surname"
+    },
+    "m_surname": {
+      "type": "string",
+      "example": ""
+    },
+    "m_national_id_number": {
+      "type": "string",
+      "example": "GHA-000000000-0"
+    },
+    "m_nationality": {
+      "type": "string",
+      "example": ""
+    },
+    "f_first_name": {
+      "type": "string",
+      "example": "father fname"
+    },
+    "f_middle_name": {
+      "type": "string",
+      "example": ""
+    },
+    "f_Surname": {
+      "type": "string",
+      "example": "father sur"
+    },
+    "f_nationality": {
+      "type": "string",
+      "example": ""
+    },
+    "f_national_id_number": {
+      "type": "string",
+      "example": ""
+    },
+    "reference_id": {
+      "type": "string",
+      "example": "abc123de-1995"
+    },
+    "document_number": {
+      "type": "string",
+      "example": "1995/000000/XX0000000A1B2C3"
+    },
+    "created_at": {
+      "type": "string",
+      "example": "05 Mar 2024"
+    },
+    "last_updated_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "example": null
+    },
+    "issuccessful": {
+      "type": "boolean",
+      "example": true
+    },
+    "message": {
+      "type": "string",
+      "example": "record reference_id : abc123de-1995 , created successfully"
+    },
+    "messagecode": {
+      "type": "string",
+      "example": "200"
+    }
+  }
+}

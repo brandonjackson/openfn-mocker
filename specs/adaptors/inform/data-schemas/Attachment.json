@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "inform/Attachment",
+  "title": "Attachment",
+  "x-openfn-adaptor": "inform",
+  "x-source": {
+    "openapi": "#/components/schemas/Attachment",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer",
+      "example": 621985
+    },
+    "xform": {
+      "type": "integer",
+      "example": 6225
+    },
+    "instance": {
+      "type": "integer",
+      "example": 7783155
+    },
+    "filename": {
+      "type": "string",
+      "example": "project/attachments/download_1.png"
+    },
+    "mimetype": {
+      "type": "string",
+      "example": "image/png"
+    },
+    "download_url": {
+      "type": "string",
+      "format": "uri"
+    },
+    "url": {
+      "type": "string",
+      "format": "uri"
+    }
+  }
+}

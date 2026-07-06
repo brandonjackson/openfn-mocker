@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "arcgis/GeocodeResponse",
+  "title": "GeocodeResponse",
+  "x-openfn-adaptor": "arcgis",
+  "x-source": {
+    "openapi": "#/components/schemas/GeocodeResponse",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "spatialReference": {
+      "type": "object",
+      "properties": {
+        "wkid": {
+          "type": "integer",
+          "example": 4326
+        }
+      }
+    },
+    "candidates": {
+      "type": "array",
+      "items": {
+        "$ref": "GeocodeCandidate.json"
+      }
+    }
+  }
+}

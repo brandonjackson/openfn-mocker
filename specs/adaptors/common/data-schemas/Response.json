@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "common/Response",
+  "title": "Response",
+  "x-openfn-adaptor": "common",
+  "x-source": {
+    "openapi": "#/components/schemas/Response",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "Generic HTTP response wrapper mirroring what common's http helpers return on state.",
+  "properties": {
+    "body": {
+      "description": "The parsed response body (arbitrary JSON)."
+    },
+    "statusCode": {
+      "type": "integer",
+      "description": "HTTP status code of the response."
+    },
+    "headers": {
+      "type": "object",
+      "description": "Response headers as key/value pairs.",
+      "additionalProperties": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "body",
+    "statusCode",
+    "headers"
+  ]
+}

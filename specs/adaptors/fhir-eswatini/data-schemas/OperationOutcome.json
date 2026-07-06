@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fhir-eswatini/OperationOutcome",
+  "title": "OperationOutcome",
+  "x-openfn-adaptor": "fhir-eswatini",
+  "x-source": {
+    "openapi": "#/components/schemas/OperationOutcome",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "required": [
+    "resourceType"
+  ],
+  "properties": {
+    "resourceType": {
+      "type": "string",
+      "enum": [
+        "OperationOutcome"
+      ]
+    },
+    "id": {
+      "type": "string"
+    },
+    "meta": {
+      "$ref": "Meta.json"
+    },
+    "issue": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "severity": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "diagnostics": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

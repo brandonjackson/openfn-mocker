@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "claude/TokenCount",
+  "title": "TokenCount",
+  "x-openfn-adaptor": "claude",
+  "x-source": {
+    "openapi": "#/components/schemas/TokenCount",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "required": [
+    "input_tokens"
+  ],
+  "properties": {
+    "input_tokens": {
+      "type": "integer",
+      "example": 2095
+    }
+  }
+}

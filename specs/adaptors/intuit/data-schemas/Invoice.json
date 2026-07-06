@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "intuit/Invoice",
+  "title": "Invoice",
+  "x-openfn-adaptor": "intuit",
+  "x-source": {
+    "openapi": "#/components/schemas/Invoice",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "Id": {
+      "type": "string",
+      "example": "130"
+    },
+    "SyncToken": {
+      "type": "string",
+      "example": "0"
+    },
+    "DocNumber": {
+      "type": "string",
+      "example": "1037"
+    },
+    "TxnDate": {
+      "type": "string",
+      "format": "date",
+      "example": "2026-06-01"
+    },
+    "CustomerRef": {
+      "$ref": "ReferenceType.json"
+    },
+    "Line": {
+      "type": "array",
+      "items": {
+        "$ref": "InvoiceLine.json"
+      }
+    },
+    "TotalAmt": {
+      "type": "number",
+      "example": 150
+    },
+    "Balance": {
+      "type": "number",
+      "example": 150
+    },
+    "DueDate": {
+      "type": "string",
+      "format": "date",
+      "example": "2026-07-01"
+    },
+    "MetaData": {
+      "$ref": "MetaData.json"
+    }
+  }
+}

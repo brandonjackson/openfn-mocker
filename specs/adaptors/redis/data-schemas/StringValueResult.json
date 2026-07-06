@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "redis/StringValueResult",
+  "title": "StringValueResult",
+  "x-openfn-adaptor": "redis",
+  "x-source": {
+    "openapi": "#/components/schemas/StringValueResult",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "description": "Result carrying a single string value.",
+  "properties": {
+    "data": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "The string value stored at the key, or null if absent."
+    }
+  }
+}

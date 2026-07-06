@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sunbird-rc/verifyResponse",
+  "title": "verifyResponse",
+  "x-openfn-adaptor": "sunbird-rc",
+  "x-source": {
+    "openapi": "#/components/schemas/verifyResponse",
+    "capturedAt": "2026-07-06"
+  },
+  "type": "object",
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": [
+        "Active",
+        "Revoked",
+        "Expired"
+      ]
+    },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "active": {
+            "type": "string"
+          },
+          "revoked": {
+            "type": "string"
+          },
+          "expired": {
+            "type": "string"
+          },
+          "proof": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "errors": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}
