@@ -35,6 +35,15 @@ describe('kobotoolbox (DRF-style envelopes)', () => {
     expect(asset.url).toContain(`/api/v2/assets/${ASSET_UID}/`);
     // Live submission count reflects seeded submissions.
     expect(asset.deployment__submission_count).toBe(5);
+    // Full Asset serializer fields a real /assets/ response returns.
+    expect(asset.kind).toBe('asset');
+    expect(asset.deployment_status).toBe('deployed');
+    expect(asset.data).toBe(`${asset.url}data/`);
+    expect(asset.owner).toContain('/api/v2/users/');
+    expect(Array.isArray(asset.summary.columns)).toBe(true);
+    expect(asset.summary.columns).toContain('household_head_name');
+    expect(asset.deployment__last_submission_time).toBeTruthy();
+    expect(typeof asset.version_id).toBe('string');
   });
 
   it('GET /api/v2/assets/:uid/ returns a single asset', async () => {
@@ -64,6 +73,13 @@ describe('kobotoolbox (DRF-style envelopes)', () => {
       expect(s._xform_id_string).toBe(ASSET_UID);
       expect(Number.isInteger(s._id)).toBe(true);
     }
+    // Standard Kobo submission metadata is present.
+    const first = body.results[0];
+    expect(first['meta/instanceID']).toBe(`uuid:${first._uuid}`);
+    expect(first._status).toBe('submitted_via_web');
+    expect(Array.isArray(first._attachments)).toBe(true);
+    expect(Array.isArray(first._geolocation)).toBe(true);
+    expect(first).toHaveProperty('__version__');
   });
 
   it('supports ?start=&limit= pagination with next link', async () => {
@@ -176,6 +192,10 @@ describe('kobotoolbox (DRF-style envelopes)', () => {
     expect(body.active).toBe(true);
     expect(body.submission_count).toBe(5);
     expect(body.identifier).toContain(`/api/v2/assets/${ASSET_UID}/`);
+    // DeploymentResponse embeds the full Asset object (required field).
+    expect(body.asset.uid).toBe(ASSET_UID);
+    expect(body.asset.kind).toBe('asset');
+    expect(body.backend).toBe('openrosa');
   });
 
   it('getSubmissions: ?query= (Mongo filter) and ?sort= work', async () => {

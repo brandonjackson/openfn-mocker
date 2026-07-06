@@ -3,8 +3,13 @@
     "1": {
       "id": 1,
       "name": "Sierra Leone Health Survey",
+      "description": "Household and clinic data collection across Bo and Kenema districts.",
       "archived": false,
       "keyId": null,
+      "appUsers": 4,
+      "forms": 2,
+      "lastSubmission": "2023-02-01T08:45:00.000Z",
+      "datasets": 0,
       "createdAt": "2023-01-10T09:00:00.000Z",
       "updatedAt": null
     }
@@ -16,9 +21,19 @@
       "name": "Household Survey",
       "version": "1",
       "state": "open",
+      "keyId": null,
+      "hash": "88f72ba933a68b80028af92dab35a88d",
+      "enketoId": "5a35312da497",
       "submissions": 2,
-      "hash": null,
-      "enketoId": null,
+      "reviewStates": {
+        "received": 2,
+        "hasIssues": 0,
+        "edited": 0
+      },
+      "lastSubmission": "2023-02-01T08:45:00.000Z",
+      "excelContentType": null,
+      "entityRelated": false,
+      "publicLinks": 0,
       "createdAt": "2023-01-11T10:00:00.000Z",
       "updatedAt": null,
       "publishedAt": "2023-01-11T10:05:00.000Z"
@@ -29,9 +44,19 @@
       "name": "Clinic Visit",
       "version": "2",
       "state": "open",
+      "keyId": null,
+      "hash": "3a10db85c03c0f290fca74bf2bfe18fe",
+      "enketoId": "5a353128c622",
       "submissions": 1,
-      "hash": null,
-      "enketoId": null,
+      "reviewStates": {
+        "received": 1,
+        "hasIssues": 0,
+        "edited": 0
+      },
+      "lastSubmission": "2023-02-01T08:45:00.000Z",
+      "excelContentType": null,
+      "entityRelated": false,
+      "publicLinks": 0,
       "createdAt": "2023-01-11T10:00:00.000Z",
       "updatedAt": null,
       "publishedAt": "2023-01-11T10:05:00.000Z"
@@ -40,12 +65,21 @@
   "submissions": {
     "uuid:sub-0001": {
       "__id": "uuid:sub-0001",
+      "meta": {
+        "instanceID": "uuid:sub-0001"
+      },
       "__system": {
         "submissionDate": "2023-02-01T08:30:00.000Z",
+        "updatedAt": null,
         "submitterId": "5",
         "submitterName": "fieldworker",
+        "attachmentsPresent": 0,
+        "attachmentsExpected": 0,
+        "status": null,
         "reviewState": null,
-        "deviceId": "collect:mock"
+        "deviceId": "collect:mock",
+        "edits": 0,
+        "formVersion": "1"
       },
       "_formId": "household-survey",
       "head_name": "Jane Doe",
@@ -55,12 +89,21 @@
     },
     "uuid:sub-0002": {
       "__id": "uuid:sub-0002",
+      "meta": {
+        "instanceID": "uuid:sub-0002"
+      },
       "__system": {
         "submissionDate": "2023-02-01T08:30:00.000Z",
+        "updatedAt": null,
         "submitterId": "5",
         "submitterName": "fieldworker",
+        "attachmentsPresent": 0,
+        "attachmentsExpected": 0,
+        "status": null,
         "reviewState": null,
-        "deviceId": "collect:mock"
+        "deviceId": "collect:mock",
+        "edits": 0,
+        "formVersion": "1"
       },
       "_formId": "household-survey",
       "head_name": "Amina Kamara",
@@ -70,12 +113,21 @@
     },
     "uuid:sub-0003": {
       "__id": "uuid:sub-0003",
+      "meta": {
+        "instanceID": "uuid:sub-0003"
+      },
       "__system": {
         "submissionDate": "2023-02-01T08:30:00.000Z",
+        "updatedAt": null,
         "submitterId": "5",
         "submitterName": "fieldworker",
+        "attachmentsPresent": 0,
+        "attachmentsExpected": 0,
+        "status": null,
         "reviewState": null,
-        "deviceId": "collect:mock"
+        "deviceId": "collect:mock",
+        "edits": 0,
+        "formVersion": "2"
       },
       "_formId": "clinic-visit",
       "patient_name": "John Smith",

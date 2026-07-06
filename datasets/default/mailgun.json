@@ -1,368 +1,697 @@
 {
   "events": {
-    "728dcb0bbc9446c9a0f695c17479ba4b": {
-      "id": "728dcb0bbc9446c9a0f695c17479ba4b",
+    "m3p07wgzaw7RikVFJoWznA": {
+      "id": "m3p07wgzaw7RikVFJoWznA",
       "event": "accepted",
-      "timestamp": 1783065535.389,
+      "timestamp": 1783353826.693,
+      "log-level": "info",
       "recipient": "jane.doe@example.org",
+      "recipient-domain": "example.org",
+      "flags": {
+        "is-routed": false,
+        "is-authenticated": true,
+        "is-test-mode": false
+      },
+      "tags": [],
+      "user-variables": {},
       "message": {
         "headers": {
-          "message-id": "20260703075855.44b4c9.ccaa477d@sandbox-test.mailgun.org",
+          "message-id": "20260706160346.358057.98f1dc5f@sandbox-test.mailgun.org",
           "from": "Mailgun Sandbox <postmaster@sandbox-test.mailgun.org>",
           "to": "jane.doe@example.org",
           "subject": "Notification #1"
-        }
+        },
+        "attachments": [],
+        "size": 3708
       },
-      "delivery-status": {
-        "code": 250,
-        "message": "",
-        "description": ""
+      "method": "smtp",
+      "envelope": {
+        "transport": "smtp",
+        "sender": "Mailgun Sandbox <postmaster@sandbox-test.mailgun.org>",
+        "sending-ip": "209.61.151.66",
+        "targets": "jane.doe@example.org"
+      },
+      "storage": {
+        "key": "a6sB3nNYpdzFoDmFAhk46baZbIEjkaZA",
+        "url": "https://storage.api.mailgun.net/v3/domains/sandbox-test.mailgun.org/messages/a6sB3nNYpdzFoDmFAhk46baZbIEjkaZA",
+        "region": "us-east4",
+        "env": "production"
       }
     },
-    "47b71c87e0f5440ea95d2f3c816664e5": {
-      "id": "47b71c87e0f5440ea95d2f3c816664e5",
+    "mRy7WApAP5xgYG9Ayh9FKQ": {
+      "id": "mRy7WApAP5xgYG9Ayh9FKQ",
       "event": "delivered",
-      "timestamp": 1783061935.389,
+      "timestamp": 1783350226.693,
+      "log-level": "info",
       "recipient": "john.smith@example.org",
+      "recipient-domain": "example.org",
+      "flags": {
+        "is-routed": false,
+        "is-authenticated": true,
+        "is-test-mode": false
+      },
+      "tags": [],
+      "user-variables": {},
       "message": {
         "headers": {
-          "message-id": "20260703075855.fa566f.80697a8a@sandbox-test.mailgun.org",
+          "message-id": "20260706160346.42046e.2de648b2@sandbox-test.mailgun.org",
           "from": "Mailgun Sandbox <postmaster@sandbox-test.mailgun.org>",
           "to": "john.smith@example.org",
           "subject": "Notification #2"
-        }
+        },
+        "attachments": [],
+        "size": 1922
       },
       "delivery-status": {
+        "attempt-no": 1,
         "code": 250,
-        "message": "",
-        "description": ""
-      }
+        "message": "OK",
+        "description": "",
+        "session-seconds": 0.43,
+        "mx-host": "mxa.example.com",
+        "tls": true,
+        "certificate-verified": true,
+        "utf8": true
+      },
+      "envelope": {
+        "transport": "smtp",
+        "sender": "Mailgun Sandbox <postmaster@sandbox-test.mailgun.org>",
+        "sending-ip": "209.61.151.66",
+        "targets": "john.smith@example.org"
+      },
+      "storage": {
+        "key": "3lf5WVEDaMyRW_tv8LTSvGsKOqLdVFR9",
+        "url": "https://storage.api.mailgun.net/v3/domains/sandbox-test.mailgun.org/messages/3lf5WVEDaMyRW_tv8LTSvGsKOqLdVFR9",
+        "region": "us-east4",
+        "env": "production"
+      },
+      "recipient-provider": "Gmail"
     },
-    "1fcfd8c73a094ea9a15544fcc69e3460": {
-      "id": "1fcfd8c73a094ea9a15544fcc69e3460",
+    "hQ2wVIG3LufteAm3wUKULg": {
+      "id": "hQ2wVIG3LufteAm3wUKULg",
       "event": "opened",
-      "timestamp": 1783058335.389,
+      "timestamp": 1783346626.693,
+      "log-level": "info",
       "recipient": "clinic@example.org",
+      "recipient-domain": "example.org",
+      "flags": {
+        "is-routed": false,
+        "is-authenticated": true,
+        "is-test-mode": false
+      },
+      "tags": [],
+      "user-variables": {},
       "message": {
         "headers": {
-          "message-id": "20260703075855.b3ca98.532d8a0c@sandbox-test.mailgun.org",
+          "message-id": "20260706160346.0f2f7f.d0508ec0@sandbox-test.mailgun.org",
           "from": "Mailgun Sandbox <postmaster@sandbox-test.mailgun.org>",
           "to": "clinic@example.org",
           "subject": "Notification #3"
-        }
+        },
+        "attachments": [],
+        "size": 5013
       },
-      "delivery-status": {
-        "code": 250,
-        "message": "",
-        "description": ""
+      "ip": "41.223.60.10",
+      "geolocation": {
+        "country": "SL",
+        "region": "Southern",
+        "city": "Bo"
+      },
+      "client-info": {
+        "client-type": "browser",
+        "client-os": "Linux",
+        "device-type": "desktop",
+        "client-name": "Chrome",
+        "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36"
       }
     },
-    "5aed33bdea9b47f3b28fecd166158fc3": {
-      "id": "5aed33bdea9b47f3b28fecd166158fc3",
+    "w32UjreSE0AQMf5f_sAGuw": {
+      "id": "w32UjreSE0AQMf5f_sAGuw",
       "event": "delivered",
-      "timestamp": 1783054735.389,
+      "timestamp": 1783343026.693,
+      "log-level": "info",
       "recipient": "jane.doe@example.org",
+      "recipient-domain": "example.org",
+      "flags": {
+        "is-routed": false,
+        "is-authenticated": true,
+        "is-test-mode": false
+      },
+      "tags": [],
+      "user-variables": {},
       "message": {
         "headers": {
-          "message-id": "20260703075855.fecaae.7a28eb53@sandbox-test.mailgun.org",
+          "message-id": "20260706160346.a37bae.c7c80a40@sandbox-test.mailgun.org",
           "from": "Mailgun Sandbox <postmaster@sandbox-test.mailgun.org>",
           "to": "jane.doe@example.org",
           "subject": "Notification #4"
-        }
+        },
+        "attachments": [],
+        "size": 3460
       },
       "delivery-status": {
+        "attempt-no": 1,
         "code": 250,
-        "message": "",
-        "description": ""
-      }
+        "message": "OK",
+        "description": "",
+        "session-seconds": 0.43,
+        "mx-host": "mxa.example.com",
+        "tls": true,
+        "certificate-verified": true,
+        "utf8": true
+      },
+      "envelope": {
+        "transport": "smtp",
+        "sender": "Mailgun Sandbox <postmaster@sandbox-test.mailgun.org>",
+        "sending-ip": "209.61.151.66",
+        "targets": "jane.doe@example.org"
+      },
+      "storage": {
+        "key": "5iWa8PjMFc59JNtUQtuoU2Qa2LNKm1l6",
+        "url": "https://storage.api.mailgun.net/v3/domains/sandbox-test.mailgun.org/messages/5iWa8PjMFc59JNtUQtuoU2Qa2LNKm1l6",
+        "region": "us-east4",
+        "env": "production"
+      },
+      "recipient-provider": "Gmail"
     },
-    "955c4b9c57104e56ba92377f57dc684c": {
-      "id": "955c4b9c57104e56ba92377f57dc684c",
-      "event": "bounced",
-      "timestamp": 1783051135.389,
+    "CuZZk2eDzejgRcm_fNWg9A": {
+      "id": "CuZZk2eDzejgRcm_fNWg9A",
+      "event": "failed",
+      "timestamp": 1783339426.693,
+      "log-level": "error",
       "recipient": "john.smith@example.org",
+      "recipient-domain": "example.org",
+      "flags": {
+        "is-routed": false,
+        "is-authenticated": true,
+        "is-test-mode": false
+      },
+      "tags": [],
+      "user-variables": {},
       "message": {
         "headers": {
-          "message-id": "20260703075855.673387.8725afc8@sandbox-test.mailgun.org",
+          "message-id": "20260706160346.08ee8c.a3730044@sandbox-test.mailgun.org",
           "from": "Mailgun Sandbox <postmaster@sandbox-test.mailgun.org>",
           "to": "john.smith@example.org",
           "subject": "Notification #5"
-        }
+        },
+        "attachments": [],
+        "size": 2172
       },
+      "severity": "permanent",
+      "reason": "suppress-bounce",
       "delivery-status": {
-        "code": 550,
-        "message": "Mailbox does not exist",
-        "description": "The email account that you tried to reach does not exist."
+        "attempt-no": 1,
+        "code": 605,
+        "message": "",
+        "description": "Not delivering to previously bounced address",
+        "session-seconds": 0
+      },
+      "envelope": {
+        "transport": "smtp",
+        "sender": "Mailgun Sandbox <postmaster@sandbox-test.mailgun.org>",
+        "sending-ip": "209.61.151.66",
+        "targets": "john.smith@example.org"
+      },
+      "storage": {
+        "key": "SXIFdLAEnlgKT7neoZxYMq1e5AN4DBOD",
+        "url": "https://storage.api.mailgun.net/v3/domains/sandbox-test.mailgun.org/messages/SXIFdLAEnlgKT7neoZxYMq1e5AN4DBOD",
+        "region": "us-east4",
+        "env": "production"
       }
     },
-    "a5163554f0124c529ff5ec352f5fee82": {
-      "id": "a5163554f0124c529ff5ec352f5fee82",
+    "T4xC4EW5luCDK70Nwgrg-A": {
+      "id": "T4xC4EW5luCDK70Nwgrg-A",
       "event": "delivered",
-      "timestamp": 1783047535.389,
+      "timestamp": 1783335826.693,
+      "log-level": "info",
       "recipient": "clinic@example.org",
+      "recipient-domain": "example.org",
+      "flags": {
+        "is-routed": false,
+        "is-authenticated": true,
+        "is-test-mode": false
+      },
+      "tags": [],
+      "user-variables": {},
       "message": {
         "headers": {
-          "message-id": "20260703075855.d93146.fddd1d34@sandbox-test.mailgun.org",
+          "message-id": "20260706160346.fdb672.7789295f@sandbox-test.mailgun.org",
           "from": "Mailgun Sandbox <postmaster@sandbox-test.mailgun.org>",
           "to": "clinic@example.org",
           "subject": "Notification #6"
-        }
+        },
+        "attachments": [],
+        "size": 1625
       },
       "delivery-status": {
+        "attempt-no": 1,
         "code": 250,
-        "message": "",
-        "description": ""
-      }
+        "message": "OK",
+        "description": "",
+        "session-seconds": 0.43,
+        "mx-host": "mxa.example.com",
+        "tls": true,
+        "certificate-verified": true,
+        "utf8": true
+      },
+      "envelope": {
+        "transport": "smtp",
+        "sender": "Mailgun Sandbox <postmaster@sandbox-test.mailgun.org>",
+        "sending-ip": "209.61.151.66",
+        "targets": "clinic@example.org"
+      },
+      "storage": {
+        "key": "ZTznx5-ytR6mf5MWNfzjDV_ziUVHTCrO",
+        "url": "https://storage.api.mailgun.net/v3/domains/sandbox-test.mailgun.org/messages/ZTznx5-ytR6mf5MWNfzjDV_ziUVHTCrO",
+        "region": "us-east4",
+        "env": "production"
+      },
+      "recipient-provider": "Gmail"
     },
-    "ad89569c24904d7f96557b8f9d75f5f2": {
-      "id": "ad89569c24904d7f96557b8f9d75f5f2",
+    "3Oibr0CnuajehOdIK09_xg": {
+      "id": "3Oibr0CnuajehOdIK09_xg",
       "event": "opened",
-      "timestamp": 1783043935.389,
+      "timestamp": 1783332226.693,
+      "log-level": "info",
       "recipient": "jane.doe@example.org",
+      "recipient-domain": "example.org",
+      "flags": {
+        "is-routed": false,
+        "is-authenticated": true,
+        "is-test-mode": false
+      },
+      "tags": [],
+      "user-variables": {},
       "message": {
         "headers": {
-          "message-id": "20260703075855.040f5f.248a3088@sandbox-test.mailgun.org",
+          "message-id": "20260706160346.01a668.805bcf1c@sandbox-test.mailgun.org",
           "from": "Mailgun Sandbox <postmaster@sandbox-test.mailgun.org>",
           "to": "jane.doe@example.org",
           "subject": "Notification #7"
-        }
+        },
+        "attachments": [],
+        "size": 5006
       },
-      "delivery-status": {
-        "code": 250,
-        "message": "",
-        "description": ""
+      "ip": "41.223.60.10",
+      "geolocation": {
+        "country": "SL",
+        "region": "Southern",
+        "city": "Bo"
+      },
+      "client-info": {
+        "client-type": "browser",
+        "client-os": "Linux",
+        "device-type": "desktop",
+        "client-name": "Chrome",
+        "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36"
       }
     },
-    "f08589d339334989ad25e952872fe25f": {
-      "id": "f08589d339334989ad25e952872fe25f",
+    "SlwaCAnBlchsitB8sZWtfQ": {
+      "id": "SlwaCAnBlchsitB8sZWtfQ",
       "event": "clicked",
-      "timestamp": 1783040335.389,
+      "timestamp": 1783328626.693,
+      "log-level": "info",
       "recipient": "john.smith@example.org",
+      "recipient-domain": "example.org",
+      "flags": {
+        "is-routed": false,
+        "is-authenticated": true,
+        "is-test-mode": false
+      },
+      "tags": [],
+      "user-variables": {},
       "message": {
         "headers": {
-          "message-id": "20260703075855.eec690.070f4c6e@sandbox-test.mailgun.org",
+          "message-id": "20260706160346.11b96a.15ee37dc@sandbox-test.mailgun.org",
           "from": "Mailgun Sandbox <postmaster@sandbox-test.mailgun.org>",
           "to": "john.smith@example.org",
           "subject": "Notification #8"
-        }
+        },
+        "attachments": [],
+        "size": 3796
       },
-      "delivery-status": {
-        "code": 250,
-        "message": "",
-        "description": ""
+      "ip": "41.223.60.10",
+      "url": "https://openfn.org",
+      "geolocation": {
+        "country": "SL",
+        "region": "Southern",
+        "city": "Bo"
+      },
+      "client-info": {
+        "client-type": "browser",
+        "client-os": "Linux",
+        "device-type": "desktop",
+        "client-name": "Chrome",
+        "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36"
       }
     },
-    "fcb336a443524f06b9dedb00e1150ad3": {
-      "id": "fcb336a443524f06b9dedb00e1150ad3",
+    "mX35m3BjJpJs6N2scf128Q": {
+      "id": "mX35m3BjJpJs6N2scf128Q",
       "event": "delivered",
-      "timestamp": 1783036735.389,
+      "timestamp": 1783325026.693,
+      "log-level": "info",
       "recipient": "clinic@example.org",
+      "recipient-domain": "example.org",
+      "flags": {
+        "is-routed": false,
+        "is-authenticated": true,
+        "is-test-mode": false
+      },
+      "tags": [],
+      "user-variables": {},
       "message": {
         "headers": {
-          "message-id": "20260703075855.9eb081.04dcc890@sandbox-test.mailgun.org",
+          "message-id": "20260706160346.2d2e1d.2b9d7568@sandbox-test.mailgun.org",
           "from": "Mailgun Sandbox <postmaster@sandbox-test.mailgun.org>",
           "to": "clinic@example.org",
           "subject": "Notification #9"
-        }
+        },
+        "attachments": [],
+        "size": 4784
       },
       "delivery-status": {
+        "attempt-no": 1,
         "code": 250,
-        "message": "",
-        "description": ""
-      }
+        "message": "OK",
+        "description": "",
+        "session-seconds": 0.43,
+        "mx-host": "mxa.example.com",
+        "tls": true,
+        "certificate-verified": true,
+        "utf8": true
+      },
+      "envelope": {
+        "transport": "smtp",
+        "sender": "Mailgun Sandbox <postmaster@sandbox-test.mailgun.org>",
+        "sending-ip": "209.61.151.66",
+        "targets": "clinic@example.org"
+      },
+      "storage": {
+        "key": "1_cVlCQ65e1yxKD-j3rvrAzNzG39Fn0E",
+        "url": "https://storage.api.mailgun.net/v3/domains/sandbox-test.mailgun.org/messages/1_cVlCQ65e1yxKD-j3rvrAzNzG39Fn0E",
+        "region": "us-east4",
+        "env": "production"
+      },
+      "recipient-provider": "Gmail"
     },
-    "256abdecff6148ebbf92368967985e99": {
-      "id": "256abdecff6148ebbf92368967985e99",
+    "wKl8tnafcGDGyWPkiWXnxQ": {
+      "id": "wKl8tnafcGDGyWPkiWXnxQ",
       "event": "complained",
-      "timestamp": 1783033135.389,
+      "timestamp": 1783321426.693,
+      "log-level": "warn",
       "recipient": "jane.doe@example.org",
+      "recipient-domain": "example.org",
+      "flags": {
+        "is-routed": false,
+        "is-authenticated": true,
+        "is-test-mode": false
+      },
+      "tags": [],
+      "user-variables": {},
       "message": {
         "headers": {
-          "message-id": "20260703075855.77679c.b6309015@sandbox-test.mailgun.org",
+          "message-id": "20260706160346.767b4f.af5dc55a@sandbox-test.mailgun.org",
           "from": "Mailgun Sandbox <postmaster@sandbox-test.mailgun.org>",
           "to": "jane.doe@example.org",
           "subject": "Notification #10"
-        }
-      },
-      "delivery-status": {
-        "code": 250,
-        "message": "",
-        "description": ""
+        },
+        "attachments": [],
+        "size": 3395
       }
     }
   },
   "stats": {
     "total": {
-      "start": "Fri, 26 Jun 2026 07:58:55 GMT",
-      "end": "Fri, 03 Jul 2026 07:58:55 GMT",
+      "description": "Aggregate stats",
+      "start": "Mon, 29 Jun 2026 16:03:46 UTC",
+      "end": "Mon, 06 Jul 2026 16:03:46 UTC",
       "resolution": "day",
       "stats": [
         {
-          "time": "Sat, 27 Jun 2026 07:58:55 GMT",
+          "time": "Tue, 30 Jun 2026 16:03:46 UTC",
           "accepted": {
-            "outgoing": 12,
             "incoming": 0,
+            "outgoing": 12,
             "total": 12
           },
           "delivered": {
             "smtp": 11,
             "http": 1,
+            "optimized": 0,
             "total": 12
           },
           "failed": {
-            "permanent": {
-              "total": 1
-            },
             "temporary": {
-              "espblock": 0
+              "espblock": 0,
+              "total": 0
+            },
+            "permanent": {
+              "suppress-bounce": 1,
+              "suppress-unsubscribe": 0,
+              "suppress-complaint": 0,
+              "bounce": 1,
+              "delayed-bounce": 0,
+              "webhook": 0,
+              "optimized": 0,
+              "total": 1
             }
           },
           "opened": {
-            "total": 5
+            "total": 5,
+            "unique": 4
+          },
+          "clicked": {
+            "total": 2,
+            "unique": 2
           }
         },
         {
-          "time": "Sun, 28 Jun 2026 07:58:55 GMT",
+          "time": "Wed, 01 Jul 2026 16:03:46 UTC",
           "accepted": {
-            "outgoing": 12,
             "incoming": 0,
+            "outgoing": 12,
             "total": 12
           },
           "delivered": {
             "smtp": 11,
             "http": 1,
+            "optimized": 0,
             "total": 12
           },
           "failed": {
-            "permanent": {
-              "total": 1
-            },
             "temporary": {
-              "espblock": 0
+              "espblock": 0,
+              "total": 0
+            },
+            "permanent": {
+              "suppress-bounce": 1,
+              "suppress-unsubscribe": 0,
+              "suppress-complaint": 0,
+              "bounce": 1,
+              "delayed-bounce": 0,
+              "webhook": 0,
+              "optimized": 0,
+              "total": 1
             }
           },
           "opened": {
-            "total": 5
+            "total": 5,
+            "unique": 4
+          },
+          "clicked": {
+            "total": 2,
+            "unique": 2
           }
         },
         {
-          "time": "Mon, 29 Jun 2026 07:58:55 GMT",
+          "time": "Thu, 02 Jul 2026 16:03:46 UTC",
           "accepted": {
-            "outgoing": 12,
             "incoming": 0,
+            "outgoing": 12,
             "total": 12
           },
           "delivered": {
             "smtp": 11,
             "http": 1,
+            "optimized": 0,
             "total": 12
           },
           "failed": {
-            "permanent": {
-              "total": 1
-            },
             "temporary": {
-              "espblock": 0
+              "espblock": 0,
+              "total": 0
+            },
+            "permanent": {
+              "suppress-bounce": 1,
+              "suppress-unsubscribe": 0,
+              "suppress-complaint": 0,
+              "bounce": 1,
+              "delayed-bounce": 0,
+              "webhook": 0,
+              "optimized": 0,
+              "total": 1
             }
           },
           "opened": {
-            "total": 5
+            "total": 5,
+            "unique": 4
+          },
+          "clicked": {
+            "total": 2,
+            "unique": 2
           }
         },
         {
-          "time": "Tue, 30 Jun 2026 07:58:55 GMT",
+          "time": "Fri, 03 Jul 2026 16:03:46 UTC",
           "accepted": {
-            "outgoing": 12,
             "incoming": 0,
+            "outgoing": 12,
             "total": 12
           },
           "delivered": {
             "smtp": 11,
             "http": 1,
+            "optimized": 0,
             "total": 12
           },
           "failed": {
-            "permanent": {
-              "total": 1
-            },
             "temporary": {
-              "espblock": 0
+              "espblock": 0,
+              "total": 0
+            },
+            "permanent": {
+              "suppress-bounce": 1,
+              "suppress-unsubscribe": 0,
+              "suppress-complaint": 0,
+              "bounce": 1,
+              "delayed-bounce": 0,
+              "webhook": 0,
+              "optimized": 0,
+              "total": 1
             }
           },
           "opened": {
-            "total": 5
+            "total": 5,
+            "unique": 4
+          },
+          "clicked": {
+            "total": 2,
+            "unique": 2
           }
         },
         {
-          "time": "Wed, 01 Jul 2026 07:58:55 GMT",
+          "time": "Sat, 04 Jul 2026 16:03:46 UTC",
           "accepted": {
-            "outgoing": 12,
             "incoming": 0,
+            "outgoing": 12,
             "total": 12
           },
           "delivered": {
             "smtp": 11,
             "http": 1,
+            "optimized": 0,
             "total": 12
           },
           "failed": {
-            "permanent": {
-              "total": 1
-            },
             "temporary": {
-              "espblock": 0
+              "espblock": 0,
+              "total": 0
+            },
+            "permanent": {
+              "suppress-bounce": 1,
+              "suppress-unsubscribe": 0,
+              "suppress-complaint": 0,
+              "bounce": 1,
+              "delayed-bounce": 0,
+              "webhook": 0,
+              "optimized": 0,
+              "total": 1
             }
           },
           "opened": {
-            "total": 5
+            "total": 5,
+            "unique": 4
+          },
+          "clicked": {
+            "total": 2,
+            "unique": 2
           }
         },
         {
-          "time": "Thu, 02 Jul 2026 07:58:55 GMT",
+          "time": "Sun, 05 Jul 2026 16:03:46 UTC",
           "accepted": {
-            "outgoing": 12,
             "incoming": 0,
+            "outgoing": 12,
             "total": 12
           },
           "delivered": {
             "smtp": 11,
             "http": 1,
+            "optimized": 0,
             "total": 12
           },
           "failed": {
-            "permanent": {
-              "total": 1
-            },
             "temporary": {
-              "espblock": 0
+              "espblock": 0,
+              "total": 0
+            },
+            "permanent": {
+              "suppress-bounce": 1,
+              "suppress-unsubscribe": 0,
+              "suppress-complaint": 0,
+              "bounce": 1,
+              "delayed-bounce": 0,
+              "webhook": 0,
+              "optimized": 0,
+              "total": 1
             }
           },
           "opened": {
-            "total": 5
+            "total": 5,
+            "unique": 4
+          },
+          "clicked": {
+            "total": 2,
+            "unique": 2
           }
         },
         {
-          "time": "Fri, 03 Jul 2026 07:58:55 GMT",
+          "time": "Mon, 06 Jul 2026 16:03:46 UTC",
           "accepted": {
-            "outgoing": 12,
             "incoming": 0,
+            "outgoing": 12,
             "total": 12
           },
           "delivered": {
             "smtp": 11,
             "http": 1,
+            "optimized": 0,
             "total": 12
           },
           "failed": {
-            "permanent": {
-              "total": 1
-            },
             "temporary": {
-              "espblock": 0
+              "espblock": 0,
+              "total": 0
+            },
+            "permanent": {
+              "suppress-bounce": 1,
+              "suppress-unsubscribe": 0,
+              "suppress-complaint": 0,
+              "bounce": 1,
+              "delayed-bounce": 0,
+              "webhook": 0,
+              "optimized": 0,
+              "total": 1
             }
           },
           "opened": {
-            "total": 5
+            "total": 5,
+            "unique": 4
+          },
+          "clicked": {
+            "total": 2,
+            "unique": 2
           }
         }
       ]

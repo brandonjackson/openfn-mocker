@@ -41,6 +41,18 @@ describe('twilio', () => {
     expect(m.account_sid).toBe(SID);
     expect(m.direction).toBe('outbound-api');
     expect(m.api_version).toBe('2010-04-01');
+    // Every real Message carries a subresource_uris map.
+    expect(m.subresource_uris.media).toBe(`/2010-04-01/Accounts/${SID}/Messages/${m.sid}/Media.json`);
+    expect(m.subresource_uris.feedback).toContain(`/Messages/${m.sid}/Feedback.json`);
+  });
+
+  it('seeds a realistic delivery failure (undelivered with an integer error_code)', async () => {
+    const { app } = await makeServer();
+    const res = await app.inject({ method: 'GET', url: MESSAGES });
+    const failed = res.json().messages.find((m: any) => m.status === 'undelivered');
+    expect(failed).toBeTruthy();
+    expect(failed.error_code).toBe(30003);
+    expect(typeof failed.error_message).toBe('string');
   });
 
   it('POST Messages.json (form-urlencoded PascalCase) creates a queued message and reads back', async () => {
@@ -122,6 +134,14 @@ describe('twilio', () => {
     expect(c.status).toBe('completed');
     expect(c.duration).toBe('45');
     expect(c.direction).toBe('outbound-api');
+    // Fields a real Call resource always includes.
+    expect(c.phone_number_sid).toMatch(/^PN[0-9a-f]{32}$/);
+    expect(c.parent_call_sid).toBeNull();
+    expect(typeof c.to_formatted).toBe('string');
+    expect(typeof c.from_formatted).toBe('string');
+    expect(c.queue_time).toBe('0');
+    expect(c.subresource_uris.recordings).toContain(`/Calls/${c.sid}/Recordings.json`);
+    expect(Object.keys(c.subresource_uris)).toContain('transcriptions');
   });
 
   it('GET single Call by sid returns the resource (404 when missing)', async () => {

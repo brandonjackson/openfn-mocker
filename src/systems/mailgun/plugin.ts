@@ -12,9 +12,10 @@ import { guide } from './guide.js';
 /**
  * Mailgun (port 4018) — the one plugin that loads its reference spec at
  * runtime: it fetches the mailgun OpenAPI from the openfn-api-specs package and
- * uses shapeRecord to keep event responses schema-shaped (when the spec carries
- * an Event schema). Handlers are still custom (Mailgun's endpoints are not plain
- * CRUD). Auth is accept-all (handled by createSystemServer).
+ * uses shapeRecord to keep event responses schema-shaped against the spec's
+ * `EventResponse` object (backfilling any required field the seed omits).
+ * Handlers are still custom (Mailgun's endpoints are not plain CRUD). Auth is
+ * accept-all (handled by createSystemServer).
  */
 
 /** From a Mailgun `to` param (string, csv, or array) get the first recipient. */
@@ -54,7 +55,9 @@ const plugin: MockSystemPlugin = {
     } catch {
       spec = undefined;
     }
-    const eventSchema = spec?.schemas?.Event;
+    // Upstream Mailgun names the per-event object `EventResponse` (older specs
+    // used `Event`); fall back so either spec version shapes correctly.
+    const eventSchema = spec?.schemas?.EventResponse ?? spec?.schemas?.Event;
 
     // POST /v3/:domain/messages — send an email (form-urlencoded or JSON).
     app.post('/v3/:domain/messages', async (req, reply) => {
