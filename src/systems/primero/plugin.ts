@@ -100,7 +100,6 @@ function listCollection(
 
 const plugin: MockSystemPlugin = {
   name: 'primero',
-  specFile: 'primero.schema.json',
   // Primero exchanges credentials for a bearer token at POST /api/v2/tokens,
   // then sends that token on every other call. The token endpoint itself must
   // stay open (you call it before you have a token); everything else requires it.

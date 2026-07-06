@@ -101,7 +101,6 @@ function matchesSearch(resource: any, params: Record<string, any>): boolean {
 
 const plugin: MockSystemPlugin = {
   name: 'fhir',
-  specFile: 'fhir-r4.openapi.json',
   // FHIR auth is optional (open server, or Bearer). Do not gate requests.
   auth: { required: false },
   credential: {

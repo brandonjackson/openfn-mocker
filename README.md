@@ -811,10 +811,12 @@ a runtime spec engine:
   define the API surface the adaptor actually calls — the same sources
   [`pnpm audit:adaptors`](#auditing-adaptor-function-coverage) reads (e.g.
   `https://cdn.jsdelivr.net/npm/@openfn/language-<name>/ast.json`).
-- **`specs/` holds reference documents** — focused OpenAPI/JSON-schema subsets
-  of the real APIs, kept for authoring and review (see `specs/README.md`).
-  They are not loaded at runtime unless a plugin chooses to (mailgun uses its
-  spec for response shaping); a plugin's routes are ordinary Fastify handlers.
+- **API specs live in [`openfn-api-specs`](https://github.com/brandonjackson/openfn-api-specs)**
+  — a focused OpenAPI 3.x spec plus standalone data-object schemas per adaptor,
+  consumed here via the `openfn-api-specs` dependency (`src/api-specs.ts`). They
+  are for authoring/review and are not loaded at runtime unless a plugin chooses
+  to (mailgun fetches its spec via `getOpenapi` for response shaping); a plugin's
+  routes are ordinary Fastify handlers.
 - **Shared helpers do the repetitive parts**: `registerCrud` and `paginate` in
   `src/engine/`, plus `registerFhirRoutes` and the XML-RPC codec in
   `src/systems/shared/` for whole families of systems (openIMIS, OpenELIS and
@@ -823,8 +825,8 @@ a runtime spec engine:
 Steps:
 
 1. Study the adaptor's surface (its `ast.json` / types, per above) and the real
-   API's docs. Optionally add a focused reference spec to `specs/` for future
-   maintainers.
+   API's docs. Its OpenAPI spec + data objects live in the `openfn-api-specs`
+   package (maintained there); consult them via `src/api-specs.ts`.
 2. Create `src/systems/<name>/plugin.ts` implementing `MockSystemPlugin`:
 
    ```ts
@@ -834,7 +836,6 @@ Steps:
    const plugin: MockSystemPlugin = {
      name: 'mysystem',
      // adaptorName: 'my-adaptor',      // only if the npm adaptor name differs
-     // specFile: 'mysystem.openapi.json', // optional pointer to a reference spec
      // Auth policy (optional). Omit or use { required: false } for open systems;
      // { required: true, schemes: [...] } returns 401 when no credential is sent.
      auth: { required: true, schemes: ['basic'] },
@@ -861,13 +862,12 @@ Where an API's envelopes do not fit plain CRUD (DHIS2 import summaries, FHIR Bun
 ### Plugin API reference
 
 A plugin is a plain object implementing `MockSystemPlugin` (`src/systems/types.ts`).
-It is deliberately small — identity, an optional spec, and two lifecycle hooks:
+It is deliberately small — identity and two lifecycle hooks:
 
 ```ts
 interface MockSystemPlugin {
   name: string;                 // stable key, matches the registry + mount path (e.g. 'dhis2')
   adaptorName?: string;         // npm adaptor short name when it differs from `name` (http-generic -> http)
-  specFile?: string;            // pointer to a reference spec in specs/ (authoring aid, not runtime config)
   auth?: AuthRequirement;       // whether the mock returns 401 for anonymous requests (presence, not value)
   credential?: CredentialSpec;  // the OpenFn credential shape the sandbox renders + generates suggestions for
   guide?: SystemGuide;          // sandbox blurb + runnable API examples (authored in guide.ts)
@@ -1066,5 +1066,5 @@ box:
 - Before opening a PR: `pnpm build`, `pnpm typecheck`, and `pnpm test` must all pass — CI (`.github/workflows/ci.yml`) runs exactly these on every push to main and every PR. `typecheck` type-checks `test/` and `scripts/` too, which `build` does not. Add tests for any new endpoint or system.
 - The README's supported-systems table and credential examples are generated from plugin metadata: run `pnpm readme` after adding or changing a plugin (`pnpm test` fails if they are stale, via `test/readme.test.ts`).
 - When you add usage examples to a system's `usage.ts` (next to its `seed.ts`, so the snippet and the records it reads stay together), run [`pnpm test:usage`](#testing-usage-examples-end-to-end) to confirm the snippets actually run through the real adaptor against the mock.
-- Keep plugins thin and mocks faithful. Match real field names, envelopes, and status codes. Reference specs in `specs/` should stay focused subsets, not multi-megabyte vendored documents.
+- Keep plugins thin and mocks faithful. Match real field names, envelopes, and status codes. Reference specs live in the `openfn-api-specs` package and should stay focused subsets, not multi-megabyte vendored documents.
 - Please do not commit secrets or real PII; seed data should be synthetic.

@@ -110,7 +110,6 @@ function deploymentInfo(store: DataStore, asset: any, port: number): Record<stri
 
 const plugin: MockSystemPlugin = {
   name: 'kobotoolbox',
-  specFile: 'kobotoolbox.schema.json',
   // KoboToolbox authenticates with `Authorization: Token <apiToken>`.
   auth: { required: true, schemes: ['token'] },
   credential: {

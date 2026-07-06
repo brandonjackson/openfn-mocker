@@ -1,8 +1,9 @@
 import type { FastifyInstance, FastifyRequest } from 'fastify';
 import type { MockSystemPlugin, SystemConfig } from '../types.js';
 import type { DataStore } from '../../store.js';
-import { loadSpec, parseSpec, type ParsedSpec } from '../../engine/spec-parser.js';
+import { parseSpec, type ParsedSpec } from '../../engine/spec-parser.js';
 import { shapeRecord } from '../../engine/response-generator.js';
+import { getOpenapi } from '../../api-specs.js';
 import { selfUrlBase } from '../shared/self-url.js';
 import { seed, buildStats, makeEvent, makeMessageId, DEFAULT_DOMAIN } from './seed.js';
 import { usage } from './usage.js';
@@ -10,11 +11,10 @@ import { guide } from './guide.js';
 
 /**
  * Mailgun (port 4018) — the one plugin that loads its reference spec at
- * runtime: it parses specs/mailgun.openapi.json and uses shapeRecord to keep
- * event responses schema-shaped. Handlers are still custom (Mailgun's
- * endpoints are not plain CRUD); for every other system the spec is an
- * authoring reference only (see specs/README.md). Auth is accept-all
- * (handled by createSystemServer).
+ * runtime: it fetches the mailgun OpenAPI from the openfn-api-specs package and
+ * uses shapeRecord to keep event responses schema-shaped (when the spec carries
+ * an Event schema). Handlers are still custom (Mailgun's endpoints are not plain
+ * CRUD). Auth is accept-all (handled by createSystemServer).
  */
 
 /** From a Mailgun `to` param (string, csv, or array) get the first recipient. */
@@ -26,7 +26,6 @@ function firstRecipient(to: any): string | undefined {
 
 const plugin: MockSystemPlugin = {
   name: 'mailgun',
-  specFile: 'mailgun.openapi.json',
   // Mailgun uses HTTP Basic auth (`api:<key>`); reject requests with no credentials.
   auth: { required: true, schemes: ['basic'] },
   credential: {
@@ -45,10 +44,12 @@ const plugin: MockSystemPlugin = {
   async overrides(app: FastifyInstance, store: DataStore, config: SystemConfig) {
     const configuredDomain = (config.domain as string) || DEFAULT_DOMAIN;
 
-    // Spec is the source of truth for response shapes; parse it once at setup.
+    // Spec is the source of truth for response shapes; fetch + parse it once at
+    // setup from the openfn-api-specs package.
     let spec: ParsedSpec | undefined;
     try {
-      if (plugin.specFile) spec = parseSpec(loadSpec(plugin.specFile));
+      const raw = getOpenapi('mailgun');
+      spec = raw ? parseSpec(raw) : undefined;
     } catch {
       spec = undefined;
     }

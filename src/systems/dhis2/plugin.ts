@@ -167,7 +167,6 @@ function schemaList(port: number): Array<Record<string, any>> {
 
 const plugin: MockSystemPlugin = {
   name: 'dhis2',
-  specFile: 'dhis2.openapi.json',
   // DHIS2 uses HTTP Basic auth; reject requests with no credentials.
   auth: { required: true, schemes: ['basic'] },
   // OpenFn credential shape (what a user pastes into OpenFn); the sandbox reads
