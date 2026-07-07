@@ -7,6 +7,28 @@ and definition of done for adding or changing one; the README has the depth
 (see "Adding a new system", "Testing usage examples end to end", "Local network
 aliasing", "Roadmap").
 
+## Installing dependencies (read this before diagnosing a failed `pnpm install`)
+
+`pnpm install` pulls `openfn-api-specs` from a **separate GitHub repo**
+(`github:brandonjackson/openfn-api-specs`), so pnpm downloads its tarball from
+`codeload.github.com`. In a restricted Claude Code cloud session that fetch
+returns **403** with a body like
+`"GitHub access to this repository is not enabled for this session"`.
+
+That 403 is **Claude Code's per-session repo-scope gate, not a network/egress
+block.** The environment's egress is open and the proxy reaches codeload fine;
+the session is just scoped to `openfn-mocker` and hasn't been granted the second
+repo. Do **not** diagnose this as egress and do **not** try to route around it.
+
+Fix, before `pnpm install`: grant the repo to the session by calling the
+`add_repo` tool for `brandonjackson/openfn-api-specs` — the repo owner
+pre-authorizes this. Then `pnpm install` and `pnpm test` run normally. In
+standard (non-restricted) web sessions and locally, the fetch already works
+without this step, because the connected GitHub account can see the repo.
+
+Permanent zero-friction fix (not yet done): publish `openfn-api-specs` to npm
+and depend on the registry version, which needs no GitHub scope in any session.
+
 ## The two sources of truth that govern correctness
 
 Two references are authoritative — each ground truth for a different concern,
