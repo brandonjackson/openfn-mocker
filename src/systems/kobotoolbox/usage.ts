@@ -17,6 +17,8 @@ export const usage: UsageExample[] = [
     code: "getDeploymentInfo('aHousehold01Q1');", apiRef: "ex2" },
   { fn: "http.get", signature: "http.get(path, options = {})", description: "Make a GET request to any KoboToolbox endpoint, e.g. a single asset.",
     code: "http.get('assets/aHousehold01Q1');", apiRef: "ex1" },
+  { fn: "http.get (attachment)", signature: "http.get(path, options = {})", description: "Download a submission's media attachment as base64.",
+    code: "http.get('assets/aHousehold01Q1/data/12001/attachments/300001', {\n  parseAs: 'base64'\n});", apiRef: "attachmentDownload" },
   { fn: "http.post", signature: "http.post(path, data, options = {})", description: "Make a POST request to submit survey data to a KoboToolbox endpoint.",
     code: "http.post('assets/aHousehold01Q1/submissions/', {\n  household_head_name: 'Fatu Conteh', water_source: 'borehole'\n});", apiRef: "ex5" },
   { fn: "http.put", signature: "http.put(path, data, options = {})", description: "Make a PUT request to a KoboToolbox endpoint, e.g. to redeploy a form.",

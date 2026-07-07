@@ -5,6 +5,7 @@ import type { DataStore } from '../../store.js';
 import { seed, nowIso } from './seed.js';
 import { usage } from './usage.js';
 import { guide } from './guide.js';
+import { examplePdf } from '../shared/attachments.js';
 
 /**
  * Sunbird RC (Registry & Credentialing). The sunbird-rc adaptor exposes generic
@@ -99,12 +100,20 @@ const plugin: MockSystemPlugin = {
     });
 
     // --- Credentialing: read a credential by id ---
+    // getCredential reads the JSON; downloadCredential requests the same path
+    // with `Accept: application/pdf` (and parseAs base64) to get a rendered PDF —
+    // so we content-negotiate and return the shared dummy PDF for that Accept.
     app.get('/credentials/:id', async (req, reply) => {
       const id = String((req.params as Record<string, any>).id);
       const found = store.get('credentials', id);
       if (!found) {
         reply.code(404);
         return { error: 'not_found' };
+      }
+      const accept = String((req.headers as Record<string, any>).accept ?? '');
+      if (accept.includes('application/pdf')) {
+        reply.type('application/pdf');
+        return reply.send(examplePdf.bytes());
       }
       return found;
     });

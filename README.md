@@ -879,6 +879,50 @@ Steps:
 
 Where an API's envelopes do not fit plain CRUD (DHIS2 import summaries, FHIR Bundles, Tastypie/DRF wrappers, Twilio's `.json` snake_case shapes), write custom Fastify handlers — that fidelity is the point of the mock — and use helpers such as `paginate()` for the parts that do fit.
 
+### Returning file attachments
+
+When an adaptor function **downloads file bytes** (an email attachment, a drive
+file, submission media, a rendered document), don't invent bytes inline — reuse
+the shared dummy fixtures in `src/systems/shared/attachments.ts`. It ships a
+small set of tiny but genuinely valid example files, each exposing the same shape:
+
+```ts
+import { exampleCsv, examplePng } from '../shared/attachments.js';
+// { filename, mimeType, size, base64, base64url, bytes(): Buffer }
+```
+
+| Fixture | Type | Use for |
+|---------|------|---------|
+| `exampleCsv` | `text/csv` | CSV downloads; adaptors that decode content as **text** |
+| `exampleTxt` | `text/plain` | plain-text downloads |
+| `exampleXlsx` | XLSX (OOXML) | spreadsheet attachments |
+| `examplePng` / `exampleJpg` | image | photos / media attachments |
+| `examplePdf` | `application/pdf` | documents / rendered credentials |
+
+The bytes are carried **inline as base64** (pure TypeScript, so they compile into
+`dist/` and ship in the Docker image with no runtime `fs`), and the exact same
+bytes are mirrored as real, openable files under `test/fixtures/attachments/`.
+`test/attachments-fixtures.test.ts` asserts the inline copy and the on-disk files
+never drift, so the fixtures stay a faithful mirror of real files.
+
+To wire one up: seed the bytes (e.g. in an `attachments` collection) and serve
+them at the exact route the adaptor's download function calls — see
+`src/systems/gmail/{seed,plugin}.ts` for the canonical example, and
+`googledrive`, `msgraph`, `odk`, `kobotoolbox`, `inform`, and `sunbird-rc` for the
+same pattern against different APIs. Two rules of thumb:
+
+- **Match the fixture to how the adaptor decodes it.** Some functions read a
+  download as text (msgraph `getFile`, a `downloadAs: 'string'` blob) — hand those
+  a text fixture (`exampleCsv` / `exampleTxt`); a binary one comes back corrupted.
+  Binary-safe paths (raw bytes → base64) can use any fixture.
+- **Only seed a downloadable file where a published adaptor function actually
+  fetches it.** Send-only or upload-only adaptors get none — it would be dead
+  content no `pnpm test:usage` run could reach.
+
+Need a type that isn't there yet? Add it to `src/systems/shared/attachments.ts`
+*and* `test/fixtures/attachments/`, extend the fixtures array and the anti-drift
+test, and prefer a real, valid file of that type.
+
 ### Plugin API reference
 
 A plugin is a plain object implementing `MockSystemPlugin` (`src/systems/types.ts`).
@@ -1105,9 +1149,10 @@ box:
   runtime's ESM loader `require` is undefined — so the module throws at
   *import* time, before any request is made. The mock already models every
   route the adaptor would call (`POST /api/v1/:entity`, `GET /api/v1/:entity/:id`,
-  `POST /credentials/issue`, `GET /credentials/:id`), so nothing on the mock
-  side can help; the fix is upstream (republish with `undici` external, or run
-  under a loader that injects a `require` shim).
+  `POST /credentials/issue`, `GET /credentials/:id` — including `downloadCredential`'s
+  `Accept: application/pdf` content-negotiation, which returns a real PDF), so
+  nothing on the mock side can help; the fix is upstream (republish with `undici`
+  external, or run under a loader that injects a `require` shim).
 - **Alternative auth modes.** Several adaptors accept a second credential shape
   the sandbox doesn't surface yet: DHIS2 personal access token (`pat`),
   `access_token` on FHIR / http / ODK, CommCare's `ApiKey <user>:<key>` header,

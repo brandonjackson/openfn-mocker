@@ -61,6 +61,20 @@ const plugin: MockSystemPlugin = {
       value: store.list('items'),
     }));
 
+    // GET /v1.0/drives/:driveId/items/:itemId/content — download a file's bytes.
+    // getFile(id) with the default { metadata: false } hits this route and reads
+    // the response as text, so seeded downloadable content is text (CSV).
+    app.get('/v1.0/drives/:driveId/items/:itemId/content', async (req, reply) => {
+      const { itemId } = req.params as Record<string, any>;
+      const stored = store.get('itemContent', String(itemId));
+      if (!stored) {
+        reply.code(404);
+        return { error: { code: 'itemNotFound', message: 'The resource could not be found.' } };
+      }
+      reply.type(stored.mimeType ?? 'application/octet-stream');
+      return stored.content ?? '';
+    });
+
     // GET /v1.0/drives/:driveId/items/:itemId — a single drive item.
     app.get('/v1.0/drives/:driveId/items/:itemId', async (req, reply) => {
       const { itemId } = req.params as Record<string, any>;

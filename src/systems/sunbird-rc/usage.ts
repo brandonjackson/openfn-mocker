@@ -34,4 +34,11 @@ export const usage: UsageExample[] = [
     code: "getCredential('did:rcw:cred0001');",
     apiRef: 'getCred',
   },
+  {
+    fn: 'downloadCredential',
+    signature: 'downloadCredential(id, options?, callback?)',
+    description: 'Download a credential as a rendered PDF (returned base64).',
+    code: "downloadCredential('did:rcw:cred0001');",
+    apiRef: 'getCred',
+  },
 ];

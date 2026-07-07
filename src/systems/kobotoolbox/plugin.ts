@@ -295,6 +295,21 @@ const plugin: MockSystemPlugin = {
       return { count: ids.length, successes, failures: ids.length - successes };
     });
 
+    // GET /api/v2/assets/:uid/data/:id/attachments/:attId/ — download a
+    // submission attachment's bytes. Reached via
+    // http.get('assets/.../data/<id>/attachments/<attId>', { parseAs: 'base64' }),
+    // which the adaptor base64-encodes from the raw bytes returned here.
+    app.get('/api/v2/assets/:uid/data/:id/attachments/:attId/', async (req, reply) => {
+      const { attId } = req.params as Record<string, any>;
+      const att = store.get('attachments', String(attId));
+      if (att === undefined) {
+        reply.code(404);
+        return { detail: 'Not found.' };
+      }
+      reply.type(att.mimetype ?? 'application/octet-stream');
+      return reply.send(Buffer.from(att.base64, 'base64'));
+    });
+
     // GET /api/v2/assets/:uid/data/:id/ — single submission.
     app.get('/api/v2/assets/:uid/data/:id/', async (req, reply) => {
       const { uid, id } = req.params as Record<string, any>;

@@ -81,6 +81,35 @@ const plugin: MockSystemPlugin = {
       return found;
     });
 
+    // --- Submission attachments ---
+    // GET .../submissions/:instanceId/attachments — list attachment names.
+    // Real Central returns `[{ name, exists }]`; the adaptor reaches this (and
+    // the download below) through its generic get()/request().
+    app.get(
+      '/v1/projects/:projectId/forms/:xmlFormId/submissions/:instanceId/attachments',
+      async (req) => {
+        const { instanceId } = req.params as Record<string, any>;
+        return store
+          .list('attachments', (a) => a.instanceId === String(instanceId))
+          .map((a) => ({ name: a.name, exists: true }));
+      }
+    );
+
+    // GET .../submissions/:instanceId/attachments/:filename — download the bytes.
+    app.get(
+      '/v1/projects/:projectId/forms/:xmlFormId/submissions/:instanceId/attachments/:filename',
+      async (req, reply) => {
+        const { instanceId, filename } = req.params as Record<string, any>;
+        const att = store.get('attachments', `${instanceId}/${filename}`);
+        if (!att) {
+          reply.code(404);
+          return { code: 404.1, message: 'Could not find the resource you were looking for.' };
+        }
+        reply.type(att.mimeType ?? 'application/octet-stream');
+        return reply.send(Buffer.from(att.base64, 'base64'));
+      }
+    );
+
     // --- OData submissions: GET .../forms/:xmlFormId.svc/Submissions ---
     // Fastify treats the ".svc" as part of the literal segment; the adaptor
     // requests exactly `${xmlFormId}.svc`. Match on a param and strip the suffix.

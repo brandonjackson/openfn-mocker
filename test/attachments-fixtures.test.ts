@@ -7,6 +7,9 @@ import {
   exampleCsv,
   exampleXlsx,
   examplePng,
+  examplePdf,
+  exampleJpg,
+  exampleTxt,
 } from '../src/systems/shared/attachments.js';
 
 /**
@@ -34,24 +37,37 @@ describe('shared attachment fixtures mirror test/fixtures/attachments/', () => {
     });
   }
 
-  it('exposes a CSV, an XLSX, and a PNG', () => {
+  it('exposes CSV, XLSX, PNG, PDF, JPEG, and TXT fixtures', () => {
     expect(attachmentFixtures.map((f) => f.filename)).toEqual([
       'example.csv',
       'example.xlsx',
       'example.png',
+      'example.pdf',
+      'example.jpg',
+      'example.txt',
     ]);
     expect(exampleCsv.mimeType).toBe('text/csv');
     expect(exampleXlsx.mimeType).toBe(
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     );
     expect(examplePng.mimeType).toBe('image/png');
+    expect(examplePdf.mimeType).toBe('application/pdf');
+    expect(exampleJpg.mimeType).toBe('image/jpeg');
+    expect(exampleTxt.mimeType).toBe('text/plain');
   });
 
-  it('the CSV decodes to readable text and the PNG has a valid signature', () => {
+  it('each fixture carries the correct file-type magic bytes', () => {
+    // CSV / TXT decode to readable text.
     expect(exampleCsv.bytes().toString('utf-8')).toContain('Western Area');
+    expect(exampleTxt.bytes().toString('utf-8')).toContain('OpenFn');
     // PNG magic number: 89 50 4E 47 0D 0A 1A 0A
     expect([...examplePng.bytes().subarray(0, 8)]).toEqual([137, 80, 78, 71, 13, 10, 26, 10]);
     // XLSX is a ZIP: starts with "PK\x03\x04".
     expect([...exampleXlsx.bytes().subarray(0, 4)]).toEqual([0x50, 0x4b, 0x03, 0x04]);
+    // PDF starts with "%PDF-".
+    expect(examplePdf.bytes().subarray(0, 5).toString('latin1')).toBe('%PDF-');
+    // JPEG starts with the SOI marker FF D8 FF and ends with EOI FF D9.
+    expect([...exampleJpg.bytes().subarray(0, 3)]).toEqual([0xff, 0xd8, 0xff]);
+    expect([...exampleJpg.bytes().subarray(-2)]).toEqual([0xff, 0xd9]);
   });
 });

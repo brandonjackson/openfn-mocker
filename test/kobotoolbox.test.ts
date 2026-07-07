@@ -2,6 +2,7 @@ import { describe, it, expect, afterAll } from 'vitest';
 import type { FastifyInstance } from 'fastify';
 import { createSystemServer } from '../src/server.js';
 import kobotoolbox from '../src/systems/kobotoolbox/plugin.js';
+import { examplePng } from '../src/systems/shared/attachments.js';
 
 const config = { port: 0, baseURL: 'http://localhost:4016' };
 const ASSET_UID = 'aHousehold01Q1';
@@ -262,5 +263,36 @@ describe('kobotoolbox (DRF-style envelopes)', () => {
       url: `/api/v2/assets/${ASSET_UID}/data/${ids[0]}/`,
     });
     expect(check.json().reviewed).toBe(true);
+  });
+
+  it('surfaces a submission attachment and downloads its bytes', async () => {
+    const { app } = await server();
+    // The first Household Survey submission carries a media attachment in
+    // _attachments, with a download_url pointing at the v2 attachment endpoint.
+    const sub = await app.inject({
+      method: 'GET',
+      url: `/api/v2/assets/${ASSET_UID}/data/12001/`,
+    });
+    expect(sub.statusCode).toBe(200);
+    const attachments = sub.json()._attachments;
+    expect(Array.isArray(attachments)).toBe(true);
+    expect(attachments).toHaveLength(1);
+    expect(attachments[0].mimetype).toBe('image/png');
+    expect(attachments[0].id).toBe(300001);
+
+    const dl = await app.inject({
+      method: 'GET',
+      url: `/api/v2/assets/${ASSET_UID}/data/12001/attachments/300001/`,
+    });
+    expect(dl.statusCode).toBe(200);
+    expect(dl.headers['content-type']).toContain('image/png');
+    // Raw bytes match the fixture; the adaptor base64-encodes them via parseAs.
+    expect(Buffer.compare(dl.rawPayload, examplePng.bytes())).toBe(0);
+
+    const missing = await app.inject({
+      method: 'GET',
+      url: `/api/v2/assets/${ASSET_UID}/data/12001/attachments/999999/`,
+    });
+    expect(missing.statusCode).toBe(404);
   });
 });

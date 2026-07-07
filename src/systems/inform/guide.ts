@@ -18,5 +18,11 @@ export const guide: SystemGuide = {
     { id: 'getSubs', method: 'GET', path: '/api/v2/data/6225', label: 'List submissions for a form' },
     { id: 'getSub', method: 'GET', path: '/api/v2/data/6225/7783155', label: 'Fetch a submission by id' },
     { id: 'media', method: 'GET', path: '/api/v2/media/621985', label: 'Fetch attachment metadata' },
+    {
+      id: 'files',
+      method: 'GET',
+      path: '/api/v2/files/621985',
+      label: 'Download an attachment (resolves to its bytes)',
+    },
   ],
 };

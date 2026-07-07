@@ -34,6 +34,12 @@ function nowIso(): string {
   return new Date().toISOString();
 }
 
+/** Drop the internal `contentBase64` field so it never leaks into a metadata response. */
+function metadataOf(file: Record<string, any>): Record<string, any> {
+  const { contentBase64: _omit, ...meta } = file;
+  return meta;
+}
+
 const plugin: MockSystemPlugin = {
   name: 'googledrive',
   auth: { required: true, schemes: ['bearer'] },
@@ -56,7 +62,7 @@ const plugin: MockSystemPlugin = {
   async overrides(app: FastifyInstance, store: DataStore, _config: SystemConfig) {
     // GET /drive/v3/files — list files.
     app.get('/drive/v3/files', async () => ({
-      files: store.list('files'),
+      files: store.list('files').map(metadataOf),
       incompleteSearch: false,
       kind: 'drive#fileList',
     }));
@@ -75,7 +81,10 @@ const plugin: MockSystemPlugin = {
       return file;
     });
 
-    // GET /drive/v3/files/:id — a single file.
+    // GET /drive/v3/files/:id — a single file. The adaptor's get() fires two
+    // requests at this path: a metadata read (?fields=...) and, for the bytes, a
+    // content download (?alt=media, responseType arraybuffer). We branch on
+    // alt=media to return the raw file bytes; every other call returns metadata.
     app.get('/drive/v3/files/:id', async (req, reply) => {
       const id = String((req.params as Record<string, any>).id);
       const file = store.get('files', id);
@@ -83,7 +92,12 @@ const plugin: MockSystemPlugin = {
         reply.code(404);
         return { error: { code: 404, message: 'File not found' } };
       }
-      return file;
+      if ((req.query as Record<string, any>).alt === 'media') {
+        const bytes = file.contentBase64 ? Buffer.from(file.contentBase64, 'base64') : Buffer.alloc(0);
+        reply.type(file.mimeType ?? 'application/octet-stream');
+        return reply.send(bytes);
+      }
+      return metadataOf(file);
     });
 
     // PATCH /drive/v3/files/:id — update file metadata.
@@ -94,7 +108,7 @@ const plugin: MockSystemPlugin = {
         return { error: { code: 404, message: 'File not found' } };
       }
       const resource = resourceOf((req.body ?? {}) as Record<string, any>);
-      return store.update('files', id, resource);
+      return metadataOf(store.update('files', id, resource) ?? {});
     });
 
     // POST /upload/drive/v3/files — create() streams content here as a

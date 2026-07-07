@@ -63,6 +63,34 @@ For each function the system exposes, write down:
    `instanceUrl` field from the credential (→ set that field with `role: 'url'`
    or `'host'`), or does it hardcode / derive the host (→ add `hostAliases`)?
 
+## Attachments: reuse the shared dummy fixtures
+
+If the adaptor has a function that **returns file bytes** (downloads an
+attachment, media, document, or rendered file), serve a real dummy file rather
+than inventing bytes inline. `src/systems/shared/attachments.ts` provides tiny
+but genuinely valid fixtures — `exampleCsv`, `exampleXlsx`, `examplePng`,
+`examplePdf`, `exampleJpg`, `exampleTxt` — each exposing
+`{ filename, mimeType, size, base64, base64url, bytes() }`. The bytes are carried
+inline (pure TS, so they compile into `dist/` and ship in the Docker image; no
+runtime `fs`), mirrored as real files under `test/fixtures/attachments/`, and
+`test/attachments-fixtures.test.ts` asserts the two never drift.
+
+- **Pick a fixture that matches the content type the adaptor decodes.** Several
+  adaptors read a downloaded file as **text** (msgraph `getFile`, an
+  azure-storage `downloadAs: 'string'`), so hand those a text fixture (`exampleCsv`
+  / `exampleTxt`) — a binary one would come back corrupted. Binary-safe download
+  paths (raw bytes → base64, e.g. gmail, googledrive, odk, kobotoolbox) can use any.
+- **Seed the bytes and serve them at the exact route the adaptor's download
+  function hits** (see `src/systems/gmail/seed.ts` + `plugin.ts` for the canonical
+  example: an `attachments` collection + a route returning the base64url/bytes).
+- **Only do this where a *published adaptor function* actually fetches the
+  bytes.** Send-only (twilio, mailgun) or upload-only (commcare) adaptors, or ones
+  with no file op at all (maximo), get no downloadable seed — it would be dead
+  content no `test:usage` run could reach.
+- **Need a type that isn't there yet?** Add it to `shared/attachments.ts` *and*
+  `test/fixtures/attachments/`, extend the array + the anti-drift test, and prefer
+  a real, valid file of that type.
+
 ## Checklist — adding or changing a system
 
 - [ ] Read the adaptor source (above); record path/method, arg shape, and
@@ -74,7 +102,8 @@ For each function the system exposes, write down:
       url/host field is set for configurable adaptors; `hostAliases` is set for
       adaptors that hardcode or derive their host.
 - [ ] `seed.ts` has records whose ids/names the usage snippets reference
-      (fewer than 50 per collection).
+      (fewer than 50 per collection). If a function returns file bytes, seed a
+      shared dummy fixture (see "Attachments" above), not ad-hoc inline bytes.
 - [ ] `usage.ts` snippets call each function with the adaptor's **real
       signature** (from the source, not the HTTP docs).
 - [ ] `guide.ts` API examples use the same paths the adaptor actually calls.

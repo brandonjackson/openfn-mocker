@@ -16,7 +16,10 @@ import { guide } from './guide.js';
 const plugin: MockSystemPlugin = {
   name: 'inform',
   // InForm authenticates with `Authorization: Token <access_token>`.
-  auth: { required: true, schemes: ['token'] },
+  // `/storage` is exempt: downloadAttachment resolves a file to a storage URL
+  // (via GET files/:id) and then fetches those bytes with a *bare* request (no
+  // auth), exactly as a real pre-signed storage link would be reachable.
+  auth: { required: true, schemes: ['token'], exemptPaths: ['/storage'] },
   credential: {
     type: 'apikey',
     authHeader: { scheme: 'token', value: 'mock-token' },
@@ -38,7 +41,7 @@ const plugin: MockSystemPlugin = {
       results: store.list('forms'),
     }));
 
-    // getAttachmentMetadata / downloadAttachment — media by id.
+    // getAttachmentMetadata — media metadata by id.
     // (registered before /forms/:id so the routes stay unambiguous)
     app.get('/api/v2/media/:id', async (req, reply) => {
       const id = String((req.params as Record<string, any>).id);
@@ -48,6 +51,40 @@ const plugin: MockSystemPlugin = {
         return { detail: 'Not found.' };
       }
       return found;
+    });
+
+    // downloadAttachment — GET files/:id resolves the attachment to a storage
+    // URL returned in the `location` header; the adaptor then fetches those bytes
+    // separately (unauthenticated) from the exempt /storage route below.
+    app.get('/api/v2/files/:id', async (req, reply) => {
+      const id = String((req.params as Record<string, any>).id);
+      const file = store.get('files', id);
+      if (!file) {
+        reply.code(404);
+        return { detail: 'Not found.' };
+      }
+      // Build a mount-prefix-aware absolute URL to the bytes (the adaptor does a
+      // bare global fetch on it, so it must be absolute and reachable directly).
+      const path = req.url.split('?')[0];
+      const prefix = path.slice(0, path.indexOf('/api/v2/files/'));
+      const origin = `${req.protocol}://${req.headers.host}`;
+      reply.header('location', `${origin}${prefix}/storage/${id}`);
+      reply.code(200);
+      return { id: file.id, filename: file.filename, mimetype: file.mimetype, size: file.size };
+    });
+
+    // /storage/:id — the attachment bytes (stands in for a pre-signed storage
+    // URL). Auth-exempt (see plugin.auth.exemptPaths), because downloadAttachment
+    // fetches it without credentials.
+    app.get('/storage/:id', async (req, reply) => {
+      const id = String((req.params as Record<string, any>).id);
+      const file = store.get('files', id);
+      if (!file) {
+        reply.code(404);
+        return { detail: 'Not found.' };
+      }
+      reply.type(file.mimetype ?? 'application/octet-stream');
+      return reply.send(Buffer.from(file.base64, 'base64'));
     });
 
     // getForm — form structure (JSON schema of fields).

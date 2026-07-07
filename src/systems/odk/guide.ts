@@ -32,5 +32,17 @@ export const guide: SystemGuide = {
       label: 'Add a submission',
       body: JSON.stringify({ head_name: 'Sandbox Household', household_size: 3, district: 'Bo' }, null, 2),
     },
+    {
+      id: 'attachmentList',
+      method: 'GET',
+      path: '/v1/projects/1/forms/household-survey/submissions/uuid:sub-0001/attachments',
+      label: 'List a submission’s attachments',
+    },
+    {
+      id: 'attachmentDownload',
+      method: 'GET',
+      path: '/v1/projects/1/forms/household-survey/submissions/uuid:sub-0001/attachments/example.png',
+      label: 'Download a submission attachment (bytes)',
+    },
   ],
 };

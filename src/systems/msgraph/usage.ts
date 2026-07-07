@@ -30,7 +30,14 @@ export const usage: UsageExample[] = [
   {
     fn: 'getFile',
     signature: 'getFile(pathOrId, options?, callback?)',
-    description: 'Fetch a single drive item. Needs a drive loaded first via getDrive.',
+    description: "Download a file's content (default). Needs a drive loaded first via getDrive.",
+    code: "getDrive({ id: 'b!driveSeed01' });\ngetFile('item02');",
+    apiRef: 'getFileContent',
+  },
+  {
+    fn: 'getFile',
+    signature: 'getFile(pathOrId, options?, callback?)',
+    description: 'Fetch a drive item’s metadata (with { metadata: true }).',
     code: "getDrive({ id: 'b!driveSeed01' });\ngetFile('item01', { metadata: true });",
     apiRef: 'getFile',
   },

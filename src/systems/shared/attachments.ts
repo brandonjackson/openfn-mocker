@@ -94,5 +94,45 @@ export const examplePng = fixture(
     'YaNSAAAAAElFTkSuQmCC'
 );
 
+/** `example.pdf` — a minimal but valid single-page PDF ("OpenFn mock example.pdf"). */
+export const examplePdf = fixture(
+  'example.pdf',
+  'application/pdf',
+  'JVBERi0xLjQKMSAwIG9iago8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4KZW5kb2JqCjIgMCBvYmoKPDwgL1R5' +
+    'cGUgL1BhZ2VzIC9LaWRzIFszIDAgUl0gL0NvdW50IDEgPj4KZW5kb2JqCjMgMCBvYmoKPDwgL1R5cGUgL1BhZ2UgL1BhcmVu' +
+    'dCAyIDAgUiAvTWVkaWFCb3ggWzAgMCAyMDAgMTAwXSAvQ29udGVudHMgNCAwIFIgL1Jlc291cmNlcyA8PCAvRm9udCA8PCAv' +
+    'RjEgNSAwIFIgPj4gPj4gPj4KZW5kb2JqCjQgMCBvYmoKPDwgL0xlbmd0aCA1MyA+PgpzdHJlYW0KQlQgL0YxIDE4IFRmIDIw' +
+    'IDQwIFRkIChPcGVuRm4gbW9jayBleGFtcGxlLnBkZikgVGogRVQKZW5kc3RyZWFtCmVuZG9iago1IDAgb2JqCjw8IC9UeXBl' +
+    'IC9Gb250IC9TdWJ0eXBlIC9UeXBlMSAvQmFzZUZvbnQgL0hlbHZldGljYSA+PgplbmRvYmoKeHJlZgowIDYKMDAwMDAwMDAw' +
+    'MCA2NTUzNSBmIAowMDAwMDAwMDA5IDAwMDAwIG4gCjAwMDAwMDAwNTggMDAwMDAgbiAKMDAwMDAwMDExNSAwMDAwMCBuIAow' +
+    'MDAwMDAwMjQxIDAwMDAwIG4gCjAwMDAwMDAzNDQgMDAwMDAgbiAKdHJhaWxlcgo8PCAvU2l6ZSA2IC9Sb290IDEgMCBSID4+' +
+    'CnN0YXJ0eHJlZgo0MTQKJSVFT0YK'
+);
+
+/** `example.jpg` — a valid minimal baseline JPEG (a small solid-colour image). */
+export const exampleJpg = fixture(
+  'example.jpg',
+  'image/jpeg',
+  '/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1R' +
+    'V19iZ2hnPk1xeXBkeFxlZ2P/wAALCAAIAAgBAREA/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgED' +
+    'AwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RF' +
+    'RkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJ' +
+    'ytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/9oACAEBAAA/ACv/2Q=='
+);
+
+/** `example.txt` — a tiny plain-text file. */
+export const exampleTxt = fixture(
+  'example.txt',
+  'text/plain',
+  'T3BlbkZuIG1vY2tlciBkdW1teSBhdHRhY2htZW50LgpUaGlzIGlzIGEgcGxhaW4tdGV4dCBleGFtcGxlIGZpbGUuCg=='
+);
+
 /** Every dummy attachment fixture, keyed by filename, for iteration in seeds/tests. */
-export const attachmentFixtures: AttachmentFixture[] = [exampleCsv, exampleXlsx, examplePng];
+export const attachmentFixtures: AttachmentFixture[] = [
+  exampleCsv,
+  exampleXlsx,
+  examplePng,
+  examplePdf,
+  exampleJpg,
+  exampleTxt,
+];

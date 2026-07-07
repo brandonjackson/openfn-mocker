@@ -1,5 +1,6 @@
 import type { DataStore } from '../../store.js';
 import type { SystemConfig } from '../types.js';
+import { examplePng } from '../shared/attachments.js';
 
 /**
  * ODK Central seed (Open Data Kit — a data-collection Digital Public Good). One
@@ -7,6 +8,11 @@ import type { SystemConfig } from '../types.js';
  * OpenFn odk adaptor reads (getForms, getSubmissions). Submissions carry the
  * ODK `__id`, `meta.instanceID` and `__system` metadata alongside the survey
  * fields, so a response looks like real ODK Central OData output.
+ *
+ * One submission (`uuid:sub-0001`) also carries a media attachment (a photo), so
+ * a workflow can list and download submission attachments — the real ODK Central
+ * endpoints `.../submissions/{id}/attachments[/{filename}]`. The bytes reuse the
+ * shared dummy PNG (see src/systems/shared/attachments.ts).
  */
 
 export function nowIso(): string {
@@ -39,14 +45,16 @@ export function odkSystem(opts: {
   submitterName?: string;
   deviceId?: string | null;
   formVersion?: string;
+  attachmentsPresent?: number;
+  attachmentsExpected?: number;
 }): Record<string, any> {
   return {
     submissionDate: opts.submissionDate,
     updatedAt: null,
     submitterId: opts.submitterId ?? '5',
     submitterName: opts.submitterName ?? 'fieldworker',
-    attachmentsPresent: 0,
-    attachmentsExpected: 0,
+    attachmentsPresent: opts.attachmentsPresent ?? 0,
+    attachmentsExpected: opts.attachmentsExpected ?? 0,
     status: null,
     reviewState: null,
     deviceId: opts.deviceId ?? 'collect:mock',
@@ -100,12 +108,14 @@ export function seed(store: DataStore, _config: SystemConfig): void {
   }
 
   const submissions = [
-    { form: 'household-survey', __id: 'uuid:sub-0001', head_name: 'Jane Doe', household_size: 4, district: 'Bo', water_source: 'borehole' },
+    { form: 'household-survey', __id: 'uuid:sub-0001', head_name: 'Jane Doe', household_size: 4, district: 'Bo', water_source: 'borehole', photo: 'example.png' },
     { form: 'household-survey', __id: 'uuid:sub-0002', head_name: 'Amina Kamara', household_size: 6, district: 'Kenema', water_source: 'well' },
     { form: 'clinic-visit', __id: 'uuid:sub-0003', patient_name: 'John Smith', visit_reason: 'antenatal', facility: 'Ngelehun CHC' },
   ];
   for (const s of submissions) {
     const { form, __id, ...fields } = s;
+    // sub-0001 carries one media attachment (its `photo` field names the file).
+    const attachmentCount = __id === 'uuid:sub-0001' ? 1 : 0;
     store.create('submissions', __id, {
       __id,
       // Every OData row carries meta.instanceID (== the row id).
@@ -113,9 +123,21 @@ export function seed(store: DataStore, _config: SystemConfig): void {
       __system: odkSystem({
         submissionDate: '2023-02-01T08:30:00.000Z',
         formVersion: form === 'clinic-visit' ? '2' : '1',
+        attachmentsPresent: attachmentCount,
+        attachmentsExpected: attachmentCount,
       }),
       _formId: form,
       ...fields,
     });
   }
+
+  // Media attachments, keyed by `<instanceId>/<filename>`, served by
+  // GET .../submissions/:instanceId/attachments[/:filename]. Reuses the shared
+  // dummy PNG so the download returns real image bytes.
+  store.create('attachments', 'uuid:sub-0001/example.png', {
+    instanceId: 'uuid:sub-0001',
+    name: examplePng.filename,
+    mimeType: examplePng.mimeType,
+    base64: examplePng.base64,
+  });
 }

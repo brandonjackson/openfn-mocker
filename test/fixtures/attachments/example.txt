@@ -1,0 +1,2 @@
+OpenFn mocker dummy attachment.
+This is a plain-text example file.
