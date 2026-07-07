@@ -16,22 +16,23 @@ describe('surveycto', () => {
     await app.close();
   });
 
-  it('lists seeded datasets', async () => {
+  it('lists seeded datasets under a { data, nextCursor } envelope', async () => {
     const { app } = await createSystemServer(surveycto, config, { logLevel: 'silent' });
     const res = await app.inject({ method: 'GET', url: '/api/v2/datasets' });
     expect(res.statusCode).toBe(200);
     const body = res.json();
-    expect(Array.isArray(body.datasets)).toBe(true);
-    expect(body.datasets.length).toBeGreaterThan(0);
+    expect(Array.isArray(body.data)).toBe(true);
+    expect(body.data.length).toBeGreaterThan(0);
+    expect(body.nextCursor).toBe(null);
     await app.close();
   });
 
-  it('upserts a dataset', async () => {
+  it('creates a dataset (collection POST, id from body)', async () => {
     const { app } = await createSystemServer(surveycto, config, { logLevel: 'silent' });
     const res = await app.inject({
       method: 'POST',
-      url: '/api/v2/datasets/my_dataset',
-      payload: { title: 'My Dataset' },
+      url: '/api/v2/datasets',
+      payload: { id: 'my_dataset', title: 'My Dataset' },
     });
     expect(res.statusCode).toBe(200);
     const body = res.json();
@@ -40,12 +41,24 @@ describe('surveycto', () => {
     await app.close();
   });
 
-  it('upserts a dataset row', async () => {
+  it('updates a dataset by id (item PUT)', async () => {
     const { app } = await createSystemServer(surveycto, config, { logLevel: 'silent' });
     const res = await app.inject({
-      method: 'POST',
-      url: '/api/v2/datasets/my_dataset/rows',
-      payload: { key: 'r1', name: 'Ada' },
+      method: 'PUT',
+      url: '/api/v2/datasets/my_dataset',
+      payload: { title: 'Renamed' },
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.json().id).toBe('my_dataset');
+    await app.close();
+  });
+
+  it('upserts a dataset row (PATCH record)', async () => {
+    const { app } = await createSystemServer(surveycto, config, { logLevel: 'silent' });
+    const res = await app.inject({
+      method: 'PATCH',
+      url: '/api/v2/datasets/my_dataset/record',
+      payload: { id: 'r1', name: 'Ada' },
     });
     expect(res.statusCode).toBe(200);
     expect(res.json().successful).toBe(true);

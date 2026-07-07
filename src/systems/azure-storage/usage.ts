@@ -17,14 +17,14 @@ export const usage: UsageExample[] = [
     fn: 'downloadBlob',
     signature: 'downloadBlob(blobName, options?)',
     description: 'Download the content of a blob.',
-    code: "downloadBlob('reports/summary.txt');",
+    code: "downloadBlob('hello.txt');",
     apiRef: 'download',
   },
   {
     fn: 'getBlobProperties',
     signature: 'getBlobProperties(blobName, options?)',
     description: 'Fetch blob properties and metadata (size, last-modified, blob type).',
-    code: "getBlobProperties('reports/summary.txt');",
+    code: "getBlobProperties('hello.txt');",
     apiRef: 'download',
   },
 ];

@@ -16,7 +16,7 @@ export const guide: SystemGuide = {
     {
       id: 'token',
       method: 'POST',
-      path: '/api/Auth/RequestToken',
+      path: '/v3/api/Auth/RequestToken',
       label: 'Request an access token',
       body: JSON.stringify(
         { consumer_key: 'mock-consumer-key', consumer_secret: 'mock-consumer-secret' },
@@ -27,7 +27,7 @@ export const guide: SystemGuide = {
     {
       id: 'submitOrder',
       method: 'POST',
-      path: '/api/Transactions/SubmitOrderRequest',
+      path: '/v3/api/Transactions/SubmitOrderRequest',
       label: 'Submit an order request',
       body: JSON.stringify(
         { id: 'order-1001', amount: 1000, currency: 'KES', description: 'Test order' },
@@ -38,13 +38,13 @@ export const guide: SystemGuide = {
     {
       id: 'status',
       method: 'GET',
-      path: '/api/Transactions/GetTransactionStatus?orderTrackingId=b945e4af-80a5-4ec1-8706',
+      path: '/v3/api/Transactions/GetTransactionStatus?orderTrackingId=b945e4af-80a5-4ec1-8706',
       label: 'Get transaction status',
     },
     {
       id: 'registerIpn',
       method: 'POST',
-      path: '/api/URLSetup/RegisterIPN',
+      path: '/v3/api/URLSetup/RegisterIPN',
       label: 'Register an IPN URL',
       body: JSON.stringify(
         { url: 'https://example.com/ipn', ipn_notification_type: 'GET' },

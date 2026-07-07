@@ -2,36 +2,36 @@ import type { UsageExample } from '../types.js';
 
 /**
  * Usage examples for the googledrive sandbox "Usage" tab: one entry per adaptor
- * function (list, create, get, update). Each takes a resource path relative to
- * the Drive API.
+ * function (list, create, get, update). `list` takes a folder id; `get` a file
+ * id or name; `create`/`update` stream base64-encoded file content.
  */
 export const usage: UsageExample[] = [
   {
     fn: 'list',
-    signature: 'list(path, options?)',
-    description: 'List Drive files.',
-    code: "list('files');",
+    signature: 'list(folderId, options?)',
+    description: 'List the files in a Drive folder.',
+    code: "list('folder_seed01');",
     apiRef: 'listFiles',
   },
   {
     fn: 'create',
-    signature: 'create(path, params, options?)',
-    description: 'Create a file or folder in Drive.',
-    code: "create('files', {\n  resource: {\n    name: 'New Folder',\n    mimeType: 'application/vnd.google-apps.folder'\n  }\n});",
+    signature: 'create(content, fileName, options?)',
+    description: 'Create a Drive file from base64-encoded content.',
+    code: "create('SGVsbG8sIHdvcmxkIQ==', 'New File.txt');",
     apiRef: 'createFile',
   },
   {
     fn: 'get',
-    signature: 'get(path, options?)',
-    description: 'Fetch a single Drive file by id.',
-    code: "get('files/file_seed01');",
+    signature: 'get(fileIdOrName)',
+    description: 'Fetch a single Drive file by id (or name).',
+    code: "get('file_seed01');",
     apiRef: 'getFile',
   },
   {
     fn: 'update',
-    signature: 'update(path, params, options?)',
-    description: 'Update the metadata of a Drive file.',
-    code: "update('files/file_seed01', {\n  resource: { name: 'Renamed.pdf' }\n});",
+    signature: 'update(fileId, content)',
+    description: 'Replace a Drive file’s content with base64-encoded bytes.',
+    code: "update('file_seed01', 'SGVsbG8sIHdvcmxkIQ==');",
     apiRef: 'updateFile',
   },
 ];

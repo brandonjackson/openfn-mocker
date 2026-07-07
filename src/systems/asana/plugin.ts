@@ -43,6 +43,10 @@ const plugin: MockSystemPlugin = {
       { name: 'workspaceGid', role: 'static', value: '12345' },
     ],
   },
+  // The adaptor hardcodes https://app.asana.com (no configurable base URL — the
+  // `baseUrl` field above is inert, like mailgun's), so `pnpm test:usage` must
+  // alias that host to the mock. See src/systems/types.ts `hostAliases`.
+  hostAliases: ['app.asana.com'],
 
   usage,
   guide,

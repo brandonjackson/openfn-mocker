@@ -41,6 +41,10 @@ const plugin: MockSystemPlugin = {
       { name: 'access_token', role: 'secret', secret: { charset: 'hex', length: 40 } },
     ],
   },
+  // The googleapis client hardcodes sheets.googleapis.com (no configurable base
+  // URL — the `baseUrl` field above is inert), so `pnpm test:usage` aliases that
+  // host to the mock. See src/systems/types.ts `hostAliases`.
+  hostAliases: ['sheets.googleapis.com'],
 
   usage,
   guide,

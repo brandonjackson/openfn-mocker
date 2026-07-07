@@ -9,8 +9,10 @@ import { guide } from './guide.js';
 /**
  * Zata tax compliance. The zata adaptor exposes generic get / post / put /
  * request verbs over the Zata REST API, authenticated with a Bearer API token.
- * A sale is POSTed to /transaction/sale and echoed back with a generated id and
- * an `accepted` status; transactions can then be read by id or listed.
+ * The adaptor prepends `apiVersion` (pinned to `v1`) to every path, so routes
+ * live under `/v1/...`. A sale is POSTed to /v1/transaction/sale and echoed back
+ * with a generated id and an `accepted` status; transactions can then be read by
+ * id or listed.
  */
 
 const plugin: MockSystemPlugin = {
@@ -31,7 +33,7 @@ const plugin: MockSystemPlugin = {
 
   async overrides(app: FastifyInstance, store: DataStore, _config: SystemConfig) {
     // --- Record a sale ---
-    app.post('/transaction/sale', async (req, reply) => {
+    app.post('/v1/transaction/sale', async (req, reply) => {
       const body = (req.body ?? {}) as Record<string, any>;
       const id = randomUUID();
       const transaction = {
@@ -46,7 +48,7 @@ const plugin: MockSystemPlugin = {
     });
 
     // --- Read one transaction by id ---
-    app.get('/transaction/:id', async (req, reply) => {
+    app.get('/v1/transaction/:id', async (req, reply) => {
       const id = String((req.params as Record<string, any>).id);
       const found = store.get('transactions', id);
       if (!found) {
@@ -57,7 +59,7 @@ const plugin: MockSystemPlugin = {
     });
 
     // --- List transactions ---
-    app.get('/transactions', async () => ({ transactions: store.list('transactions') }));
+    app.get('/v1/transactions', async () => ({ transactions: store.list('transactions') }));
   },
 
   seed,

@@ -28,6 +28,11 @@ const plugin: MockSystemPlugin = {
       { name: 'apiKey', role: 'secret', secret: { charset: 'alnum', length: 39, prefix: 'AIza' } },
     ],
   },
+  // The @google/genai client hardcodes generativelanguage.googleapis.com (no
+  // configurable base URL — the `baseUrl` field above is inert), so
+  // `pnpm test:usage` aliases that host to the mock. See src/systems/types.ts
+  // `hostAliases` and the README's "Local network aliasing".
+  hostAliases: ['generativelanguage.googleapis.com'],
 
   usage,
   guide,

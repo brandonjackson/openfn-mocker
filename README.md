@@ -693,7 +693,7 @@ Create (or edit) the credential for each adaptor and point its URL field at the 
 { "baseUrl": "http://localhost:4000/mailchimp", "server": "us1", "apiKey": "<generated>" }
 
 // SurveyCTO  (username & password)
-{ "baseUrl": "http://localhost:4000/surveycto", "servername": "mockserver", "username": "user@example.com", "password": "<generated>", "apiVersion": "v1" }
+{ "baseUrl": "http://localhost:4000/surveycto", "servername": "mockserver", "username": "user@example.com", "password": "<generated>", "apiVersion": "v2" }
 
 // OpenFn Collections  (API key)
 { "collections_endpoint": "http://localhost:4000/collections", "collections_token": "<generated>", "project_id": "mock-project" }
@@ -741,7 +741,7 @@ Create (or edit) the credential for each adaptor and point its URL field at the 
 { "baseUrl": "http://localhost:4000/googlesheets", "access_token": "<generated>" }
 
 // Pesapal (v3)  (OAuth client credentials)
-{ "baseUrl": "http://localhost:4000/pesapal", "consumer_key": "mock-consumer-key", "consumer_secret": "<generated>" }
+{ "baseUrl": "http://localhost:4000/pesapal", "apiVersion": "v3", "consumer_key": "mock-consumer-key", "consumer_secret": "<generated>" }
 
 // OpenFn (Lightning)  (API key)
 { "baseUrl": "http://localhost:4000/openfn", "access_token": "<generated>" }
@@ -981,16 +981,22 @@ empirical check behind those gaps.
 
 ## Local network aliasing
 
-A few adaptors call hostnames the mock isn't reachable at by just setting a
-`baseUrl`: either a literal public hostname hardcoded into the adaptor (Mailgun
-always calls `api.mailgun.net`; Twilio, `api.twilio.com`), or per-service hosts
-it derives from the credential's own domain (OpenCRVS's v2 adaptor builds
-`auth.<domain>`, `gateway.<domain>`, `register.<domain>`,
-`countryconfig.<domain>`). A plugin declares these on
-`MockSystemPlugin.hostAliases` (see `src/systems/types.ts`) — but what (if
-anything) can be done to actually resolve them to this mock is different in
-each of the three places this project runs, and none of it involves touching
-adaptor code:
+**There is one rule for pointing an adaptor at the mock, and two ways it plays
+out.** Most adaptors expose a configurable base URL (a `baseUrl` / `apiUrl` /
+`host` / `instanceUrl` credential field), so the mock just sets that field to
+its own origin — no aliasing, nothing special. Reach for `hostAliases` *only*
+when an adaptor gives you no such field: either it hardcodes a literal public
+hostname (Mailgun's `api.mailgun.net`, Twilio's `api.twilio.com`, Asana's
+`app.asana.com`, the Google adaptors' `*.googleapis.com`, Mailchimp's
+`<dc>.api.mailchimp.com`, Microsoft Graph's `graph.microsoft.com`, Azure Blob's
+`<account>.blob.core.windows.net`, SurveyCTO's `<server>.surveycto.com`), or it
+derives per-service hosts from the credential's own domain (OpenCRVS's v2 adaptor
+builds `auth.<domain>`, `gateway.<domain>`, `register.<domain>`,
+`countryconfig.<domain>`). Those systems declare the hosts they need on
+`MockSystemPlugin.hostAliases` (see `src/systems/types.ts`) — one mechanism, one
+declaration, whatever the adaptor. What (if anything) can be done to actually
+resolve those aliases to this mock is different in each of the three places this
+project runs, and none of it involves touching adaptor code:
 
 1. **Local dev / `pnpm test:usage` — supported.** The test harness
    (`scripts/lib/host-alias-proxy.ts`) fully owns the machine it runs on, so it
@@ -1076,23 +1082,23 @@ box:
   Timeout`. The mock itself handles a correctly-serialized multipart POST fine;
   the fix is upstream in the adaptor's multipart send path. Until then these two
   examples fail fast in `pnpm test:usage`.
-- **Twilio still calls the real `api.twilio.com`.** Mailgun's identical
-  hardcoded-hostname problem is now solved for local dev/test (see [Local
-  network aliasing](#local-network-aliasing)) — Twilio just hasn't been wired
-  up to the same `hostAliases` mechanism yet (a one-line addition once
-  someone needs it). Neither can ever work against a *hosted* mock deployment
-  regardless — see point 3 in that section.
+- **sunbird-rc can't be loaded by the OpenFn runtime.** `@openfn/language-sunbird-rc@1.1.2`
+  is published as ESM (`"type": "module"`, runtime entry `dist/index.js`) but
+  esbuild bundled `undici` into it and left CommonJS-style dynamic requires
+  behind. Its top-level init runs `__require("assert")` (via the esbuild
+  `Dynamic require of "x" is not supported` shim, plus ~117 other
+  `__require(...)` sites for `http`/`net`/`stream`/`tls`/…), and under the
+  runtime's ESM loader `require` is undefined — so the module throws at
+  *import* time, before any request is made. The mock already models every
+  route the adaptor would call (`POST /api/v1/:entity`, `GET /api/v1/:entity/:id`,
+  `POST /credentials/issue`, `GET /credentials/:id`), so nothing on the mock
+  side can help; the fix is upstream (republish with `undici` external, or run
+  under a loader that injects a `require` shim).
 - **Alternative auth modes.** Several adaptors accept a second credential shape
   the sandbox doesn't surface yet: DHIS2 personal access token (`pat`),
   `access_token` on FHIR / http / ODK, CommCare's `ApiKey <user>:<key>` header,
   and Salesforce's `securityToken`. Model these so both variants of each
   credential work.
-- **Salesforce end-to-end via jsforce.** Salesforce now has a plugin (REST Data
-  API — `sobjects`, `describe`, SOQL `query` — plus a SOAP login and OAuth token
-  stub), so its request/response surface is modelled and directly testable. The
-  stock adaptor authenticates through `jsforce`, whose login handshake and
-  instance-URL derivation still need alignment before it can be driven fully end
-  to end against a single-origin mount (`pnpm test:usage`).
 - **Primero `createReferrals` adaptor bug.** The stock adaptor passes `json: {
   data }` to `request`, which auto-parses the response body into an object —
   then the adaptor calls `JSON.parse()` on that already-parsed object anyway,

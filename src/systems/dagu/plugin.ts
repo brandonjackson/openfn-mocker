@@ -6,15 +6,19 @@ import { usage } from './usage.js';
 import { guide } from './guide.js';
 
 /**
- * Dagu workflow engine. The dagu adaptor exposes generic get / post / request
- * verbs over the Dagu v1 REST API (under /api/v1), authenticated with HTTP
- * Basic. Listings come back under `{ DAGs, Errors, HasError }`; a single DAG is
- * wrapped in `{ DAG }`, and actions (start/stop) are POSTed to the DAG path.
+ * Dagu workflow engine. The dagu adaptor first logs in (POST /account/login
+ * with `{ username, password }` JSON, reading `body.token.access_token`), then
+ * sends that token as a Bearer credential on the generic get / post / request
+ * verbs over the Dagu v1 REST API (under /api/v1). Listings come back under
+ * `{ DAGs, Errors, HasError }`; a single DAG is wrapped in `{ DAG }`, and
+ * actions (start/stop) are POSTed to the DAG path.
  */
 
 const plugin: MockSystemPlugin = {
   name: 'dagu',
-  auth: { required: true, schemes: ['basic'] },
+  // The adaptor authenticates via a login handshake, not a header on the first
+  // request, so /account/login must be reachable without credentials.
+  auth: { required: true, schemes: ['bearer'], exemptPaths: ['/account/login'] },
   credential: {
     type: 'userpass',
     authHeader: { scheme: 'basic', userField: 'username', passField: 'password' },
@@ -29,6 +33,13 @@ const plugin: MockSystemPlugin = {
   guide,
 
   async overrides(app: FastifyInstance, store: DataStore, _config: SystemConfig) {
+    // --- Login handshake ---
+    // The adaptor POSTs { username, password } here before any call and reads
+    // body.token.access_token, which it then sends as a Bearer token.
+    app.post('/account/login', async () => ({
+      token: { access_token: 'mock-access-token' },
+    }));
+
     // --- List DAGs ---
     app.get('/api/v1/dags', async () => ({
       DAGs: store.list('dags'),

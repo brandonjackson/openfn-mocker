@@ -2,7 +2,10 @@ import type { UsageExample } from '../types.js';
 
 /**
  * Usage examples for the mailchimp sandbox "Usage" tab: one entry per adaptor
- * function. Each `apiRef` links to a matching example id on the guide.
+ * function. Every function (except `listAudiences`) takes a single options
+ * object — `listId` and the rest of the arguments are properties on it, not
+ * positional — so the snippets pass one object. Each `apiRef` links to a
+ * matching example id on the guide.
  */
 export const usage: UsageExample[] = [
   {
@@ -14,58 +17,58 @@ export const usage: UsageExample[] = [
   },
   {
     fn: 'listAudienceInfo',
-    signature: 'listAudienceInfo(listId, query?, callback?)',
+    signature: 'listAudienceInfo({ listId }, callback?)',
     description: 'Get information about a single audience.',
-    code: "listAudienceInfo('list_seed01');",
+    code: "listAudienceInfo({ listId: 'list_seed01' });",
     apiRef: 'getList',
   },
   {
     fn: 'listMembers',
-    signature: 'listMembers(listId, query?, callback?)',
+    signature: 'listMembers({ listId, ...query }, callback?)',
     description: 'List the members of an audience.',
-    code: "listMembers('list_seed01');",
+    code: "listMembers({ listId: 'list_seed01' });",
     apiRef: 'listMembers',
   },
   {
     fn: 'addMember',
-    signature: 'addMember(listId, member, callback?)',
+    signature: 'addMember({ listId, member }, callback?)',
     description: 'Add a new member to an audience.',
-    code: "addMember('list_seed01', {\n  email_address: 'grace@example.com',\n  status: 'subscribed'\n});",
+    code: "addMember({\n  listId: 'list_seed01',\n  member: [{ email_address: 'grace@example.com', status: 'subscribed' }]\n});",
     apiRef: 'addMember',
   },
   {
     fn: 'updateMember',
-    signature: 'updateMember(listId, subscriberHash, member, callback?)',
+    signature: 'updateMember({ listId, subscriberHash, member }, callback?)',
     description: 'Update an existing audience member.',
-    code: "updateMember('list_seed01', 'hashseed01', {\n  status: 'unsubscribed'\n});",
+    code: "updateMember({\n  listId: 'list_seed01',\n  subscriberHash: 'hashseed01',\n  member: { status: 'unsubscribed' }\n});",
     apiRef: 'updateMember',
   },
   {
     fn: 'upsertMembers',
-    signature: 'upsertMembers(listId, members, callback?)',
+    signature: 'upsertMembers({ listId, users }, callback?)',
     description: 'Add or update audience members in bulk.',
-    code: "upsertMembers('list_seed01', [\n  { email_address: 'ada@example.com', status: 'subscribed' }\n]);",
-    apiRef: 'addMember',
+    code: "upsertMembers({\n  listId: 'list_seed01',\n  users: [{ email: 'ada@example.com', status: 'subscribed' }]\n});",
+    apiRef: 'batchMembers',
   },
   {
     fn: 'tagMembers',
-    signature: 'tagMembers(listId, member, callback?)',
-    description: 'Add or remove tags on an audience member.',
-    code: "tagMembers('list_seed01', {\n  email_address: 'ada@example.com',\n  tags: [{ name: 'VIP', status: 'active' }]\n});",
-    apiRef: 'tag',
+    signature: 'tagMembers({ listId, tagId, members }, callback?)',
+    description: 'Add members to a segment (tag) in bulk.',
+    code: "tagMembers({\n  listId: 'list_seed01',\n  tagId: 'seg01',\n  members: ['ada@example.com']\n});",
+    apiRef: 'segmentMembers',
   },
   {
     fn: 'startBatch',
-    signature: 'startBatch(operations, callback?)',
+    signature: 'startBatch({ operations }, callback?)',
     description: 'Start a batch of operations to run asynchronously.',
-    code: "startBatch([\n  { method: 'POST', path: '/lists/list_seed01/members', body: '{}' }\n]);",
+    code: "startBatch({\n  operations: [{ method: 'POST', path: '/lists/list_seed01/members', body: '{}' }]\n});",
     apiRef: 'batch',
   },
   {
     fn: 'deleteMember',
-    signature: 'deleteMember(listId, subscriberHash, callback?)',
-    description: 'Archive (permanently delete) an audience member.',
-    code: "deleteMember('list_seed01', 'hashseed01');",
+    signature: 'deleteMember({ listId, subscriberHash }, callback?)',
+    description: 'Permanently delete an audience member.',
+    code: "deleteMember({ listId: 'list_seed01', subscriberHash: 'hashseed01' });",
     apiRef: 'deleteMember',
   },
 ];

@@ -1,10 +1,12 @@
 import type { SystemGuide } from '../types.js';
 
 /**
- * Sandbox guide for the collections system. Values live at
- * /collections/:name/:key, listings at /collections/:name; a listing returns
- * { items, cursor }. Auth is a Bearer token. Referenced by the usage examples'
- * `apiRef` cross-links.
+ * Sandbox guide for the collections system. Paths are relative to the system
+ * mount (`/collections`), which the adaptor's `collections_endpoint` already
+ * includes — so a value lives at `<mount>/:name/:key` and a listing at
+ * `<mount>/:name`; a listing returns { items, cursor }. Each value is a JSON
+ * string. Auth is a Bearer token. Referenced by the usage examples' `apiRef`
+ * cross-links.
  */
 export const guide: SystemGuide = {
   title: 'OpenFn Collections',
@@ -16,21 +18,25 @@ export const guide: SystemGuide = {
     {
       id: 'getKey',
       method: 'GET',
-      path: '/collections/patients/patient-001',
+      path: '/patients/patient-001',
       label: 'Fetch a value by key',
     },
-    { id: 'listKeys', method: 'GET', path: '/collections/patients', label: 'List values in a collection' },
+    { id: 'listKeys', method: 'GET', path: '/patients', label: 'List values in a collection' },
     {
       id: 'setKey',
       method: 'POST',
-      path: '/collections/patients',
+      path: '/patients',
       label: 'Upsert key/value pairs',
-      body: JSON.stringify({ items: [{ key: 'patient-003', value: { name: 'Grace' } }] }, null, 2),
+      body: JSON.stringify(
+        { items: [{ key: 'patient-003', value: JSON.stringify({ name: 'Grace' }) }] },
+        null,
+        2
+      ),
     },
     {
       id: 'removeKey',
       method: 'DELETE',
-      path: '/collections/patients/patient-001',
+      path: '/patients/patient-001',
       label: 'Remove a value by key',
     },
   ],

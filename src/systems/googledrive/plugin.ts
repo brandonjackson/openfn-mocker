@@ -9,9 +9,11 @@ import { guide } from './guide.js';
 /**
  * Google Drive v3 (www.googleapis.com/drive/v3). The googledrive adaptor
  * authenticates with a Bearer access token and calls the Drive Files resource:
- * list, get, create and update files/folders. Create/update accept the file
- * metadata either directly or wrapped in a `{ resource }` object (the adaptor's
- * `create('files', { resource: {...} })` shape), so both are unwrapped here.
+ * list, get, create and update files. The metadata routes (POST/PATCH
+ * /drive/v3/files) create/patch by JSON body; the adaptor's typed create/update
+ * instead stream file content as a multipart upload to the /upload/drive/v3
+ * endpoints, which are modelled separately below. Create/update metadata may be
+ * sent directly or wrapped in a `{ resource }` object, so both are unwrapped.
  */
 
 /** Unwrap the file metadata from a `{ resource }` wrapper or a bare body. */
@@ -20,6 +22,16 @@ function resourceOf(body: Record<string, any>): Record<string, any> {
     string,
     any
   >;
+}
+
+/** Best-effort extract the "name" from a multipart/related upload body. */
+function nameFromUploadBody(body: unknown): string | undefined {
+  const raw = typeof body === 'string' ? body : body == null ? '' : JSON.stringify(body);
+  return raw.match(/"name"\s*:\s*"([^"]+)"/)?.[1];
+}
+
+function nowIso(): string {
+  return new Date().toISOString();
 }
 
 const plugin: MockSystemPlugin = {
@@ -33,6 +45,10 @@ const plugin: MockSystemPlugin = {
       { name: 'access_token', role: 'secret', secret: { charset: 'hex', length: 40 } },
     ],
   },
+  // The googleapis client hardcodes www.googleapis.com (no configurable base URL
+  // — the `baseUrl` field above is inert), so `pnpm test:usage` aliases that host
+  // to the mock. See src/systems/types.ts `hostAliases`.
+  hostAliases: ['www.googleapis.com'],
 
   usage,
   guide,
@@ -79,6 +95,41 @@ const plugin: MockSystemPlugin = {
       }
       const resource = resourceOf((req.body ?? {}) as Record<string, any>);
       return store.update('files', id, resource);
+    });
+
+    // POST /upload/drive/v3/files — create() streams content here as a
+    // multipart/related upload (uploadType=multipart), not to the metadata
+    // endpoint above. The file metadata (name) rides in the multipart body.
+    app.post('/upload/drive/v3/files', async (req) => {
+      const id = randomUUID();
+      const name = nameFromUploadBody(req.body) ?? 'Untitled';
+      const file = {
+        id,
+        name,
+        mimeType: 'application/octet-stream',
+        kind: 'drive#file',
+        webViewLink: `https://drive.google.com/file/d/${id}/view`,
+        size: '11',
+        createdTime: nowIso(),
+      };
+      store.create('files', id, file);
+      return file;
+    });
+
+    // PATCH /upload/drive/v3/files/:id — update() streams replacement content
+    // here (uploadType=multipart). Echo back the updated file.
+    app.patch('/upload/drive/v3/files/:id', async (req, reply) => {
+      const id = String((req.params as Record<string, any>).id);
+      const existing = store.get('files', id);
+      if (!existing) {
+        reply.code(404);
+        return { error: { code: 404, message: 'File not found' } };
+      }
+      const updated = store.update('files', id, {
+        size: '11',
+        webViewLink: `https://drive.google.com/file/d/${id}/view`,
+      });
+      return { id, name: updated?.name ?? existing.name, webViewLink: updated?.webViewLink, size: '11' };
     });
   },
 

@@ -26,9 +26,14 @@ const plugin: MockSystemPlugin = {
       { name: 'servername', role: 'static', value: 'mockserver' },
       { name: 'username', role: 'username', value: 'user@example.com' },
       { name: 'password', role: 'secret', secret: { charset: 'alnum', length: 16 } },
-      { name: 'apiVersion', role: 'static', value: 'v1' },
+      { name: 'apiVersion', role: 'static', value: 'v2' },
     ],
   },
+  // The adaptor builds https://<servername>.surveycto.com/api/<apiVersion> and
+  // never reads a base URL (the `baseUrl` field above is inert), so
+  // `pnpm test:usage` aliases the derived host to the mock. See
+  // src/systems/types.ts `hostAliases`.
+  hostAliases: ['mockserver.surveycto.com'],
 
   usage,
   guide,
@@ -43,23 +48,43 @@ const plugin: MockSystemPlugin = {
     app.get('/forms/data/wide/json/exports/:formId', wideJson);
 
     // --- Datasets ----------------------------------------------------------
-    // list('datasets') — enumerate server datasets.
-    app.get('/api/v2/datasets', async () => ({ datasets: store.list('datasets') }));
+    // list('datasets') — the adaptor pages over a { data, nextCursor } envelope.
+    app.get('/api/v2/datasets', async () => ({ data: store.list('datasets'), nextCursor: null }));
 
-    // upsertDataset — create or replace a server dataset by id.
-    app.post('/api/v2/datasets/:datasetId', async (req) => {
-      const datasetId = String((req.params as Record<string, any>).datasetId);
-      const body = (req.body ?? {}) as Record<string, any>;
-      const dataset = { ...body, id: datasetId };
-      store.replace('datasets', datasetId, dataset);
+    // upsertDataset first GETs the dataset by id to decide create vs update
+    // (200 -> PUT update, 404 -> POST create).
+    app.get('/api/v2/datasets/:datasetId', async (req, reply) => {
+      const id = String((req.params as Record<string, any>).datasetId);
+      const dataset = store.get('datasets', id);
+      if (!dataset) {
+        reply.code(404);
+        return { error: 'not found' };
+      }
       return dataset;
     });
 
-    // upsertRecord — upsert a single row into a dataset.
-    app.post('/api/v2/datasets/:datasetId/rows', async (req) => {
+    // upsertDataset create (collection POST, dataset id comes from the body).
+    app.post('/api/v2/datasets', async (req) => {
+      const body = (req.body ?? {}) as Record<string, any>;
+      const id = String(body.id);
+      const dataset = { ...body, id };
+      store.replace('datasets', id, dataset);
+      return dataset;
+    });
+
+    // upsertDataset update (item PUT).
+    app.put('/api/v2/datasets/:datasetId', async (req) => {
+      const id = String((req.params as Record<string, any>).datasetId);
+      const dataset = { ...((req.body ?? {}) as Record<string, any>), id };
+      store.replace('datasets', id, dataset);
+      return dataset;
+    });
+
+    // upsertRecord — PATCH a single row (record id carried as ?recordId=).
+    app.patch('/api/v2/datasets/:datasetId/record', async (req) => {
       const datasetId = String((req.params as Record<string, any>).datasetId);
       const body = (req.body ?? {}) as Record<string, any>;
-      const key = body.key != null && String(body.key).length ? String(body.key) : datasetId + '-row';
+      const key = body.id != null && String(body.id).length ? String(body.id) : datasetId + '-row';
       store.replace('records', key, { datasetId, ...body });
       return { successful: true };
     });

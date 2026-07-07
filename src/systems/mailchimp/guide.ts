@@ -30,6 +30,24 @@ export const guide: SystemGuide = {
       body: JSON.stringify({ status: 'unsubscribed' }, null, 2),
     },
     {
+      id: 'batchMembers',
+      method: 'POST',
+      path: '/3.0/lists/list_seed01',
+      label: 'Bulk add/update members (upsertMembers)',
+      body: JSON.stringify(
+        { members: [{ email_address: 'ada@example.com', status: 'subscribed' }], update_existing: true },
+        null,
+        2
+      ),
+    },
+    {
+      id: 'segmentMembers',
+      method: 'POST',
+      path: '/3.0/lists/list_seed01/segments/seg01',
+      label: 'Add members to a segment/tag (tagMembers)',
+      body: JSON.stringify({ members_to_add: ['ada@example.com'] }, null, 2),
+    },
+    {
       id: 'tag',
       method: 'POST',
       path: '/3.0/lists/list_seed01/members/hashseed01/tags',
@@ -49,9 +67,9 @@ export const guide: SystemGuide = {
     },
     {
       id: 'deleteMember',
-      method: 'DELETE',
-      path: '/3.0/lists/list_seed01/members/hashseed01',
-      label: 'Archive/delete a member (204)',
+      method: 'POST',
+      path: '/3.0/lists/list_seed01/members/hashseed01/actions/delete-permanent',
+      label: 'Permanently delete a member (204)',
     },
   ],
 };
