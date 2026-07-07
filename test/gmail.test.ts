@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { createSystemServer } from '../src/server.js';
 import gmail from '../src/systems/gmail/plugin.js';
+import { exampleCsv, exampleXlsx, examplePng } from '../src/systems/shared/attachments.js';
 
 const config = { port: 0 };
 
@@ -59,6 +60,66 @@ describe('gmail', () => {
     const body = res.json();
     expect(body.attachmentId).toBe('att_seed01');
     expect(Buffer.from(body.data, 'base64').toString('utf-8')).toContain('Western Area');
+    await app.close();
+  });
+
+  it('carries the three dummy attachments on the sample message, matchable by filename', async () => {
+    const { app } = await createSystemServer(gmail, config, { logLevel: 'silent' });
+    // The sample-attachments message is found by a subject: query, so a workflow
+    // can target exactly it.
+    const list = await app.inject({
+      method: 'GET',
+      url: '/gmail/v1/users/me/messages?q=subject:sample',
+    });
+    expect(list.json().messages).toEqual([{ id: 'msg_seed03', threadId: 'thread_seed03' }]);
+
+    const res = await app.inject({
+      method: 'GET',
+      url: '/gmail/v1/users/me/messages/msg_seed03?format=full',
+    });
+    expect(res.statusCode).toBe(200);
+    const parts: any[] = res.json().payload.parts;
+
+    // Every dummy attachment is a message part carrying its filename + an
+    // attachmentId — exactly what the adaptor matches on to download by name.
+    for (const fx of [exampleCsv, exampleXlsx, examplePng]) {
+      const part = parts.find((p) => p.filename === fx.filename);
+      expect(part, `part for ${fx.filename}`).toBeDefined();
+      expect(part.mimeType).toBe(fx.mimeType);
+      expect(part.body.size).toBe(fx.size);
+      expect(typeof part.body.attachmentId).toBe('string');
+    }
+    await app.close();
+  });
+
+  it('returns each dummy attachment’s bytes intact (csv, xlsx, png)', async () => {
+    const { app } = await createSystemServer(gmail, config, { logLevel: 'silent' });
+    const cases = [
+      { id: 'att_example_csv', fx: exampleCsv },
+      { id: 'att_example_xlsx', fx: exampleXlsx },
+      { id: 'att_example_png', fx: examplePng },
+    ];
+    for (const { id, fx } of cases) {
+      const res = await app.inject({
+        method: 'GET',
+        url: `/gmail/v1/users/me/messages/msg_seed03/attachments/${id}`,
+      });
+      expect(res.statusCode).toBe(200);
+      const body = res.json();
+      expect(body.attachmentId).toBe(id);
+      expect(body.size).toBe(fx.size);
+      // Bytes come back base64url-encoded, as the real API returns them, and
+      // decode back to the original file byte-for-byte.
+      expect(Buffer.from(body.data, 'base64url').equals(fx.bytes())).toBe(true);
+    }
+
+    // The CSV in particular decodes to readable text (the adaptor's file
+    // content type does Buffer.from(data,'base64').toString('utf-8')).
+    const csv = await app.inject({
+      method: 'GET',
+      url: '/gmail/v1/users/me/messages/msg_seed03/attachments/att_example_csv',
+    });
+    expect(Buffer.from(csv.json().data, 'base64').toString('utf-8')).toContain('Western Area');
     await app.close();
   });
 
