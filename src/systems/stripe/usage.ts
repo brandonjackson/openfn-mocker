@@ -15,9 +15,9 @@ export const usage: UsageExample[] = [
   },
   {
     fn: 'get',
-    signature: 'get(path, options?)',
-    description: 'Retrieve a single Stripe object by resource path.',
-    code: "get('customers/cus_seed01');",
+    signature: 'get(resource, id)',
+    description: 'Retrieve a single Stripe object by resource and id.',
+    code: "get('customers', 'cus_seed01');",
     apiRef: 'getCustomer',
   },
 ];

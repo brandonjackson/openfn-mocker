@@ -15,16 +15,16 @@ export const guide: SystemGuide = {
     {
       id: 'sale',
       method: 'POST',
-      path: '/transaction/sale',
+      path: '/v1/transaction/sale',
       label: 'Record a sale transaction',
       body: JSON.stringify({ amount: 1500, currency: 'USD', buyerTin: '1000000001' }, null, 2),
     },
     {
       id: 'getTxn',
       method: 'GET',
-      path: '/transaction/TXN-0001',
+      path: '/v1/transaction/TXN-0001',
       label: 'Fetch a transaction by id',
     },
-    { id: 'listTxn', method: 'GET', path: '/transactions', label: 'List transactions' },
+    { id: 'listTxn', method: 'GET', path: '/v1/transactions', label: 'List transactions' },
   ],
 };

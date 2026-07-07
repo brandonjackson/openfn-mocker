@@ -22,16 +22,16 @@ export const usage: UsageExample[] = [
   },
   {
     fn: 'upsertDataset',
-    signature: 'upsertDataset(datasetId, options?, callback?)',
-    description: 'Create or replace a server dataset.',
-    code: "upsertDataset('my_dataset');",
+    signature: 'upsertDataset(data, callback?)',
+    description: 'Create or replace a server dataset (id is read from the data).',
+    code: "upsertDataset({ id: 'my_dataset', title: 'My Dataset', type: 'SERVER_DATASET' });",
     apiRef: 'upsertDataset',
   },
   {
     fn: 'upsertRecord',
     signature: 'upsertRecord(datasetId, record, callback?)',
     description: 'Insert or update a single row in a server dataset.',
-    code: "upsertRecord('my_dataset', { key: 'r1', name: 'Ada' });",
+    code: "upsertRecord('my_dataset', { id: 'r1', name: 'Ada' });",
     apiRef: 'upsertRecord',
   },
 ];

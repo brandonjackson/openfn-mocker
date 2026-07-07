@@ -8,20 +8,24 @@ import { guide } from './guide.js';
 
 /**
  * Pesapal payments (API v3). The pesapal adaptor exposes generic get / post /
- * request verbs over the Pesapal API (under /api). A Bearer token is minted
- * first via POST /api/Auth/RequestToken (exempt from auth enforcement); orders
- * are then submitted and their status polled. Responses carry a string `status`
- * ('200') and an `error` field that is null on success.
+ * request verbs over the Pesapal API. It builds every request under
+ * `<baseUrl>/<apiVersion>/api` (apiVersion pinned to `v3` here so its two
+ * internal defaults — `v3` for the token call, `pesapalv3` for data calls —
+ * agree). A Bearer token is minted first via POST /v3/api/Auth/RequestToken
+ * (exempt from auth enforcement); orders are then submitted and their status
+ * polled. Responses carry a string `status` ('200') and an `error` field that
+ * is null on success.
  */
 
 const plugin: MockSystemPlugin = {
   name: 'pesapal',
-  auth: { required: true, schemes: ['bearer'], exemptPaths: ['/api/Auth/RequestToken'] },
+  auth: { required: true, schemes: ['bearer'], exemptPaths: ['/v3/api/Auth/RequestToken'] },
   credential: {
     type: 'oauth',
     authHeader: { scheme: 'bearer', value: 'mock-access-token' },
     fields: [
       { name: 'baseUrl', role: 'url' },
+      { name: 'apiVersion', role: 'static', value: 'v3' },
       { name: 'consumer_key', role: 'static', value: 'mock-consumer-key' },
       { name: 'consumer_secret', role: 'secret', secret: { charset: 'hex', length: 32 } },
     ],
@@ -32,7 +36,7 @@ const plugin: MockSystemPlugin = {
 
   async overrides(app: FastifyInstance, store: DataStore, _config: SystemConfig) {
     // --- Token exchange (exempt from auth) ---
-    app.post('/api/Auth/RequestToken', async () => ({
+    app.post('/v3/api/Auth/RequestToken', async () => ({
       token: 'mock-access-token',
       expiryDate: nowIso(),
       error: null,
@@ -41,7 +45,7 @@ const plugin: MockSystemPlugin = {
     }));
 
     // --- Submit an order ---
-    app.post('/api/Transactions/SubmitOrderRequest', async (req) => {
+    app.post('/v3/api/Transactions/SubmitOrderRequest', async (req) => {
       const body = (req.body ?? {}) as Record<string, any>;
       const orderTrackingId = randomUUID();
       const merchantReference = body.id ?? 'ref';
@@ -66,7 +70,7 @@ const plugin: MockSystemPlugin = {
     });
 
     // --- Transaction status ---
-    app.get('/api/Transactions/GetTransactionStatus', async (req) => {
+    app.get('/v3/api/Transactions/GetTransactionStatus', async (req) => {
       const query = (req.query ?? {}) as Record<string, any>;
       const orderTrackingId = String(query.orderTrackingId ?? '');
       const order = store.get('orders', orderTrackingId);
@@ -83,7 +87,7 @@ const plugin: MockSystemPlugin = {
     });
 
     // --- Register an IPN URL ---
-    app.post('/api/URLSetup/RegisterIPN', async (req) => {
+    app.post('/v3/api/URLSetup/RegisterIPN', async (req) => {
       const body = (req.body ?? {}) as Record<string, any>;
       return {
         ipn_id: randomUUID(),

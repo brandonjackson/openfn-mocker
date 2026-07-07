@@ -27,6 +27,10 @@ const plugin: MockSystemPlugin = {
       { name: 'access_token', role: 'secret', secret: { charset: 'hex', length: 40 } },
     ],
   },
+  // The adaptor hardcodes graph.microsoft.com (no configurable base URL — the
+  // `baseUrl` field above is inert), so `pnpm test:usage` aliases that host to
+  // the mock. See src/systems/types.ts `hostAliases`.
+  hostAliases: ['graph.microsoft.com'],
 
   usage,
   guide,
@@ -47,6 +51,13 @@ const plugin: MockSystemPlugin = {
 
     // GET /v1.0/drives/:driveId/root/children — folder (root) contents.
     app.get('/v1.0/drives/:driveId/root/children', async () => ({
+      value: store.list('items'),
+    }));
+
+    // GET /v1.0/drives/:driveId/items/:itemId/children — folder children by
+    // item id. getFolder always addresses a folder as items/<id>/children
+    // (with 'root' as the id for the top level), so this is the route it hits.
+    app.get('/v1.0/drives/:driveId/items/:itemId/children', async () => ({
       value: store.list('items'),
     }));
 
@@ -92,10 +103,46 @@ const plugin: MockSystemPlugin = {
       return drive;
     });
 
-    // POST /v1.0/* — generic create(resource, data). Graph echoes the created
-    // resource with a generated id. Registered last so any specific POST routes
-    // (none today) take precedence.
+    // PUT /v1.0/_uploadSession/:id — the second leg of uploadFile's resumable
+    // upload. createUploadSession (below) hands the adaptor this URL; it then
+    // PUTs the bytes here and expects the finished driveItem back.
+    app.put('/v1.0/_uploadSession/:id', async (req, reply) => {
+      const body = req.body;
+      const size =
+        typeof body === 'string'
+          ? Buffer.byteLength(body)
+          : Buffer.byteLength(JSON.stringify(body ?? ''));
+      const id = randomUUID();
+      const item = {
+        id,
+        name: 'uploaded',
+        size,
+        file: { mimeType: 'application/octet-stream' },
+        lastModifiedDateTime: nowIso(),
+      };
+      store.create('items', id, item);
+      reply.code(201);
+      return item;
+    });
+
+    // POST /v1.0/* — generic create(resource, data), plus uploadFile's
+    // createUploadSession leg. Graph echoes the created resource with a
+    // generated id; a `.../createUploadSession` POST instead returns an
+    // uploadUrl the adaptor then PUTs to (see /_uploadSession above). Registered
+    // last so any specific POST routes take precedence.
     app.post('/v1.0/*', async (req, reply) => {
+      const tail = String((req.params as Record<string, any>)['*'] ?? '');
+      if (tail.endsWith('createUploadSession')) {
+        // Point the upload URL back at this same origin. uploadFile only runs
+        // through the alias-proxy (graph.microsoft.com over TLS), so the host
+        // here is that aliased host and https is correct.
+        const host = req.headers.host ?? '127.0.0.1';
+        const sessionId = randomUUID().replace(/-/g, '').slice(0, 16);
+        return {
+          uploadUrl: `https://${host}/v1.0/_uploadSession/${sessionId}`,
+          expirationDateTime: nowIso(),
+        };
+      }
       const body = (req.body ?? {}) as Record<string, any>;
       reply.code(201);
       return { id: randomUUID(), ...body, createdDateTime: nowIso() };

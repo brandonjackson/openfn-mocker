@@ -146,6 +146,40 @@ const plugin: MockSystemPlugin = {
       return null;
     });
 
+    // --- Composite sObjects collection endpoints --------------------------
+    // jsforce (and thus the adaptor's upsert/destroy) switches to these
+    // collection endpoints whenever it is handed an array of records/ids — which
+    // the adaptor always does. Both return an array of { id, success, errors }
+    // save results (HTTP 200).
+
+    // upsert(type, records, extIdField) -> PATCH .../composite/sobjects/:type/:extIdField
+    // with { allOrNone, records: [{ <extIdField>, attributes:{type}, ...fields }] }.
+    app.patch('/services/data/:ver/composite/sobjects/:type/:extIdField', async (req) => {
+      const type = String((req.params as Record<string, any>).type);
+      const body = (req.body ?? {}) as Record<string, any>;
+      const records = Array.isArray(body.records) ? body.records : [];
+      return records.map((rec: Record<string, any>) => {
+        const id = makeSfId();
+        const { attributes: _attributes, ...fields } = rec;
+        store.create(type, id, { Id: id, ...fields, attributes: { type } });
+        return { id, success: true, errors: [], created: true };
+      });
+    });
+
+    // destroy(type, ids) -> DELETE .../composite/sobjects?ids=<csv>[&allOrNone=true]
+    // (the sObject type is not in the URL, so delete best-effort across every
+    // collection; each id yields one success result).
+    app.delete('/services/data/:ver/composite/sobjects', async (req) => {
+      const ids = String((req.query as Record<string, any>).ids ?? '')
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean);
+      return ids.map((id) => {
+        for (const c of store.collections()) store.destroy(c, id);
+        return { id, success: true, errors: [] };
+      });
+    });
+
     // SOQL query — parse the sObject name out of the `?q=` clause.
     app.get('/services/data/:ver/query', async (req) => {
       const params = req.params as Record<string, any>;

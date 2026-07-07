@@ -7,9 +7,9 @@ import type { UsageExample } from '../types.js';
 export const usage: UsageExample[] = [
   {
     fn: 'getValues',
-    signature: 'getValues(params, options?)',
+    signature: 'getValues(spreadsheetId, range, callback?)',
     description: 'Read the values of a range from a spreadsheet.',
-    code: "getValues({\n  spreadsheetId: 'sheet_seed01',\n  range: 'Sheet1!A1:C2'\n});",
+    code: "getValues('sheet_seed01', 'Sheet1!A1:C2');",
     apiRef: 'getValues',
   },
   {

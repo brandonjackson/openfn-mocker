@@ -39,7 +39,7 @@ const plugin: MockSystemPlugin = {
 
   async overrides(app: FastifyInstance, store: DataStore, _config: SystemConfig) {
     // GET /collections/:name/:key — fetch one value (static-count route wins).
-    app.get('/collections/:name/:key', async (req, reply) => {
+    app.get('/:name/:key', async (req, reply) => {
       const { name, key } = req.params as Record<string, any>;
       const found = store.get(String(name), String(key));
       if (!found) {
@@ -50,7 +50,7 @@ const plugin: MockSystemPlugin = {
     });
 
     // GET /collections/:name — list values, optionally filtered by ?key= glob.
-    app.get('/collections/:name', async (req) => {
+    app.get('/:name', async (req) => {
       const name = String((req.params as Record<string, any>).name);
       const q = (req.query ?? {}) as Record<string, any>;
       let items = store.list(name);
@@ -62,7 +62,7 @@ const plugin: MockSystemPlugin = {
     });
 
     // POST /collections/:name — upsert one or many { key, value } pairs.
-    app.post('/collections/:name', async (req) => {
+    app.post('/:name', async (req) => {
       const name = String((req.params as Record<string, any>).name);
       const body = (req.body ?? {}) as Record<string, any>;
       const incoming: Array<Record<string, any>> = Array.isArray(body.items)
@@ -89,7 +89,7 @@ const plugin: MockSystemPlugin = {
     });
 
     // DELETE /collections/:name/:key — remove one value.
-    app.delete('/collections/:name/:key', async (req, reply) => {
+    app.delete('/:name/:key', async (req, reply) => {
       const { name, key } = req.params as Record<string, any>;
       const removed = store.destroy(String(name), String(key));
       if (!removed) {
@@ -100,7 +100,7 @@ const plugin: MockSystemPlugin = {
     });
 
     // DELETE /collections/:name — remove every value in the collection.
-    app.delete('/collections/:name', async (req) => {
+    app.delete('/:name', async (req) => {
       const name = String((req.params as Record<string, any>).name);
       const keys = store.list(name).map((it) => String(it.key));
       for (const k of keys) store.destroy(name, k);

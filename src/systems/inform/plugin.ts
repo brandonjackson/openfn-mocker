@@ -7,9 +7,10 @@ import { guide } from './guide.js';
 
 /**
  * UNICEF InForm — a KoboToolbox/KPI-based form deployment. Token auth
- * ("Authorization: Token <access_token>"). The adaptor calls bare resource
- * paths (forms, forms/:id, data/:id, data/:id/:subId, media/:id), and list
- * endpoints return a { count, results } envelope.
+ * ("Authorization: Token <access_token>"). The adaptor builds every request as
+ * `<baseUrl>/api/<apiVersion>/<path>` (apiVersion pinned to `v2`), so routes
+ * live under `/api/v2/...` (forms, forms/:id, data/:id, data/:id/:subId,
+ * media/:id); list endpoints return a { count, results } envelope.
  */
 
 const plugin: MockSystemPlugin = {
@@ -32,14 +33,14 @@ const plugin: MockSystemPlugin = {
   async overrides(app: FastifyInstance, store: DataStore, _config: SystemConfig) {
     // --- Forms -------------------------------------------------------------
     // getForms — list deployed forms.
-    app.get('/forms', async () => ({
+    app.get('/api/v2/forms', async () => ({
       count: store.count('forms'),
       results: store.list('forms'),
     }));
 
     // getAttachmentMetadata / downloadAttachment — media by id.
     // (registered before /forms/:id so the routes stay unambiguous)
-    app.get('/media/:id', async (req, reply) => {
+    app.get('/api/v2/media/:id', async (req, reply) => {
       const id = String((req.params as Record<string, any>).id);
       const found = store.get('media', id);
       if (!found) {
@@ -50,7 +51,7 @@ const plugin: MockSystemPlugin = {
     });
 
     // getForm — form structure (JSON schema of fields).
-    app.get('/forms/:id/form.json', async (req, reply) => {
+    app.get('/api/v2/forms/:id/form.json', async (req, reply) => {
       const id = String((req.params as Record<string, any>).id);
       const form = store.get('forms', id);
       if (!form) {
@@ -67,7 +68,7 @@ const plugin: MockSystemPlugin = {
     });
 
     // getForm — single form by id.
-    app.get('/forms/:id', async (req, reply) => {
+    app.get('/api/v2/forms/:id', async (req, reply) => {
       const id = String((req.params as Record<string, any>).id);
       const found = store.get('forms', id);
       if (!found) {
@@ -79,7 +80,7 @@ const plugin: MockSystemPlugin = {
 
     // --- Data (submissions) ------------------------------------------------
     // getSubmission — single submission by id (static-count route wins).
-    app.get('/data/:id/:subId', async (req, reply) => {
+    app.get('/api/v2/data/:id/:subId', async (req, reply) => {
       const { subId } = req.params as Record<string, any>;
       const found = store.get('submissions', String(subId));
       if (!found) {
@@ -90,7 +91,7 @@ const plugin: MockSystemPlugin = {
     });
 
     // getSubmissions — submissions for a form.
-    app.get('/data/:id', async () => ({
+    app.get('/api/v2/data/:id', async () => ({
       count: store.count('submissions'),
       results: store.list('submissions'),
     }));

@@ -22,16 +22,16 @@ export const guide: SystemGuide = {
     {
       id: 'upsertDataset',
       method: 'POST',
-      path: '/api/v2/datasets/my_dataset',
+      path: '/api/v2/datasets',
       label: 'Create or replace a dataset',
-      body: JSON.stringify({ title: 'My Dataset', type: 'SERVER_DATASET' }, null, 2),
+      body: JSON.stringify({ id: 'my_dataset', title: 'My Dataset', type: 'SERVER_DATASET' }, null, 2),
     },
     {
       id: 'upsertRecord',
-      method: 'POST',
-      path: '/api/v2/datasets/my_dataset/rows',
+      method: 'PATCH',
+      path: '/api/v2/datasets/my_dataset/record',
       label: 'Upsert a dataset row',
-      body: JSON.stringify({ key: 'r1', name: 'Ada' }, null, 2),
+      body: JSON.stringify({ id: 'r1', name: 'Ada' }, null, 2),
     },
   ],
 };

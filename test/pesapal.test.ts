@@ -9,7 +9,7 @@ describe('pesapal', () => {
     const { app } = await createSystemServer(pesapal, config, { logLevel: 'silent' });
     const res = await app.inject({
       method: 'POST',
-      url: '/api/Auth/RequestToken',
+      url: '/v3/api/Auth/RequestToken',
       payload: { consumer_key: 'mock-consumer-key', consumer_secret: 'mock-consumer-secret' },
     });
     expect(res.statusCode).toBe(200);
@@ -23,7 +23,7 @@ describe('pesapal', () => {
     const { app } = await createSystemServer(pesapal, config, { logLevel: 'silent' });
     const res = await app.inject({
       method: 'POST',
-      url: '/api/Transactions/SubmitOrderRequest',
+      url: '/v3/api/Transactions/SubmitOrderRequest',
       payload: { id: 'order-1001', amount: 1000, currency: 'KES', description: 'Test order' },
     });
     expect(res.statusCode).toBe(200);
@@ -38,7 +38,7 @@ describe('pesapal', () => {
     const { app } = await createSystemServer(pesapal, config, { logLevel: 'silent' });
     const res = await app.inject({
       method: 'GET',
-      url: '/api/Transactions/GetTransactionStatus?orderTrackingId=b945e4af-80a5-4ec1-8706',
+      url: '/v3/api/Transactions/GetTransactionStatus?orderTrackingId=b945e4af-80a5-4ec1-8706',
     });
     expect(res.statusCode).toBe(200);
     const body = res.json();
@@ -51,7 +51,7 @@ describe('pesapal', () => {
     const { app } = await createSystemServer(pesapal, config, { logLevel: 'silent' });
     const res = await app.inject({
       method: 'POST',
-      url: '/api/URLSetup/RegisterIPN',
+      url: '/v3/api/URLSetup/RegisterIPN',
       payload: { url: 'https://example.com/ipn' },
     });
     expect(res.statusCode).toBe(200);

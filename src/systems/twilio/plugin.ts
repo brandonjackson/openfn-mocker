@@ -52,6 +52,11 @@ const plugin: MockSystemPlugin = {
       { name: 'authToken', role: 'secret', secret: { charset: 'hex', length: 32 } },
     ],
   },
+  // The adaptor builds a Twilio SDK client that hardcodes https://api.twilio.com
+  // (no configurable base URL — the `baseUrl` field above is inert), so
+  // `pnpm test:usage` aliases that host to the mock. See src/systems/types.ts
+  // `hostAliases` and the README's "Local network aliasing".
+  hostAliases: ['api.twilio.com'],
 
   usage,
   guide,

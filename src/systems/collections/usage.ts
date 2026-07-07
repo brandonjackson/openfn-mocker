@@ -22,9 +22,9 @@ export const usage: UsageExample[] = [
   },
   {
     fn: 'collections.set',
-    signature: 'collections.set(name, values, callback?)',
-    description: 'Upsert one or more key/value pairs into a collection.',
-    code: "collections.set('patients', { 'patient-003': { name: 'Grace' } });",
+    signature: 'collections.set(name, key, values, callback?)',
+    description: 'Upsert a key/value pair into a collection.',
+    code: "collections.set('patients', 'patient-003', { name: 'Grace' });",
     apiRef: 'setKey',
   },
   {

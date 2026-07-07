@@ -17,7 +17,7 @@ export const guide: SystemGuide = {
     {
       id: 'folder',
       method: 'GET',
-      path: '/v1.0/drives/b!driveSeed01/root/children',
+      path: '/v1.0/drives/b!driveSeed01/items/root/children',
       label: 'List folder (root) children',
     },
     {

@@ -30,10 +30,12 @@ const plugin: MockSystemPlugin = {
   guide,
 
   async overrides(app: FastifyInstance, store: DataStore, _config: SystemConfig) {
+    // The Lightning REST API is served under `/api` — the adaptor builds every
+    // request as `${baseUrl}/api/${path}` (e.g. get('jobs') -> GET /api/jobs).
     // --- Jobs ---
-    app.get('/jobs', async () => ({ items: store.list('jobs') }));
+    app.get('/api/jobs', async () => ({ items: store.list('jobs') }));
 
-    app.post('/jobs', async (req, reply) => {
+    app.post('/api/jobs', async (req, reply) => {
       const body = (req.body ?? {}) as Record<string, any>;
       const id = randomUUID();
       const job = {
@@ -50,7 +52,7 @@ const plugin: MockSystemPlugin = {
       return job;
     });
 
-    app.get('/jobs/:id', async (req, reply) => {
+    app.get('/api/jobs/:id', async (req, reply) => {
       const id = String((req.params as Record<string, any>).id);
       const found = store.get('jobs', id);
       if (!found) {
@@ -61,9 +63,9 @@ const plugin: MockSystemPlugin = {
     });
 
     // --- Projects ---
-    app.get('/projects', async () => ({ items: store.list('projects') }));
+    app.get('/api/projects', async () => ({ items: store.list('projects') }));
 
-    app.get('/projects/:id', async (req, reply) => {
+    app.get('/api/projects/:id', async (req, reply) => {
       const id = String((req.params as Record<string, any>).id);
       const found = store.get('projects', id);
       if (!found) {

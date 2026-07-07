@@ -38,6 +38,11 @@ const plugin: MockSystemPlugin = {
       { name: 'apiKey', role: 'secret', secret: { charset: 'hex', length: 32 } },
     ],
   },
+  // The Mailchimp SDK builds https://<server>.api.mailchimp.com/3.0 (server is
+  // the static `us1` here) and never reads a base URL (the `baseUrl` field above
+  // is inert), so `pnpm test:usage` aliases the derived host to the mock. See
+  // src/systems/types.ts `hostAliases`.
+  hostAliases: ['us1.api.mailchimp.com'],
 
   usage,
   guide,
@@ -105,7 +110,23 @@ const plugin: MockSystemPlugin = {
       return updated;
     });
 
-    // upsertMembers — PUT creates or replaces a member by subscriber hash.
+    // upsertMembers — the adaptor's upsertMembers calls the SDK's
+    // batchListMembers(listId, { members }), which POSTs to /3.0/lists/:id and
+    // returns new_members / updated_members / errors.
+    app.post('/3.0/lists/:id', async (req) => {
+      const members = Array.isArray((req.body as any)?.members) ? (req.body as any).members : [];
+      return {
+        new_members: [],
+        updated_members: members,
+        errors: [],
+        total_created: 0,
+        total_updated: members.length,
+        error_count: 0,
+      };
+    });
+
+    // A member upsert by subscriber hash (PUT) — kept for the single-member
+    // upsert path some workflows use directly.
     app.put('/3.0/lists/:id/members/:hash', async (req) => {
       const params = req.params as Record<string, any>;
       const id = String(params.id);
@@ -124,13 +145,33 @@ const plugin: MockSystemPlugin = {
       return member;
     });
 
-    // tagMembers — 204 No Content.
+    // tagMembers — the adaptor's tagMembers calls batchSegmentMembers, which
+    // POSTs to /3.0/lists/:id/segments/:segmentId and returns members_added etc.
+    app.post('/3.0/lists/:id/segments/:segmentId', async () => ({
+      members_added: [],
+      members_removed: [],
+      errors: [],
+      total_added: 0,
+      total_removed: 0,
+      error_count: 0,
+    }));
+
+    // Add/remove tags on one member (updateMemberTags) — 204 No Content.
     app.post('/3.0/lists/:id/members/:hash/tags', async (_req, reply) => {
       reply.code(204);
       return null;
     });
 
-    // deleteMember — 204 No Content (archive/permanent delete).
+    // deleteMember — the adaptor calls deleteListMemberPermanent, which POSTs to
+    // .../actions/delete-permanent and returns 204 No Content.
+    app.post('/3.0/lists/:id/members/:hash/actions/delete-permanent', async (req, reply) => {
+      const hash = String((req.params as Record<string, any>).hash);
+      store.destroy('members', hash);
+      reply.code(204);
+      return null;
+    });
+
+    // Archive a member (DELETE) — 204 No Content, kept for the archive path.
     app.delete('/3.0/lists/:id/members/:hash', async (req, reply) => {
       const hash = String((req.params as Record<string, any>).hash);
       const existed = store.destroy('members', hash);

@@ -28,6 +28,11 @@ const plugin: MockSystemPlugin = {
       { name: 'containerName', role: 'static', value: 'mock-container' },
     ],
   },
+  // The adaptor hardcodes https://<accountName>.blob.core.windows.net and never
+  // reads a base URL (the `baseUrl` field above is inert), so `pnpm test:usage`
+  // aliases the derived host (accountName is the static `mockaccount`) to the
+  // mock. See src/systems/types.ts `hostAliases`.
+  hostAliases: ['mockaccount.blob.core.windows.net'],
 
   usage,
   guide,
@@ -67,7 +72,12 @@ const plugin: MockSystemPlugin = {
         reply.code(404);
         return { error: 'BlobNotFound' };
       }
-      reply.header('content-type', blob.contentType ?? 'application/octet-stream');
+      // The adaptor's downloadBlob validates the response ETag, so echo the
+      // blob's stored etag/last-modified (as the real Get Blob response does).
+      reply
+        .header('content-type', blob.contentType ?? 'application/octet-stream')
+        .header('etag', blob.etag ?? '"0x8MOCK"')
+        .header('last-modified', blob.lastModified ?? nowIso());
       return blob.content;
     });
 
