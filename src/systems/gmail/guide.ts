@@ -33,6 +33,12 @@ export const guide: SystemGuide = {
       label: 'Fetch an attachment’s base64url bytes',
     },
     {
+      id: 'getSampleAttachment',
+      method: 'GET',
+      path: '/gmail/v1/users/me/messages/msg_seed03/attachments/att_example_csv',
+      label: 'Fetch a sample attachment (example.csv) as base64url bytes',
+    },
+    {
       id: 'sendMessage',
       method: 'POST',
       path: '/gmail/v1/users/me/messages/send',

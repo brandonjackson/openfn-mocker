@@ -17,6 +17,23 @@ export const usage: UsageExample[] = [
     apiRef: 'listMessages',
   },
   {
+    fn: 'getContentsFromMessages',
+    signature: 'getContentsFromMessages(options)',
+    description:
+      'Download file attachments from a message by filename — a CSV, spreadsheet, and image in one call.',
+    code:
+      "getContentsFromMessages({\n" +
+      "  query: 'subject:sample',\n" +
+      "  contents: [\n" +
+      "    'subject',\n" +
+      "    { type: 'file', name: 'csv', file: 'example.csv' },\n" +
+      "    { type: 'file', name: 'xlsx', file: 'example.xlsx' },\n" +
+      "    { type: 'file', name: 'png', file: 'example.png' },\n" +
+      "  ],\n" +
+      "});",
+    apiRef: 'getSampleAttachment',
+  },
+  {
     fn: 'sendMessage',
     signature: 'sendMessage(message)',
     description: 'Send a Gmail message with subject, body, and optional attachments.',
