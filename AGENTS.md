@@ -7,27 +7,19 @@ and definition of done for adding or changing one; the README has the depth
 (see "Adding a new system", "Testing usage examples end to end", "Local network
 aliasing", "Roadmap").
 
-## Installing dependencies (read this before diagnosing a failed `pnpm install`)
+## Specs are a dev-time reference, not a runtime input
 
-`pnpm install` pulls `openfn-api-specs` from a **separate GitHub repo**
-(`github:brandonjackson/openfn-api-specs`), so pnpm downloads its tarball from
-`codeload.github.com`. In a restricted Claude Code cloud session that fetch
-returns **403** with a body like
-`"GitHub access to this repository is not enabled for this session"`.
+`openfn-api-specs` is **not** a dependency of this repo, and nothing fetches a
+spec at runtime. `pnpm install`, the running mock server, and `pnpm test:usage`
+need no GitHub access and touch no CDN. (Mailgun used to fetch its OpenAPI at
+startup to "backfill" event fields, but `EventResponse` declares no required
+fields, so that step backfilled nothing — it was dead weight and is gone.)
 
-That 403 is **Claude Code's per-session repo-scope gate, not a network/egress
-block.** The environment's egress is open and the proxy reaches codeload fine;
-the session is just scoped to `openfn-mocker` and hasn't been granted the second
-repo. Do **not** diagnose this as egress and do **not** try to route around it.
-
-Fix, before `pnpm install`: grant the repo to the session by calling the
-`add_repo` tool for `brandonjackson/openfn-api-specs` — the repo owner
-pre-authorizes this. Then `pnpm install` and `pnpm test` run normally. In
-standard (non-restricted) web sessions and locally, the fetch already works
-without this step, because the connected GitHub account can see the repo.
-
-Permanent zero-friction fix (not yet done): publish `openfn-api-specs` to npm
-and depend on the registry version, which needs no GitHub scope in any session.
+Every system's responses are built from its hand-written `seed.ts` +
+`overrides`. The openfn-api-specs repo is the source of truth for API *shape*
+(see below), but conforming to it is a **development workflow** you run while
+authoring a system — compare `seed.ts`/`plugin.ts` against the spec by hand — not
+something enforced on the runtime or usage-test critical path.
 
 ## The two sources of truth that govern correctness
 
@@ -38,8 +30,8 @@ and neither the vendor's HTTP docs nor intuition substitutes for either:
   repo is authoritative for the *shape* of the APIs you impersonate** — their
   request/response envelopes, field names, data-object schemas, and status
   codes. The mock's response bodies and seeded record shapes must match the
-  spec. Consult them here via `src/api-specs.ts`; they are authored and
-  maintained in that repo, not this one.
+  spec. Consult them directly in that repo (or its jsDelivr mirror) while
+  authoring; they are maintained there, not vendored or fetched here.
 - **The published OpenFn adaptor is ground truth for how it *engages* those
   APIs** — for both the request paths/methods it calls *and* the argument shape
   of every function. The mock's routes and the `usage.ts` snippets must match
