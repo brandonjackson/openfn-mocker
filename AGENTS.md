@@ -7,12 +7,21 @@ and definition of done for adding or changing one; the README has the depth
 (see "Adding a new system", "Testing usage examples end to end", "Local network
 aliasing", "Roadmap").
 
-## The one principle that governs correctness
+## The two sources of truth that govern correctness
 
-**The published OpenFn adaptor is ground truth** — for both the request
-paths/methods it calls *and* the argument shape of every function. The mock's
-routes and the `usage.ts` snippets must match the adaptor, never the vendor's
-HTTP docs or intuition.
+Two references are authoritative — each ground truth for a different concern,
+and neither the vendor's HTTP docs nor intuition substitutes for either:
+
+- **The [`openfn-api-specs`](https://github.com/brandonjackson/openfn-api-specs)
+  repo is authoritative for the *shape* of the APIs you impersonate** — their
+  request/response envelopes, field names, data-object schemas, and status
+  codes. The mock's response bodies and seeded record shapes must match the
+  spec. Consult them here via `src/api-specs.ts`; they are authored and
+  maintained in that repo, not this one.
+- **The published OpenFn adaptor is ground truth for how it *engages* those
+  APIs** — for both the request paths/methods it calls *and* the argument shape
+  of every function. The mock's routes and the `usage.ts` snippets must match
+  the adaptor.
 
 A green `pnpm test` is **necessary but not sufficient.** The unit tests assert
 the mock against *your own* assumptions, and the README table is generated from
@@ -44,8 +53,9 @@ For each function the system exposes, write down:
 
 - [ ] Read the adaptor source (above); record path/method, arg shape, and
       base-URL handling per function.
-- [ ] `plugin.ts` `overrides` routes match the adaptor's real paths, methods, and
-      response envelopes (lean on `registerCrud` / `paginate` / shared helpers).
+- [ ] `plugin.ts` `overrides` routes match the adaptor's real paths and methods,
+      and their response envelopes/field shapes match the `openfn-api-specs`
+      spec (lean on `registerCrud` / `paginate` / shared helpers).
 - [ ] `credential` matches the adaptor's `configuration-schema.json`; the
       url/host field is set for configurable adaptors; `hostAliases` is set for
       adaptors that hardcode or derive their host.
