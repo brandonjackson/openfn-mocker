@@ -1,20 +1,17 @@
-import type { FastifyInstance, FastifyRequest } from 'fastify';
+import type { FastifyInstance } from 'fastify';
 import type { MockSystemPlugin, SystemConfig } from '../types.js';
 import type { DataStore } from '../../store.js';
-import { parseSpec, type ParsedSpec } from '../../engine/spec-parser.js';
-import { shapeRecord } from '../../engine/response-generator.js';
-import { fetchOpenapi } from '../../api-specs.js';
 import { selfUrlBase } from '../shared/self-url.js';
 import { seed, buildStats, makeEvent, makeMessageId, DEFAULT_DOMAIN } from './seed.js';
 import { usage } from './usage.js';
 import { guide } from './guide.js';
 
 /**
- * Mailgun (port 4018) — the one plugin that loads its reference spec at
- * runtime: it fetches the mailgun OpenAPI from the openfn-api-specs package and
- * uses shapeRecord to keep event responses schema-shaped against the spec's
- * `EventResponse` object (backfilling any required field the seed omits).
- * Handlers are still custom (Mailgun's endpoints are not plain CRUD). Auth is
+ * Mailgun (port 4018). Handlers are custom (Mailgun's endpoints are not plain
+ * CRUD); event responses are served straight from the hand-written seed
+ * (`seed.ts`), which models each event type the way the live events API returns
+ * it. Fidelity to the mailgun `EventResponse` spec in openfn-api-specs is a
+ * dev-time concern, not a runtime one — nothing here fetches a spec. Auth is
  * accept-all (handled by createSystemServer).
  */
 
@@ -48,20 +45,6 @@ const plugin: MockSystemPlugin = {
 
   async overrides(app: FastifyInstance, store: DataStore, config: SystemConfig) {
     const configuredDomain = (config.domain as string) || DEFAULT_DOMAIN;
-
-    // Spec is the source of truth for response shapes; fetch + parse it once at
-    // setup. fetchOpenapi pulls the latest from the openfn-api-specs CDN, with
-    // the bundled snapshot as fallback.
-    let spec: ParsedSpec | undefined;
-    try {
-      const raw = await fetchOpenapi('mailgun');
-      spec = raw ? parseSpec(raw) : undefined;
-    } catch {
-      spec = undefined;
-    }
-    // Upstream Mailgun names the per-event object `EventResponse` (older specs
-    // used `Event`); fall back so either spec version shapes correctly.
-    const eventSchema = spec?.schemas?.EventResponse ?? spec?.schemas?.Event;
 
     // POST /v3/:domain/messages — send an email (form-urlencoded or JSON).
     app.post('/v3/:domain/messages', async (req, reply) => {
@@ -102,9 +85,7 @@ const plugin: MockSystemPlugin = {
 
     // GET /v3/:domain/events — list events with Mailgun paging envelope.
     app.get('/v3/:domain/events', async (req) => {
-      const items = store
-        .list('events')
-        .map((ev) => (eventSchema ? shapeRecord(ev, eventSchema, spec) : ev));
+      const items = store.list('events');
       // Paging links must point back at this request's public origin (and keep
       // the mount prefix), not a hard-coded localhost — otherwise a client that
       // follows next/previous against a deployed instance (Railway, Render, ...)

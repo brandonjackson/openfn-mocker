@@ -17,7 +17,6 @@
     "test:watch": "vitest",
     "test:usage": "tsx scripts/test-usage-examples.ts",
     "audit:adaptors": "tsx scripts/audit-adaptor-coverage.ts",
-    "specs": "api-specs",
     "readme": "tsx scripts/generate-readme.ts",
     "readme:check": "tsx scripts/generate-readme.ts --check"
   },
@@ -28,7 +27,6 @@
     "@anthropic-ai/sdk": "^0.109.1",
     "@fastify/formbody": "^7",
     "fastify": "^4",
-    "openfn-api-specs": "github:brandonjackson/openfn-api-specs",
     "yaml": "^2"
   },
   "devDependencies": {

@@ -83,10 +83,10 @@ export interface UsageExample {
 }
 
 /**
- * A mock system plugin. Plugins are THIN: they declare identity + spec file,
+ * A mock system plugin. Plugins are THIN: they declare identity + credential,
  * register any custom / non-CRUD routes in `overrides`, and load seed data in
- * `seed`. The engine (route-registrar, response-generator, spec-parser) does
- * the heavy lifting; call those helpers from inside `overrides`.
+ * `seed`. The engine (route-registrar, response-generator) does the heavy
+ * lifting; call those helpers from inside `overrides`.
  */
 export interface MockSystemPlugin {
   /** Stable system key, e.g. 'dhis2' (matches the registry + config key). */
