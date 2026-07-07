@@ -832,7 +832,16 @@ Steps:
 
 1. Study the adaptor's surface (its `ast.json` / types, per above) and the real
    API's docs. Its OpenAPI spec + data objects live in the `openfn-api-specs`
-   package (maintained there); consult them via `src/api-specs.ts`.
+   package (maintained there); consult them via `src/api-specs.ts`. **Also read
+   the published adaptor's built source** (`npm pack @openfn/language-<name>`,
+   then read `dist/*.js` + `configuration-schema.json`) — it is the ground truth
+   for the exact request **path + method** each function builds (including `/api`
+   or version prefixes and colon-verbs), its **argument shape** (positional vs a
+   single options object, base64 content, arrays that get spread, stateful
+   prerequisites), and whether it reads a **base URL** from the credential or
+   hardcodes/derives its host. The vendor's HTTP docs and intuition are not
+   reliable substitutes, and getting any of these wrong is exactly what
+   `pnpm test:usage` (step 7) exists to catch.
 2. Create `src/systems/<name>/plugin.ts` implementing `MockSystemPlugin`:
 
    ```ts
@@ -862,6 +871,7 @@ Steps:
 4. Register the plugin in `src/systems/index.ts`. The registry key is the mount path and must equal `plugin.name` (guarded by `test/registry.test.ts`). No `mock.config.yaml` block is needed — every registered system is enabled by default; add a block only to disable it or set overrides.
 5. Author `guide.ts` (sandbox blurb + runnable API examples) and `usage.ts` (per-adaptor-function job snippets) next to the seed, and set `credential` on the plugin so the sandbox can render and generate the OpenFn credential.
 6. Add `test/<name>.test.ts` exercising the endpoints, then run `pnpm test` and `pnpm readme` (regenerates the README's supported-systems table and credential examples from the plugin). Tests build a single system with `createSystemServer`, so they use unprefixed paths (e.g. `/api/things`); the running server mounts the same routes under `/<name>`.
+7. **Run [`pnpm test:usage --system <name>`](#testing-usage-examples-end-to-end) and confirm every usage example passes — this is the definition of done.** This is the only check that runs the *real* adaptor, so it is the only one that can catch a wrong route path or a wrong function signature. A passing `pnpm test` from step 6 is **necessary but not sufficient**: those unit tests assert the mock against your own assumptions (and the README is generated from the plugin's own metadata), so a wrong path or shape sails through them green. If an example genuinely can't pass because of an upstream adaptor or packaging bug (reproducible with the adaptor outside this repo), record it in the [Roadmap](#roadmap) instead — that is the only acceptable non-pass. See `AGENTS.md` for the full checklist and a triage guide for classifying a `test:usage` failure.
 
 Where an API's envelopes do not fit plain CRUD (DHIS2 import summaries, FHIR Bundles, Tastypie/DRF wrappers, Twilio's `.json` snake_case shapes), write custom Fastify handlers — that fidelity is the point of the mock — and use helpers such as `paginate()` for the parts that do fit.
 
@@ -1118,6 +1128,6 @@ box:
 - IDs use Node's built-in `crypto.randomUUID()` (or a system-specific format where the real API differs).
 - Before opening a PR: `pnpm build`, `pnpm typecheck`, and `pnpm test` must all pass — CI (`.github/workflows/ci.yml`) runs exactly these on every push to main and every PR. `typecheck` type-checks `test/` and `scripts/` too, which `build` does not. Add tests for any new endpoint or system.
 - The README's supported-systems table and credential examples are generated from plugin metadata: run `pnpm readme` after adding or changing a plugin (`pnpm test` fails if they are stale, via `test/readme.test.ts`).
-- When you add usage examples to a system's `usage.ts` (next to its `seed.ts`, so the snippet and the records it reads stay together), run [`pnpm test:usage`](#testing-usage-examples-end-to-end) to confirm the snippets actually run through the real adaptor against the mock.
+- **If you added or changed a system, `pnpm test:usage --system <name>` must be green before you open the PR** (or every remaining failure must be a documented [Roadmap](#roadmap) blocker). This is the real definition of done, and the checklist lives in [`AGENTS.md`](AGENTS.md). `pnpm test` and `pnpm readme` are **necessary but not sufficient**: both check the mock against its *own* assumptions — the unit tests assert the paths the plugin uses, the README is generated from the plugin's metadata — so a wrong route path or a wrong adaptor-function signature passes them green. `test:usage` is the only check that runs the real published adaptor, so it is the only one that catches that class of bug. It is **not** in CI (it is network-bound and hits npm), so this gate is on you locally.
 - Keep plugins thin and mocks faithful. Match real field names, envelopes, and status codes. Reference specs live in the `openfn-api-specs` package and should stay focused subsets, not multi-megabyte vendored documents.
 - Please do not commit secrets or real PII; seed data should be synthetic.
