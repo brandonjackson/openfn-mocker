@@ -41,4 +41,11 @@ export const usage: UsageExample[] = [
     code: "getAttachmentMetadata('621985');",
     apiRef: 'media',
   },
+  {
+    fn: 'downloadAttachment',
+    signature: 'downloadAttachment(attachmentId, options?, callback?)',
+    description: 'Download a submission attachment’s bytes (as base64).',
+    code: "downloadAttachment('621985', { parseAs: 'base64' });",
+    apiRef: 'files',
+  },
 ];

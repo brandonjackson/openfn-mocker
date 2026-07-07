@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { createSystemServer } from '../src/server.js';
 import inform from '../src/systems/inform/plugin.js';
+import { exampleJpg } from '../src/systems/shared/attachments.js';
 
 const config = { port: 0 };
 
@@ -46,6 +47,41 @@ describe('inform', () => {
     const res = await app.inject({ method: 'GET', url: '/api/v2/media/621985' });
     expect(res.statusCode).toBe(200);
     expect(res.json().filename).toBe('photo.jpg');
+    await app.close();
+  });
+
+  it('downloadAttachment: files/:id redirects to storage bytes', async () => {
+    const { app } = await createSystemServer(inform, config, { logLevel: 'silent' });
+
+    // GET files/:id returns a location header pointing at the bytes.
+    const meta = await app.inject({ method: 'GET', url: '/api/v2/files/621985?filename=photo.jpg' });
+    expect(meta.statusCode).toBe(200);
+    const location = meta.headers['location'] as string;
+    expect(location).toBeTruthy();
+    expect(location).toContain('/storage/621985');
+
+    // The bytes route returns the real JPEG, byte-for-byte.
+    const storagePath = new URL(location).pathname;
+    const bytes = await app.inject({ method: 'GET', url: storagePath });
+    expect(bytes.statusCode).toBe(200);
+    expect(bytes.headers['content-type']).toContain('image/jpeg');
+    expect(Buffer.compare(bytes.rawPayload, exampleJpg.bytes())).toBe(0);
+    await app.close();
+  });
+
+  it('the /storage bytes route is reachable without auth (pre-signed URL)', async () => {
+    // autoAuth: false drives the real enforcement path; /storage is exempt.
+    const { app } = await createSystemServer(inform, config, {
+      logLevel: 'silent',
+      autoAuth: false,
+    });
+    // A normal API path still 401s without credentials...
+    const gated = await app.inject({ method: 'GET', url: '/api/v2/forms' });
+    expect(gated.statusCode).toBe(401);
+    // ...but the storage bytes are reachable unauthenticated.
+    const open = await app.inject({ method: 'GET', url: '/storage/621985' });
+    expect(open.statusCode).toBe(200);
+    expect(Buffer.compare(open.rawPayload, exampleJpg.bytes())).toBe(0);
     await app.close();
   });
 });

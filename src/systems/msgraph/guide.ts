@@ -27,6 +27,12 @@ export const guide: SystemGuide = {
       label: 'Get a drive item (file)',
     },
     {
+      id: 'getFileContent',
+      method: 'GET',
+      path: '/v1.0/drives/b!driveSeed01/items/item02/content',
+      label: 'Download a file’s content (bytes)',
+    },
+    {
       id: 'create',
       method: 'POST',
       path: '/v1.0/sites/root/lists',

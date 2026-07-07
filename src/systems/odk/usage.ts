@@ -17,4 +17,8 @@ export const usage: UsageExample[] = [
     code: "post('v1/projects/1/forms/household-survey.svc/Submissions', {\n  deviceID: 'device-01', instanceID: 'uuid:abc123'\n});", apiRef: "ex4" },
   { fn: "request", signature: "request(method, path, body, options = {})", description: "Make a general HTTP request against ODK Central with any method.",
     code: "request('GET', 'v1/projects');", apiRef: "ex1" },
+  { fn: "get", signature: "get(path, options = {})", description: "List a submission's media attachments.",
+    code: "get('v1/projects/1/forms/household-survey/submissions/uuid:sub-0001/attachments');", apiRef: "attachmentList" },
+  { fn: "get", signature: "get(path, options = {})", description: "Download a submission attachment's bytes as base64.",
+    code: "get('v1/projects/1/forms/household-survey/submissions/uuid:sub-0001/attachments/example.png', {\n  parseAs: 'base64'\n});", apiRef: "attachmentDownload" },
 ];

@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import type { DataStore } from '../../store.js';
 import type { SystemConfig } from '../types.js';
+import { examplePng } from '../shared/attachments.js';
 
 export const DEFAULT_PORT = 4016;
 
@@ -287,6 +288,36 @@ export function seed(store: DataStore, config: SystemConfig): void {
         ...fields,
       };
     });
+
+    // Give the first Household Survey submission a media attachment so a workflow
+    // can download a real submission attachment via
+    // http.get('assets/.../data/<id>/attachments/<attId>', { parseAs: 'base64' }).
+    // The bytes reuse the shared dummy PNG (see src/systems/shared/attachments.ts).
+    if (asset.uid === 'aHousehold01Q1' && submissions.length) {
+      const target = submissions[0];
+      const attachmentId = 300001;
+      const downloadUrl = `${assetUrl(port, asset.uid)}data/${target._id}/attachments/${attachmentId}/`;
+      target.photo = examplePng.filename;
+      target._attachments = [
+        {
+          id: attachmentId,
+          download_url: downloadUrl,
+          download_small_url: downloadUrl,
+          download_medium_url: downloadUrl,
+          download_large_url: downloadUrl,
+          mimetype: examplePng.mimeType,
+          filename: `${asset.owner}/attachments/${formhubUuid}/${target._uuid}/${examplePng.filename}`,
+          instance: target._id,
+          xform: 1,
+          question_xpath: 'photo',
+        },
+      ];
+      store.create('attachments', String(attachmentId), {
+        id: attachmentId,
+        mimetype: examplePng.mimeType,
+        base64: examplePng.base64,
+      });
+    }
 
     const core = {
       uid: asset.uid,

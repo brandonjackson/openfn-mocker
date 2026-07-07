@@ -49,5 +49,11 @@ export const guide: SystemGuide = {
         2
       ),
     },
+    {
+      id: 'attachmentDownload',
+      method: 'GET',
+      path: '/api/v2/assets/aHousehold01Q1/data/12001/attachments/300001/',
+      label: 'Download a submission attachment (bytes)',
+    },
   ],
 };

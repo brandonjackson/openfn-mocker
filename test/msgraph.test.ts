@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { createSystemServer } from '../src/server.js';
 import msgraph from '../src/systems/msgraph/plugin.js';
+import { exampleCsv } from '../src/systems/shared/attachments.js';
 
 const config = { port: 0 };
 
@@ -46,6 +47,25 @@ describe('msgraph', () => {
     const missing = await app.inject({
       method: 'GET',
       url: '/v1.0/drives/b!driveSeed01/items/nope',
+    });
+    expect(missing.statusCode).toBe(404);
+    await app.close();
+  });
+
+  it('downloads a file’s content as text (getFile default path)', async () => {
+    const { app } = await createSystemServer(msgraph, config, { logLevel: 'silent' });
+    const res = await app.inject({
+      method: 'GET',
+      url: '/v1.0/drives/b!driveSeed01/items/item02/content',
+    });
+    expect(res.statusCode).toBe(200);
+    // The adaptor reads this response as text; it matches the CSV fixture exactly.
+    expect(res.body).toBe(exampleCsv.bytes().toString('utf-8'));
+    expect(res.headers['content-type']).toContain('text/csv');
+
+    const missing = await app.inject({
+      method: 'GET',
+      url: '/v1.0/drives/b!driveSeed01/items/nope/content',
     });
     expect(missing.statusCode).toBe(404);
     await app.close();
