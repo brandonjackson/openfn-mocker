@@ -63,6 +63,7 @@ import beyonic from './beyonic/plugin.js';
 import dagu from './dagu/plugin.js';
 import gemini from './gemini/plugin.js';
 import googlesheets from './googlesheets/plugin.js';
+import gmail from './gmail/plugin.js';
 import pesapal from './pesapal/plugin.js';
 import openfn from './openfn/plugin.js';
 
@@ -131,6 +132,7 @@ export const plugins: Record<string, MockSystemPlugin> = {
   dagu,
   gemini,
   googlesheets,
+  gmail,
   pesapal,
   openfn,
 };

@@ -530,6 +530,7 @@ Every system is mounted at `/<name>` on the shared port. The credential URL fiel
 | dagu | `/dagu` | `baseUrl` | username & password | stable |
 | gemini | `/gemini` | `baseUrl` | API key | stable |
 | googlesheets | `/googlesheets` | `baseUrl` | API key | stable |
+| gmail | `/gmail` | `baseUrl` | API key | stable |
 | pesapal | `/pesapal` | `baseUrl` | OAuth client credentials | stable |
 | openfn | `/openfn` | `baseUrl` | API key | stable |
 <!-- END GENERATED: supported-systems -->
@@ -739,6 +740,9 @@ Create (or edit) the credential for each adaptor and point its URL field at the 
 
 // Google Sheets  (API key)
 { "baseUrl": "http://localhost:4000/googlesheets", "access_token": "<generated>" }
+
+// Gmail  (API key)
+{ "baseUrl": "http://localhost:4000/gmail", "access_token": "<generated>" }
 
 // Pesapal (v3)  (OAuth client credentials)
 { "baseUrl": "http://localhost:4000/pesapal", "apiVersion": "v3", "consumer_key": "mock-consumer-key", "consumer_secret": "<generated>" }
