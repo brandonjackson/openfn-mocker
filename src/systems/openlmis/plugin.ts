@@ -42,6 +42,18 @@ function intParam(value: unknown, fallback: number): number {
   return Number.isFinite(n) && n >= 0 ? n : fallback;
 }
 
+/**
+ * Read a boolean query parameter. OpenLMIS declares `emergency` as a boolean,
+ * but query values arrive as strings (and Fastify hands back an array when a
+ * parameter repeats), so accept `true`/`false` in any case and fall back to
+ * `false` the way an omitted flag behaves.
+ */
+function boolParam(value: unknown): boolean {
+  const raw = Array.isArray(value) ? value[value.length - 1] : value;
+  if (typeof raw === 'boolean') return raw;
+  return typeof raw === 'string' && raw.trim().toLowerCase() === 'true';
+}
+
 const plugin: MockSystemPlugin = {
   name: 'openlmis',
   credential: {
@@ -129,15 +141,18 @@ const plugin: MockSystemPlugin = {
       return record;
     });
 
-    // POST /api/requisitions/initiate?program=&facility=&... — OpenLMIS's real
-    // initiate endpoint; creates a skeleton requisition.
+    // POST /api/requisitions/initiate?program=&facility=&emergency= — OpenLMIS's
+    // real initiate endpoint; creates a skeleton requisition. The spec marks
+    // program, facility and emergency as required query parameters; the mock is
+    // lenient about their presence (like the rest of its accept-all surface) but
+    // honours every one of them.
     app.post('/api/requisitions/initiate', async (req, reply) => {
       const q = (req.query ?? {}) as Record<string, any>;
       const id = randomUUID();
       const record = {
         id,
         status: 'INITIATED',
-        emergency: q.emergency === 'true',
+        emergency: boolParam(q.emergency),
         program: { id: q.program },
         facility: { id: q.facility },
         processingPeriod: { id: q.processingPeriod },

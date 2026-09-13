@@ -19,7 +19,7 @@ export const guide: SystemGuide = {
     { method: 'GET', path: '/api/requisitions', label: 'Requisitions' },
     {
       method: 'POST',
-      path: '/api/requisitions/initiate?program=10845cb9-d365-4aaa-badd-b4fa39c6a26a&facility=a6799d64-d10d-4011-b8c2-0e4d4a3f0001',
+      path: '/api/requisitions/initiate?program=10845cb9-d365-4aaa-badd-b4fa39c6a26a&facility=a6799d64-d10d-4011-b8c2-0e4d4a3f0001&emergency=false',
       label: 'Initiate a requisition',
     },
   ],
