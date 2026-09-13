@@ -10,11 +10,11 @@ export const guide: SystemGuide = {
   title: 'Resource Map',
   docs: 'https://docs.openfn.org/adaptors/packages/resourcemap-docs',
   blurb:
-    'Facility & resource mapping organised into collections of sites. HTTP Basic auth. submitSite POSTs a site (name, lat/lng, properties) into a collection at /api/collections/:id/sites.json; the collection and site lists are read from the same /api/collections* surface.',
+    'Facility & resource mapping organised into collections of sites. HTTP Basic auth. submitSite POSTs a site (name, lat/lng, properties) into a collection at /api/collections/:id/sites.json and gets the raw site record back with a 200; the sites in a collection are read from the query endpoint /api/collections/:id.json, which answers { name, count, totalPages, sites }.',
   auth: 'Basic',
   examples: [
     { id: 'collections', method: 'GET', path: '/api/collections.json', label: 'List collections' },
-    { id: 'sites', method: 'GET', path: '/api/collections/1/sites.json', label: 'Sites in a collection' },
+    { id: 'sites', method: 'GET', path: '/api/collections/1.json', label: 'Query the sites in a collection' },
     {
       id: 'submit',
       method: 'POST',
