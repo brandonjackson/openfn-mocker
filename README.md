@@ -589,7 +589,7 @@ Create (or edit) the credential for each adaptor and point its URL field at the 
 { "baseUrl": "http://localhost:4000/mailgun", "domain": "sandbox-test.mailgun.org", "apiKey": "<generated>" }
 
 // Twilio  (API key)
-{ "baseUrl": "http://localhost:4000/twilio", "accountSid": "ACtest123456", "authToken": "<generated>" }
+{ "baseUrl": "http://localhost:4000/twilio", "accountSid": "AC00000000000000000000000000000000", "authToken": "<generated>" }
 
 // Go.Data  (email & password)
 { "apiUrl": "http://localhost:4000/godata", "email": "api@who.int", "password": "<generated>" }
@@ -1172,12 +1172,36 @@ check it in the spec repo directly with
 system with a real credential goes through exactly the same path.
 
 The check is **not part of `pnpm test`**: it depends on the spec repo's
-contents, and the current sweep across all systems finds 15 of 62 conforming
+contents, and the current sweep across all systems finds 18 of 62 conforming
 (see the [Roadmap](#roadmap)). Stripe is the worked example of getting a system
 to zero: every violation was the mock's, and closing them (spec-complete seed
 records, a shared record builder for the create routes, a full 404 envelope)
 took one pass; see `src/systems/stripe/seed.ts`. It exits non-zero on any violation so a single
 system can be gated once it is clean.
+
+**Start with the systems whose spec is settled.** A violation only tells you
+something if the spec it is measured against is trustworthy, so the systems
+worth driving to zero first are the ones `pnpm specs report` puts in its `ok`
+bucket — full coverage, complete, and either a vendor-published OpenAPI or a
+conversion of a vendor machine spec. Fourteen of them have a mock here (asana,
+azure-storage, dhis2, gemini, gmail, googledrive, googlesheets, kobotoolbox,
+mailchimp, mailgun, ocl, odk, stripe, twilio), ten of which now conform. Every
+violation left in those ten-plus-four is a place the *vendor's own document*
+disagrees with the system it describes, each checked against the vendor's source
+and written into that adaptor's `source.json` notes in `openfn-api-specs`:
+
+| system | left | what the spec gets wrong |
+|--------|------|--------------------------|
+| kobotoolbox | 35 | KPI's hand-written asset annotations lag its code: `settings.country` is `[{label, value}]`, `permissions` is a list of permission assignments, and `access_types` / `summary.languages` / `summary.default_translation` / `deployed_versions.next`/`previous` really do come back null |
+| dhis2 | 5 | describes 2.43 only (no legacy `POST /api/trackedEntityInstances`), omits the optional `/api/{version}/` segment, and models nested metadata as full objects where DHIS2 returns `{"id": "…"}` |
+| odk | 4 | types an OData submission row with the docs' own demo form and marks its `age`/`name` required, which no other form's rows can satisfy |
+| ocl | 3 | inherits DRF's `{count, next, previous, results}` envelope from drf-yasg, but OCL returns a bare array and paginates in headers |
+
+Telling those apart from the mock's own bugs is the whole job, and the way to do
+it is to go to the system itself: OCL's `ListWithHeadersMixin`, KPI's
+`AssetSerializer`, ODK Central's `Frame.forApi()` (which is how the last pass
+found that a real Central *omits* null fields rather than sending them, a
+genuine mock bug) all settle the question that the two documents alone cannot.
 
 ## Roadmap
 
@@ -1210,8 +1234,8 @@ box:
   Timeout`. The mock itself handles a correctly-serialized multipart POST fine;
   the fix is upstream in the adaptor's multipart send path. Until then these two
   examples fail fast in `pnpm test:usage`.
-- **sunbird-rc can't be loaded by the OpenFn runtime.** `@openfn/language-sunbird-rc@1.1.2`
-  is published as ESM (`"type": "module"`, runtime entry `dist/index.js`) but
+- **sunbird-rc can't be loaded by the OpenFn runtime.** `@openfn/language-sunbird-rc`
+  (confirmed against 1.1.2 and still in 1.1.3) is published as ESM (`"type": "module"`, runtime entry `dist/index.js`) but
   esbuild bundled `undici` into it and left CommonJS-style dynamic requires
   behind. Its top-level init runs `__require("assert")` (via the esbuild
   `Dynamic require of "x" is not supported` shim, plus ~117 other
@@ -1219,10 +1243,14 @@ box:
   runtime's ESM loader `require` is undefined — so the module throws at
   *import* time, before any request is made. The mock already models every
   route the adaptor would call (`POST /api/v1/:entity`, `GET /api/v1/:entity/:id`,
-  `POST /credentials/issue`, `GET /credentials/:id` — including `downloadCredential`'s
+  `POST /credentials/issue` — 201 with the registry's `credentialResponse`
+  envelope — and `GET /credentials/:id`, including `downloadCredential`'s
   `Accept: application/pdf` content-negotiation, which returns a real PDF), so
   nothing on the mock side can help; the fix is upstream (republish with `undici`
-  external, or run under a loader that injects a `require` shim).
+  external, or run under a loader that injects a `require` shim). Its spec covers
+  only the credential issuance component — the registry entity API is generated
+  per deployment — so `openfn-api-specs` records it as `coverage: subset` and the
+  registry routes above match no spec operation.
 - **Alternative auth modes.** Several adaptors accept a second credential shape
   the sandbox doesn't surface yet: DHIS2 personal access token (`pat`),
   `access_token` on FHIR / http / ODK, CommCare's `ApiKey <user>:<key>` header,
@@ -1237,26 +1265,31 @@ box:
   undefined (reading 'body')` — a bug in `@openfn/language-primero` (confirmed
   against 4.1.2), not something the mock's response shape can work around.
 - **Spec conformance baseline.** [`pnpm test:conformance`](#checking-spec-conformance)
-  currently finds 15 of 62 systems conforming to their `openfn-api-specs` spec,
-  with 279 violations in total. Stripe was the first system harmonised against
-  a vendor-published (`found-openapi`) spec and is clean for both its guide
-  traffic and the real adaptor's. The rest fall into three buckets, each needing
-  different work: **mock gaps** (DHIS2, checked against the vendor's own
-  OpenAPI, is missing required fields such as `sessionTimeout` on
-  `/api/system/info` and `aggregationType` on org units, and its `openingDate`
-  is not a `date-time`; Twilio's configured `account_sid` is too short for the
-  real `^AC[0-9a-fA-F]{32}$`; ERPNext and the mock disagree on `200` vs `201`
-  for a create), **spec gaps** (FHIR `/metadata` and `_history`, OpenMRS
-  `/session` and its `fhir2` facade, and the DHIS2 `/api/{version}/` segment
-  are served by the mock but absent from the spec; DHIS2's legacy
-  `POST /api/trackedEntityInstances` is gone from the 2.43 spec, which is a
-  hint the mock should steer usage toward `/api/tracker`), and **modelling
-  disagreements** where the two describe the same system through different
-  APIs (Odoo/OpenSPP XML-RPC vs the spec's JSON-RPC/REST view; OpenELIS FHIR
-  facade vs its REST API; Maximo `/oslc` vs `/maxrest`; vTiger `?operation=`
-  vs path operations; the `dagu` spec's paths belong to a different system
-  altogether). Work through them per system as Stripe was, fixing the mock or
-  the spec as appropriate, until the check can gate CI.
+  currently finds 18 of 62 systems conforming to their `openfn-api-specs` spec,
+  with 207 violations in total. The systems whose spec is settled (the `ok`
+  bucket of `pnpm specs report`) were taken first: ten of the fourteen with a
+  mock here are now clean, and the rest are the vendor documents' own errors,
+  listed in [Checking spec conformance](#checking-spec-conformance) and recorded
+  in each adaptor's `source.json`. The remaining ~160 violations are on systems
+  whose spec was written from vendor docs by hand, and fall into three buckets,
+  each needing different work: **mock gaps** (ERPNext and the mock disagree on
+  `200` vs `201` for a create; lamisplus, mpesa and ibipimo have field-level
+  mismatches), **spec gaps** (FHIR `/metadata` and `_history`, OpenMRS
+  `/session` and its `fhir2` facade are served by the mock but absent from the
+  spec), and **modelling disagreements** where the two describe the same system
+  through different APIs (Odoo/OpenSPP XML-RPC vs the spec's JSON-RPC/REST view;
+  OpenELIS FHIR facade vs its REST API; Maximo `/oslc` vs `/maxrest`; vTiger
+  `?operation=` vs path operations; the `dagu` spec's paths belong to a
+  different system altogether). Work through them per system as Stripe was,
+  fixing the mock or the spec as appropriate, until the check can gate CI.
+- **Gate CI on the systems that conform.** The check exits non-zero on any
+  violation, so the eighteen clean systems could be gated today
+  (`pnpm test:conformance -- --system asana,gmail,stripe,twilio,…`) to stop them
+  regressing. What stands in the way is that a vendor document's own errors
+  (above) are indistinguishable from a real regression in the report: a
+  known-deviations list per adaptor in `openfn-api-specs` — asserted, so it
+  fails when a deviation is *fixed* upstream — would let the whole sweep gate
+  rather than a hand-kept list of system names.
 - **Credential value validation (optional).** Auth is presence-checked, never
   value-checked, so negative-path tests (wrong password, expired or refreshed
   token) can't be exercised. An opt-in "strict credential" mode would let

@@ -10,7 +10,7 @@ export const guide: SystemGuide = {
   title: 'ODK Central',
   docs: 'https://docs.openfn.org/adaptors/packages/odk-docs',
   blurb:
-    'Open Data Kit data collection. Session-token auth; projects and forms are REST arrays and submissions come through the OData endpoint (…/forms/{id}.svc/Submissions) as { value: [...] } with ODK __id / __system metadata.',
+    'Open Data Kit data collection. Session-token auth; projects and forms are REST arrays and submissions come through the OData endpoint (…/forms/{id}.svc/Submissions) as { value: [...] } with ODK __id / __system metadata. Those tables are read-only — the JSON write path is a submission comment.',
   auth: 'Session token (POST /v1/sessions)',
   examples: [
     {
@@ -27,10 +27,17 @@ export const guide: SystemGuide = {
       label: 'Submissions (OData, getSubmissions)',
     },
     {
+      id: 'comment',
       method: 'POST',
-      path: '/v1/projects/1/forms/household-survey.svc/Submissions',
-      label: 'Add a submission',
-      body: JSON.stringify({ head_name: 'Sandbox Household', household_size: 3, district: 'Bo' }, null, 2),
+      path: '/v1/projects/1/forms/household-survey/submissions/uuid:sub-0001/comments',
+      label: 'Comment on a submission',
+      body: JSON.stringify({ body: 'Checked against the paper form.' }, null, 2),
+    },
+    {
+      id: 'commentList',
+      method: 'GET',
+      path: '/v1/projects/1/forms/household-survey/submissions/uuid:sub-0001/comments',
+      label: 'Comments on a submission',
     },
     {
       id: 'attachmentList',

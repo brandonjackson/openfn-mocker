@@ -10,7 +10,7 @@ export const guide: SystemGuide = {
   title: 'KoboToolbox',
   docs: 'https://docs.openfn.org/adaptors/packages/kobotoolbox-docs',
   blurb:
-    'Survey platform. Assets (forms) and their submissions use DRF { count, next, previous, results } envelopes; submission counts are live. getForms, getSubmissions (?query=/?sort=), getDeploymentInfo and generic http.* asset/data operations are all covered.',
+    'Survey platform. Assets (forms) and their submissions use DRF { count, next, previous, results } envelopes; submission counts are live. getForms, getSubmissions (?query=/?sort=), getDeploymentInfo and generic http.* asset/data operations are all covered. Collected data reaches KoboToolbox through KoboCAT/OpenRosa, so /api/v2 has no JSON submit endpoint — the write paths here are edit, duplicate, bulk-update and delete.',
   auth: 'Token',
   examples: [
     { method: 'GET', path: '/api/v2/assets/?asset_type=survey', label: 'Survey assets (getForms)' },
@@ -36,18 +36,8 @@ export const guide: SystemGuide = {
     },
     {
       method: 'POST',
-      path: '/api/v2/assets/aHousehold01Q1/submissions/',
-      label: 'Submit survey data: assigned a new _id, read-back-able',
-      body: JSON.stringify(
-        {
-          household_head_name: 'Sandbox Household',
-          household_size: 4,
-          water_source: 'borehole',
-          district: 'Bo',
-        },
-        null,
-        2
-      ),
+      path: '/api/v2/assets/aHousehold01Q1/data/12001/duplicate/',
+      label: 'Duplicate a submission: a copy with a new _id, read-back-able',
     },
     {
       id: 'attachmentDownload',

@@ -13,6 +13,15 @@ const OWNER = 'DemoOrg';
 const SOURCE = 'DemoSource';
 const COLLECTION = 'DemoCollection';
 
+/**
+ * Fixed creation/update timestamps. Every OCL resource carries `created_on` and
+ * `updated_on` (ISO-8601 with a timezone), and repositories also carry the
+ * `version` of the row you are looking at — `HEAD` for the working copy. The
+ * spec marks all three required on a source, so they are seeded, not optional.
+ */
+const CREATED_ON = '2026-01-05T09:12:33.482000Z';
+const UPDATED_ON = '2026-02-17T14:48:02.117000Z';
+
 export function seed(store: DataStore, config: SystemConfig): void {
   const origin = `http://localhost:${config.port}`;
 
@@ -23,6 +32,8 @@ export function seed(store: DataStore, config: SystemConfig): void {
     name: 'Demo Organization',
     url: `${origin}/orgs/${OWNER}/`,
     public_access: 'View',
+    created_on: CREATED_ON,
+    updated_on: UPDATED_ON,
   });
 
   store.create('sources', SOURCE, {
@@ -36,8 +47,14 @@ export function seed(store: DataStore, config: SystemConfig): void {
     owner_type: 'Organization',
     owner_url: `${origin}/orgs/${OWNER}/`,
     url: `${origin}/orgs/${OWNER}/sources/${SOURCE}/`,
+    versions_url: `${origin}/orgs/${OWNER}/sources/${SOURCE}/versions/`,
+    concepts_url: `${origin}/orgs/${OWNER}/sources/${SOURCE}/concepts/`,
+    mappings_url: `${origin}/orgs/${OWNER}/sources/${SOURCE}/mappings/`,
     active_concepts: 2,
     default_locale: 'en',
+    version: 'HEAD',
+    created_on: CREATED_ON,
+    updated_on: UPDATED_ON,
   });
 
   const concept = (id: string, cls: string, datatype: string, name: string) => ({
@@ -50,6 +67,8 @@ export function seed(store: DataStore, config: SystemConfig): void {
     url: `${origin}/orgs/${OWNER}/sources/${SOURCE}/concepts/${id}/`,
     version_url: `${origin}/orgs/${OWNER}/sources/${SOURCE}/concepts/${id}/`,
     retired: false,
+    created_on: CREATED_ON,
+    updated_on: UPDATED_ON,
     source: SOURCE,
     owner: OWNER,
     owner_type: 'Organization',
@@ -72,7 +91,11 @@ export function seed(store: DataStore, config: SystemConfig): void {
     collection_type: 'Subset',
     owner: OWNER,
     owner_type: 'Organization',
+    owner_url: `${origin}/orgs/${OWNER}/`,
     url: `${origin}/orgs/${OWNER}/collections/${COLLECTION}/`,
+    version: 'HEAD',
+    created_on: CREATED_ON,
+    updated_on: UPDATED_ON,
   });
 
   store.create('mappings', 'MAP-1', {
@@ -89,5 +112,8 @@ export function seed(store: DataStore, config: SystemConfig): void {
     owner_type: 'Organization',
     url: `${origin}/orgs/${OWNER}/collections/${COLLECTION}/mappings/MAP-1/`,
     retired: false,
+    version: 'HEAD',
+    created_on: CREATED_ON,
+    updated_on: UPDATED_ON,
   });
 }

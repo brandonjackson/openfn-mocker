@@ -2,7 +2,12 @@ import { randomBytes } from 'node:crypto';
 import type { DataStore } from '../../store.js';
 import type { SystemConfig } from '../types.js';
 
-export const DEFAULT_ACCOUNT_SID = 'ACtest123456';
+/**
+ * The account the mock answers for. A Twilio Account SID is `AC` + 32 hex
+ * characters (the API's responses are checked against that pattern), so this
+ * is the shape of a real one with an unmistakably fake value.
+ */
+export const DEFAULT_ACCOUNT_SID = 'AC00000000000000000000000000000000';
 
 /** Resolve the account SID from config (supports account_sid or accountSid). */
 export function accountSidFrom(config: SystemConfig): string {

@@ -14,7 +14,7 @@ export const guide: SystemGuide = {
   blurb:
     'SMS + voice. Form-encoded PascalCase input, snake_case JSON output. Reading a single message auto-advances its status queued to sent to delivered.',
   auth: 'Basic (sid:token)',
-  vars: { account_sid: 'ACtest123456' },
+  vars: { account_sid: 'AC00000000000000000000000000000000' },
   examples: [
     {
       method: 'POST',

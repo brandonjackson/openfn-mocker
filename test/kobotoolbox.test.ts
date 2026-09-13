@@ -109,52 +109,59 @@ describe('kobotoolbox (DRF-style envelopes)', () => {
     expect(res.json()._id).toBe(first._id);
   });
 
-  it('POST submission assigns _id (int) + _uuid and is readable back', async () => {
+  it('duplicating a submission assigns a new _id and is readable back', async () => {
     const { app } = await server();
-    const createRes = await app.inject({
+    const dupRes = await app.inject({
       method: 'POST',
-      url: `/api/v2/assets/${ASSET_UID}/submissions/`,
-      payload: {
-        id: ASSET_UID,
-        submission: { household_head_name: 'New Person', household_size: 2, water_source: 'piped' },
-      },
+      url: `/api/v2/assets/${ASSET_UID}/data/12001/duplicate/`,
     });
-    expect(createRes.statusCode).toBe(201);
-    const created = createRes.json();
-    expect(created.message).toBe('Successful submission.');
-    expect(Number.isInteger(created._id)).toBe(true);
-    expect(typeof created._uuid).toBe('string');
+    expect(dupRes.statusCode).toBe(200);
+    const copy = dupRes.json();
+    expect(Number.isInteger(copy._id)).toBe(true);
+    expect(copy._id).not.toBe(12001);
+    expect(typeof copy._uuid).toBe('string');
+    // The copy points back at the submission it was made from, and carries its
+    // survey answers but not its media.
+    expect(copy['meta/deprecatedID']).toContain('uuid:');
+    expect(copy._attachments).toEqual([]);
 
-    // Read back via single-submission endpoint.
+    // Read back via the single-submission endpoint.
     const readRes = await app.inject({
       method: 'GET',
-      url: `/api/v2/assets/${ASSET_UID}/data/${created._id}/`,
+      url: `/api/v2/assets/${ASSET_UID}/data/${copy._id}/`,
     });
     expect(readRes.statusCode).toBe(200);
-    const sub = readRes.json();
-    expect(sub.household_head_name).toBe('New Person');
-    expect(sub._xform_id_string).toBe(ASSET_UID);
+    expect(readRes.json()._xform_id_string).toBe(ASSET_UID);
 
-    // Count now reflects the new submission (5 -> 6) on both data list and asset.
+    // Count now reflects the copy (5 -> 6) on both the data list and the asset.
     const dataRes = await app.inject({ method: 'GET', url: `/api/v2/assets/${ASSET_UID}/data/` });
     expect(dataRes.json().count).toBe(6);
     const assetRes = await app.inject({ method: 'GET', url: `/api/v2/assets/${ASSET_UID}/` });
     expect(assetRes.json().deployment__submission_count).toBe(6);
   });
 
-  it('accepts a bare survey object (no submission wrapper)', async () => {
+  it('404s when duplicating a submission that is not on this asset', async () => {
     const { app } = await server();
     const res = await app.inject({
       method: 'POST',
-      url: `/api/v2/assets/aClinicVisit02/submissions/`,
-      payload: { patient_name: 'Bare Body', age: 30 },
+      url: `/api/v2/assets/aClinicVisit02/data/12001/duplicate/`,
     });
-    expect(res.statusCode).toBe(201);
-    const readRes = await app.inject({
-      method: 'GET',
-      url: `/api/v2/assets/aClinicVisit02/data/${res.json()._id}/`,
-    });
-    expect(readRes.json().patient_name).toBe('Bare Body');
+    expect(res.statusCode).toBe(404);
+    expect(res.json().detail).toBe('Not found.');
+  });
+
+  it('every submission attachment carries its uid and base file name', async () => {
+    const { app } = await server();
+    const res = await app.inject({ method: 'GET', url: `/api/v2/assets/${ASSET_UID}/data/` });
+    const withMedia = res.json().results.filter((r: any) => r._attachments.length);
+    expect(withMedia.length).toBeGreaterThan(0);
+    for (const sub of withMedia) {
+      for (const att of sub._attachments) {
+        expect(att.uid).toMatch(/^att/);
+        expect(att.media_file_basename).toBe('example.png');
+        expect(att.filename).toContain(att.media_file_basename);
+      }
+    }
   });
 
   it('getForms: ?asset_type=survey filters the asset list', async () => {

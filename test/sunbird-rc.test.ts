@@ -28,24 +28,30 @@ describe('sunbird-rc', () => {
     await app.close();
   });
 
-  it('issues a credential with a did:rcw: id', async () => {
+  it('issues a credential (201) in the credentialResponse envelope', async () => {
     const { app } = await createSystemServer(sunbirdRc, config, { logLevel: 'silent' });
     const res = await app.inject({
       method: 'POST',
       url: '/credentials/issue',
       payload: { credential: { credentialSubject: { id: 'did:rcw:123' } }, credentialSchemaId: 'schema-1' },
     });
-    expect(res.statusCode).toBe(200);
+    expect(res.statusCode).toBe(201);
     const body = res.json();
-    expect(body.id.startsWith('did:rcw:')).toBe(true);
+    expect(body.credential.id.startsWith('did:rcw:')).toBe(true);
+    expect(body.credential.credentialSubject.id).toBe('did:rcw:123');
+    expect(body.credential.proof.proofPurpose).toBe('assertionMethod');
+    expect(body.credentialSchemaId).toBe('schema-1');
     await app.close();
   });
 
-  it('fetches the seeded credential by id', async () => {
+  it('fetches the seeded credential by id, as the verifiable credential itself', async () => {
     const { app } = await createSystemServer(sunbirdRc, config, { logLevel: 'silent' });
     const res = await app.inject({ method: 'GET', url: '/credentials/did:rcw:cred0001' });
     expect(res.statusCode).toBe(200);
-    expect(res.json().id).toBe('did:rcw:cred0001');
+    const vc = res.json();
+    expect(vc.id).toBe('did:rcw:cred0001');
+    expect(vc.type).toEqual(['VerifiableCredential']);
+    expect(vc.credentialSubject.name).toBe('Ravi Kumar');
     await app.close();
   });
 
