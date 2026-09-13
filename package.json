@@ -32,7 +32,7 @@
   },
   "devDependencies": {
     "@types/node": "^22",
-    "openfn-api-specs": "github:brandonjackson/openfn-api-specs#claude/wonderful-heisenberg-sxpne6",
+    "openfn-api-specs": "github:brandonjackson/openfn-api-specs#main",
     "tsx": "^4",
     "typescript": "^5",
     "vitest": "^2"

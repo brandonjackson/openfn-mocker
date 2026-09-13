@@ -65,8 +65,9 @@ describe('conformance capture', () => {
     expect(Array.isArray(violations)).toBe(true);
     const coverage = conformer.coverage();
     expect(coverage.exchanges).toBe(exchanges.length);
-    // At least the guide's system/info and organisationUnits reads exist in the spec.
+    // At least the guide's system/info and organisationUnits reads exist in the
+    // spec (the vendor spec keys the list with a trailing slash; either is fine).
     expect(coverage.hit).toContain('GET /api/system/info');
-    expect(coverage.hit).toContain('GET /api/organisationUnits');
+    expect(coverage.hit.some((op) => /^GET \/api\/organisationUnits\/?$/.test(op))).toBe(true);
   });
 });

@@ -1172,7 +1172,7 @@ check it in the spec repo directly with
 system with a real credential goes through exactly the same path.
 
 The check is **not part of `pnpm test`**: it depends on the spec repo's
-contents, and the first sweep across all systems found 14 of 62 conforming
+contents, and the first sweep across all systems found 13 of 62 conforming
 (see the [Roadmap](#roadmap)). It exits non-zero on any violation so a single
 system can be gated once it is clean.
 
@@ -1234,21 +1234,24 @@ box:
   undefined (reading 'body')` — a bug in `@openfn/language-primero` (confirmed
   against 4.1.2), not something the mock's response shape can work around.
 - **Spec conformance baseline.** The first [`pnpm test:conformance`](#checking-spec-conformance)
-  sweep found 14 of 62 systems conforming to their `openfn-api-specs` spec, with
-  280 violations in total. They fall into three buckets, each needing different
-  work: **mock gaps** (Stripe customers lack `created`/`livemode`; Twilio's
-  configured `account_sid` is too short for the real `^AC[0-9a-fA-F]{32}$`;
-  OpenMRS `person.age` is not an integer; ERPNext and the mock disagree on
-  `200` vs `201` for a create), **spec gaps** (DHIS2's `/api/tracker`,
-  `/api/analytics`, `/api/schemas` and the `/api/{version}/` segment; FHIR
-  `/metadata` and `_history`; OpenMRS `/session` and the `fhir2` facade are all
-  served by the mock but absent from the spec), and **modelling disagreements**
-  where the two describe the same system through different APIs (Odoo/OpenSPP
-  XML-RPC vs the spec's JSON-RPC/REST view; OpenELIS FHIR facade vs its REST
-  API; Maximo `/oslc` vs `/maxrest`; vTiger `?operation=` vs path operations;
-  the `dagu` spec's paths belong to a different system altogether). Work
-  through them per system, fixing the mock or the spec as appropriate, until
-  the check can gate CI.
+  sweep found 13 of 62 systems conforming to their `openfn-api-specs` spec, with
+  298 violations in total. They fall into three buckets, each needing different
+  work: **mock gaps** (DHIS2, checked against the vendor's own OpenAPI, is
+  missing required fields such as `sessionTimeout` on `/api/system/info` and
+  `aggregationType` on org units, and its `openingDate` is not a `date-time`;
+  Stripe customers lack `created`/`livemode`; Twilio's configured
+  `account_sid` is too short for the real `^AC[0-9a-fA-F]{32}$`; ERPNext and
+  the mock disagree on `200` vs `201` for a create), **spec gaps** (FHIR
+  `/metadata` and `_history`, OpenMRS `/session` and its `fhir2` facade, and the
+  DHIS2 `/api/{version}/` segment are served by the mock but absent from the
+  spec; DHIS2's legacy `POST /api/trackedEntityInstances` is gone from the 2.43
+  spec, which is a hint the mock should steer usage toward `/api/tracker`), and
+  **modelling disagreements** where the two describe the same system through
+  different APIs (Odoo/OpenSPP XML-RPC vs the spec's JSON-RPC/REST view;
+  OpenELIS FHIR facade vs its REST API; Maximo `/oslc` vs `/maxrest`; vTiger
+  `?operation=` vs path operations; the `dagu` spec's paths belong to a
+  different system altogether). Work through them per system, fixing the mock
+  or the spec as appropriate, until the check can gate CI.
 - **Credential value validation (optional).** Auth is presence-checked, never
   value-checked, so negative-path tests (wrong password, expired or refreshed
   token) can't be exercised. An opt-in "strict credential" mode would let
