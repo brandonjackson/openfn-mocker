@@ -48,7 +48,8 @@ describe('stripe', () => {
     expect(res.statusCode).toBe(404);
     const body = res.json();
     expect(body.error.type).toBe('invalid_request_error');
-    expect(body.error.message).toBe('No such customer');
+    expect(body.error.message).toBe("No such customer: 'cus_missing'");
+    expect(body.error.code).toBe('resource_missing');
     await app.close();
   });
 

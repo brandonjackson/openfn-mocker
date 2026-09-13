@@ -28,5 +28,19 @@ export const guide: SystemGuide = {
       label: 'Retrieve a customer',
     },
     { id: 'listCharges', method: 'GET', path: '/v1/charges', label: 'List charges' },
+    {
+      id: 'createCharge',
+      method: 'POST',
+      path: '/v1/charges',
+      label: 'Create a charge (returns the full charge object, status succeeded)',
+      body: JSON.stringify({ amount: 5000, currency: 'usd', customer: 'cus_seed01' }, null, 2),
+    },
+    { id: 'getCharge', method: 'GET', path: '/v1/charges/ch_seed01', label: 'Retrieve a charge' },
+    {
+      id: 'missingCustomer',
+      method: 'GET',
+      path: '/v1/customers/cus_missing',
+      label: 'Unknown id: 404 with the Stripe error envelope',
+    },
   ],
 };
