@@ -509,7 +509,7 @@ Every system is mounted at `/<name>` on the shared port. The credential URL fiel
 | et-mfr | `/et-mfr` | `baseUrl` | username & password | stable |
 | resourcemap | `/resourcemap` | `baseUrl` | username & password | stable |
 | ghana-nia | `/ghana-nia` | `baseUrl` | API key | stable |
-| ghana-bdr | `/ghana-bdr` | `baseUrl` | username & password | stable |
+| ghana-bdr | `/ghana-bdr` | `baseUrl` | API key | stable |
 | wigal-sms | `/wigal-sms` | `baseUrl` | API key | stable |
 | progres | `/progres` | `url` | API key | stable |
 | salesforce | `/salesforce` | `loginUrl` | username & password | stable |
@@ -678,8 +678,8 @@ Create (or edit) the credential for each adaptor and point its URL field at the 
 // Ghana NIA (National Identification Authority)  (API key)
 { "baseUrl": "http://localhost:4000/ghana-nia", "merchantKey": "<generated>" }
 
-// Ghana Births & Deaths Registry (BDR)  (username & password)
-{ "baseUrl": "http://localhost:4000/ghana-bdr", "username": "admin", "password": "<generated>" }
+// Ghana Births & Deaths Registry (BDR)  (API key)
+{ "baseUrl": "http://localhost:4000/ghana-bdr", "token": "<generated>" }
 
 // Wigal SMS (Frog API)  (API key)
 { "baseUrl": "http://localhost:4000/wigal-sms", "username": "openfn", "apiKey": "<generated>" }

@@ -51,6 +51,7 @@ describe('per-plugin credential spec', () => {
         'commcare',
         'dagu',
         'dhis2',
+        'ghana-bdr',
         'gmail',
         'googledrive',
         'googlesheets',
