@@ -25,8 +25,9 @@ export const usage: UsageExample[] = [
   {
     fn: 'put',
     signature: 'put(path, data, params = {}, callback = s => s)',
-    description: 'PUT a FHIR resource to SATUSEHAT to replace it by id.',
-    code: "put('Patient/P02478375123', {\n  resourceType: 'Patient',\n  id: 'P02478375123',\n  active: true,\n});",
+    description:
+      'PUT a FHIR resource to SATUSEHAT to replace it by id (Patient has no documented full replace; use patch there).',
+    code: "put('Encounter/b0d1d54a-4ea1-4e69-b2e2-8b4cf1e0a111', {\n  resourceType: 'Encounter',\n  id: 'b0d1d54a-4ea1-4e69-b2e2-8b4cf1e0a111',\n  status: 'finished',\n  subject: { reference: 'Patient/P02478375123' },\n});",
     apiRef: 'put',
   },
   {

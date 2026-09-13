@@ -15,6 +15,10 @@ import { guide } from './guide.js';
  *  - Business fields are nested under a `data` object on every record.
  *  - List responses use the envelope `{ data: [...], metadata: { total, per, page } }`.
  *  - Single responses use `{ data: {...} }`.
+ *  - A create answers 200 with the created record — or 204 with no body when the
+ *    client supplied its own `data.id`, because it already knows the record
+ *    (`Api::V2::Concerns::Record#create` renders
+ *    `status = params.dig(:data, :id).present? ? 204 : 200`).
  *
  * Endpoints are not plain CRUD (nested envelope + display-id generation), so
  * they are registered as custom handlers rather than via registerCrud.
@@ -31,6 +35,16 @@ function extractData(body: any): Record<string, any> {
     return { ...body };
   }
   return {};
+}
+
+/**
+ * The id the client supplied on a create, if any: Primero lets a client mint
+ * the record's uuid itself (`data.id`), and answers 204 with no body when it
+ * does, since the client already has everything it sent.
+ */
+function suppliedId(body: any): string | undefined {
+  const id = body?.data?.id ?? (body && !body.data ? body.id : undefined);
+  return typeof id === 'string' && id.length ? id : undefined;
 }
 
 function toInt(v: unknown, fallback: number): number {
@@ -141,7 +155,9 @@ const plugin: MockSystemPlugin = {
       const data = extractData(req.body);
       const now = new Date();
       const seq = store.count('cases') + 1;
-      const id = randomUUID();
+      const own = suppliedId(req.body);
+      const id = own ?? randomUUID();
+      delete data.id;
       const record = {
         id,
         case_id: makeDisplayId('CP', now.getFullYear(), seq),
@@ -152,7 +168,12 @@ const plugin: MockSystemPlugin = {
         data,
       };
       store.create('cases', id, record);
-      reply.code(201);
+      // The client minted the id, so Primero answers 204 with no body.
+      if (own) {
+        reply.code(204);
+        return null;
+      }
+      reply.code(200);
       return { data: record };
     });
 
@@ -194,7 +215,9 @@ const plugin: MockSystemPlugin = {
       const data = extractData(body);
       const now = new Date();
       const seq = store.count('incidents') + 1;
-      const id = randomUUID();
+      const own = suppliedId(body);
+      const id = own ?? randomUUID();
+      delete data.id;
       const record = {
         id,
         incident_id: makeDisplayId('IN', now.getFullYear(), seq),
@@ -205,7 +228,12 @@ const plugin: MockSystemPlugin = {
         data,
       };
       store.create('incidents', id, record);
-      reply.code(201);
+      // Same 204-on-client-supplied-id rule as cases.
+      if (own) {
+        reply.code(204);
+        return null;
+      }
+      reply.code(200);
       return { data: record };
     });
 

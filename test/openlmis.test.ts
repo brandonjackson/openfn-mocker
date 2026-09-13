@@ -37,10 +37,22 @@ describe('openlmis', () => {
     const { app } = await createSystemServer(openlmis, config, { logLevel: 'silent' });
     const res = await app.inject({
       method: 'POST',
-      url: `/api/requisitions/initiate?program=${IDS.programEpi}&facility=${IDS.facilityNgelehun}`,
+      url: `/api/requisitions/initiate?program=${IDS.programEpi}&facility=${IDS.facilityNgelehun}&emergency=false`,
     });
     expect(res.statusCode).toBe(201);
     expect(res.json().status).toBe('INITIATED');
+    expect(res.json().emergency).toBe(false);
+    await app.close();
+  });
+
+  it('honours the emergency flag when initiating a requisition', async () => {
+    const { app } = await createSystemServer(openlmis, config, { logLevel: 'silent' });
+    const res = await app.inject({
+      method: 'POST',
+      url: `/api/requisitions/initiate?program=${IDS.programEpi}&facility=${IDS.facilityNgelehun}&emergency=true`,
+    });
+    expect(res.statusCode).toBe(201);
+    expect(res.json().emergency).toBe(true);
     await app.close();
   });
 

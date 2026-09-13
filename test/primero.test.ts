@@ -61,7 +61,7 @@ describe('primero (token-exchange, nested data envelope)', () => {
         },
       },
     });
-    expect(created.statusCode).toBe(201);
+    expect(created.statusCode).toBe(200);
     const createdBody = created.json();
     expect(createdBody.data.id).toBeTruthy();
     expect(createdBody.data.case_id).toMatch(/^CP-\d{4}-\d{3}$/);
@@ -71,6 +71,22 @@ describe('primero (token-exchange, nested data envelope)', () => {
     const read = await app.inject({ method: 'GET', url: `/api/v2/cases/${id}` });
     expect(read.statusCode).toBe(200);
     expect(read.json().data.data.name_last).toBe('Bangura');
+  });
+
+  it('POST a case with a client-supplied data.id answers 204 with no body', async () => {
+    const app = await makeApp();
+    const id = '11111111-2222-3333-4444-555555555555';
+    const created = await app.inject({
+      method: 'POST',
+      url: '/api/v2/cases',
+      payload: { data: { id, name_first: 'Client', name_last: 'Minted' } },
+    });
+    expect(created.statusCode).toBe(204);
+    expect(created.body).toBe('');
+
+    const read = await app.inject({ method: 'GET', url: `/api/v2/cases/${id}` });
+    expect(read.statusCode).toBe(200);
+    expect(read.json().data.data.name_first).toBe('Client');
   });
 
   it('PATCH merges nested data without clobbering other fields', async () => {
@@ -117,7 +133,7 @@ describe('primero (token-exchange, nested data envelope)', () => {
       url: '/api/v2/incidents',
       payload: { data: { cp_incident_violence_type: 'neglect', description: 'New incident' } },
     });
-    expect(res.statusCode).toBe(201);
+    expect(res.statusCode).toBe(200);
     const body = res.json();
     expect(body.data.id).toBeTruthy();
     expect(body.data.data.cp_incident_violence_type).toBe('neglect');

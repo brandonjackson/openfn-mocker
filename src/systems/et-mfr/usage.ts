@@ -21,7 +21,7 @@ export const usage: UsageExample[] = [
     description: 'Make a POST request to Ethiopia MFR with a JSON body.',
     code:
       "post('Facility', {\n" +
-      "  facilityName: 'New Health Center', region: 'Addis Ababa', facilityType: 'Health Center',\n" +
+      "  name: 'New Health Center', regionId: 1, zoneId: 11, woredaId: 101, facilityTypeId: 204,\n" +
       "});",
     apiRef: 'create',
   },
@@ -29,7 +29,7 @@ export const usage: UsageExample[] = [
     fn: 'request',
     signature: 'request(method, path, body, options, callback = s => s)',
     description: 'Make a general HTTP request to Ethiopia MFR with any method.',
-    code: "request('GET', 'Facility/GetFacilities', null, { query: { page: 1, pageSize: 10 } });",
+    code: "request('POST', 'Facility/GetFacilities', { pageNumber: 1, showPerPage: 10 });",
     apiRef: 'paged',
   },
 ];
