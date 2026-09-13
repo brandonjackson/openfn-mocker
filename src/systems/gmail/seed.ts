@@ -23,6 +23,21 @@ function b64(text: string): string {
   return Buffer.from(text, 'utf-8').toString('base64url');
 }
 
+/**
+ * The per-part MIME headers the real API returns on an attachment part. The
+ * adaptor needs them: `getContentsFromMessages`' file handling passes
+ * `part.headers` straight into its content parser, which reads Content-Type off
+ * the array to decide how to decode the bytes (and throws on a part that has no
+ * `headers` at all).
+ */
+function attachmentHeaders(mimeType: string, filename: string) {
+  return [
+    { name: 'Content-Type', value: `${mimeType}; name="${filename}"` },
+    { name: 'Content-Disposition', value: `attachment; filename="${filename}"` },
+    { name: 'Content-Transfer-Encoding', value: 'base64' },
+  ];
+}
+
 export function seed(store: DataStore, _config: SystemConfig): void {
   const messages = [
     {
@@ -57,6 +72,7 @@ export function seed(store: DataStore, _config: SystemConfig): void {
             partId: '1',
             mimeType: 'text/csv',
             filename: 'coverage.csv',
+            headers: attachmentHeaders('text/csv', 'coverage.csv'),
             body: { attachmentId: 'att_seed01', size: 48 },
           },
         ],
@@ -128,18 +144,21 @@ export function seed(store: DataStore, _config: SystemConfig): void {
             partId: '1',
             mimeType: exampleCsv.mimeType,
             filename: exampleCsv.filename,
+            headers: attachmentHeaders(exampleCsv.mimeType, exampleCsv.filename),
             body: { attachmentId: 'att_example_csv', size: exampleCsv.size },
           },
           {
             partId: '2',
             mimeType: exampleXlsx.mimeType,
             filename: exampleXlsx.filename,
+            headers: attachmentHeaders(exampleXlsx.mimeType, exampleXlsx.filename),
             body: { attachmentId: 'att_example_xlsx', size: exampleXlsx.size },
           },
           {
             partId: '3',
             mimeType: examplePng.mimeType,
             filename: examplePng.filename,
+            headers: attachmentHeaders(examplePng.mimeType, examplePng.filename),
             body: { attachmentId: 'att_example_png', size: examplePng.size },
           },
         ],

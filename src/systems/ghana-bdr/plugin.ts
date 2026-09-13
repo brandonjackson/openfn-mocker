@@ -1,79 +1,62 @@
 import { randomInt, randomUUID } from 'node:crypto';
-import type { FastifyInstance, FastifyReply } from 'fastify';
+import type { FastifyInstance } from 'fastify';
 import type { MockSystemPlugin, SystemConfig } from '../types.js';
 import type { DataStore } from '../../store.js';
-import { seed } from './seed.js';
+import { seed, toBirthRecord } from './seed.js';
 import { usage } from './usage.js';
 import { guide } from './guide.js';
 
 /**
- * Ghana BDR (Births & Deaths Registry). The ghana-bdr adaptor posts birth
- * notifications with Basic-style creds (username/password appended to the body).
- * `sendBirthNotification` → POST /api/notification; the generic `get`/`post` hit
- * any path.
+ * Ghana BDR (Births & Deaths Registry), as engaged by
+ * `@openfn/language-ghana-bdr@1.0.1`.
  *
- * QUIRK: the real BDR API speaks *double-encoded* JSON on the wire — the adaptor
- * sends JSON.stringify(JSON.stringify(body)) and reads the response with
- * body.json() *then* JSON.parse(). So this mock tolerates a stringified request
- * body and replies to /api/notification with a JSON-encoded JSON string, matching
- * the exact wire format the adaptor expects.
+ * The adaptor exposes `get(path, query)`, `post(path, data)`,
+ * `request(method, path, body, options)` and `createBirthRecord(data)`, and
+ * wraps every one of them in a token exchange:
+ *
+ *   1. POST /api/v1/UserManagementService/integrations/auth/token with a
+ *      `Token: <configuration.token>` header, reading
+ *      `{ api_data: { access_token, expires_in } }` off the response — it
+ *      throws if `access_token` is missing or `expires_in` is not a number;
+ *   2. the real call, with `Authorization: Bearer <access_token>`. A 401 is
+ *      retried once against a freshly exchanged token.
+ *
+ * `createBirthRecord` posts to
+ * /api/v1/UserManagementService/integrations/registrations/birth. The generic
+ * get/post/request take any path.
+ *
+ * RESPONSE SHAPE. The `api_data` envelope is pinned by the adaptor for the
+ * token exchange only. For the birth record itself the adaptor is agnostic (it
+ * hands the parsed body straight to `composeNextState`), so this mock returns
+ * the bare record documented by openfn-api-specs'
+ * `ghana-bdr/BirthNotificationResponse` rather than inventing an envelope
+ * around it. Note that spec was captured against the adaptor's previous API
+ * (POST /api/notification on tracker.chimgh.org, double-encoded JSON on the
+ * wire, username/password in the body); 1.0.1 replaced all of that, so the
+ * record *shape* is the only part of it still in force here.
  */
 
-/** Read a body that may be a JSON string (adaptor double-encodes) or an object. */
-function readBody(body: unknown): Record<string, any> {
-  if (typeof body === 'string') {
-    try {
-      const once = JSON.parse(body);
-      return typeof once === 'string' ? JSON.parse(once) : once;
-    } catch {
-      return { _raw: body };
-    }
-  }
-  return (body ?? {}) as Record<string, any>;
-}
+const TOKEN_PATH = '/api/v1/UserManagementService/integrations/auth/token';
+const BIRTH_PATH = '/api/v1/UserManagementService/integrations/registrations/birth';
 
-/** Reply with a double-encoded JSON body (BDR's wire format). */
-function sendDoubleEncoded(reply: FastifyReply, obj: unknown): string {
-  reply.header('content-type', 'application/json');
-  return JSON.stringify(JSON.stringify(obj));
-}
-
-/** Build a birth-certificate record from a notification body. */
-function toNotification(data: Record<string, any>): Record<string, any> {
-  const child = data.child ?? {};
-  const mother = data.mother ?? {};
-  const father = data.father ?? {};
-  const referenceId = `${randomUUID().slice(0, 8)}-${randomInt(1000, 9999)}`;
-  const cert = `${String(randomInt(0, 1_000_000)).padStart(6, '0')}-${String(randomInt(0, 100)).padStart(2, '0')}-2024`;
-  return {
-    birth_certificate_number: cert,
-    first_name: child.first_name ?? '',
-    middle_name: child.middle_name ?? '',
-    Surname: child.Surname ?? '',
-    birth_date: child.birth_date ?? '',
-    gender: child.gender_code === '1' ? 'MALE' : 'FEMALE',
-    m_first_name: mother.first_name ?? '',
-    m_national_id_number: mother.national_id_number ?? '',
-    f_first_name: father.first_name ?? '',
-    f_national_id_number: father.national_id_number ?? '',
-    reference_id: referenceId,
-    registry_code: data.registry_code ?? '',
-    created_at: new Date().toISOString(),
-    last_updated_at: null,
-    issuccessful: true,
-    message: `record reference_id : ${referenceId} , created successfully`,
-    messagecode: '200',
-  };
-}
+/** Seconds an issued access token stays valid (the adaptor caches against this). */
+const TOKEN_TTL_SECONDS = 3600;
 
 const plugin: MockSystemPlugin = {
   name: 'ghana-bdr',
+  // Every call carries `Authorization: Bearer <access_token>` except the token
+  // exchange itself, which authenticates with a `Token:` header the generic
+  // parser doesn't recognise — hence the exemption.
+  auth: { required: true, schemes: ['bearer'], exemptPaths: [TOKEN_PATH] },
   credential: {
-    type: 'userpass',
+    type: 'apikey',
+    authHeader: { scheme: 'bearer', value: 'mock-access-token' },
     fields: [
       { name: 'baseUrl', role: 'url' },
-      { name: 'username', role: 'username', value: 'admin' },
-      { name: 'password', role: 'secret', secret: { charset: 'alnum', length: 16 } },
+      // The long-lived API consumer token, traded for a short-lived access
+      // token. Required by the adaptor's configuration-schema.json alongside
+      // baseUrl; it throws "Missing configuration.token" without it.
+      { name: 'token', role: 'secret', secret: { charset: 'alnum', length: 32 } },
     ],
   },
 
@@ -81,20 +64,61 @@ const plugin: MockSystemPlugin = {
   guide,
 
   async overrides(app: FastifyInstance, store: DataStore, _config: SystemConfig) {
-    // POST /api/notification — sendBirthNotification (and generic post): register a
-    // birth and mint a certificate number. Response is a double-encoded JSON string.
-    app.post('/api/notification', async (req, reply) => {
-      const record = toNotification(readBody(req.body));
-      store.create('notifications', record.reference_id, record);
-      reply.code(200);
-      return sendDoubleEncoded(reply, record);
+    // POST .../auth/token — trade the long-lived `Token` header for a
+    // short-lived access token. Auth-exempt (see plugin.auth.exemptPaths), so
+    // the header is presence-checked here instead; the value is never validated.
+    app.post(TOKEN_PATH, async (req, reply) => {
+      const token = req.headers.token;
+      if (!token) {
+        reply.code(401);
+        return { message: 'Missing Token header', messagecode: '401', issuccessful: false };
+      }
+      return {
+        api_data: {
+          access_token: `mock-access-${randomUUID().replace(/-/g, '')}`,
+          expires_in: TOKEN_TTL_SECONDS,
+        },
+      };
     });
 
-    // GET /api/notification — list registered birth notifications (generic get).
-    app.get('/api/notification', async () => ({
-      count: store.count('notifications'),
-      notifications: store.list('notifications'),
-    }));
+    // POST .../registrations/birth — createBirthRecord (and a generic post to
+    // the same path): register a birth and mint a certificate number.
+    app.post(BIRTH_PATH, async (req, reply) => {
+      const record = toBirthRecord((req.body ?? {}) as Record<string, any>, {
+        certificateNumber: `${String(randomInt(0, 1_000_000)).padStart(6, '0')}-${String(
+          randomInt(0, 100)
+        ).padStart(2, '0')}-2024`,
+        referenceId: `${randomUUID().slice(0, 8)}-${randomInt(1000, 9999)}`,
+      });
+      store.create('birthRecords', record.reference_id, record);
+      reply.code(200);
+      return record;
+    });
+
+    // GET .../registrations/birth — list registered births, optionally narrowed
+    // by ?registry_code (what `get(path, query)` sends).
+    app.get(BIRTH_PATH, async (req) => {
+      const { registry_code: registryCode } = req.query as Record<string, any>;
+      const records = store
+        .list('birthRecords')
+        .filter((r) => !registryCode || r.registry_code === String(registryCode));
+      return { count: records.length, records };
+    });
+
+    // GET .../registrations/birth/:referenceId — one registered birth.
+    app.get(`${BIRTH_PATH}/:referenceId`, async (req, reply) => {
+      const referenceId = String((req.params as Record<string, any>).referenceId);
+      const record = store.get('birthRecords', referenceId);
+      if (!record) {
+        reply.code(404);
+        return {
+          message: `No record found for reference_id : ${referenceId}`,
+          messagecode: '404',
+          issuccessful: false,
+        };
+      }
+      return record;
+    });
   },
 
   seed,
