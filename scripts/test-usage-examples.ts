@@ -53,6 +53,9 @@
  *   pnpm test:usage -- --keep           # keep the temp job/state/log files
  *   pnpm test:usage -- --no-warmup      # skip the adaptor-cache warm-up
  *   pnpm test:usage -- --cli "npx -y @openfn/cli"   # override the CLI command
+ *   pnpm test:usage -- --capture <dir>  # also record every request/response the real
+ *                                       # adaptor made as <dir>/<system>.jsonl (full bodies),
+ *                                       # for `pnpm test:conformance -- --system X --exchanges=<file>`
  */
 import { spawn, spawnSync } from 'node:child_process';
 import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
@@ -65,6 +68,7 @@ import { plugins } from '../src/systems/index.js';
 import { resolveCredentialValues, systemVars } from '../src/credentials.js';
 import type { MockSystemPlugin, SystemConfig, UsageExample } from '../src/systems/types.js';
 import { startAliasProxy } from './lib/host-alias-proxy.js';
+import { attachExchangeCapture, type Exchange } from './lib/conformance.js';
 
 /* The CLI expands a short name like `openspp` to `@openfn/language-openspp`
  * and auto-installs it. The mapping lives on each plugin (`adaptorName`,
@@ -84,6 +88,7 @@ interface Args {
   keep: boolean;
   warmup: boolean;
   cli?: string;
+  capture?: string;
 }
 
 function parseArgs(argv: string[]): Args {
@@ -97,6 +102,8 @@ function parseArgs(argv: string[]): Args {
     else if (a === '--system' || a === '--systems') {
       args.systems = (argv[++i] ?? '').split(',').map((s) => s.trim()).filter(Boolean);
     } else if (a === '--cli') args.cli = argv[++i];
+    else if (a === '--capture') args.capture = argv[++i];
+    else if (a.startsWith('--capture=')) args.capture = a.slice('--capture='.length);
     else if (a.startsWith('--')) {
       throw new Error(`Unknown flag: ${a}`);
     }
@@ -146,11 +153,14 @@ async function startSystem(system: string, plugin: MockSystemPlugin) {
   delete config.rate_limit;
 
   const { app } = await createSystemServer(plugin, config, { logLevel: 'warn', autoAuth: false });
+  // Full request/response bodies of everything the real adaptor sends, for
+  // `--capture` (spec-conformance input). Hooks must attach before listen.
+  const captured: Exchange[] = attachExchangeCapture(app).exchanges;
   await app.listen({ port: 0, host: '127.0.0.1' });
   const addr = app.server.address();
   const port = typeof addr === 'object' && addr ? addr.port : 0;
   const origin = `http://127.0.0.1:${port}`;
-  return { app, origin, port, config };
+  return { app, origin, port, config, captured };
 }
 
 interface CliCmd {
@@ -425,7 +435,7 @@ async function main(): Promise<void> {
     const dir = join(workDir, system);
     mkdirSync(dir, { recursive: true });
 
-    const { app, origin, port, config } = await startSystem(system, plugin);
+    const { app, origin, port, config, captured } = await startSystem(system, plugin);
     // Some adaptors (Mailgun, OpenCRVS) call hostnames the mock isn't otherwise
     // reachable at; see scripts/lib/host-alias-proxy.ts and the README's "Local
     // network aliasing". Systems without `hostAliases` get `undefined` here and
@@ -446,6 +456,12 @@ async function main(): Promise<void> {
     } finally {
       await alias?.close();
       await app.close();
+      if (args.capture) {
+        mkdirSync(args.capture, { recursive: true });
+        const file = join(args.capture, `${system}.jsonl`);
+        writeFileSync(file, captured.map((e) => JSON.stringify(e)).join('\n') + (captured.length ? '\n' : ''));
+        console.log(`   ↳ captured ${captured.length} exchange(s) to ${file}`);
+      }
     }
   }
 
