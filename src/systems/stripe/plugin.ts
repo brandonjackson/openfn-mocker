@@ -1,7 +1,7 @@
 import type { FastifyInstance } from 'fastify';
 import type { MockSystemPlugin, SystemConfig } from '../types.js';
 import type { DataStore } from '../../store.js';
-import { seed, makeId } from './seed.js';
+import { seed, makeId, customerRecord, chargeRecord, unixNow } from './seed.js';
 import { usage } from './usage.js';
 import { guide } from './guide.js';
 
@@ -19,9 +19,17 @@ function listEnvelope(resource: string, data: any[]): Record<string, any> {
   return { object: 'list', url: `/v1/${resource}`, has_more: false, data };
 }
 
-/** Stripe-style resource-not-found error body. */
-function notFound(resource: string): Record<string, any> {
-  return { error: { message: `No such ${resource}`, type: 'invalid_request_error' } };
+/** Stripe-style resource-not-found error body (the spec's `error` envelope). */
+function notFound(resource: string, id: string): Record<string, any> {
+  return {
+    error: {
+      code: 'resource_missing',
+      doc_url: 'https://stripe.com/docs/error-codes/resource-missing',
+      message: `No such ${resource}: '${id}'`,
+      param: 'id',
+      type: 'invalid_request_error',
+    },
+  };
 }
 
 const plugin: MockSystemPlugin = {
@@ -47,7 +55,9 @@ const plugin: MockSystemPlugin = {
     app.post('/v1/customers', async (req, reply) => {
       const body = (req.body ?? {}) as Record<string, any>;
       const id = makeId('cus_');
-      const customer = { ...body, id, object: 'customer' };
+      // Spec-complete record (all `required` fields present) with the request's
+      // fields layered on, as Stripe returns the full object on create.
+      const customer = customerRecord({ ...body, id, created: unixNow(), livemode: false });
       store.create('customers', id, customer);
       reply.code(200);
       return customer;
@@ -58,7 +68,7 @@ const plugin: MockSystemPlugin = {
       const found = store.get('customers', id);
       if (!found) {
         reply.code(404);
-        return notFound('customer');
+        return notFound('customer', id);
       }
       return found;
     });
@@ -69,16 +79,17 @@ const plugin: MockSystemPlugin = {
     app.post('/v1/charges', async (req, reply) => {
       const body = (req.body ?? {}) as Record<string, any>;
       const id = makeId('ch_');
-      const charge = {
+      // Form-encoded requests deliver `amount` as a string; chargeRecord coerces
+      // it to the integer the spec requires and fills every required field.
+      const charge = chargeRecord({
         ...body,
         id,
-        object: 'charge',
-        status: 'succeeded',
-        amount: body.amount ?? null,
+        created: unixNow(),
         currency: body.currency ?? 'usd',
-        paid: true,
-        captured: true,
-      };
+        customer: body.customer ?? null,
+        status: 'succeeded',
+        livemode: false,
+      });
       store.create('charges', id, charge);
       reply.code(200);
       return charge;
@@ -89,7 +100,7 @@ const plugin: MockSystemPlugin = {
       const found = store.get('charges', id);
       if (!found) {
         reply.code(404);
-        return notFound('charge');
+        return notFound('charge', id);
       }
       return found;
     });
