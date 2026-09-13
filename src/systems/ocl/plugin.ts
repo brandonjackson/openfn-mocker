@@ -1,4 +1,4 @@
-import type { FastifyInstance } from 'fastify';
+import type { FastifyInstance, FastifyReply } from 'fastify';
 import type { MockSystemPlugin, SystemConfig } from '../types.js';
 import type { DataStore } from '../../store.js';
 import { seed } from './seed.js';
@@ -19,6 +19,21 @@ import { guide } from './guide.js';
  * dereferences to reach this mock.
  */
 
+/**
+ * OCL paginates in *headers*, not in the body: its list views serialize the page
+ * as a bare JSON array and hang `num_found` / `num_returned` / `pages` /
+ * `page_number` off the response (`ListWithHeadersMixin` in oclapi2). `next` and
+ * `previous` are only present when such a page exists, which for the seeded
+ * single page is never.
+ */
+function listPage(reply: FastifyReply, items: any[]): any[] {
+  reply.header('num_found', String(items.length));
+  reply.header('num_returned', String(items.length));
+  reply.header('pages', '1');
+  reply.header('page_number', '1');
+  return items;
+}
+
 const plugin: MockSystemPlugin = {
   name: 'ocl',
   credential: {
@@ -35,12 +50,12 @@ const plugin: MockSystemPlugin = {
 
   async overrides(app: FastifyInstance, store: DataStore, _config: SystemConfig) {
     // --- Mappings (getMappings): both collections and sources repositories. ---
-    const mappings = async () => store.list('mappings');
+    const mappings = async (_req: unknown, reply: FastifyReply) => listPage(reply, store.list('mappings'));
     app.get('/orgs/:ownerId/collections/:repo/:version/mappings', mappings);
     app.get('/orgs/:ownerId/sources/:repo/:version/mappings', mappings);
 
     // --- Concepts. A versioned repo path and the plain get() path both work. ---
-    const concepts = async () => store.list('concepts');
+    const concepts = async (_req: unknown, reply: FastifyReply) => listPage(reply, store.list('concepts'));
     app.get('/orgs/:ownerId/collections/:repo/:version/concepts', concepts);
     app.get('/orgs/:ownerId/sources/:repo/concepts', concepts);
 
@@ -54,7 +69,7 @@ const plugin: MockSystemPlugin = {
       }
       return found;
     });
-    app.get('/orgs/:ownerId/sources', async () => store.list('sources'));
+    app.get('/orgs/:ownerId/sources', async (_req, reply) => listPage(reply, store.list('sources')));
 
     // --- Organization metadata ---
     app.get('/orgs/:ownerId', async (req, reply) => {

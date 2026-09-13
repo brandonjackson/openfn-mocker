@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 import type { FastifyInstance } from 'fastify';
 import type { MockSystemPlugin, SystemConfig } from '../types.js';
 import type { DataStore } from '../../store.js';
-import { seed, nowIso } from './seed.js';
+import { seed, buildCredential } from './seed.js';
 import { usage } from './usage.js';
 import { guide } from './guide.js';
 import { examplePdf } from '../shared/attachments.js';
@@ -86,17 +86,21 @@ const plugin: MockSystemPlugin = {
     });
 
     // --- Credentialing: issue a verifiable credential ---
-    app.post('/credentials/issue', async (req) => {
+    // Returns 201 with the registry's `credentialResponse` envelope (the signed
+    // VC plus its schema id, tags and audit fields), as the issuance API does.
+    app.post('/credentials/issue', async (req, reply) => {
       const body = (req.body ?? {}) as Record<string, any>;
       const id = 'did:rcw:' + randomUUID();
-      const credential = {
+      const input = (body.credential ?? {}) as Record<string, any>;
+      const issued = buildCredential({
         id,
-        credential: body.credential ?? {},
+        credentialSubject: input.credentialSubject ?? {},
         credentialSchemaId: body.credentialSchemaId ?? null,
-        createdAt: nowIso(),
-      };
-      store.create('credentials', id, credential);
-      return credential;
+        tags: body.tags,
+      });
+      store.create('credentials', id, issued);
+      reply.code(201);
+      return issued;
     });
 
     // --- Credentialing: read a credential by id ---
@@ -115,7 +119,9 @@ const plugin: MockSystemPlugin = {
         reply.type('application/pdf');
         return reply.send(examplePdf.bytes());
       }
-      return found;
+      // The read returns the verifiable credential itself; the issuance
+      // envelope around it (schema id, tags, audit fields) is not repeated.
+      return found.credential;
     });
   },
 

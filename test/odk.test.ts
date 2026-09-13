@@ -84,21 +84,54 @@ describe('odk (ODK Central)', () => {
     await app.close();
   });
 
-  it('accepts a new submission through the OData table', async () => {
+  it('omits null fields on REST resources, as Central\'s serializer does', async () => {
     const { app } = await createSystemServer(odk, config, { logLevel: 'silent' });
-    const res = await app.inject({
-      method: 'POST',
+    const projects = await app.inject({ method: 'GET', url: '/v1/projects' });
+    // An unencrypted project has no keyId key at all, and a project that has
+    // never been edited no updatedAt.
+    expect('keyId' in projects.json()[0]).toBe(false);
+    expect('updatedAt' in projects.json()[0]).toBe(false);
+    expect(projects.json()[0].name).toBe('Sierra Leone Health Survey');
+
+    const forms = await app.inject({ method: 'GET', url: '/v1/projects/1/forms' });
+    for (const form of forms.json()) expect('updatedAt' in form).toBe(false);
+
+    // The OData tables keep their fixed columns, nulls included.
+    const subs = await app.inject({
+      method: 'GET',
       url: '/v1/projects/1/forms/household-survey.svc/Submissions',
-      payload: { head_name: 'New Head', household_size: 2 },
     });
+    expect(subs.json().value[0].__system.reviewState).toBeNull();
+    await app.close();
+  });
+
+  it('comments on a submission and lists the comment back', async () => {
+    const { app } = await createSystemServer(odk, config, { logLevel: 'silent' });
+    const base = '/v1/projects/1/forms/household-survey/submissions/uuid:sub-0001/comments';
+    const res = await app.inject({ method: 'POST', url: base, payload: { body: 'Checked.' } });
     expect(res.statusCode).toBe(200);
     const created = res.json();
-    expect(created.__id).toBeTruthy();
-    // POST-created rows match the seed rows' shape (meta + __system).
-    expect(created.meta.instanceID).toBe(created.__id);
-    expect(created.__system.deviceId).toBeDefined();
-    const list = await app.inject({ method: 'GET', url: '/v1/projects/1/forms/household-survey.svc/Submissions' });
-    expect(list.json().value.length).toBe(3);
+    expect(created.body).toBe('Checked.');
+    expect(typeof created.actorId).toBe('number');
+    // The mock's own bookkeeping key never reaches the response.
+    expect(created._instanceId).toBeUndefined();
+
+    const list = await app.inject({ method: 'GET', url: base });
+    expect(list.json().map((c: any) => c.body)).toEqual(['Checked.']);
+    await app.close();
+  });
+
+  it('rejects a comment with no body, and 404s for an unknown submission', async () => {
+    const { app } = await createSystemServer(odk, config, { logLevel: 'silent' });
+    const base = '/v1/projects/1/forms/household-survey/submissions/uuid:sub-0001/comments';
+    const bad = await app.inject({ method: 'POST', url: base, payload: {} });
+    expect(bad.statusCode).toBe(400);
+    const missing = await app.inject({
+      method: 'POST',
+      url: '/v1/projects/1/forms/household-survey/submissions/uuid:nope/comments',
+      payload: { body: 'hi' },
+    });
+    expect(missing.statusCode).toBe(404);
     await app.close();
   });
 });

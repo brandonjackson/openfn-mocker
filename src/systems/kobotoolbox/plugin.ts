@@ -11,7 +11,7 @@ import { guide } from './guide.js';
  * KoboToolbox (port 4016) — Token auth ("Authorization: Token xxx"), DRF-style
  * envelopes ({ count, next, previous, results }). Source system exposing survey
  * "assets" and their "submissions" (collected data). The nested, non-CRUD route
- * shape (assets -> data -> single submission, plus a separate /submissions/ POST)
+ * shape (assets -> data -> single submission, plus the per-submission actions)
  * is registered with custom handlers rather than the generic CRUD helper; the
  * DRF envelope is applied by hand. Auth is accept-all (handled globally).
  */
@@ -346,17 +346,18 @@ const plugin: MockSystemPlugin = {
       return null;
     });
 
-    // POST /api/v2/assets/:uid/submissions/ — create a submission.
-    app.post('/api/v2/assets/:uid/submissions/', async (req, reply) => {
-      const uid = (req.params as Record<string, any>).uid;
-      const raw = (req.body ?? {}) as Record<string, any>;
-
-      // Accept either a bare survey object or a { id, submission } envelope.
-      const fields =
-        raw && typeof raw === 'object' && raw.submission && typeof raw.submission === 'object'
-          ? (raw.submission as Record<string, any>)
-          : raw;
-      const { id: _ignoredId, submission: _ignoredSub, ...surveyFields } = fields as Record<string, any>;
+    // POST /api/v2/assets/:uid/data/:id/duplicate/ — copy a submission.
+    // KPI has no JSON "create a submission" endpoint (collected data arrives
+    // through KoboCAT/OpenRosa, not /api/v2), so this is the write path a
+    // workflow can drive here: it returns the copy, with a fresh _id and _uuid
+    // and the original recorded as its deprecated instance id.
+    app.post('/api/v2/assets/:uid/data/:id/duplicate/', async (req, reply) => {
+      const { uid, id } = req.params as Record<string, any>;
+      const original = store.get('submissions', String(id));
+      if (original === undefined || original._xform_id_string !== uid) {
+        reply.code(404);
+        return { detail: 'Not found.' };
+      }
 
       // Assign a new integer _id (max existing + 1).
       const existingIds = store
@@ -366,8 +367,10 @@ const plugin: MockSystemPlugin = {
       const newId = (existingIds.length ? Math.max(...existingIds) : 12000) + 1;
       const uuid = randomUUID();
       const asset = store.get('assets', uid);
+      const { _id, _uuid, _attachments, _submission_time, ...fields } = original as Record<string, any>;
 
-      const submission = {
+      const duplicate = {
+        ...fields,
         ...koboSubmissionMeta({
           id: newId,
           uuid,
@@ -376,20 +379,15 @@ const plugin: MockSystemPlugin = {
           xformId: uid,
           version: asset?.version_id ?? versionId(uid),
           formhubUuid: asset?.deployment__uuid ?? versionId(`fh-${uid}`).slice(1),
-          fields: surveyFields,
+          fields,
         }),
-        ...surveyFields,
+        // The copy points back at the submission it was made from; its media
+        // is not copied with it.
+        'meta/deprecatedID': `uuid:${original._uuid}`,
+        _attachments: [],
       };
-      store.create('submissions', String(newId), submission);
-
-      reply.code(201);
-      return {
-        message: 'Successful submission.',
-        _id: newId,
-        _uuid: uuid,
-        status: 'submitted',
-        submission,
-      };
+      store.create('submissions', String(newId), duplicate);
+      return duplicate;
     });
   },
 

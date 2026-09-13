@@ -29,11 +29,27 @@ describe('ocl (OpenConceptLab REST)', () => {
     await app.close();
   });
 
-  it('reads source metadata by id', async () => {
+  it('paginates a list in headers, the way OCL does', async () => {
+    const { app } = await createSystemServer(ocl, config, { logLevel: 'silent' });
+    const res = await app.inject({ method: 'GET', url: '/orgs/DemoOrg/sources' });
+    expect(res.statusCode).toBe(200);
+    expect(Array.isArray(res.json())).toBe(true);
+    expect(res.headers['num_found']).toBe('1');
+    expect(res.headers['num_returned']).toBe('1');
+    expect(res.headers['pages']).toBe('1');
+    expect(res.headers['page_number']).toBe('1');
+    await app.close();
+  });
+
+  it('reads source metadata by id, with the fields the API always returns', async () => {
     const { app } = await createSystemServer(ocl, config, { logLevel: 'silent' });
     const res = await app.inject({ method: 'GET', url: '/orgs/DemoOrg/sources/DemoSource' });
     expect(res.statusCode).toBe(200);
-    expect(res.json().short_code).toBe('DemoSource');
+    const body = res.json();
+    expect(body.short_code).toBe('DemoSource');
+    expect(body.version).toBe('HEAD');
+    expect(typeof body.created_on).toBe('string');
+    expect(typeof body.updated_on).toBe('string');
     await app.close();
   });
 

@@ -25,6 +25,39 @@ describe('dhis2', () => {
     expect(body.version).toBe('2.39');
     expect(typeof body.serverDate).toBe('string');
     expect(body.contextPath).toContain('http://localhost:');
+    // The one field DHIS2's own spec marks required on this resource.
+    expect(body.sessionTimeout).toBe(3600);
+  });
+
+  it('serves the metadata fields DHIS2 marks required on each resource', async () => {
+    const { app } = await boot();
+    const ous = await app.inject({ method: 'GET', url: '/api/organisationUnits' });
+    for (const ou of ous.json().organisationUnits) {
+      expect(ou.aggregationType).toBe('NONE');
+      // openingDate is a date-time, not a bare calendar date.
+      expect(ou.openingDate).toMatch(/T\d{2}:\d{2}:\d{2}/);
+    }
+
+    const program = await app.inject({ method: 'GET', url: '/api/programs/IpHINAT79UW' });
+    const p = program.json();
+    for (const field of [
+      'accessLevel',
+      'featureType',
+      'version',
+      'expiryDays',
+      'completeEventsExpiryDays',
+      'openDaysAfterCoEndDate',
+      'maxTeiCountToReturn',
+      'minAttributesRequiredToSearch',
+    ]) {
+      expect(p[field]).toBeDefined();
+    }
+    // Nested metadata stays an id-only reference, as DHIS2 returns it unfiltered.
+    expect(p.trackedEntityType).toEqual({ id: 'nEenWmSyUEp' });
+
+    const tet = await app.inject({ method: 'GET', url: '/api/trackedEntityTypes/nEenWmSyUEp' });
+    expect(tet.json().featureType).toBe('NONE');
+    expect(tet.json().minAttributesRequiredToSearch).toBe(1);
   });
 
   it('GET /api/organisationUnits returns pager + resource-typed array with seed data', async () => {
@@ -228,6 +261,12 @@ describe('dhis2', () => {
     expect(Array.isArray(body.rows)).toBe(true);
     expect(body.rows.length).toBeGreaterThanOrEqual(1);
     expect(body.metaData.items).toBeTruthy();
+    // The grid describes its own dimensions.
+    expect(body.width).toBe(body.headers.length);
+    expect(body.headerWidth).toBe(body.headers.length);
+    expect(body.visibleWidth).toBe(body.headers.length);
+    expect(body.height).toBe(body.rows.length);
+    expect(body.lastDataRow).toBe(false);
   });
 
   it('GET /api/schemas lists schemas; /api/schemas/:type returns one', async () => {
@@ -237,6 +276,7 @@ describe('dhis2', () => {
     const one = await app.inject({ method: 'GET', url: '/api/schemas/dataElement' });
     expect(one.statusCode).toBe(200);
     expect(one.json().plural).toBe('dataElements');
+    expect(typeof one.json().order).toBe('number');
   });
 
   it('generic classic CRUD works for an unseeded resourceType (dataSets)', async () => {

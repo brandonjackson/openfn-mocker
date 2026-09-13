@@ -19,6 +19,11 @@ export function assetUrl(port: number, uid: string): string {
   return `http://localhost:${port}/api/v2/assets/${uid}/`;
 }
 
+/** A deterministic Kobo attachment uid (`att` + 22 chars) derived from a seed. */
+export function attachmentUid(seed: string): string {
+  return `att${versionId(seed).slice(1)}`;
+}
+
 /** A deterministic Kobo-style version id (`v` + 22 chars) derived from a seed. */
 export function versionId(seed: string): string {
   let h = 0;
@@ -301,15 +306,20 @@ export function seed(store: DataStore, config: SystemConfig): void {
       target._attachments = [
         {
           id: attachmentId,
+          // Every attachment also carries its own `att…` uid and the bare file
+          // name alongside the stored path — both required on the resource.
+          uid: attachmentUid(`${asset.uid}-${attachmentId}`),
           download_url: downloadUrl,
           download_small_url: downloadUrl,
           download_medium_url: downloadUrl,
           download_large_url: downloadUrl,
           mimetype: examplePng.mimeType,
           filename: `${asset.owner}/attachments/${formhubUuid}/${target._uuid}/${examplePng.filename}`,
+          media_file_basename: examplePng.filename,
           instance: target._id,
           xform: 1,
           question_xpath: 'photo',
+          is_deleted: false,
         },
       ];
       store.create('attachments', String(attachmentId), {

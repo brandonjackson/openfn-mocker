@@ -12,7 +12,7 @@ const config: MockerConfig = {
     dhis2: { enabled: true, port: 0, version: '2.39' },
     fhir: { enabled: true, port: 0, apiPath: '' },
     commcare: { enabled: true, port: 0, domain: 'test-project' },
-    twilio: { enabled: true, port: 0, account_sid: 'ACtest123456' },
+    twilio: { enabled: true, port: 0, account_sid: 'AC00000000000000000000000000000000' },
     'http-generic': { enabled: true, port: 0 },
     salesforce: { enabled: false, port: 0 }, // placeholder, no plugin
   },
@@ -313,12 +313,12 @@ describe('sandbox credential (sourced from the plugin, generated in the browser)
 
   it('keeps Twilio identifiers static so the mock paths resolve, generating only the secret', () => {
     const html = renderSandboxPage([
-      { name: 'twilio', mountPath: '/twilio', config: { account_sid: 'ACtest123456' } },
+      { name: 'twilio', mountPath: '/twilio', config: { account_sid: 'AC00000000000000000000000000000000' } },
     ]);
     expect(html).toContain('"name":"accountSid"');
     expect(html).toContain('"name":"authToken"');
     // accountSid is a static value (used to build /Accounts/<sid>/… paths), authToken is generated.
-    expect(html).toContain('ACtest123456');
+    expect(html).toContain('AC00000000000000000000000000000000');
     expect(html).not.toContain('mock-auth-token');
   });
 

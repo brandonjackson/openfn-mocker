@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 import type { FastifyInstance } from 'fastify';
 import type { MockSystemPlugin, SystemConfig } from '../types.js';
 import type { DataStore } from '../../store.js';
-import { seed, nowIso } from './seed.js';
+import { seed, nowIso, projectRef } from './seed.js';
 import { usage } from './usage.js';
 import { guide } from './guide.js';
 
@@ -66,7 +66,7 @@ const plugin: MockSystemPlugin = {
         name: input.name ?? null,
         notes: input.notes ?? '',
         completed: input.completed ?? false,
-        projects: input.projects ?? [],
+        projects: (input.projects ?? []).map(projectRef),
         created_at: nowIso(),
         modified_at: nowIso(),
       };
@@ -91,6 +91,7 @@ const plugin: MockSystemPlugin = {
       const gid = String((req.params as Record<string, any>).gid);
       const body = (req.body ?? {}) as Record<string, any>;
       const patch = (body.data ?? body) as Record<string, any>;
+      if (Array.isArray(patch.projects)) patch.projects = patch.projects.map(projectRef);
       const updated = store.update('tasks', gid, { ...patch, modified_at: nowIso() });
       if (!updated) {
         reply.code(404);

@@ -21,6 +21,9 @@ export function genUid(): string {
  */
 export function seed(store: DataStore, _config: SystemConfig): void {
   const now = new Date().toISOString();
+  // DHIS2 dates are ISO-8601 instants; `openingDate` is a date-time like every
+  // other, not a bare calendar date.
+  const epoch = '1970-01-01T00:00:00.000Z';
 
   // --- Organisation units: national -> regional -> facility ---
   const nationalId = 'ImspTQPwCqd';
@@ -33,7 +36,9 @@ export function seed(store: DataStore, _config: SystemConfig): void {
     shortName: 'Sierra Leone',
     level: 1,
     path: `/${nationalId}`,
-    openingDate: '1970-01-01',
+    openingDate: epoch,
+    // Org units are not aggregated data items; a metadata export carries NONE.
+    aggregationType: 'NONE',
     created: now,
     lastUpdated: now,
   });
@@ -44,7 +49,9 @@ export function seed(store: DataStore, _config: SystemConfig): void {
     level: 2,
     path: `/${nationalId}/${regionalId}`,
     parent: { id: nationalId },
-    openingDate: '1970-01-01',
+    openingDate: epoch,
+    // Org units are not aggregated data items; a metadata export carries NONE.
+    aggregationType: 'NONE',
     created: now,
     lastUpdated: now,
   });
@@ -55,7 +62,9 @@ export function seed(store: DataStore, _config: SystemConfig): void {
     level: 3,
     path: `/${nationalId}/${regionalId}/${facilityId}`,
     parent: { id: regionalId },
-    openingDate: '1970-01-01',
+    openingDate: epoch,
+    // Org units are not aggregated data items; a metadata export carries NONE.
+    aggregationType: 'NONE',
     created: now,
     lastUpdated: now,
   });
@@ -79,6 +88,18 @@ export function seed(store: DataStore, _config: SystemConfig): void {
     name: 'Child Programme',
     shortName: 'Child Programme',
     programType: 'WITH_REGISTRATION',
+    // A program carries its access and search settings inline; DHIS2 marks all
+    // of these required on the resource.
+    accessLevel: 'OPEN',
+    featureType: 'NONE',
+    version: 5,
+    expiryDays: 0,
+    completeEventsExpiryDays: 0,
+    openDaysAfterCoEndDate: 0,
+    maxTeiCountToReturn: 0,
+    minAttributesRequiredToSearch: 1,
+    // Nested metadata comes back as an id-only reference, as DHIS2 returns it
+    // when no `fields` are requested.
     trackedEntityType: { id: 'nEenWmSyUEp' },
     created: now,
     lastUpdated: now,
@@ -89,16 +110,15 @@ export function seed(store: DataStore, _config: SystemConfig): void {
   });
 
   // --- Tracked entity types ---
-  store.create('trackedEntityTypes', 'nEenWmSyUEp', {
-    id: 'nEenWmSyUEp',
-    name: 'Person',
+  const trackedEntityType = (id: string, name: string) => ({
+    id,
+    name,
+    featureType: 'NONE',
+    maxTeiCountToReturn: 0,
+    minAttributesRequiredToSearch: 1,
     created: now,
     lastUpdated: now,
   });
-  store.create('trackedEntityTypes', 'MCPQUTHX1Ze', {
-    id: 'MCPQUTHX1Ze',
-    name: 'Building',
-    created: now,
-    lastUpdated: now,
-  });
+  store.create('trackedEntityTypes', 'nEenWmSyUEp', trackedEntityType('nEenWmSyUEp', 'Person'));
+  store.create('trackedEntityTypes', 'MCPQUTHX1Ze', trackedEntityType('MCPQUTHX1Ze', 'Building'));
 }

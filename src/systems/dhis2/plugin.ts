@@ -140,28 +140,38 @@ function analyticsResponse(): Record<string, any> {
       ['fbfJHSPpUQD', '202401', 'ImspTQPwCqd', '123.0'],
       ['cYeuwXTCPkU', '202401', 'ImspTQPwCqd', '98.0'],
     ],
+    // The grid reports its own dimensions: `width`/`headerWidth` count the
+    // columns, `visibleWidth` the non-hidden ones and `height` the rows.
+    // `lastDataRow` is a flag (is the cursor on the grid's last data row), not
+    // an index.
     width: 4,
     height: 2,
+    headerWidth: 4,
+    visibleWidth: 4,
+    lastDataRow: false,
   };
 }
 
 /** A small /api/schemas catalog (enough for get('schemas') / get('schemas/x')). */
 function schemaList(port: number): Array<Record<string, any>> {
-  const mk = (name: string, plural: string, klass: string) => ({
+  // `order` is the schema's rank in DHIS2's metadata import order — required on
+  // every schema, and what an importer sorts a metadata payload by.
+  const mk = (name: string, plural: string, klass: string, order: number) => ({
     name,
     plural,
     klass: `org.hisp.dhis.${klass}`,
     metadata: true,
+    order,
     href: `http://localhost:${port}/api/schemas/${name}`,
   });
   return [
-    mk('dataElement', 'dataElements', 'dataelement.DataElement'),
-    mk('organisationUnit', 'organisationUnits', 'organisationunit.OrganisationUnit'),
-    mk('program', 'programs', 'program.Program'),
-    mk('trackedEntityType', 'trackedEntityTypes', 'trackedentity.TrackedEntityType'),
-    mk('dataSet', 'dataSets', 'dataset.DataSet'),
-    mk('optionSet', 'optionSets', 'option.OptionSet'),
-    mk('option', 'options', 'option.Option'),
+    mk('dataElement', 'dataElements', 'dataelement.DataElement', 1300),
+    mk('organisationUnit', 'organisationUnits', 'organisationunit.OrganisationUnit', 1310),
+    mk('program', 'programs', 'program.Program', 1320),
+    mk('trackedEntityType', 'trackedEntityTypes', 'trackedentity.TrackedEntityType', 1330),
+    mk('dataSet', 'dataSets', 'dataset.DataSet', 1340),
+    mk('optionSet', 'optionSets', 'option.OptionSet', 1350),
+    mk('option', 'options', 'option.Option', 1360),
   ];
 }
 
@@ -191,6 +201,12 @@ const plugin: MockSystemPlugin = {
       revision: '9d9dcf1',
       serverDate: new Date().toISOString(),
       contextPath: `http://localhost:${config.port}`,
+      // The session lifetime in seconds — the one field DHIS2 marks required on
+      // this resource — plus the locale/calendar context a client reads with it.
+      sessionTimeout: 3600,
+      calendar: 'iso8601',
+      dateFormat: 'yyyy-mm-dd',
+      serverTimeZoneId: 'Etc/UTC',
     }));
 
     // Metadata resources: list + single-by-uid.

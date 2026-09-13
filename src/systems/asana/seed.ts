@@ -11,6 +11,22 @@ export function nowIso(): string {
   return new Date().toISOString();
 }
 
+/**
+ * The `projects` a task belongs to come back as *compact project objects*
+ * (`ProjectCompact` in Asana's OpenAPI), not as bare gids — even though the
+ * create/update request accepts an array of gids. `projectRef` turns either
+ * form into the response shape.
+ */
+export function projectRef(project: unknown): Record<string, any> {
+  if (project && typeof project === 'object') return project as Record<string, any>;
+  const gid = String(project);
+  return { gid, resource_type: 'project', name: projectNames[gid] ?? 'Untitled project' };
+}
+
+const projectNames: Record<string, string> = {
+  proj_seed01: 'Mock project',
+};
+
 export function seed(store: DataStore, _config: SystemConfig): void {
   const tasks = [
     {
@@ -19,7 +35,7 @@ export function seed(store: DataStore, _config: SystemConfig): void {
       name: 'Write spec',
       notes: '',
       completed: false,
-      projects: ['proj_seed01'],
+      projects: [projectRef('proj_seed01')],
       created_at: nowIso(),
       modified_at: nowIso(),
     },
@@ -29,7 +45,7 @@ export function seed(store: DataStore, _config: SystemConfig): void {
       name: 'Review pull request',
       notes: 'Check the mocker changes',
       completed: false,
-      projects: ['proj_seed01'],
+      projects: [projectRef('proj_seed01')],
       created_at: nowIso(),
       modified_at: nowIso(),
     },
