@@ -8,6 +8,11 @@ COPY package.json pnpm-lock.yaml* ./
 RUN pnpm install --frozen-lockfile || pnpm install
 COPY . .
 RUN pnpm build
+# Drop dev dependencies (TypeScript, vitest, the openfn-api-specs reference
+# specs, ...) so the runtime stage below carries only what `node dist/index.js`
+# needs. The specs are a dev-time check (`pnpm test:conformance`), never a
+# runtime input.
+RUN pnpm prune --prod
 
 # ---- Runtime ----
 FROM node:20-slim AS runtime

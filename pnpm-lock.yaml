@@ -24,6 +24,9 @@ importers:
       '@types/node':
         specifier: ^22
         version: 22.20.0
+      openfn-api-specs:
+        specifier: github:brandonjackson/openfn-api-specs#main
+        version: https://codeload.github.com/brandonjackson/openfn-api-specs/tar.gz/14bfe4aa1325afc20ac41e6f4250facff9eeeaca
       tsx:
         specifier: ^4
         version: 4.22.4
@@ -689,6 +692,12 @@ packages:
   on-exit-leak-free@2.1.2:
     resolution: {integrity: sha512-0eJJY6hXLGf1udHwfNftBqH+g73EU4B504nZeKpz1sYRKafAghwxEJunB2O7rDZkL4PGfsMVnTXZ2EjibbqcsA==}
     engines: {node: '>=14.0.0'}
+
+  openfn-api-specs@https://codeload.github.com/brandonjackson/openfn-api-specs/tar.gz/14bfe4aa1325afc20ac41e6f4250facff9eeeaca:
+    resolution: {tarball: https://codeload.github.com/brandonjackson/openfn-api-specs/tar.gz/14bfe4aa1325afc20ac41e6f4250facff9eeeaca}
+    version: 0.1.0
+    engines: {node: '>=20'}
+    hasBin: true
 
   pathe@1.1.2:
     resolution: {integrity: sha512-whLdWMYL2TwI08hn8/ZqAbrVemu0LNaNNJZX73O6qaIdCTfXutsLhMkjdENX0qhsQ9uIimo4/aQOmXkoon2nDQ==}
@@ -1409,6 +1418,11 @@ snapshots:
   nanoid@3.3.15: {}
 
   on-exit-leak-free@2.1.2: {}
+
+  openfn-api-specs@https://codeload.github.com/brandonjackson/openfn-api-specs/tar.gz/14bfe4aa1325afc20ac41e6f4250facff9eeeaca:
+    dependencies:
+      ajv: 8.20.0
+      ajv-formats: 3.0.1(ajv@8.20.0)
 
   pathe@1.1.2: {}
 

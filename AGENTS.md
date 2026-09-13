@@ -9,17 +9,21 @@ aliasing", "Roadmap").
 
 ## Specs are a dev-time reference, not a runtime input
 
-`openfn-api-specs` is **not** a dependency of this repo, and nothing fetches a
-spec at runtime. `pnpm install`, the running mock server, and `pnpm test:usage`
-need no GitHub access and touch no CDN. (Mailgun used to fetch its OpenAPI at
-startup to "backfill" event fields, but `EventResponse` declares no required
-fields, so that step backfilled nothing — it was dead weight and is gone.)
+`openfn-api-specs` is a **dev dependency** of this repo (installed from GitHub
+by `pnpm install`), and nothing fetches a spec at runtime: the running mock
+server, the Docker image (dev dependencies are pruned before the runtime
+stage), and `pnpm test:usage` need no GitHub access and touch no CDN. (Mailgun
+used to fetch its OpenAPI at startup to "backfill" event fields, but
+`EventResponse` declares no required fields, so that step backfilled nothing —
+it was dead weight and is gone.)
 
 Every system's responses are built from its hand-written `seed.ts` +
 `overrides`. The openfn-api-specs repo is the source of truth for API *shape*
-(see below), but conforming to it is a **development workflow** you run while
-authoring a system — compare `seed.ts`/`plugin.ts` against the spec by hand — not
-something enforced on the runtime or usage-test critical path.
+(see below). Conforming to it is a **development workflow**: consult the spec
+while authoring, then run `pnpm test:conformance -- --system <name>`, which
+fires the system's guide examples at the mock and validates every request and
+response body against the spec (README "Checking spec conformance"). It is not
+on the runtime or usage-test critical path and is not part of `pnpm test`.
 
 ## The two sources of truth that govern correctness
 
@@ -115,6 +119,11 @@ runtime `fs`), mirrored as real files under `test/fixtures/attachments/`, and
 - [ ] **`pnpm test:usage --system <name>` green** — every usage example runs end
       to end through the real adaptor, *or* each remaining failure is a
       documented Roadmap blocker (see below). **This is the definition of done.**
+- [ ] `pnpm test:conformance -- --system <name>` run and read. Clear every
+      violation that is the mock's (a missing required field, a wrong type, a
+      wrong status code). Where the *spec* is wrong or missing an endpoint the
+      adaptor really calls, fix it in `openfn-api-specs` rather than bending the
+      mock to a bad spec; note anything left in the README Roadmap.
 
 ## When `test:usage` fails, classify before fixing
 

@@ -822,11 +822,12 @@ a runtime spec engine:
   [`pnpm audit:adaptors`](#auditing-adaptor-function-coverage) reads (e.g.
   `https://cdn.jsdelivr.net/npm/@openfn/language-<name>/ast.json`).
 - **API specs live in [`openfn-api-specs`](https://github.com/brandonjackson/openfn-api-specs)**
-  — a focused OpenAPI 3.x spec plus standalone data-object schemas per adaptor,
-  consumed here via the `openfn-api-specs` dependency (`src/api-specs.ts`). They
-  are for authoring/review and are not loaded at runtime unless a plugin chooses
-  to (mailgun fetches its spec via `getOpenapi` for response shaping); a plugin's
-  routes are ordinary Fastify handlers.
+  — a full-coverage OpenAPI 3.x spec plus standalone data-object schemas per
+  adaptor. It is a **dev dependency** here (installed from GitHub), used for two
+  things only: consulting while you author a system, and mechanically checking
+  the mock's responses against the spec with
+  [`pnpm test:conformance`](#checking-spec-conformance). Nothing loads a spec at
+  runtime; a plugin's routes are ordinary Fastify handlers.
 - **Shared helpers do the repetitive parts**: `registerCrud` and `paginate` in
   `src/engine/`, plus `registerFhirRoutes` and the XML-RPC codec in
   `src/systems/shared/` for whole families of systems (openIMIS, OpenELIS and
@@ -836,7 +837,8 @@ Steps:
 
 1. Study the adaptor's surface (its `ast.json` / types, per above) and the real
    API's docs. Its OpenAPI spec + data objects live in the `openfn-api-specs`
-   package (maintained there); consult them via `src/api-specs.ts`. **Also read
+   package (maintained there); once installed, read
+   `node_modules/openfn-api-specs/specs/adaptors/<adaptor>/openapi.json`. **Also read
    the published adaptor's built source** (`npm pack @openfn/language-<name>`,
    then read `dist/*.js` + `configuration-schema.json`) — it is the ground truth
    for the exact request **path + method** each function builds (including `/api`
@@ -1109,6 +1111,71 @@ pnpm audit:adaptors -- --json              # machine-readable report
 pnpm audit:adaptors -- --all               # also print each adaptor's full surface
 ```
 
+## Checking spec conformance
+
+`pnpm test:usage` proves the real adaptor can *drive* the mock (paths, methods,
+signatures) and `pnpm audit:adaptors` proves every function has an example.
+Neither looks at what the mock *sends back*. `pnpm test:conformance` does: it
+checks the mock's request and response bodies against the adaptor's OpenAPI
+spec in [`openfn-api-specs`](https://github.com/brandonjackson/openfn-api-specs),
+the repo that is the source of truth for API *shape*.
+
+For each system it boots the mock in-process, fires every example request from
+the system's sandbox guide (`guide.ts`) at it with full bodies captured, and
+hands the exchanges to the spec repo's conformance engine (`createConformer`).
+That engine matches each exchange to a spec operation (behind the spec's
+`servers[]` path prefix where needed), picks the response schema for the
+status that actually came back, and validates the body with JSON Schema. The
+report groups violations by operation and shows which spec operations the
+guide did and did not exercise:
+
+```bash
+pnpm test:conformance                            # every system with guide examples
+pnpm test:conformance -- --system dhis2,primero
+pnpm test:conformance -- --list                  # what would run, and against which spec
+pnpm test:conformance -- --verbose               # also list spec operations the guide never hits
+pnpm test:conformance -- --json                  # machine-readable report
+pnpm test:conformance -- --strict-additional     # also flag fields the spec does not list
+pnpm test:conformance -- --latest                # specs from the jsDelivr mirror, not the installed snapshot
+```
+
+Violations come in five kinds, and each points at a different owner:
+
+| kind | meaning | usually means |
+|------|---------|---------------|
+| `unknown-operation` | no spec operation matches the method + path | the mock and spec disagree on the API's paths (a version prefix, XML-RPC vs REST, a FHIR facade vs a REST API), or the spec is missing an endpoint the adaptor really calls |
+| `unknown-status` | the operation is documented but not this status | the mock returns `201` where the real API returns `200`, or vice versa |
+| `response-schema` | the body fails the documented schema | a seed record is missing a required field, has the wrong type, or breaks a `format`/`pattern` (e.g. Twilio's `AccountSid` must be 34 characters) |
+| `request-schema` | a guide example's body fails the documented request schema | the example sends numbers where the API wants strings, or omits a required field |
+| `schema-error` | the spec's own schema does not compile | a bug in the spec |
+
+Extra fields pass by default (real servers grow fields faster than specs do);
+`--strict-additional` flips that. Non-JSON responses (CSV, PDF, XML) are not
+schema-checked.
+
+**Read the result as a diagnostic, not a verdict.** Many specs were authored
+independently of the mocks, and a `generated` spec was written from the
+vendor's docs by hand, so a violation can mean the mock is wrong, the spec is
+wrong, or both model the same API differently. The same engine can check a
+*real* instance too, which is how you tell the two apart: capture real traffic
+(see below) and run it through the same spec. Where the spec turns out to be
+wrong, fix it in `openfn-api-specs`, not here.
+
+**Checking real adaptor traffic.** `pnpm test:usage -- --capture <dir>` records
+every request the real published adaptor makes against the mock (full bodies)
+to `<dir>/<system>.jsonl`, in the engine's JSON Lines hand-off format
+(`{ method, path, status, requestBody?, responseBody?, contentType? }`). Feed
+such a file back with
+`pnpm test:conformance -- --system <name> --exchanges=<dir>/<name>.jsonl`, or
+check it in the spec repo directly with
+`pnpm specs conform <adaptor> --exchanges=<file>`. A file recorded from a live
+system with a real credential goes through exactly the same path.
+
+The check is **not part of `pnpm test`**: it depends on the spec repo's
+contents, and the first sweep across all systems found 13 of 62 conforming
+(see the [Roadmap](#roadmap)). It exits non-zero on any violation so a single
+system can be gated once it is clean.
+
 ## Roadmap
 
 The mock covers the request/response surface each adaptor calls, but a few
@@ -1166,6 +1233,25 @@ box:
   returns, so `createReferrals` always throws `Cannot read properties of
   undefined (reading 'body')` — a bug in `@openfn/language-primero` (confirmed
   against 4.1.2), not something the mock's response shape can work around.
+- **Spec conformance baseline.** The first [`pnpm test:conformance`](#checking-spec-conformance)
+  sweep found 13 of 62 systems conforming to their `openfn-api-specs` spec, with
+  298 violations in total. They fall into three buckets, each needing different
+  work: **mock gaps** (DHIS2, checked against the vendor's own OpenAPI, is
+  missing required fields such as `sessionTimeout` on `/api/system/info` and
+  `aggregationType` on org units, and its `openingDate` is not a `date-time`;
+  Stripe customers lack `created`/`livemode`; Twilio's configured
+  `account_sid` is too short for the real `^AC[0-9a-fA-F]{32}$`; ERPNext and
+  the mock disagree on `200` vs `201` for a create), **spec gaps** (FHIR
+  `/metadata` and `_history`, OpenMRS `/session` and its `fhir2` facade, and the
+  DHIS2 `/api/{version}/` segment are served by the mock but absent from the
+  spec; DHIS2's legacy `POST /api/trackedEntityInstances` is gone from the 2.43
+  spec, which is a hint the mock should steer usage toward `/api/tracker`), and
+  **modelling disagreements** where the two describe the same system through
+  different APIs (Odoo/OpenSPP XML-RPC vs the spec's JSON-RPC/REST view;
+  OpenELIS FHIR facade vs its REST API; Maximo `/oslc` vs `/maxrest`; vTiger
+  `?operation=` vs path operations; the `dagu` spec's paths belong to a
+  different system altogether). Work through them per system, fixing the mock
+  or the spec as appropriate, until the check can gate CI.
 - **Credential value validation (optional).** Auth is presence-checked, never
   value-checked, so negative-path tests (wrong password, expired or refreshed
   token) can't be exercised. An opt-in "strict credential" mode would let
@@ -1178,5 +1264,5 @@ box:
 - Before opening a PR: `pnpm build`, `pnpm typecheck`, and `pnpm test` must all pass — CI (`.github/workflows/ci.yml`) runs exactly these on every push to main and every PR. `typecheck` type-checks `test/` and `scripts/` too, which `build` does not. Add tests for any new endpoint or system.
 - The README's supported-systems table and credential examples are generated from plugin metadata: run `pnpm readme` after adding or changing a plugin (`pnpm test` fails if they are stale, via `test/readme.test.ts`).
 - **If you added or changed a system, `pnpm test:usage --system <name>` must be green before you open the PR** (or every remaining failure must be a documented [Roadmap](#roadmap) blocker). This is the real definition of done, and the checklist lives in [`AGENTS.md`](AGENTS.md). `pnpm test` and `pnpm readme` are **necessary but not sufficient**: both check the mock against its *own* assumptions — the unit tests assert the paths the plugin uses, the README is generated from the plugin's metadata — so a wrong route path or a wrong adaptor-function signature passes them green. `test:usage` is the only check that runs the real published adaptor, so it is the only one that catches that class of bug. It is **not** in CI (it is network-bound and hits npm), so this gate is on you locally.
-- Keep plugins thin and mocks faithful. Match real field names, envelopes, and status codes. Reference specs live in the `openfn-api-specs` package and should stay focused subsets, not multi-megabyte vendored documents.
+- Keep plugins thin and mocks faithful. Match real field names, envelopes, and status codes. Reference specs live in the `openfn-api-specs` package; `pnpm test:conformance -- --system <name>` checks the mock's bodies against them.
 - Please do not commit secrets or real PII; seed data should be synthetic.
