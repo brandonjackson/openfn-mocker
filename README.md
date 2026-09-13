@@ -684,7 +684,7 @@ Create (or edit) the credential for each adaptor and point its URL field at the 
 // Wigal SMS (Frog API)  (API key)
 { "baseUrl": "http://localhost:4000/wigal-sms", "username": "openfn", "apiKey": "<generated>" }
 
-// UNHCR proGres v4  (API key)
+// UNHCR proGres v4 (DTP)  (API key)
 { "url": "http://localhost:4000/progres", "key": "<generated>", "cert": "<generated>", "token": "<generated>" }
 
 // Salesforce  (username & password)

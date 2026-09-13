@@ -5,8 +5,10 @@ import { makeMeta } from '../shared/fhir.js';
 /**
  * SATUSEHAT seed — Indonesia's national health-data platform speaks FHIR R4
  * under /fhir-r4/v1. A small, cross-referenced set (an Organization/facility,
- * two Patients and a Practitioner) is seeded so the satusehat adaptor's get()
- * reads return realistic resources and searchset Bundles on first boot.
+ * two Patients, a Practitioner and an Encounter) is seeded so the satusehat
+ * adaptor's get() reads return realistic resources and searchset Bundles on
+ * first boot, and put() has an Encounter to replace (SatuSehat documents a full
+ * replace for Encounter, but not for Patient).
  */
 
 export function seed(store: DataStore, _config: SystemConfig): void {
@@ -67,5 +69,39 @@ export function seed(store: DataStore, _config: SystemConfig): void {
     active: true,
     name: [{ use: 'official', text: 'dr. Andi Wijaya', family: 'Wijaya', given: ['Andi'] }],
     gender: 'male',
+  });
+
+  store.create('Encounter', 'b0d1d54a-4ea1-4e69-b2e2-8b4cf1e0a111', {
+    resourceType: 'Encounter',
+    id: 'b0d1d54a-4ea1-4e69-b2e2-8b4cf1e0a111',
+    meta: makeMeta('1'),
+    identifier: [
+      { system: 'http://sys-ids.kemkes.go.id/encounter/10000001', value: 'RJ-2024-000123' },
+    ],
+    status: 'in-progress',
+    class: {
+      system: 'http://terminology.hl7.org/CodeSystem/v3-ActCode',
+      code: 'AMB',
+      display: 'ambulatory',
+    },
+    subject: { reference: 'Patient/P02478375123', display: 'Budi Santoso' },
+    participant: [
+      {
+        type: [
+          {
+            coding: [
+              {
+                system: 'http://terminology.hl7.org/CodeSystem/v3-ParticipationType',
+                code: 'ATND',
+                display: 'attender',
+              },
+            ],
+          },
+        ],
+        individual: { reference: 'Practitioner/N10000001', display: 'dr. Andi Wijaya' },
+      },
+    ],
+    period: { start: '2024-03-04T01:00:00+00:00' },
+    serviceProvider: { reference: 'Organization/10000001' },
   });
 }
