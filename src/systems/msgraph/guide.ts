@@ -37,7 +37,7 @@ export const guide: SystemGuide = {
       method: 'POST',
       path: '/v1.0/sites/root/lists',
       label: 'Create a resource',
-      body: JSON.stringify({ displayName: 'Tasks' }, null, 2),
+      body: JSON.stringify({ '@odata.type': '#microsoft.graph.list', displayName: 'Tasks' }, null, 2),
     },
     {
       id: 'upload',

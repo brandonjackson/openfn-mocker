@@ -20,6 +20,7 @@ export function nowIso(): string {
 
 export function seed(store: DataStore, _config: SystemConfig): void {
   const drive = {
+    '@odata.type': '#microsoft.graph.drive',
     id: 'b!driveSeed01',
     driveType: 'documentLibrary',
     name: 'Documents',
@@ -30,6 +31,7 @@ export function seed(store: DataStore, _config: SystemConfig): void {
 
   const items = [
     {
+      '@odata.type': '#microsoft.graph.driveItem',
       id: 'item01',
       name: 'report.xlsx',
       size: 20481,
@@ -41,6 +43,7 @@ export function seed(store: DataStore, _config: SystemConfig): void {
       lastModifiedDateTime: nowIso(),
     },
     {
+      '@odata.type': '#microsoft.graph.driveItem',
       id: 'item02',
       name: 'coverage.csv',
       size: exampleCsv.size,
@@ -49,6 +52,7 @@ export function seed(store: DataStore, _config: SystemConfig): void {
       lastModifiedDateTime: nowIso(),
     },
     {
+      '@odata.type': '#microsoft.graph.driveItem',
       id: 'folder01',
       name: 'Data',
       folder: { childCount: 0 },

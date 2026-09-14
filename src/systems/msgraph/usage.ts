@@ -45,7 +45,7 @@ export const usage: UsageExample[] = [
     fn: 'create',
     signature: 'create(resource, data, callback?)',
     description: 'Create a resource under any Graph collection.',
-    code: "create('sites/root/lists', { displayName: 'Tasks' });",
+    code: "create('sites/root/lists', { '@odata.type': '#microsoft.graph.list', displayName: 'Tasks' });",
     apiRef: 'create',
   },
   {
