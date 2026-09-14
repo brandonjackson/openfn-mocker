@@ -9,13 +9,13 @@ export const guide: SystemGuide = {
   title: 'SurveyCTO',
   docs: 'https://docs.openfn.org/adaptors/packages/surveycto-docs',
   blurb:
-    'Offline-first form collection. The adaptor authenticates with HTTP Basic and fetches submissions as a wide-JSON array from /api/v2/forms/data/wide/json/:formId; server datasets are read and written under /api/v2/datasets.',
+    'Offline-first form collection. The adaptor authenticates with HTTP Basic and fetches submissions as a wide-JSON array from /api/v1/forms/data/wide/json/:formId (the adaptor\'s default apiVersion, and the version this is documented as a plain GET under); server datasets are read and written under /api/v2/datasets.',
   auth: 'Basic (username/password)',
   examples: [
     {
       id: 'fetch',
       method: 'GET',
-      path: '/api/v2/forms/data/wide/json/my_form',
+      path: '/api/v1/forms/data/wide/json/my_form',
       label: 'Fetch form submissions (wide JSON)',
     },
     { id: 'listDatasets', method: 'GET', path: '/api/v2/datasets', label: 'List server datasets' },
@@ -24,7 +24,7 @@ export const guide: SystemGuide = {
       method: 'POST',
       path: '/api/v2/datasets',
       label: 'Create or replace a dataset',
-      body: JSON.stringify({ id: 'my_dataset', title: 'My Dataset', type: 'SERVER_DATASET' }, null, 2),
+      body: JSON.stringify({ id: 'my_dataset', title: 'My Dataset', discriminator: 'DATA' }, null, 2),
     },
     {
       id: 'upsertRecord',

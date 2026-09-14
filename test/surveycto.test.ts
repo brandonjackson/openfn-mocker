@@ -16,14 +16,16 @@ describe('surveycto', () => {
     await app.close();
   });
 
-  it('lists seeded datasets under a { data, nextCursor } envelope', async () => {
+  it('lists seeded datasets under a { data } envelope, omitting nextCursor on the last page', async () => {
     const { app } = await createSystemServer(surveycto, config, { logLevel: 'silent' });
     const res = await app.inject({ method: 'GET', url: '/api/v2/datasets' });
     expect(res.statusCode).toBe(200);
     const body = res.json();
     expect(Array.isArray(body.data)).toBe(true);
     expect(body.data.length).toBeGreaterThan(0);
-    expect(body.nextCursor).toBe(null);
+    // The vendor's CursorPaginatedResponse.nextCursor is a non-nullable string,
+    // so a null value would fail conformance; the mock omits the key instead.
+    expect(body.nextCursor).toBeUndefined();
     await app.close();
   });
 

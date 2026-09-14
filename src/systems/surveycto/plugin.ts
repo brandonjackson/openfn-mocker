@@ -26,7 +26,12 @@ const plugin: MockSystemPlugin = {
       { name: 'servername', role: 'static', value: 'mockserver' },
       { name: 'username', role: 'username', value: 'user@example.com' },
       { name: 'password', role: 'secret', secret: { charset: 'alnum', length: 16 } },
-      { name: 'apiVersion', role: 'static', value: 'v2' },
+      // v1 is the adaptor's own default (buildUrl: apiVersion = 'v1') and is
+      // the version fetchSubmissions' plain GET is actually documented under;
+      // v2 (POST-only for the wide-JSON export, per the vendor's OpenAPI) is
+      // where every dataset endpoint lives, so the dataset usage examples
+      // override apiVersion mid-job via fn() rather than changing this default.
+      { name: 'apiVersion', role: 'static', value: 'v1' },
     ],
   },
   // The adaptor builds https://<servername>.surveycto.com/api/<apiVersion> and
@@ -43,13 +48,22 @@ const plugin: MockSystemPlugin = {
     // The `?date=` param filters submissions after a date; we treat it as a
     // no-op and return every seeded submission for the form.
     const wideJson = async () => store.list('submissions');
-    app.get('/api/v2/forms/data/wide/json/:formId', wideJson);
     app.get('/api/v1/forms/data/wide/json/:formId', wideJson);
-    app.get('/forms/data/wide/json/exports/:formId', wideJson);
+    // v2's equivalent (formJsonHandlerV2) is documented POST-only ("Export
+    // form submissions") rather than v1's plain GET download, so it is not
+    // registered here: the adaptor's fetchSubmissions always sends GET
+    // regardless of apiVersion, which only the v1 shape actually matches.
+    app.get('/api/v2/forms/data/wide/json/:formId', wideJson);
 
     // --- Datasets ----------------------------------------------------------
-    // list('datasets') — the adaptor pages over a { data, nextCursor } envelope.
-    app.get('/api/v2/datasets', async () => ({ data: store.list('datasets'), nextCursor: null }));
+    // list('datasets') — the adaptor pages over a { data, nextCursor } envelope
+    // (nextCursor read with `?? null`, so an absent key is as good as a null
+    // one). The vendor's CursorPaginatedResponse.nextCursor is typed as a plain
+    // (non-nullable) string despite its own description saying "if null, there
+    // are no more pages" -- a real imprecision in their published spec, not
+    // something to paper over by editing a verbatim upstream file -- so the
+    // mock omits the key entirely for a last/only page instead of sending null.
+    app.get('/api/v2/datasets', async () => ({ data: store.list('datasets') }));
 
     // upsertDataset first GETs the dataset by id to decide create vs update
     // (200 -> PUT update, 404 -> POST create).

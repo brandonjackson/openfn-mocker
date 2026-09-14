@@ -694,7 +694,7 @@ Create (or edit) the credential for each adaptor and point its URL field at the 
 { "baseUrl": "http://localhost:4000/mailchimp", "server": "us1", "apiKey": "<generated>" }
 
 // SurveyCTO  (username & password)
-{ "baseUrl": "http://localhost:4000/surveycto", "servername": "mockserver", "username": "user@example.com", "password": "<generated>", "apiVersion": "v2" }
+{ "baseUrl": "http://localhost:4000/surveycto", "servername": "mockserver", "username": "user@example.com", "password": "<generated>", "apiVersion": "v1" }
 
 // OpenFn Collections  (API key)
 { "collections_endpoint": "http://localhost:4000/collections", "collections_token": "<generated>", "project_id": "mock-project" }

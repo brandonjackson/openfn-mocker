@@ -34,8 +34,12 @@ export function seed(store: DataStore, _config: SystemConfig): void {
     {
       id: 'demographics',
       title: 'Demographics',
-      type: 'SERVER_DATASET',
-      lastModified: nowIso(),
+      // One of CASES | ENUMERATORS | DATA (DatasetDiscriminator), required on
+      // every dataset per the vendor's DatasetInput schema.
+      discriminator: 'DATA',
+      status: 'READY',
+      createdOn: nowIso(),
+      modifiedOn: nowIso(),
     },
   ];
   for (const d of datasets) store.create('datasets', d.id, d);
