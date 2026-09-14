@@ -38,6 +38,7 @@ const plugin: MockSystemPlugin = {
   async overrides(app: FastifyInstance, store: DataStore, _config: SystemConfig) {
     // GET /v1.0/me — the signed-in user.
     app.get('/v1.0/me', async () => ({
+      '@odata.type': '#microsoft.graph.user',
       id: '00000000-0000-0000-0000-000000000001',
       displayName: 'Mock User',
       mail: 'user@contoso.com',
@@ -95,6 +96,7 @@ const plugin: MockSystemPlugin = {
           ? Buffer.byteLength(body)
           : Buffer.byteLength(JSON.stringify(body ?? ''));
       const item = {
+        '@odata.type': '#microsoft.graph.driveItem',
         id: String(itemId),
         name: 'uploaded',
         size,
@@ -128,6 +130,7 @@ const plugin: MockSystemPlugin = {
           : Buffer.byteLength(JSON.stringify(body ?? ''));
       const id = randomUUID();
       const item = {
+        '@odata.type': '#microsoft.graph.driveItem',
         id,
         name: 'uploaded',
         size,

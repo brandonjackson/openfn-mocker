@@ -26,7 +26,7 @@ importers:
         version: 22.20.0
       openfn-api-specs:
         specifier: github:brandonjackson/openfn-api-specs#main
-        version: https://codeload.github.com/brandonjackson/openfn-api-specs/tar.gz/e9923ac3b7d3d67e331f52ebb0fd9b31c212bc08
+        version: https://codeload.github.com/brandonjackson/openfn-api-specs/tar.gz/86a51decbb514bebd6e68f667146ae4a302d423d
       tsx:
         specifier: ^4
         version: 4.22.4
@@ -633,8 +633,8 @@ packages:
   fast-uri@2.4.0:
     resolution: {integrity: sha512-ypuAmmMKInk5q7XcepxlnUWDLWv4GFtaJqAzWKqn62IpQ3pejtr5dTVbt3vwqVaMKmkNR55sTT+CqUKIaT21BA==}
 
-  fast-uri@3.1.3:
-    resolution: {integrity: sha512-i70LwGWUduXqzicKXWshooq+sWL1K3WUU5rKZNG/0i3a1OSoX3HqhH5WbWwTmqWfor4urUakGPiRQcleRZTwOg==}
+  fast-uri@3.1.7:
+    resolution: {integrity: sha512-dOvZVzjdZdz7phd9v6jCbwxrBW3fK6n8Rc0CtdmM4bumzMnxywBYhuph6J819RRw/ku+rLbelwfMunktuzVVHg==}
 
   fastify-plugin@4.5.1:
     resolution: {integrity: sha512-stRHYGeuqpEZTL1Ef0Ovr2ltazUT9g844X5z/zEBFLG8RYlpDiOCIG+ATvYEp+/zmc7sN29mcIMp8gvYplYPIQ==}
@@ -693,8 +693,8 @@ packages:
     resolution: {integrity: sha512-0eJJY6hXLGf1udHwfNftBqH+g73EU4B504nZeKpz1sYRKafAghwxEJunB2O7rDZkL4PGfsMVnTXZ2EjibbqcsA==}
     engines: {node: '>=14.0.0'}
 
-  openfn-api-specs@https://codeload.github.com/brandonjackson/openfn-api-specs/tar.gz/e9923ac3b7d3d67e331f52ebb0fd9b31c212bc08:
-    resolution: {tarball: https://codeload.github.com/brandonjackson/openfn-api-specs/tar.gz/e9923ac3b7d3d67e331f52ebb0fd9b31c212bc08}
+  openfn-api-specs@https://codeload.github.com/brandonjackson/openfn-api-specs/tar.gz/86a51decbb514bebd6e68f667146ae4a302d423d:
+    resolution: {tarball: https://codeload.github.com/brandonjackson/openfn-api-specs/tar.gz/86a51decbb514bebd6e68f667146ae4a302d423d}
     version: 0.1.0
     engines: {node: '>=20'}
     hasBin: true
@@ -1230,7 +1230,7 @@ snapshots:
   ajv@8.20.0:
     dependencies:
       fast-deep-equal: 3.1.3
-      fast-uri: 3.1.3
+      fast-uri: 3.1.7
       json-schema-traverse: 1.0.0
       require-from-string: 2.0.2
 
@@ -1350,7 +1350,7 @@ snapshots:
 
   fast-uri@2.4.0: {}
 
-  fast-uri@3.1.3: {}
+  fast-uri@3.1.7: {}
 
   fastify-plugin@4.5.1: {}
 
@@ -1419,7 +1419,7 @@ snapshots:
 
   on-exit-leak-free@2.1.2: {}
 
-  openfn-api-specs@https://codeload.github.com/brandonjackson/openfn-api-specs/tar.gz/e9923ac3b7d3d67e331f52ebb0fd9b31c212bc08:
+  openfn-api-specs@https://codeload.github.com/brandonjackson/openfn-api-specs/tar.gz/86a51decbb514bebd6e68f667146ae4a302d423d:
     dependencies:
       ajv: 8.20.0
       ajv-formats: 3.0.1(ajv@8.20.0)
