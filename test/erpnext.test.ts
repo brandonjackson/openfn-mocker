@@ -15,14 +15,14 @@ describe('erpnext (Frappe REST)', () => {
     await app.close();
   });
 
-  it('creates a document (201) and echoes it under data', async () => {
+  it('creates a document (200, Frappe never sets 201) and echoes it under data', async () => {
     const { app } = await createSystemServer(erpnext, config, { logLevel: 'silent' });
     const res = await app.inject({
       method: 'POST',
       url: '/api/resource/Customer',
       payload: { customer_name: 'Gamma Distributors', customer_type: 'Company' },
     });
-    expect(res.statusCode).toBe(201);
+    expect(res.statusCode).toBe(200);
     expect(res.json().data.customer_name).toBe('Gamma Distributors');
     expect(typeof res.json().data.name).toBe('string');
     await app.close();
@@ -49,10 +49,10 @@ describe('erpnext (Frappe REST)', () => {
     await app.close();
   });
 
-  it('deletes a document and replies { message: "ok" }', async () => {
+  it('deletes a document and replies { message: "ok" } with status 202', async () => {
     const { app, store } = await createSystemServer(erpnext, config, { logLevel: 'silent' });
     const res = await app.inject({ method: 'DELETE', url: '/api/resource/Customer/CUST-0002' });
-    expect(res.statusCode).toBe(200);
+    expect(res.statusCode).toBe(202);
     expect(res.json().message).toBe('ok');
     expect(store.get('Customer', 'CUST-0002')).toBeUndefined();
     await app.close();

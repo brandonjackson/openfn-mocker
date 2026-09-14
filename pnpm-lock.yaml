@@ -26,7 +26,7 @@ importers:
         version: 22.20.0
       openfn-api-specs:
         specifier: github:brandonjackson/openfn-api-specs#claude/app-adaptor-spec-mocks-taugrs
-        version: https://codeload.github.com/brandonjackson/openfn-api-specs/tar.gz/b0532dcacd7365a7809c84a025663eb7d5a1b7fe
+        version: https://codeload.github.com/brandonjackson/openfn-api-specs/tar.gz/0471477789b9fcc529b19e772f1054e4e78920b4
       tsx:
         specifier: ^4
         version: 4.22.4
@@ -693,8 +693,8 @@ packages:
     resolution: {integrity: sha512-0eJJY6hXLGf1udHwfNftBqH+g73EU4B504nZeKpz1sYRKafAghwxEJunB2O7rDZkL4PGfsMVnTXZ2EjibbqcsA==}
     engines: {node: '>=14.0.0'}
 
-  openfn-api-specs@https://codeload.github.com/brandonjackson/openfn-api-specs/tar.gz/b0532dcacd7365a7809c84a025663eb7d5a1b7fe:
-    resolution: {tarball: https://codeload.github.com/brandonjackson/openfn-api-specs/tar.gz/b0532dcacd7365a7809c84a025663eb7d5a1b7fe}
+  openfn-api-specs@https://codeload.github.com/brandonjackson/openfn-api-specs/tar.gz/0471477789b9fcc529b19e772f1054e4e78920b4:
+    resolution: {tarball: https://codeload.github.com/brandonjackson/openfn-api-specs/tar.gz/0471477789b9fcc529b19e772f1054e4e78920b4}
     version: 0.1.0
     engines: {node: '>=20'}
     hasBin: true
@@ -1419,7 +1419,7 @@ snapshots:
 
   on-exit-leak-free@2.1.2: {}
 
-  openfn-api-specs@https://codeload.github.com/brandonjackson/openfn-api-specs/tar.gz/b0532dcacd7365a7809c84a025663eb7d5a1b7fe:
+  openfn-api-specs@https://codeload.github.com/brandonjackson/openfn-api-specs/tar.gz/0471477789b9fcc529b19e772f1054e4e78920b4:
     dependencies:
       ajv: 8.20.0
       ajv-formats: 3.0.1(ajv@8.20.0)

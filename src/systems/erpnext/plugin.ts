@@ -72,28 +72,45 @@ function matchCondition(doc: any, cond: any[]): boolean {
   }
 }
 
-/**
- * Filter documents by a Frappe `filters` query value. Frappe accepts either a
- * list of `[field, op, value]` triples or a `{ field: value }` object; support
- * both since the adaptor passes whichever the job author wrote.
- */
-function applyFilters(docs: any[], raw: unknown): any[] {
-  if (typeof raw !== 'string') return docs;
-  let parsed: any;
-  try {
-    parsed = JSON.parse(raw);
-  } catch {
-    return docs;
-  }
+/** True if `doc` satisfies a parsed `filters`/`or_filters` value (list of triples
+ * ANDed, or `{ field: value }` ANDed) — the shared half of applyFilters. */
+function matchesParsedFilter(doc: any, parsed: any): boolean {
   if (Array.isArray(parsed)) {
     const conditions = parsed.filter((c) => Array.isArray(c));
-    return docs.filter((d) => conditions.every((c) => matchCondition(d, c)));
+    return conditions.every((c) => matchCondition(doc, c));
   }
   if (parsed && typeof parsed === 'object') {
-    const entries = Object.entries(parsed);
-    return docs.filter((d) => entries.every(([k, v]) => String(d[k]) === String(v)));
+    return Object.entries(parsed).every(([k, v]) => String(doc[k]) === String(v));
   }
-  return docs;
+  return true;
+}
+
+/**
+ * Filter documents by Frappe `filters` (ANDed) and `or_filters` (ORed) query
+ * values. Frappe accepts either a list of `[field, op, value]` triples or a
+ * `{ field: value }` object for each; support both since the adaptor passes
+ * whichever the job author wrote. When both are given a document must satisfy
+ * every `filters` condition AND at least one `or_filters` condition.
+ */
+function applyFilters(docs: any[], rawFilters: unknown, rawOrFilters?: unknown): any[] {
+  const parse = (raw: unknown): any => {
+    if (typeof raw !== 'string') return undefined;
+    try {
+      return JSON.parse(raw);
+    } catch {
+      return undefined;
+    }
+  };
+  const filters = parse(rawFilters);
+  const orFilters = parse(rawOrFilters);
+  return docs.filter((d) => {
+    if (filters !== undefined && !matchesParsedFilter(d, filters)) return false;
+    if (Array.isArray(orFilters) && orFilters.length > 0) {
+      const conditions = orFilters.filter((c) => Array.isArray(c));
+      if (conditions.length > 0 && !conditions.some((c) => matchCondition(d, c))) return false;
+    }
+    return true;
+  });
 }
 
 const plugin: MockSystemPlugin = {
@@ -111,21 +128,30 @@ const plugin: MockSystemPlugin = {
   guide,
 
   async overrides(app: FastifyInstance, store: DataStore, _config: SystemConfig) {
-    // GET /api/resource/<DocType> — getList. Honours fields/filters/limit params.
+    // GET /api/resource/<DocType> — getList. Honours fields/filters/or_filters/limit
+    // params. The adaptor's frappe-js-sdk always sends `limit`, never
+    // `limit_page_length` (Frappe's REST layer treats them as aliases, so both are
+    // accepted here — see openfn-api-specs' erpnext source.json for the SDK read
+    // that caught this: the mock's pagination never actually triggered from real
+    // adaptor calls before this fix).
     app.get(RESOURCE, async (req) => {
       const { doctype } = req.params as { doctype: string };
       const q = (req.query ?? {}) as Record<string, any>;
-      let docs = applyFilters(store.list(doctype), q.filters);
+      let docs = applyFilters(store.list(doctype), q.filters, q.or_filters);
       const fields = parseFields(q.fields);
       const start = Number(q.limit_start ?? 0) || 0;
-      const pageLen = q.limit_page_length != null ? Number(q.limit_page_length) : undefined;
+      const limit = q.limit ?? q.limit_page_length;
+      const pageLen = limit != null ? Number(limit) : undefined;
       if (start) docs = docs.slice(start);
       if (pageLen != null && pageLen > 0) docs = docs.slice(0, pageLen);
       return { data: docs.map((d) => projectFields(d, fields)) };
     });
 
-    // POST /api/resource/<DocType> — create. Frappe autonames when `name` is omitted.
-    app.post(RESOURCE, async (req, reply) => {
+    // POST /api/resource/<DocType> — create. Frappe autonames when `name` is
+    // omitted. Real Frappe never sets an explicit status here (frappe/api/v1.py
+    // create_doc), so the response falls through to the framework default, 200 —
+    // not the 201 a generic REST convention would suggest.
+    app.post(RESOURCE, async (req) => {
       const { doctype } = req.params as { doctype: string };
       const body = (req.body ?? {}) as Record<string, any>;
       const name = String(body.name ?? `${doctype}-${store.count(doctype) + 1}`.replace(/\s+/g, '-'));
@@ -138,7 +164,6 @@ const plugin: MockSystemPlugin = {
         owner: 'Administrator',
       };
       store.create(doctype, name, doc);
-      reply.code(201);
       return { data: doc };
     });
 
@@ -165,13 +190,16 @@ const plugin: MockSystemPlugin = {
       return { data: merged };
     });
 
-    // DELETE /api/resource/<DocType>/<name> — Frappe replies { message: "ok" }.
+    // DELETE /api/resource/<DocType>/<name> — Frappe replies { message: "ok" }
+    // with status 202 (frappe/api/v1.py delete_doc sets http_status_code = 202
+    // explicitly; it is not the 200/204 a generic REST convention would suggest).
     app.delete(`${RESOURCE}/:name`, async (req, reply) => {
       const { doctype, name } = req.params as { doctype: string; name: string };
       if (!store.destroy(doctype, name)) {
         reply.code(404);
         return { exc_type: 'DoesNotExistError', _server_messages: `${doctype} ${name} not found` };
       }
+      reply.code(202);
       return { message: 'ok' };
     });
 
