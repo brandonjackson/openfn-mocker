@@ -100,6 +100,7 @@ export async function buildServer(
     }
     return {
       totals: report.totals,
+      notRepresented: report.missing,
       systems: report.systems.map(({ name, title, adaptor, rating, summary, ledger }) => ({
         name,
         title,
