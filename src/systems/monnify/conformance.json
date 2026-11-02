@@ -3,6 +3,10 @@
     "adaptor": "monnify",
     "origin": "generated"
   },
+  "coverage": {
+    "operations": 7,
+    "exercised": 2
+  },
   "routes": {
     "GET /api/v1/banks": "failing",
     "GET /api/v2/disbursements/search-transactions": "conforming",

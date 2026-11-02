@@ -44,10 +44,11 @@
  *   pnpm test:conformance -- --no-requests         # skip request-body checks
  *   pnpm test:conformance -- --latest              # specs from the jsDelivr mirror, not the snapshot
  *   pnpm test:conformance -- --check-baseline      # the CI gate: fail if the yardstick moved off the baseline
- *   pnpm test:conformance -- --update-baseline     # record the current verified routes as the baseline
+ *   pnpm test:conformance -- --update-baseline     # record the current verified routes (and spec coverage) as the
+ *                                                  # baseline, and rebuild coverage.json from the ledgers
  *   pnpm test:conformance -- --routes              # also list every route with its yardstick state
  */
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
@@ -62,6 +63,7 @@ import {
   type Violation,
 } from 'openfn-api-specs';
 
+import { coverageSummaryJson } from '../src/conformance-ledger.js';
 import { plugins } from '../src/systems/index.js';
 import { guideExchanges, harnessConfig, type Exchange } from './lib/conformance.js';
 import {
@@ -76,6 +78,7 @@ import {
 } from './lib/yardstick.js';
 
 const SYSTEMS_DIR = fileURLToPath(new URL('../src/systems', import.meta.url));
+const COVERAGE_PATH = fileURLToPath(new URL('../coverage.json', import.meta.url));
 
 const adaptorFor = (system: string): string => plugins[system]?.adaptorName ?? system;
 
@@ -279,10 +282,12 @@ async function main(): Promise<void> {
       const specRef = { adaptor, ...(base.specOrigin ? { origin: base.specOrigin } : {}) };
       score = scoreSystem({ system, routes, exchanges, routeOf, violationsOf, deviations: ledger.deviations, routeAliases: ledger.routeAliases });
       violations = [...score.routes.flatMap((rr) => rr.violations), ...score.unrouted.flatMap((u) => u.violations)];
-      baseline = diffBaseline(score, ledger, specRef);
+      const cov = conformer.coverage();
+      const specCoverage = { operations: cov.hit.length + cov.missed.length, exercised: cov.hit.length };
+      baseline = diffBaseline(score, ledger, specRef, specCoverage);
       if (args.updateBaseline) {
         saveLedger(SYSTEMS_DIR, system, {
-          ...snapshotOf(score, specRef),
+          ...snapshotOf(score, specRef, specCoverage),
           specMounts: ledger.specMounts,
           routeAliases: ledger.routeAliases,
           deviations: ledger.deviations,
@@ -356,8 +361,19 @@ async function main(): Promise<void> {
   }
   console.log('═'.repeat(72));
 
+  // coverage.json is derived from every ledger on disk, so a --system run
+  // still rewrites (or checks) the whole file consistently.
+  let coverageDrift = false;
   if (args.updateBaseline) {
     console.log(`\nLedger snapshots updated for ${scored.length} system(s) (src/systems/<name>/conformance.json).`);
+    if (!args.exchanges) {
+      writeFileSync(COVERAGE_PATH, coverageSummaryJson(SYSTEMS_DIR));
+      console.log('coverage.json rebuilt from the ledgers.');
+    }
+  } else if (args.checkBaseline && !args.exchanges) {
+    const current = existsSync(COVERAGE_PATH) ? readFileSync(COVERAGE_PATH, 'utf8') : '';
+    coverageDrift = current !== coverageSummaryJson(SYSTEMS_DIR);
+    if (coverageDrift) console.log('\n✗ coverage.json is out of date with the ledgers; run pnpm test:conformance -- --update-baseline');
   }
   if (args.checkBaseline || args.updateBaseline) {
     for (const r of regressions) console.log(`\n✗ ${r.system}: ${r.baseline!.regressed.length} verified route(s) regressed:\n    ${r.baseline!.regressed.join('\n    ')}`);
@@ -373,7 +389,7 @@ async function main(): Promise<void> {
         );
       }
     }
-    const failed = regressions.length > 0 || stale.length > 0 || invalid.length > 0 || errored > 0 || (!args.updateBaseline && unrecorded.length > 0);
+    const failed = coverageDrift || regressions.length > 0 || stale.length > 0 || invalid.length > 0 || errored > 0 || (!args.updateBaseline && unrecorded.length > 0);
     if (!failed) console.log('\n✓ yardstick matches the baseline');
     process.exit(failed ? 1 : 0);
   }

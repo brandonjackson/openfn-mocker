@@ -3,6 +3,10 @@
     "adaptor": "msgraph",
     "origin": "found-openapi"
   },
+  "coverage": {
+    "operations": 2605,
+    "exercised": 7
+  },
   "routes": {
     "GET /v1.0/drives/:driveId": "conforming",
     "GET /v1.0/drives/:driveId/items/:itemId": "conforming",

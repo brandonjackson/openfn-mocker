@@ -3,6 +3,10 @@
     "adaptor": "et-mfr",
     "origin": "generated"
   },
+  "coverage": {
+    "operations": 14,
+    "exercised": 14
+  },
   "routes": {
     "DELETE /api/Facility/:dhis2Id": "conforming",
     "GET /api/Facility": "conforming",

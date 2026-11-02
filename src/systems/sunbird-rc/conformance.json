@@ -3,6 +3,10 @@
     "adaptor": "sunbird-rc",
     "origin": "found-openapi"
   },
+  "coverage": {
+    "operations": 6,
+    "exercised": 2
+  },
   "routes": {
     "DELETE /api/v1/:entity/:id": "unexercised",
     "GET /api/v1/:entity/:id": "failing",

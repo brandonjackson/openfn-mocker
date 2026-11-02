@@ -3,6 +3,10 @@
     "adaptor": "ibipimo",
     "origin": "generated"
   },
+  "coverage": {
+    "operations": 4,
+    "exercised": 4
+  },
   "routes": {
     "GET /api/v1/samples/status": "conforming",
     "GET /api/v1/sites": "failing",

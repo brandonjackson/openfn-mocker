@@ -3,6 +3,10 @@
     "adaptor": "opencrvs",
     "origin": "found-openapi"
   },
+  "coverage": {
+    "operations": 24,
+    "exercised": 6
+  },
   "routes": {
     "GET /api/events/events/:eventId": "conforming",
     "GET /api/events/locations": "conforming",

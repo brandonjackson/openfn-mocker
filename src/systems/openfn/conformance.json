@@ -3,6 +3,10 @@
     "adaptor": "openfn",
     "origin": "synthesized"
   },
+  "coverage": {
+    "operations": 22,
+    "exercised": 4
+  },
   "routes": {
     "GET /api/jobs": "conforming",
     "GET /api/jobs/:id": "conforming",

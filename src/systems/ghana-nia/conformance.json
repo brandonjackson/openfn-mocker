@@ -3,6 +3,10 @@
     "adaptor": "ghana-nia",
     "origin": "synthesized"
   },
+  "coverage": {
+    "operations": 3,
+    "exercised": 3
+  },
   "routes": {
     "GET /awopa/api/v1/baby/registration": "conforming",
     "GET /awopa/api/v1/baby/registration/:pin": "conforming",

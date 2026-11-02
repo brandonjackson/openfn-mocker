@@ -3,6 +3,10 @@
     "adaptor": "collections",
     "origin": "synthesized"
   },
+  "coverage": {
+    "operations": 7,
+    "exercised": 4
+  },
   "routes": {
     "DELETE /:name": "unexercised",
     "DELETE /:name/:key": "conforming",

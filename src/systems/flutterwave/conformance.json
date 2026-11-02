@@ -3,6 +3,10 @@
     "adaptor": "flutterwave",
     "origin": "generated"
   },
+  "coverage": {
+    "operations": 10,
+    "exercised": 4
+  },
   "routes": {
     "GET /customers": "failing",
     "GET /payment-methods": "unexercised",

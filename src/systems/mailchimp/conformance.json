@@ -3,6 +3,10 @@
     "adaptor": "mailchimp",
     "origin": "converted"
   },
+  "coverage": {
+    "operations": 298,
+    "exercised": 10
+  },
   "routes": {
     "DELETE /3.0/lists/:id/members/:hash": "unexercised",
     "GET /3.0/batches": "unexercised",

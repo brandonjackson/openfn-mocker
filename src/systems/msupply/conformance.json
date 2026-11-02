@@ -3,6 +3,10 @@
     "adaptor": "msupply",
     "origin": "converted"
   },
+  "coverage": {
+    "operations": 309,
+    "exercised": 1
+  },
   "routes": {
     "POST /graphql": "conforming"
   },

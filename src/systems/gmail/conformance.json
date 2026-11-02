@@ -3,6 +3,10 @@
     "adaptor": "gmail",
     "origin": "converted"
   },
+  "coverage": {
+    "operations": 79,
+    "exercised": 4
+  },
   "routes": {
     "GET /gmail/v1/users/:userId/messages": "conforming",
     "GET /gmail/v1/users/:userId/messages/:id": "conforming",

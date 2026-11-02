@@ -3,6 +3,10 @@
     "adaptor": "gemini",
     "origin": "converted"
   },
+  "coverage": {
+    "operations": 85,
+    "exercised": 2
+  },
   "routes": {
     "POST /v1beta/models/:model": "conforming"
   },

@@ -3,6 +3,10 @@
     "adaptor": "dhis2",
     "origin": "found-openapi"
   },
+  "coverage": {
+    "operations": 2574,
+    "exercised": 21
+  },
   "routes": {
     "DELETE /api/*": "deviating",
     "GET /api/*": "unchecked",

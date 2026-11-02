@@ -3,6 +3,10 @@
     "adaptor": "asana",
     "origin": "found-openapi"
   },
+  "coverage": {
+    "operations": 249,
+    "exercised": 6
+  },
   "routes": {
     "GET /api/1.0/projects/:pgid/tasks": "unexercised",
     "GET /api/1.0/tasks": "conforming",

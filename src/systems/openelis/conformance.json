@@ -3,6 +3,10 @@
     "adaptor": "openelis",
     "origin": "generated"
   },
+  "coverage": {
+    "operations": 1057,
+    "exercised": 3
+  },
   "routes": {
     "DELETE /api/OpenELIS-Global/rest/fhir/:resourceType/:id": "unexercised",
     "DELETE /fhir/:resourceType/:id": "unexercised",

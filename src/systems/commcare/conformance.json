@@ -3,6 +3,10 @@
     "adaptor": "commcare",
     "origin": "generated"
   },
+  "coverage": {
+    "operations": 181,
+    "exercised": 6
+  },
   "routes": {
     "GET /a/:domain/api/v0.5/*": "conforming",
     "GET /a/:domain/api/v0.5/case/": "conforming",

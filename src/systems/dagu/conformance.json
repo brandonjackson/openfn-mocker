@@ -3,6 +3,10 @@
     "adaptor": "dagu",
     "origin": "synthesized"
   },
+  "coverage": {
+    "operations": 4,
+    "exercised": 0
+  },
   "routes": {
     "GET /api/v1/dags": "failing",
     "GET /api/v1/dags/:name": "failing",

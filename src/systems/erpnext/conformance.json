@@ -3,6 +3,10 @@
     "adaptor": "erpnext",
     "origin": "generated"
   },
+  "coverage": {
+    "operations": 6,
+    "exercised": 6
+  },
   "routes": {
     "DELETE /api/resource/:doctype/:name": "conforming",
     "GET /api/method/frappe.client.get_count": "conforming",

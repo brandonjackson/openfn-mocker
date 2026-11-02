@@ -3,6 +3,10 @@
     "adaptor": "http",
     "origin": "synthesized"
   },
+  "coverage": {
+    "operations": 6,
+    "exercised": 0
+  },
   "routes": {
     "DELETE /*": "unexercised",
     "GET /*": "failing",

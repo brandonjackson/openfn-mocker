@@ -3,6 +3,10 @@
     "adaptor": "beyonic",
     "origin": "generated"
   },
+  "coverage": {
+    "operations": 3,
+    "exercised": 3
+  },
   "routes": {
     "GET /contacts": "unexercised",
     "GET /payments": "failing",

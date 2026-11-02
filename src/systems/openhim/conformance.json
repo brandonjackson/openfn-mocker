@@ -3,6 +3,10 @@
     "adaptor": "openhim",
     "origin": "generated"
   },
+  "coverage": {
+    "operations": 97,
+    "exercised": 18
+  },
   "routes": {
     "DELETE /channels/:id": "conforming",
     "DELETE /clients/:id": "conforming",

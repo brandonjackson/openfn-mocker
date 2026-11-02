@@ -3,6 +3,10 @@
     "adaptor": "openmrs",
     "origin": "converted"
   },
+  "coverage": {
+    "operations": 554,
+    "exercised": 6
+  },
   "specMounts": [
     {
       "prefix": "/ws/fhir2/R4",

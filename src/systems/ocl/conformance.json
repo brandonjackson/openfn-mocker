@@ -3,6 +3,10 @@
     "adaptor": "ocl",
     "origin": "converted"
   },
+  "coverage": {
+    "operations": 1966,
+    "exercised": 7
+  },
   "routes": {
     "GET /orgs/:ownerId": "conforming",
     "GET /orgs/:ownerId/collections/:repo/:version/concepts": "deviating",
