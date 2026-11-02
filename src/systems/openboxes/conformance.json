@@ -3,62 +3,50 @@
     "adaptor": "openboxes",
     "origin": "generated"
   },
-  "routes": {
-    "DELETE /api/locations/:id": "unexercised",
-    "DELETE /api/products/:id": "unexercised",
-    "DELETE /api/stockMovements/:id": "unexercised",
-    "DELETE /locations/:id": "unexercised",
-    "DELETE /products/:id": "unexercised",
-    "DELETE /stockMovements/:id": "unexercised",
-    "GET /api/locations": "conforming",
-    "GET /api/locations/:id": "unexercised",
-    "GET /api/products": "conforming",
-    "GET /api/products/:id": "unexercised",
-    "GET /api/stockMovements": "conforming",
-    "GET /api/stockMovements/:id": "unexercised",
-    "GET /api/stockMovements/:id/stockMovementItems": "unexercised",
-    "GET /locations": "unexercised",
-    "GET /locations/:id": "unexercised",
-    "GET /products": "unexercised",
-    "GET /products/:id": "unexercised",
-    "GET /stockMovements": "unexercised",
-    "GET /stockMovements/:id": "unexercised",
-    "GET /stockMovements/:id/stockMovementItems": "unexercised",
-    "PATCH /api/locations/:id": "unexercised",
-    "PATCH /api/products/:id": "unexercised",
-    "PATCH /api/stockMovements/:id": "unexercised",
-    "PATCH /locations/:id": "unexercised",
-    "PATCH /products/:id": "unexercised",
-    "PATCH /stockMovements/:id": "unexercised",
-    "POST /api/locations": "unexercised",
-    "POST /api/login": "failing",
-    "POST /api/products": "failing",
-    "POST /api/stockMovements": "unexercised",
-    "POST /locations": "unexercised",
-    "POST /login": "unexercised",
-    "POST /products": "unexercised",
-    "POST /stockMovements": "unexercised",
-    "PUT /api/locations/:id": "unexercised",
-    "PUT /api/products/:id": "unexercised",
-    "PUT /api/stockMovements/:id": "unexercised",
-    "PUT /locations/:id": "unexercised",
-    "PUT /products/:id": "unexercised",
-    "PUT /stockMovements/:id": "unexercised"
-  },
-  "failures": {
-    "POST /api/login": [
-      "content-type: response is application/json; spec documents text/html for status 200"
-    ],
-    "POST /api/products": [
-      "unknown-status: spec documents no response for status 201 (documented: 200, default)"
-    ]
-  },
-  "unrouted": [],
-  "deviations": [],
   "routeAliases": [
     {
       "prefix": "/",
       "canonical": "/api/"
+    }
+  ],
+  "routes": {
+    "DELETE /api/locations/:id": "conforming",
+    "DELETE /api/products/:id": "conforming",
+    "DELETE /api/stockMovements/:id": "conforming",
+    "GET /api/locations": "conforming",
+    "GET /api/locations/:id": "conforming",
+    "GET /api/products": "conforming",
+    "GET /api/products/:id": "conforming",
+    "GET /api/stockMovements": "conforming",
+    "GET /api/stockMovements/:id": "conforming",
+    "GET /api/stockMovements/:id/stockMovementItems": "conforming",
+    "POST /api/locations": "unchecked",
+    "POST /api/locations/:id": "conforming",
+    "POST /api/login": "conforming",
+    "POST /api/products": "conforming",
+    "POST /api/products/:id": "conforming",
+    "POST /api/stockMovements": "unchecked",
+    "PUT /api/locations/:id": "conforming",
+    "PUT /api/products/:id": "conforming"
+  },
+  "failures": {},
+  "unrouted": [],
+  "deviations": [
+    {
+      "route": "POST /api/locations",
+      "kind": "unknown-status",
+      "message": "status 200",
+      "category": "vendor-spec-wrong",
+      "reason": "LocationApiController.create renders [data: location] without setting a status, so OpenBoxes answers 200; the hand-written spec says 201",
+      "evidence": "https://github.com/openboxes/openboxes/blob/0493fec99606cae1971bc55124daabebddabbe69/grails-app/controllers/org/pih/warehouse/api/LocationApiController.groovy#L149-L160"
+    },
+    {
+      "route": "POST /api/stockMovements",
+      "kind": "unknown-status",
+      "message": "status 201",
+      "category": "vendor-spec-wrong",
+      "reason": "StockMovementApiController.create sets response.status = 201 before rendering [data: newStockMovement]; the hand-written spec says 200",
+      "evidence": "https://github.com/openboxes/openboxes/blob/0493fec99606cae1971bc55124daabebddabbe69/grails-app/controllers/org/pih/warehouse/api/StockMovementApiController.groovy#L125-L131"
     }
   ]
 }
