@@ -4,34 +4,26 @@
     "origin": "generated"
   },
   "routes": {
-    "DELETE /channels/:id": "unexercised",
-    "DELETE /clients/:id": "unexercised",
-    "DELETE /tasks/:id": "unexercised",
+    "DELETE /channels/:id": "conforming",
+    "DELETE /clients/:id": "conforming",
+    "DELETE /tasks/:id": "conforming",
     "GET /channels": "conforming",
-    "GET /channels/:id": "unexercised",
-    "GET /chw/encounter": "unexercised",
+    "GET /channels/:id": "conforming",
     "GET /clients": "conforming",
-    "GET /clients/:id": "unexercised",
-    "GET /tasks": "unexercised",
-    "GET /tasks/:id": "unexercised",
+    "GET /clients/:id": "conforming",
+    "GET /tasks": "conforming",
+    "GET /tasks/:id": "conforming",
     "GET /transactions": "conforming",
-    "GET /transactions/:id": "unexercised",
-    "PATCH /channels/:id": "unexercised",
-    "PATCH /clients/:id": "unexercised",
-    "PATCH /tasks/:id": "unexercised",
-    "POST /channels": "unexercised",
+    "GET /transactions/:id": "conforming",
+    "POST /channels": "conforming",
     "POST /chw/encounter": "conforming",
-    "POST /clients": "failing",
-    "POST /tasks": "unexercised",
-    "PUT /channels/:id": "unexercised",
-    "PUT /clients/:id": "unexercised",
-    "PUT /tasks/:id": "unexercised"
+    "POST /clients": "conforming",
+    "POST /tasks": "conforming",
+    "PUT /channels/:id": "conforming",
+    "PUT /clients/:id": "conforming",
+    "PUT /tasks/:id": "conforming"
   },
-  "failures": {
-    "POST /clients": [
-      "content-type: response is application/json; spec documents text/plain for status 201"
-    ]
-  },
+  "failures": {},
   "unrouted": [],
   "deviations": []
 }
