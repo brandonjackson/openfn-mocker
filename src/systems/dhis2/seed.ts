@@ -69,13 +69,14 @@ export function seed(store: DataStore, _config: SystemConfig): void {
     lastUpdated: now,
   });
 
-  // --- Data elements (each with a valueType) ---
+  // --- Data elements (each with a valueType, domainType and aggregationType,
+  // the three properties DHIS2 requires on every data element) ---
   const dataElements = [
-    { id: 'fbfJHSPpUQD', name: 'ANC 1st visit', shortName: 'ANC 1st visit', valueType: 'NUMBER', domainType: 'AGGREGATE' },
-    { id: 'cYeuwXTCPkU', name: 'ANC 2nd visit', shortName: 'ANC 2nd visit', valueType: 'NUMBER', domainType: 'AGGREGATE' },
-    { id: 'qrur9Dvnyt5', name: 'Age in years', shortName: 'Age', valueType: 'INTEGER', domainType: 'TRACKER' },
-    { id: 'a3kGcGDCuk6', name: 'MCH Apgar Score', shortName: 'Apgar', valueType: 'INTEGER', domainType: 'TRACKER' },
-    { id: 'X8zyunlgUfM', name: 'Infant Feeding', shortName: 'Feeding', valueType: 'TEXT', domainType: 'TRACKER' },
+    { id: 'fbfJHSPpUQD', name: 'ANC 1st visit', shortName: 'ANC 1st visit', valueType: 'NUMBER', domainType: 'AGGREGATE', aggregationType: 'SUM' },
+    { id: 'cYeuwXTCPkU', name: 'ANC 2nd visit', shortName: 'ANC 2nd visit', valueType: 'NUMBER', domainType: 'AGGREGATE', aggregationType: 'SUM' },
+    { id: 'qrur9Dvnyt5', name: 'Age in years', shortName: 'Age', valueType: 'INTEGER', domainType: 'TRACKER', aggregationType: 'AVERAGE' },
+    { id: 'a3kGcGDCuk6', name: 'MCH Apgar Score', shortName: 'Apgar', valueType: 'INTEGER', domainType: 'TRACKER', aggregationType: 'AVERAGE' },
+    { id: 'X8zyunlgUfM', name: 'Infant Feeding', shortName: 'Feeding', valueType: 'TEXT', domainType: 'TRACKER', aggregationType: 'NONE' },
   ];
   for (const de of dataElements) {
     store.create('dataElements', de.id, { ...de, created: now, lastUpdated: now });

@@ -69,9 +69,101 @@ function applyFilters(items: any[], filters: FilterClause[]): any[] {
   );
 }
 
+// ---------------------------------------------------------------------------
+// Field filtering (`?fields=`), as DHIS2's FieldFilterService applies it to
+// metadata reads: a list defaults to the ID_NAME preset (`id,displayName`), a
+// single object to `*`, and a nested reference that is not itself expanded
+// with `[...]` comes back id-only (FieldPathHelper.expandReference).
+// ---------------------------------------------------------------------------
+
+interface FieldNode {
+  name: string;
+  children?: FieldNode[];
+}
+
+const FIELD_PRESETS: Record<string, string[]> = {
+  all: ['*'],
+  owner: ['*'],
+  persisted: ['*'],
+  simple: ['*'],
+  id: ['id'],
+  code: ['code'],
+  idName: ['id', 'displayName'],
+  identifiable: ['id', 'name', 'code', 'created', 'lastUpdated', 'lastUpdatedBy'],
+  nameable: ['id', 'name', 'shortName', 'description', 'code', 'created', 'lastUpdated'],
+};
+
+/** Parse a DHIS2 field expression (`id,name,parent[id,name],:nameable`) into a tree. */
+function parseFields(spec: string): FieldNode[] {
+  const parts: string[] = [];
+  let depth = 0;
+  let cur = '';
+  for (const ch of spec) {
+    if (ch === '[' || ch === '(') depth++;
+    if (ch === ']' || ch === ')') depth--;
+    if (ch === ',' && depth === 0) {
+      parts.push(cur);
+      cur = '';
+    } else cur += ch;
+  }
+  parts.push(cur);
+  const out: FieldNode[] = [];
+  for (const raw of parts.map((p) => p.trim()).filter(Boolean)) {
+    if (raw.startsWith('!')) continue; // exclusions: not modelled, the field is simply not added
+    const open = raw.search(/[[(]/);
+    if (open > 0) {
+      out.push({ name: raw.slice(0, open), children: parseFields(raw.slice(open + 1, -1)) });
+    } else if (raw.startsWith(':')) {
+      for (const f of FIELD_PRESETS[raw.slice(1)] ?? ['*']) out.push({ name: f });
+    } else out.push({ name: raw });
+  }
+  return out;
+}
+
+const isPlainObject = (v: unknown): v is Record<string, any> =>
+  v !== null && typeof v === 'object' && !Array.isArray(v);
+
+/** A nested value with no sub-selection: references collapse to `{ id }`. */
+function defaultValue(v: any): any {
+  if (Array.isArray(v)) return v.map(defaultValue);
+  if (isPlainObject(v) && typeof v.id === 'string') return { id: v.id };
+  return v;
+}
+
+/** Project one object through a field tree. */
+function project(obj: any, fields: FieldNode[]): any {
+  if (Array.isArray(obj)) return obj.map((o) => project(o, fields));
+  if (!isPlainObject(obj)) return obj;
+  const src: Record<string, any> =
+    typeof obj.name === 'string' && obj.displayName === undefined ? { ...obj, displayName: obj.name } : obj;
+  const out: Record<string, any> = {};
+  if (fields.some((f) => f.name === '*')) {
+    for (const [k, v] of Object.entries(src)) out[k] = defaultValue(v);
+  }
+  for (const f of fields) {
+    if (f.name === '*' || !(f.name in src)) continue;
+    out[f.name] = f.children ? project(src[f.name], f.children) : defaultValue(src[f.name]);
+  }
+  return out;
+}
+
+/** Apply `?fields=` (or the default for a list / a single object) to a metadata read. */
+function selectFields(value: any, query: Record<string, any>, list: boolean): any {
+  const raw = query.fields;
+  const spec = Array.isArray(raw) ? raw.join(',') : typeof raw === 'string' && raw.trim() ? raw : undefined;
+  const fields = spec ? parseFields(spec) : list ? FIELD_PRESETS.idName.map((name) => ({ name })) : [{ name: '*' }];
+  return project(value, fields);
+}
+
 /** Build a DHIS2 list envelope `{ pager, "<resourceType>": [...] }`. */
 function listEnvelope(resourceType: string, all: any[], query: Record<string, any>): any {
-  const items = applyFilters(all, parseFilters(query));
+  // Legacy tracker lists render every field unless `fields` narrows them (2.40's
+  // controllers use getFieldsFromRequestOrAll); metadata lists default to id,displayName.
+  const filtered = applyFilters(all, parseFilters(query));
+  const items =
+    LEGACY_TRACKER.has(resourceType) && query.fields === undefined
+      ? filtered
+      : filtered.map((item) => selectFields(item, query, true));
   const paging = query.paging;
   if (paging === 'false' || paging === false) {
     return { [resourceType]: items };
@@ -106,6 +198,111 @@ const NOT_FOUND = {
   status: 'ERROR',
   message: 'Object not found.',
 };
+
+/**
+ * The deprecated (pre-2.41) tracker resources. DHIS2 2.40 and earlier serve
+ * these at /api/{resource}; 2.41 removed them in favour of /api/tracker. Their
+ * writes answer with ImportSummaries, not the ObjectReport metadata writes use.
+ */
+const LEGACY_TRACKER = new Set(['trackedEntityInstances', 'events', 'enrollments']);
+
+/** Java class DHIS2 reports as `klass` in an ObjectReport, per metadata collection. */
+const KLASS: Record<string, string> = {
+  organisationUnits: 'org.hisp.dhis.organisationunit.OrganisationUnit',
+  dataElements: 'org.hisp.dhis.dataelement.DataElement',
+  programs: 'org.hisp.dhis.program.Program',
+  programStages: 'org.hisp.dhis.program.ProgramStage',
+  trackedEntityTypes: 'org.hisp.dhis.trackedentity.TrackedEntityType',
+  trackedEntityAttributes: 'org.hisp.dhis.trackedentity.TrackedEntityAttribute',
+  dataSets: 'org.hisp.dhis.dataset.DataSet',
+  optionSets: 'org.hisp.dhis.option.OptionSet',
+  options: 'org.hisp.dhis.option.Option',
+};
+
+const klassOf = (collection: string): string => {
+  if (KLASS[collection]) return KLASS[collection];
+  const singular = collection.replace(/s$/, '');
+  return `org.hisp.dhis.${singular.toLowerCase()}.${singular[0]?.toUpperCase() ?? ''}${singular.slice(1)}`;
+};
+
+/**
+ * A metadata write's WebMessage (WebMessageUtils.objectReport). A create
+ * answers 201 Created (AbstractCrudController.postObject sets it, and
+ * WebMessageControllerAdvice copies it onto the response); update, patch and
+ * delete answer 200. `errorCode` is absent: DHIS2 only sets it on errors and
+ * serialises with NON_NULL.
+ */
+function objectReport(collection: string, uid: string, created = false): Record<string, any> {
+  return {
+    httpStatus: created ? 'Created' : 'OK',
+    httpStatusCode: created ? 201 : 200,
+    status: 'OK',
+    response: { responseType: 'ObjectReport', uid, klass: klassOf(collection), errorReports: [] },
+  };
+}
+
+/**
+ * A legacy tracker import's WebMessage (WebMessageUtils.importSummaries): one
+ * ImportSummary per imported object, wrapped in ImportSummaries with the
+ * totals. 2.40's EnrollmentController answers 201; the TEI and event
+ * controllers answer 200.
+ */
+function importSummaries(
+  collection: string,
+  uids: string[],
+  baseUrl: string
+): { code: number; body: Record<string, any> } {
+  const code = collection === 'enrollments' ? 201 : 200;
+  return {
+    code,
+    body: {
+      httpStatus: code === 201 ? 'Created' : 'OK',
+      httpStatusCode: code,
+      status: 'OK',
+      message: 'Import was successful.',
+      response: {
+        responseType: 'ImportSummaries',
+        status: 'SUCCESS',
+        imported: uids.length,
+        updated: 0,
+        deleted: 0,
+        ignored: 0,
+        total: uids.length,
+        importSummaries: uids.map((uid) => ({
+          responseType: 'ImportSummary',
+          status: 'SUCCESS',
+          importCount: { imported: 1, updated: 0, ignored: 0, deleted: 0 },
+          reference: uid,
+          href: `${baseUrl}/api/${collection}/${uid}`,
+        })),
+      },
+    },
+  };
+}
+
+/** Apply an RFC 6902 JSON Patch (the body DHIS2's PATCH /api/{type}/{uid} takes) to a record. */
+function applyJsonPatch(record: Record<string, any>, ops: any[]): Record<string, any> {
+  const out = JSON.parse(JSON.stringify(record));
+  for (const op of ops) {
+    if (!op || typeof op !== 'object' || typeof op.path !== 'string') continue;
+    const keys = op.path.split('/').slice(1).map((k: string) => k.replace(/~1/g, '/').replace(/~0/g, '~'));
+    if (keys.length === 0) continue;
+    let target: any = out;
+    for (const k of keys.slice(0, -1)) {
+      if (target[k] === undefined || target[k] === null) target[k] = {};
+      target = target[k];
+    }
+    const last = keys[keys.length - 1];
+    if (op.op === 'remove') {
+      if (Array.isArray(target)) target.splice(Number(last), 1);
+      else delete target[last];
+    } else if (op.op === 'add' || op.op === 'replace') {
+      if (Array.isArray(target) && last === '-') target.push(op.value);
+      else target[last] = op.value;
+    }
+  }
+  return out;
+}
 
 /**
  * New Tracker API (/api/tracker) object types, mapped to their store collection,
@@ -195,19 +392,54 @@ const plugin: MockSystemPlugin = {
   guide,
 
   async overrides(app: FastifyInstance, store: DataStore, config: SystemConfig) {
-    // --- System info ---
-    app.get('/api/system/info', async () => ({
+    const baseUrl = `http://localhost:${config.port}`;
+
+    // --- System info (also served behind /api/{version}/ by the wildcard) ---
+    const systemInfo = () => ({
       version: (config.version as string) || '2.39',
       revision: '9d9dcf1',
       serverDate: new Date().toISOString(),
-      contextPath: `http://localhost:${config.port}`,
+      contextPath: baseUrl,
       // The session lifetime in seconds — the one field DHIS2 marks required on
       // this resource — plus the locale/calendar context a client reads with it.
       sessionTimeout: 3600,
       calendar: 'iso8601',
       dateFormat: 'yyyy-mm-dd',
       serverTimeZoneId: 'Etc/UTC',
-    }));
+    });
+    app.get('/api/system/info', async () => systemInfo());
+
+    /** Create one metadata object: store it and answer 201 + Location + ObjectReport. */
+    const createMetadata = (collection: string, body: any, reply: FastifyReply) => {
+      const obj = body && typeof body === 'object' && !Array.isArray(body) ? body : {};
+      const existing = obj.id;
+      const uid = existing != null && String(existing).length > 0 ? String(existing) : genUid();
+      store.create(collection, uid, { ...obj, id: uid });
+      reply.code(201);
+      reply.header('Location', `${baseUrl}/api/${collection}/${uid}`);
+      return objectReport(collection, uid, true);
+    };
+
+    /**
+     * Legacy tracker import (2.40 and earlier): a single object, or a bulk
+     * `{ "<collection>": [...] }` payload, answered with ImportSummaries.
+     */
+    const importLegacyTracker = (collection: string, body: any, reply: FastifyReply) => {
+      const idField = ID_FIELD[collection] ?? 'id';
+      const obj = body && typeof body === 'object' ? body : {};
+      const items: any[] = Array.isArray(obj[collection]) ? obj[collection] : [obj];
+      const uids = items.map((item) => {
+        const o = item && typeof item === 'object' && !Array.isArray(item) ? item : {};
+        const existing = o[idField];
+        const uid = existing != null && String(existing).length > 0 ? String(existing) : genUid();
+        store.create(collection, uid, { ...o, [idField]: uid });
+        return uid;
+      });
+      const { code, body: out } = importSummaries(collection, uids, baseUrl);
+      reply.code(code);
+      if (uids.length === 1) reply.header('Location', `${baseUrl}/api/${collection}/${uids[0]}`);
+      return out;
+    };
 
     // Metadata resources: list + single-by-uid.
     const metaResources = ['organisationUnits', 'dataElements', 'programs', 'trackedEntityTypes'];
@@ -222,7 +454,7 @@ const plugin: MockSystemPlugin = {
           reply.code(404);
           return NOT_FOUND;
         }
-        return item;
+        return selectFields(item, (req.query ?? {}) as Record<string, any>, false);
       });
     }
 
@@ -234,35 +466,35 @@ const plugin: MockSystemPlugin = {
       });
     }
 
-    // POST importers (import summary + read-back-able store record).
-    const importPaths = [
-      'trackedEntityInstances',
-      'events',
-      'enrollments',
-      'organisationUnits',
-      'dataElements',
-    ];
-    for (const res of importPaths) {
-      const idField = ID_FIELD[res] ?? 'id';
-      app.post(`/api/${res}`, async (req: FastifyRequest, reply) => {
-        const body = (req.body ?? {}) as Record<string, any>;
-        const existing = body[idField];
-        const uid = existing != null && String(existing).length > 0 ? String(existing) : genUid();
-        const record = { ...(typeof body === 'object' && !Array.isArray(body) ? body : {}), [idField]: uid };
-        store.create(res, uid, record);
-        reply.code(200);
-        return importSummary(uid);
-      });
+    // Legacy tracker imports (ImportSummaries) and metadata creates (ObjectReport).
+    for (const res of LEGACY_TRACKER) {
+      app.post(`/api/${res}`, async (req: FastifyRequest, reply) => importLegacyTracker(res, req.body, reply));
+    }
+    for (const res of ['organisationUnits', 'dataElements']) {
+      app.post(`/api/${res}`, async (req: FastifyRequest, reply) => createMetadata(res, req.body, reply));
     }
 
-    // dataValueSets: read returns a flattened { dataValues: [...] }; POST imports.
-    app.get('/api/dataValueSets', async () => {
+    // dataValueSets: read returns a DataValueSet (the requested dataSet /
+    // period / orgUnit plus their flattened dataValues); POST imports.
+    const readDataValueSet = (query: Record<string, any>) => {
       const dataValues: any[] = [];
       for (const set of store.list('dataValueSets')) {
-        if (Array.isArray(set?.dataValues)) dataValues.push(...set.dataValues);
+        if (!Array.isArray(set?.dataValues)) continue;
+        for (const dv of set.dataValues) {
+          const v = { period: set.period, orgUnit: set.orgUnit, ...dv };
+          if (query.period && v.period !== query.period) continue;
+          if (query.orgUnit && v.orgUnit !== query.orgUnit) continue;
+          if (query.dataSet && set.dataSet !== query.dataSet) continue;
+          dataValues.push(v);
+        }
       }
-      return { dataValues };
-    });
+      const out: Record<string, any> = {};
+      for (const k of ['dataSet', 'period', 'orgUnit']) if (typeof query[k] === 'string') out[k] = query[k];
+      return { ...out, dataValues };
+    };
+    app.get('/api/dataValueSets', async (req: FastifyRequest) =>
+      readDataValueSet((req.query ?? {}) as Record<string, any>)
+    );
     app.post('/api/dataValueSets', async (req: FastifyRequest, reply) => {
       const body = (req.body ?? {}) as Record<string, any>;
       const uid = genUid();
@@ -272,6 +504,7 @@ const plugin: MockSystemPlugin = {
         httpStatus: 'OK',
         httpStatusCode: 200,
         status: 'OK',
+        message: 'Import was successful.',
         response: {
           responseType: 'ImportSummary',
           status: 'SUCCESS',
@@ -286,25 +519,38 @@ const plugin: MockSystemPlugin = {
       };
     });
 
-    // /api/metadata: ingest a bundle of collections, return stats.
+    // /api/metadata: ingest a bundle of collections. DHIS2 wraps the
+    // ImportReport (stats + one typeReport per object type) in a WebMessage.
     app.post('/api/metadata', async (req: FastifyRequest, reply) => {
       const body = (req.body ?? {}) as Record<string, any>;
       let created = 0;
+      const typeReports: any[] = [];
       for (const [key, value] of Object.entries(body)) {
         if (!Array.isArray(value)) continue;
         const idField = ID_FIELD[key] ?? 'id';
-        for (const item of value) {
+        const klass = klassOf(key);
+        const objectReports = value.map((item, index) => {
           const obj = item && typeof item === 'object' ? item : {};
           const existing = (obj as Record<string, any>)[idField];
           const uid = existing != null && String(existing).length > 0 ? String(existing) : genUid();
           store.create(key, uid, { ...obj, [idField]: uid });
-          created++;
-        }
+          return { klass, index, uid, errorReports: [] };
+        });
+        created += objectReports.length;
+        const n = objectReports.length;
+        typeReports.push({ klass, stats: { created: n, updated: 0, deleted: 0, ignored: 0, total: n }, objectReports });
       }
       reply.code(200);
       return {
+        httpStatus: 'OK',
+        httpStatusCode: 200,
         status: 'OK',
-        stats: { created, updated: 0, deleted: 0, ignored: 0, total: created },
+        response: {
+          responseType: 'ImportReport',
+          status: 'OK',
+          stats: { created, updated: 0, deleted: 0, ignored: 0, total: created },
+          typeReports,
+        },
       };
     });
 
@@ -329,13 +575,6 @@ const plugin: MockSystemPlugin = {
       if (segs.length) segs[segs.length - 1] = segs[segs.length - 1].replace(/\.json$/, '');
       return segs;
     };
-
-    const systemInfo = () => ({
-      version: (config.version as string) || '2.39',
-      revision: '9d9dcf1',
-      serverDate: new Date().toISOString(),
-      contextPath: `http://localhost:${config.port}`,
-    });
 
     /** POST /api/tracker — import trackedEntities/events/enrollments/relationships. */
     const trackerImport = (body: Record<string, any>, reply: FastifyReply) => {
@@ -407,13 +646,7 @@ const plugin: MockSystemPlugin = {
         const instances = store.list(meta.collection);
         return { instances, page: 1, pageSize: 50, total: instances.length };
       }
-      if (head === 'dataValueSets') {
-        const dataValues: any[] = [];
-        for (const set of store.list('dataValueSets')) {
-          if (Array.isArray(set?.dataValues)) dataValues.push(...set.dataValues);
-        }
-        return { dataValues };
-      }
+      if (head === 'dataValueSets') return readDataValueSet(query);
 
       // Classic resource: /api/{resourceType}[/{id}]
       if (segs.length === 1) return listEnvelope(head, store.list(head), query);
@@ -422,7 +655,7 @@ const plugin: MockSystemPlugin = {
         reply.code(404);
         return NOT_FOUND;
       }
-      return item;
+      return LEGACY_TRACKER.has(head) && query.fields === undefined ? item : selectFields(item, query, false);
     });
 
     // POST /api/** — new Tracker imports + classic creates for any resourceType.
@@ -437,16 +670,11 @@ const plugin: MockSystemPlugin = {
 
       if (head === 'tracker') return trackerImport(body, reply);
 
-      // Classic create: store + ImportSummary. Only for a bare collection path.
+      // Classic create, only for a bare collection path: a legacy tracker
+      // import (ImportSummaries) or a metadata create (201 + ObjectReport).
       if (segs.length === 1) {
-        const idField = ID_FIELD[head] ?? 'id';
-        const existing = body[idField];
-        const uid = existing != null && String(existing).length > 0 ? String(existing) : genUid();
-        const record = { ...(typeof body === 'object' && !Array.isArray(body) ? body : {}), [idField]: uid };
-        store.create(head, uid, record);
-        reply.code(200);
-        reply.header('Location', `http://localhost:${config.port}/api/${head}/${uid}`);
-        return importSummary(uid);
+        if (LEGACY_TRACKER.has(head)) return importLegacyTracker(head, body, reply);
+        return createMetadata(head, body, reply);
       }
       // POST to /api/{resource}/{id} (update-by-post): merge.
       const updated = store.update(head, segs[segs.length - 1], body);
@@ -465,12 +693,26 @@ const plugin: MockSystemPlugin = {
       const id = segs[segs.length - 1];
       const idField = ID_FIELD[head] ?? 'id';
       const body = (req.body ?? {}) as Record<string, any>;
+      // Legacy tracker updates answer with an ImportSummary (2.40 controllers).
+      if (LEGACY_TRACKER.has(head)) {
+        store.replace(head, id, { ...body, [idField]: id });
+        reply.code(200);
+        return importSummary(id);
+      }
+      // A metadata PUT updates an existing object (AbstractCrudController
+      // .putJsonObject looks it up first, so an unknown uid is a 404).
+      if (store.get(head, id) === undefined) {
+        reply.code(404);
+        return NOT_FOUND;
+      }
       store.replace(head, id, { ...body, [idField]: id });
       reply.code(200);
-      return importSummary(id);
+      return objectReport(head, id);
     });
 
-    // PATCH /api/{resourceType}/{id} — partial update (http.patch).
+    // PATCH /api/{resourceType}/{id} — partial update (http.patch). DHIS2 takes
+    // an RFC 6902 JSON Patch array (application/json-patch+json); a plain
+    // object body is merged too, since the adaptor's http.patch sends one.
     app.patch('/api/*', async (req: FastifyRequest, reply) => {
       const segs = apiSegments(req);
       if (segs.length < 2) {
@@ -479,13 +721,20 @@ const plugin: MockSystemPlugin = {
       }
       const [head] = segs;
       const id = segs[segs.length - 1];
-      const updated = store.update(head, id, (req.body ?? {}) as Record<string, any>);
-      if (updated === undefined) {
+      const current = store.get(head, id);
+      if (current === undefined) {
         reply.code(404);
         return NOT_FOUND;
       }
+      const body = req.body ?? {};
+      if (Array.isArray(body)) {
+        const idField = ID_FIELD[head] ?? 'id';
+        store.replace(head, id, { ...applyJsonPatch(current, body), [idField]: id });
+      } else {
+        store.update(head, id, body as Record<string, any>);
+      }
       reply.code(200);
-      return importSummary(id);
+      return objectReport(head, id);
     });
 
     // DELETE /api/{resourceType}/{id} (classic) or DELETE /api/tracker/{type}/{id}.
@@ -510,12 +759,22 @@ const plugin: MockSystemPlugin = {
         return NOT_FOUND;
       }
       reply.code(200);
-      return {
-        httpStatus: 'OK',
-        httpStatusCode: 200,
-        status: 'OK',
-        response: { responseType: 'ObjectReport', uid: id, klass: head },
-      };
+      if (LEGACY_TRACKER.has(head)) {
+        // 2.40's legacy tracker controllers answer a delete with an ImportSummary.
+        return {
+          httpStatus: 'OK',
+          httpStatusCode: 200,
+          status: 'OK',
+          message: 'Import was successful.',
+          response: {
+            responseType: 'ImportSummary',
+            status: 'SUCCESS',
+            importCount: { imported: 0, updated: 0, ignored: 0, deleted: 1 },
+            reference: id,
+          },
+        };
+      }
+      return objectReport(head, id);
     });
   },
 
