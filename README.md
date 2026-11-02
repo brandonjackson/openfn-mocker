@@ -1182,8 +1182,8 @@ the spec has no such operation, status or media type), `failing`, or
 The engine does not wave through a wrong success code (a 2xx the spec doesn't
 list never falls back to its `default` error shape) or a media type the spec
 doesn't document. The current
-sweep: **219 of 509 mock routes verified (43%); 16 of 62 systems fully
-verified; 67 failing; 223 unexercised.** The running mock shows the whole
+sweep: **211 of 509 mock routes verified (41%); 15 of 62 systems fully
+verified; 75 failing; 223 unexercised.** The running mock shows the whole
 picture, rated per system, at [`/status`](#conformance-status-page).
 
 **The ledgers.** Each system has `src/systems/<name>/conformance.json`: a
@@ -1324,10 +1324,10 @@ box:
   returns, so `createReferrals` always throws `Cannot read properties of
   undefined (reading 'body')` — a bug in `@openfn/language-primero` (confirmed
   against 4.1.2), not something the mock's response shape can work around.
-- **Drive the conformance yardstick to 100%.** 219 of 509 mock routes are
+- **Drive the conformance yardstick to 100%.** 211 of 509 mock routes are
   verified today (see [Checking spec conformance](#checking-spec-conformance)
   and `/status`). The work splits three ways: **unexercised routes** (223) need
-  guide examples; **failing routes** (67) need the mock fixed, or the spec
+  guide examples; **failing routes** (75) need the mock fixed, or the spec
   fixed or a deviation recorded where the vendor's document is wrong (the
   kobotoolbox/dhis2/odk/ocl cases above); and **modelling disagreements**
   where the mock and spec describe the same system through different APIs

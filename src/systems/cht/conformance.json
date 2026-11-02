@@ -5,7 +5,7 @@
   },
   "routes": {
     "GET /api/v1/settings": "unexercised",
-    "GET /api/v2/export/contacts": "conforming",
+    "GET /api/v2/export/contacts": "failing",
     "GET /api/v2/export/reports": "unexercised",
     "GET /medic/_changes": "failing",
     "GET /medic/:docId": "failing",
@@ -16,6 +16,9 @@
     "PUT /medic/:docId": "unexercised"
   },
   "failures": {
+    "GET /api/v2/export/contacts": [
+      "content-type: response is application/json; spec documents text/csv for status 200"
+    ],
     "GET /medic/_changes": [
       "unknown-operation: no operation in the spec matches GET /medic/_changes"
     ],

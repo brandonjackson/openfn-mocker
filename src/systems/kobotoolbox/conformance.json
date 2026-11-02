@@ -24,31 +24,19 @@
   },
   "failures": {
     "GET /api/v2/assets/": [
-      "response-schema /results/*/access_types: must be array",
-      "response-schema /results/*/deployed_versions/next: must be string",
-      "response-schema /results/*/deployed_versions/previous: must be string",
-      "response-schema /results/*/permissions/*: must be string",
-      "response-schema /results/*/settings/country/*: must be string",
-      "response-schema /results/*/summary/default_translation: must be string",
-      "response-schema /results/*/summary/languages/*: must be string"
+      "response-schema /results/*/deployment__data_download_links: missing required property 'csv_legacy'",
+      "response-schema /results/*/deployment__data_download_links: missing required property 'xls_legacy'",
+      "response-schema /results/*/deployment__data_download_links: missing required property 'zip_legacy'"
     ],
     "GET /api/v2/assets/:uid/": [
-      "response-schema /access_types: must be array",
-      "response-schema /deployed_versions/next: must be string",
-      "response-schema /deployed_versions/previous: must be string",
-      "response-schema /permissions/*: must be string",
-      "response-schema /settings/country/*: must be string",
-      "response-schema /summary/default_translation: must be string",
-      "response-schema /summary/languages/*: must be string"
+      "response-schema /deployment__data_download_links: missing required property 'csv_legacy'",
+      "response-schema /deployment__data_download_links: missing required property 'xls_legacy'",
+      "response-schema /deployment__data_download_links: missing required property 'zip_legacy'"
     ],
     "GET /api/v2/assets/:uid/deployment/": [
-      "response-schema /asset/access_types: must be array",
-      "response-schema /asset/deployed_versions/next: must be string",
-      "response-schema /asset/deployed_versions/previous: must be string",
-      "response-schema /asset/permissions/*: must be string",
-      "response-schema /asset/settings/country/*: must be string",
-      "response-schema /asset/summary/default_translation: must be string",
-      "response-schema /asset/summary/languages/*: must be string"
+      "response-schema /asset/deployment__data_download_links: missing required property 'csv_legacy'",
+      "response-schema /asset/deployment__data_download_links: missing required property 'xls_legacy'",
+      "response-schema /asset/deployment__data_download_links: missing required property 'zip_legacy'"
     ]
   },
   "unrouted": [],
