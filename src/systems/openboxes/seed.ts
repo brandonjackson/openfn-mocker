@@ -34,11 +34,23 @@ export function seed(store: DataStore, _config: SystemConfig): void {
     identifier: 'SL-2024-0001',
     origin: { id: id32('loc-depot-bo'), name: 'Bo District Medical Store' },
     destination: { id: id32('loc-ngelehun'), name: 'Ngelehun CHC' },
-    dateRequested: '2024-03-10',
+    dateRequested: '03/10/2024',
     statusCode: 'DISPATCHED',
     lineItems: [
-      { product: { productCode: 'MAL-ACT-001' }, quantityRequested: 500, quantityShipped: 500 },
-      { product: { productCode: 'MAL-RDT-001' }, quantityRequested: 300, quantityShipped: 300 },
+      {
+        id: id32('smi-0001-1'),
+        product: { id: id32('prod-act'), productCode: 'MAL-ACT-001', name: 'Artemether/Lumefantrine 20/120mg' },
+        quantityRequested: 500,
+        quantityShipped: 500,
+        sortOrder: 0,
+      },
+      {
+        id: id32('smi-0001-2'),
+        product: { id: id32('prod-rdt'), productCode: 'MAL-RDT-001', name: 'Malaria Rapid Diagnostic Test' },
+        quantityRequested: 300,
+        quantityShipped: 300,
+        sortOrder: 1,
+      },
     ],
   });
 }

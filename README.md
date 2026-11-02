@@ -770,7 +770,7 @@ Each system implements the API surface its OpenFn adaptor actually calls (see [`
 - **openelis** — OpenELIS Global's FHIR R4 lab API under `/fhir`: ServiceRequests (orders), Specimens, Observations (results) and DiagnosticReports tied to a Patient.
 - **cht** — the Medic REST API (`POST /api/v1/people`, `/api/v1/places`, `GET`/`PUT /api/v1/settings`, `/api/v2/export/*`) and the underlying CouchDB (`/medic/:id`, `POST /medic/_bulk_docs`, `GET /medic/_changes`), which returns write acks (`{ ok, id, rev }`) and filters `_changes` by `?since=`.
 - **openhim** — the OpenHIM Core API: channels, clients, tasks and (read-only) transactions as Mongo docs keyed by a 24-hex `_id`, plus a sample `/chw/encounter` mediator route.
-- **openboxes** — the OpenBoxes REST API under `/api` with token login (`POST /api/login`) and the `{ data: … }` envelope for products, locations and stock movements (with line items); ids are 32-hex.
+- **openboxes** — the OpenBoxes REST API under `/api` with cookie-session login (`POST /api/login`) and the `{ data: … }` envelope for products, locations and stock movements (with line items); ids are 32-hex.
 - **ihris** — the iHRIS FHIR R4 workforce API under `/fhir`: Practitioners, PractitionerRoles, Organizations and Locations.
 - **twilio / mailgun** — the single send operation each adaptor exposes (`POST .../Messages.json`, `POST /v3/{domain}/messages`), plus extra read endpoints (Twilio messages/calls, Mailgun events/stats). Twilio takes PascalCase form input, returns snake_case JSON, and auto-advances message status `queued` → `sent` → `delivered` on each read.
 - **http-generic** — a spec-less catch-all that answers any method/path, matching the generic `http` (`common`) adaptor.
