@@ -193,7 +193,8 @@ const plugin: MockSystemPlugin = {
     };
 
     // ---- Session (GET /ws/rest/v1/session) -----------------------------
-    // Handled inside the wildcard dispatcher below (segs === ['session']).
+    // A real controller in OpenMRS (SessionController1_9), not a resource, so
+    // it gets its own static route ahead of the wildcard dispatcher below.
     const sessionBody = () => ({
       authenticated: true,
       sessionId: 'mock-openmrs-session',
@@ -205,6 +206,8 @@ const plugin: MockSystemPlugin = {
       },
     });
 
+    app.get('/ws/rest/v1/session', async () => sessionBody());
+
     // ---- OpenMRS REST API (/ws/rest/v1/**) -----------------------------
     // A single wildcard dispatcher covers every resource, subresource, id and
     // verb the generic adaptor can build.
@@ -212,10 +215,7 @@ const plugin: MockSystemPlugin = {
     app.get('/ws/rest/v1/*', async (req, reply) => {
       const segs = segmentsOf(req);
       if (segs.length === 0) return { results: [] };
-      if (segs.length === 1) {
-        if (segs[0] === 'session') return sessionBody();
-        return listEnvelope(segs[0], req);
-      }
+      if (segs.length === 1) return listEnvelope(segs[0], req);
       if (segs.length === 2) return getOne(segs[0], segs[1], req, reply, segs[0]);
       // Subresource list: /{resource}/{uuid}/{sub}
       if (segs.length === 3) {

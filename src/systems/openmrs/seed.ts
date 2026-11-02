@@ -27,7 +27,7 @@ const PATIENTS: PatientSeed[] = [
   { mrn: 'MRN-002', given: 'John', family: 'Smith', gender: 'M', birthdate: '1985-07-22', city: 'Bo', country: 'Sierra Leone' },
   { mrn: 'MRN-003', given: 'Aminata', family: 'Kamara', gender: 'F', birthdate: '2001-11-02', city: 'Kenema', country: 'Sierra Leone' },
   { mrn: 'MRN-004', given: 'Mohamed', family: 'Bangura', gender: 'M', birthdate: '1978-01-30', city: 'Makeni', country: 'Sierra Leone' },
-  { mrn: 'MRN-005', given: 'Fatmata', family: 'Sesay', gender: 'F', birthdate: '2010-05-19', city: 'Freetown', country: 'Sierra Leone' },
+  { mrn: 'MRN-005', given: 'Fatmata', family: 'Sesay', gender: 'F', birthdate: '2010-05-19', city: 'Freetown', country: 'Sierra Leone', patientUuid: '5b0c9a8e-2f4d-4e6a-9c1b-7d3e8f2a4b65' },
 ];
 
 const ENCOUNTER_TYPES = [
@@ -49,10 +49,20 @@ const CONCEPTS = [
   { display: 'Chief complaint', datatype: 'Text', conceptClass: 'Symptom' },
 ];
 
+/** Pinned uuids so the sandbox guide's location examples resolve. */
 const LOCATIONS = [
-  { name: 'Outpatient Clinic' },
-  { name: 'Inpatient Ward' },
+  { name: 'Outpatient Clinic', uuid: 'a2f1c6d8-4b7e-4f19-8c3a-6e5d0b9f7a21' },
+  { name: 'Inpatient Ward', uuid: 'b1a8b05e-3542-4037-bbd3-998ee9c40574' },
 ];
+
+/**
+ * Pinned uuids for the first seeded encounter, observation and condition, so
+ * the sandbox guide's FHIR read examples (Encounter/{id}, Observation/{id},
+ * Condition/{id}) resolve. The rest are random.
+ */
+const FIRST_ENCOUNTER_UUID = 'e3a2c7d4-1b8f-4c5e-9a6d-2f7b0c1e8d93';
+const FIRST_OBS_UUID = '0b6f4e2a-7c91-4d38-b5e2-9a1c3d8f6e47';
+const CONDITION_UUID = 'c4d9e1f7-3a2b-4e6c-8d5f-1b7a9e0c2d64';
 
 /** Map a REST person/patient seed into a FHIR R4 Patient resource. */
 function toFhirPatient(patientUuid: string, p: PatientSeed): Record<string, any> {
@@ -87,7 +97,7 @@ export function seed(store: DataStore, _config: SystemConfig): void {
   // Locations.
   const locationRefs: Array<{ uuid: string; display: string }> = [];
   for (const loc of LOCATIONS) {
-    const uuid = randomUUID();
+    const uuid = loc.uuid;
     store.create('location', uuid, { uuid, display: loc.name, name: loc.name });
     locationRefs.push({ uuid, display: loc.name });
   }
@@ -158,7 +168,7 @@ export function seed(store: DataStore, _config: SystemConfig): void {
   // A few encounters + observations for the first patients.
   const now = Date.now();
   patientRefs.slice(0, 3).forEach((patientRef, i) => {
-    const encUuid = randomUUID();
+    const encUuid = i === 0 ? FIRST_ENCOUNTER_UUID : randomUUID();
     const encType = encTypeRefs[i % encTypeRefs.length];
     const location = locationRefs[i % locationRefs.length];
     const when = new Date(now - i * 86_400_000).toISOString();
@@ -188,7 +198,7 @@ export function seed(store: DataStore, _config: SystemConfig): void {
 
     // One weight observation per encounter.
     const weightConcept = conceptRefs[0];
-    const obsUuid = randomUUID();
+    const obsUuid = i === 0 ? FIRST_OBS_UUID : randomUUID();
     const weight = 55 + i * 3;
     store.create('obs', obsUuid, {
       uuid: obsUuid,
@@ -215,7 +225,7 @@ export function seed(store: DataStore, _config: SystemConfig): void {
 
   // A FHIR Condition for the first patient so fhir.get('Condition') returns data.
   if (patientRefs[0]) {
-    const condUuid = randomUUID();
+    const condUuid = CONDITION_UUID;
     store.create('fhir_condition', condUuid, {
       resourceType: 'Condition',
       id: condUuid,
