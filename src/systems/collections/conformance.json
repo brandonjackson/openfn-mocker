@@ -1,0 +1,16 @@
+{
+  "spec": {
+    "adaptor": "collections",
+    "origin": "synthesized"
+  },
+  "routes": {
+    "DELETE /:name": "unexercised",
+    "DELETE /:name/:key": "conforming",
+    "GET /:name": "conforming",
+    "GET /:name/:key": "conforming",
+    "POST /:name": "conforming"
+  },
+  "failures": {},
+  "unrouted": [],
+  "deviations": []
+}

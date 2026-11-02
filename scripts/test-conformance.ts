@@ -16,16 +16,20 @@
  *      prefixes if needed), picks the response schema for the status that came
  *      back, and validates the body;
  *   3. reports violations grouped by operation, plus which spec operations the
- *      traffic did and did not exercise.
+ *      traffic did and did not exercise;
+ *   4. scores the **yardstick** (scripts/lib/yardstick.ts): of the routes the
+ *      mock serves, how many are verified against the spec, after applying the
+ *      system's accepted-deviations ledger (`src/systems/<name>/conformance.json`).
  *
  * The specs are read from the installed `openfn-api-specs` dev dependency (a
  * fixed snapshot, so runs are deterministic and offline); `--latest` fetches
  * the current copy from jsDelivr instead. `http-generic` and any system whose
  * adaptor has no spec are reported as skipped.
  *
- * Exits non-zero on any violation (so it can gate a branch) unless `--json`.
- * It is NOT part of `pnpm test`: many specs were authored independently of the
- * mocks, so the first runs are a diagnostic, not a regression gate.
+ * Exit code: with `--check-baseline`, non-zero only when the yardstick moved
+ * away from the committed baseline (a verified route regressed, a gain is not
+ * yet recorded, or a deviation went stale); that is the CI gate. Otherwise
+ * non-zero on any unaccepted violation, unless `--json`.
  *
  * Usage:
  *   pnpm test:conformance                          # every system with guide examples
@@ -39,9 +43,13 @@
  *   pnpm test:conformance -- --strict-additional   # flag fields the spec does not list
  *   pnpm test:conformance -- --no-requests         # skip request-body checks
  *   pnpm test:conformance -- --latest              # specs from the jsDelivr mirror, not the snapshot
+ *   pnpm test:conformance -- --check-baseline      # the CI gate: fail if the yardstick moved off the baseline
+ *   pnpm test:conformance -- --update-baseline     # record the current verified routes as the baseline
+ *   pnpm test:conformance -- --routes              # also list every route with its yardstick state
  */
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import {
   createConformer,
   fetchOpenapi,
@@ -56,6 +64,18 @@ import {
 
 import { plugins } from '../src/systems/index.js';
 import { guideExchanges, harnessConfig, type Exchange } from './lib/conformance.js';
+import {
+  diffBaseline,
+  loadLedger,
+  pct,
+  saveLedger,
+  scoreSystem,
+  snapshotOf,
+  type BaselineDiff,
+  type SystemScore,
+} from './lib/yardstick.js';
+
+const SYSTEMS_DIR = fileURLToPath(new URL('../src/systems', import.meta.url));
 
 const adaptorFor = (system: string): string => plugins[system]?.adaptorName ?? system;
 
@@ -69,10 +89,13 @@ interface Args {
   strictAdditional: boolean;
   checkRequests: boolean;
   latest: boolean;
+  checkBaseline: boolean;
+  updateBaseline: boolean;
+  routes: boolean;
 }
 
 function parseArgs(argv: string[]): Args {
-  const args: Args = { list: false, json: false, verbose: false, strictAdditional: false, checkRequests: true, latest: false };
+  const args: Args = { list: false, json: false, verbose: false, strictAdditional: false, checkRequests: true, latest: false, checkBaseline: false, updateBaseline: false, routes: false };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     const value = (flag: string): string => (a.includes('=') ? a.slice(a.indexOf('=') + 1) : argv[++i] ?? '') || fail(`${flag} needs a value`);
@@ -83,6 +106,9 @@ function parseArgs(argv: string[]): Args {
     else if (a === '--strict-additional') args.strictAdditional = true;
     else if (a === '--no-requests') args.checkRequests = false;
     else if (a === '--latest') args.latest = true;
+    else if (a === '--check-baseline') args.checkBaseline = true;
+    else if (a === '--update-baseline') args.updateBaseline = true;
+    else if (a === '--routes') args.routes = true;
     else if (a === '--system' || a === '--systems' || a.startsWith('--system=') || a.startsWith('--systems=')) {
       args.systems = value('--system').split(',').map((s) => s.trim()).filter(Boolean);
     } else if (a === '--export' || a.startsWith('--export=')) args.exportDir = value('--export');
@@ -104,15 +130,19 @@ interface SystemResult {
   reason?: string;
   specOrigin?: string;
   exchanges: number;
+  /** Violations not accepted by the system's deviations ledger. */
   violations: Violation[];
   coverage?: Coverage;
+  /** The yardstick. Absent for --exchanges runs (no route list) and skipped systems. */
+  score?: SystemScore;
+  baseline?: BaselineDiff;
 }
 
 async function loadSpec(adaptor: string, latest: boolean): Promise<any | undefined> {
   return latest ? fetchOpenapi(adaptor) : getOpenapi(adaptor);
 }
 
-function printSystem(r: SystemResult, verbose: boolean): void {
+function printSystem(r: SystemResult, verbose: boolean, showRoutes = false): void {
   const head = `── ${r.system}  (spec: ${r.adaptor}${r.specOrigin ? `, ${r.specOrigin}` : ''}, ${r.exchanges} exchange(s))`;
   if (r.status === 'skipped') {
     console.log(`${head}\n   ↷ skipped: ${r.reason}`);
@@ -126,6 +156,16 @@ function printSystem(r: SystemResult, verbose: boolean): void {
   const total = cov.hit.length + cov.missed.length;
   const mark = r.violations.length ? '✗' : '✓';
   console.log(`${head}\n   ${mark} ${r.violations.length} violation(s); ${cov.hit.length}/${total} spec operation(s) exercised; ${cov.unmatched.length} exchange(s) matched no operation`);
+  if (r.score) {
+    const c = r.score.counts;
+    console.log(
+      `   yardstick: ${c.verified}/${c.routes} route(s) verified (${pct(c.verified, c.routes)}): ` +
+        `${c.conforming} conforming, ${c.deviating} deviating, ${c.failing} failing, ${c.unexercised} unexercised`
+    );
+    for (const u of r.score.unrouted) console.log(`     ! no mock route served ${u.exchange}`);
+    for (const d of r.score.stale) console.log(`     ! stale deviation (matches nothing): ${d.route} [${d.kind}]${d.pointer ? ` ${d.pointer}` : ''}`);
+    if (showRoutes) for (const rr of r.score.routes) console.log(`     ${rr.state.padEnd(11)} ${rr.route}`);
+  }
   for (const [op, list] of groupViolations(r.violations)) {
     console.log(`     ${op}`);
     const byExchange = new Map<string, Violation[]>();
@@ -185,11 +225,14 @@ async function main(): Promise<void> {
     }
 
     let exchanges: Exchange[];
+    let routes: string[] | undefined;
+    let routeOf: (string | undefined)[] = [];
     try {
       if (args.exchanges) {
         exchanges = parseExchangesJsonl(readFileSync(args.exchanges, 'utf8'));
       } else {
-        exchanges = (await guideExchanges(plugin, harnessConfig(system))).exchanges;
+        const run = await guideExchanges(plugin, harnessConfig(system));
+        ({ exchanges, routes, routeOf } = run);
       }
     } catch (err) {
       // A mock that throws while its own guide examples run is a finding in its
@@ -213,10 +256,21 @@ async function main(): Promise<void> {
       strictAdditional: args.strictAdditional,
       checkRequests: args.checkRequests,
     });
-    const violations = conformer.checkAll(exchanges);
-    const r: SystemResult = { ...base, exchanges: exchanges.length, violations, coverage: conformer.coverage() };
+    const violationsOf = exchanges.map((ex) => conformer.check(ex));
+    let violations = violationsOf.flat();
+    let score: SystemScore | undefined;
+    let baseline: BaselineDiff | undefined;
+    if (routes) {
+      const ledger = loadLedger(SYSTEMS_DIR, system);
+      const specRef = { adaptor, ...(base.specOrigin ? { origin: base.specOrigin } : {}) };
+      score = scoreSystem({ system, routes, exchanges, routeOf, violationsOf, deviations: ledger.deviations });
+      violations = [...score.routes.flatMap((rr) => rr.violations), ...score.unrouted.flatMap((u) => u.violations)];
+      baseline = diffBaseline(score, ledger, specRef);
+      if (args.updateBaseline) saveLedger(SYSTEMS_DIR, system, { ...snapshotOf(score, specRef), deviations: ledger.deviations });
+    }
+    const r: SystemResult = { ...base, exchanges: exchanges.length, violations, coverage: conformer.coverage(), score, baseline };
     results.push(r);
-    if (!args.json) printSystem(r, args.verbose);
+    if (!args.json) printSystem(r, args.verbose, args.routes);
   }
 
   const checked = results.filter((r) => r.status === 'checked');
@@ -224,13 +278,34 @@ async function main(): Promise<void> {
   const totalViolations = checked.reduce((n, r) => n + r.violations.length, 0);
   const clean = checked.filter((r) => r.violations.length === 0).length;
 
+  const scored = checked.filter((r) => r.score).map((r) => r.score!);
+  const yardstick = {
+    routes: scored.reduce((n, s) => n + s.counts.routes, 0),
+    verified: scored.reduce((n, s) => n + s.counts.verified, 0),
+    conforming: scored.reduce((n, s) => n + s.counts.conforming, 0),
+    deviating: scored.reduce((n, s) => n + s.counts.deviating, 0),
+    failing: scored.reduce((n, s) => n + s.counts.failing, 0),
+    unexercised: scored.reduce((n, s) => n + s.counts.unexercised, 0),
+    systems: scored.length,
+    systemsClean: scored.filter((s) => s.clean).length,
+  };
+  const regressions = checked.filter((r) => r.baseline?.regressed.length);
+  const unrecorded = checked.filter((r) => r.baseline && (r.baseline.gained.length || r.baseline.stale));
+  const stale = scored.filter((s) => s.stale.length);
+
   if (args.json) {
-    console.log(JSON.stringify({ results, summary: { checked: checked.length, clean, violations: totalViolations, errors: errored } }, null, 2));
+    console.log(
+      JSON.stringify(
+        { results, summary: { checked: checked.length, clean, violations: totalViolations, errors: errored, yardstick } },
+        null,
+        2
+      )
+    );
     return;
   }
 
   console.log(`\n${'═'.repeat(72)}`);
-  console.log(`  ${'system'.padEnd(16)} ${'exch'.padStart(5)} ${'viol'.padStart(5)} ${'unmatched'.padStart(9)}  spec ops hit`);
+  console.log(`  ${'system'.padEnd(16)} ${'exch'.padStart(5)} ${'viol'.padStart(5)} ${'unmatched'.padStart(9)}  ${'spec ops hit'.padEnd(12)}  verified routes`);
   for (const r of results) {
     if (r.status !== 'checked') {
       const note = r.status === 'error' ? `ERROR (${(r.reason ?? '').split('\n')[0]})` : `skipped (${r.reason})`;
@@ -239,7 +314,8 @@ async function main(): Promise<void> {
     }
     const cov = r.coverage!;
     console.log(
-      `  ${r.system.padEnd(16)} ${String(r.exchanges).padStart(5)} ${String(r.violations.length).padStart(5)} ${String(cov.unmatched.length).padStart(9)}  ${cov.hit.length}/${cov.hit.length + cov.missed.length}`
+      `  ${r.system.padEnd(16)} ${String(r.exchanges).padStart(5)} ${String(r.violations.length).padStart(5)} ${String(cov.unmatched.length).padStart(9)}  ${`${cov.hit.length}/${cov.hit.length + cov.missed.length}`.padEnd(12)}  ` +
+        (r.score ? `${r.score.counts.verified}/${r.score.counts.routes}${r.score.clean ? '' : ' ✗'}` : '—')
     );
   }
   const skipped = results.length - checked.length - errored;
@@ -248,7 +324,35 @@ async function main(): Promise<void> {
       (errored ? `; ${errored} errored` : '') +
       (skipped ? `; ${skipped} skipped` : '')
   );
+  if (scored.length) {
+    console.log(
+      `\n  YARDSTICK: ${yardstick.verified}/${yardstick.routes} mock routes verified against the spec (${pct(yardstick.verified, yardstick.routes)})\n` +
+        `             ${yardstick.conforming} conforming; ${yardstick.deviating} deviating (accepted); ${yardstick.failing} failing; ${yardstick.unexercised} unexercised\n` +
+        `             ${yardstick.systemsClean}/${yardstick.systems} system(s) fully verified`
+    );
+  }
   console.log('═'.repeat(72));
+
+  if (args.updateBaseline) {
+    console.log(`\nLedger snapshots updated for ${scored.length} system(s) (src/systems/<name>/conformance.json).`);
+  }
+  if (args.checkBaseline || args.updateBaseline) {
+    for (const r of regressions) console.log(`\n✗ ${r.system}: ${r.baseline!.regressed.length} verified route(s) regressed:\n    ${r.baseline!.regressed.join('\n    ')}`);
+    for (const s of stale) console.log(`\n✗ ${s.system}: ${s.stale.length} stale deviation(s); delete them from src/systems/${s.system}/conformance.json`);
+    if (!args.updateBaseline) {
+      for (const r of unrecorded) {
+        const gained = r.baseline!.gained.length;
+        console.log(
+          `\n✗ ${r.system}: ledger snapshot is out of date` +
+            (gained ? ` (${gained} newly verified route(s) to lock in)` : '') +
+            `; run pnpm test:conformance -- --system ${r.system} --update-baseline`
+        );
+      }
+    }
+    const failed = regressions.length > 0 || stale.length > 0 || errored > 0 || (!args.updateBaseline && unrecorded.length > 0);
+    if (!failed) console.log('\n✓ yardstick matches the baseline');
+    process.exit(failed ? 1 : 0);
+  }
 
   process.exit(totalViolations || errored ? 1 : 0);
 }

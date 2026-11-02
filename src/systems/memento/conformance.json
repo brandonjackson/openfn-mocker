@@ -1,0 +1,24 @@
+{
+  "spec": {
+    "adaptor": "memento",
+    "origin": "generated"
+  },
+  "routes": {
+    "GET /v1/libraries": "conforming",
+    "GET /v1/libraries/:id": "conforming",
+    "GET /v1/libraries/:id/entries": "conforming",
+    "GET /v1/libraries/:id/entries/:entryId": "conforming",
+    "POST /v1/libraries/:id/entries": "failing",
+    "PUT /v1/libraries/:id/entries/:entryId": "failing"
+  },
+  "failures": {
+    "POST /v1/libraries/:id/entries": [
+      "unknown-status: spec documents no response for status 200 (documented: 201)"
+    ],
+    "PUT /v1/libraries/:id/entries/:entryId": [
+      "unknown-operation: no operation in the spec matches PUT /v1/libraries/lib_seed01/entries/entry_seed01"
+    ]
+  },
+  "unrouted": [],
+  "deviations": []
+}

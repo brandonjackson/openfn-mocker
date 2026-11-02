@@ -1,0 +1,20 @@
+{
+  "spec": {
+    "adaptor": "odoo",
+    "origin": "synthesized"
+  },
+  "routes": {
+    "POST /xmlrpc/2/common": "failing",
+    "POST /xmlrpc/2/object": "failing"
+  },
+  "failures": {
+    "POST /xmlrpc/2/common": [
+      "unknown-operation: no operation in the spec matches POST /xmlrpc/2/common"
+    ],
+    "POST /xmlrpc/2/object": [
+      "unknown-operation: no operation in the spec matches POST /xmlrpc/2/object"
+    ]
+  },
+  "unrouted": [],
+  "deviations": []
+}

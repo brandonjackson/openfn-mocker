@@ -210,12 +210,18 @@ function injectHasAuth(headers: Record<string, any> | undefined): boolean {
 export async function createSystemServer(
   plugin: MockSystemPlugin,
   config: SystemConfig,
-  opts: { logLevel?: string; autoAuth?: boolean }
+  opts: {
+    logLevel?: string;
+    autoAuth?: boolean;
+    /** Called with the bare instance before the system registers, so hooks like `onRoute` see every route. */
+    beforeRegister?: (app: FastifyInstance) => void;
+  }
 ): Promise<{ app: FastifyInstance; store: DataStore; requestLog: RequestLog }> {
   const app = Fastify({
     logger: { level: makeLogLevel(opts.logLevel) },
     ...fastifyServerOptions,
   });
+  opts.beforeRegister?.(app);
 
   const { store, requestLog } = await registerSystem(app, plugin, config);
 

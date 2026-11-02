@@ -120,7 +120,7 @@ function resolveUsage(name: string, vars: Record<string, string>): UsageExample[
 }
 
 /** HTML-escape for text placed in the document (defense in depth). */
-function esc(s: string): string {
+export function esc(s: string): string {
   return s
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
@@ -240,14 +240,14 @@ const LOGO_B64 =
   'OTcyLDMxLjk3MzM2IHYgMTYxLjcyMDMxIGggLTY2LjcyNyB6IiBmaWxsPSIjMDAwIi8+PC9zdmc+';
 
 /** Favicon reuses the OpenFn mark so the browser tab matches the docs. */
-const FAVICON_B64 = LOGO_B64;
+export const FAVICON_B64 = LOGO_B64;
 
 // Palette + chrome mirror the OpenFn documentation site (docs.openfn.org, a
 // Docusaurus/infima light theme): azure #2196f3 primary, white navbar + content,
 // a light sidebar with soft-blue active states, a dark-slate footer, the same
 // system-ui / SFMono font stacks, 8px radii and 1px #dadde1 borders. Response
 // bodies stay on a dark code surface, matching the docs' dark Prism code blocks.
-const STYLES = [
+export const STYLES = [
   ':root{--bg:#fff;--panel:#fff;--ink:#1c1e21;--muted:#606770;',
   '--border:#dadde1;--border-soft:#ebedf0;--wash:#f6f7f8;',
   '--accent:#2196f3;--accent-hover:#0d89ec;--accent-strong:#0a6bb7;--accent-soft:#ebf2fc;',
@@ -435,24 +435,36 @@ const STYLES = [
   '.nav-list a{padding:5px 10px}',
   '.nav-group{margin:12px 0 6px;padding:0}.nav-group:first-child{margin-top:0}}',
   '@media(max-width:640px){.ex .path{min-width:140px}.hero h1{font-size:27px}.sys-head h3{font-size:20px}',
-  '.navbar-links{gap:14px}.brand-sub,.brand-sep{display:none}.sys-guide{grid-template-columns:1fr;gap:16px}}',
+  '.navbar-links{gap:14px}.navbar-links a.ext{display:none}.brand-sub,.brand-sep{display:none}.sys-guide{grid-template-columns:1fr;gap:16px}}',
 ].join('');
 
+/**
+ * The top navbar shared by every page the mock serves. `brandHref` is where the
+ * logo goes (the sandbox keeps it in-page, '#console'; other pages link home).
+ */
+export function navbar(brandHref: string): string {
+  return [
+    '<header class="navbar"><div class="navbar-inner">',
+    '<a class="brand" href="' + brandHref + '" aria-label="OpenFn mocker — API sandbox">',
+    '<img class="brand-logo" src="data:image/svg+xml;base64,',
+    LOGO_B64,
+    '" alt="OpenFn" width="30" height="30">',
+    '<span class="brand-name">OpenFn</span>',
+    '<span class="brand-sep">/</span>',
+    '<span class="brand-sub">mocker</span>',
+    '</a>',
+    '<nav class="navbar-links">',
+    '<a href="/">Sandbox</a>',
+    '<a href="/status">Status</a>',
+    '<a class="ext" href="https://docs.openfn.org/documentation" target="_blank" rel="noopener">Docs</a>',
+    '<a class="ext" href="https://docs.openfn.org/adaptors" target="_blank" rel="noopener">Adaptors</a>',
+    '<a class="ext" href="https://github.com/brandonjackson/openfn-mocker" target="_blank" rel="noopener">GitHub</a>',
+    '</nav></div></header>',
+  ].join('');
+}
+
 const HEADER = [
-  '<header class="navbar"><div class="navbar-inner">',
-  '<a class="brand" href="#console" aria-label="OpenFn mocker — API sandbox">',
-  '<img class="brand-logo" src="data:image/svg+xml;base64,',
-  LOGO_B64,
-  '" alt="OpenFn" width="30" height="30">',
-  '<span class="brand-name">OpenFn</span>',
-  '<span class="brand-sep">/</span>',
-  '<span class="brand-sub">mocker</span>',
-  '</a>',
-  '<nav class="navbar-links">',
-  '<a href="https://docs.openfn.org/documentation" target="_blank" rel="noopener">Docs</a>',
-  '<a href="https://docs.openfn.org/adaptors" target="_blank" rel="noopener">Adaptors</a>',
-  '<a href="https://github.com/brandonjackson/openfn-mocker" target="_blank" rel="noopener">GitHub</a>',
-  '</nav></div></header>',
+  navbar('#console'),
   '<div class="hero"><div class="wrap">',
   '<h1>API sandbox</h1>',
   '<p class="hero-lede">A configurable mock of the external systems OpenFn integrates with. ',
@@ -461,7 +473,7 @@ const HEADER = [
   '</div></div>',
 ].join('');
 
-const FOOTER = [
+export const FOOTER = [
   '<footer class="foot"><div class="wrap">',
   '<p class="foot-note">Every request runs against the live in-memory mock; data resets on restart or via the reset endpoints.</p>',
   '<p class="foot-links">',

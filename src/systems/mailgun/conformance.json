@@ -1,0 +1,14 @@
+{
+  "spec": {
+    "adaptor": "mailgun",
+    "origin": "found-openapi"
+  },
+  "routes": {
+    "GET /v3/:domain/events": "conforming",
+    "GET /v3/:domain/stats/total": "conforming",
+    "POST /v3/:domain/messages": "conforming"
+  },
+  "failures": {},
+  "unrouted": [],
+  "deviations": []
+}

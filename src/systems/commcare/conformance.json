@@ -1,0 +1,21 @@
+{
+  "spec": {
+    "adaptor": "commcare",
+    "origin": "generated"
+  },
+  "routes": {
+    "GET /a/:domain/api/v0.5/*": "conforming",
+    "GET /a/:domain/api/v0.5/case/": "conforming",
+    "GET /a/:domain/api/v0.5/case/:case_id/": "conforming",
+    "GET /a/:domain/api/v0.5/form/": "conforming",
+    "GET /a/:domain/api/v0.5/form/:id/": "unexercised",
+    "POST /a/:domain/api/v0.5/*": "unexercised",
+    "POST /a/:domain/fixtures/fixapi/": "unexercised",
+    "POST /a/:domain/importer/excel/bulk_upload_api/": "unexercised",
+    "POST /a/:domain/receiver/": "conforming",
+    "POST /a/:domain/receiver/:id/": "unexercised"
+  },
+  "failures": {},
+  "unrouted": [],
+  "deviations": []
+}

@@ -1,0 +1,14 @@
+{
+  "spec": {
+    "adaptor": "ghana-nia",
+    "origin": "synthesized"
+  },
+  "routes": {
+    "GET /awopa/api/v1/baby/registration": "conforming",
+    "GET /awopa/api/v1/baby/registration/:pin": "conforming",
+    "POST /awopa/api/v1/baby/registration": "conforming"
+  },
+  "failures": {},
+  "unrouted": [],
+  "deviations": []
+}

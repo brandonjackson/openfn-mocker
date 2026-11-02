@@ -1,0 +1,15 @@
+{
+  "spec": {
+    "adaptor": "gmail",
+    "origin": "converted"
+  },
+  "routes": {
+    "GET /gmail/v1/users/:userId/messages": "conforming",
+    "GET /gmail/v1/users/:userId/messages/:id": "conforming",
+    "GET /gmail/v1/users/:userId/messages/:messageId/attachments/:attId": "conforming",
+    "POST /gmail/v1/users/:userId/messages/send": "conforming"
+  },
+  "failures": {},
+  "unrouted": [],
+  "deviations": []
+}

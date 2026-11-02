@@ -1,0 +1,31 @@
+{
+  "spec": {
+    "adaptor": "cht",
+    "origin": "found-openapi"
+  },
+  "routes": {
+    "GET /api/v1/settings": "unexercised",
+    "GET /api/v2/export/contacts": "conforming",
+    "GET /api/v2/export/reports": "unexercised",
+    "GET /medic/_changes": "failing",
+    "GET /medic/:docId": "failing",
+    "POST /api/v1/people": "conforming",
+    "POST /api/v1/places": "unexercised",
+    "POST /medic/_bulk_docs": "failing",
+    "PUT /api/v1/settings": "unexercised",
+    "PUT /medic/:docId": "unexercised"
+  },
+  "failures": {
+    "GET /medic/_changes": [
+      "unknown-operation: no operation in the spec matches GET /medic/_changes"
+    ],
+    "GET /medic/:docId": [
+      "unknown-operation: no operation in the spec matches GET /medic/person-patient-0001"
+    ],
+    "POST /medic/_bulk_docs": [
+      "unknown-operation: no operation in the spec matches POST /medic/_bulk_docs"
+    ]
+  },
+  "unrouted": [],
+  "deviations": []
+}

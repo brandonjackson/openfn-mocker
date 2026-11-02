@@ -1,0 +1,21 @@
+{
+  "spec": {
+    "adaptor": "satusehat",
+    "origin": "generated"
+  },
+  "routes": {
+    "DELETE /fhir-r4/v1/:resourceType/:id": "unexercised",
+    "GET /fhir-r4/v1/:resourceType": "conforming",
+    "GET /fhir-r4/v1/:resourceType/:id": "conforming",
+    "GET /fhir-r4/v1/metadata": "unexercised",
+    "PATCH /fhir-r4/v1/:resourceType/:id": "conforming",
+    "POST /fhir-r4/v1": "unexercised",
+    "POST /fhir-r4/v1/:resourceType": "conforming",
+    "POST /fhir-r4/v1/:resourceType/_search": "unexercised",
+    "POST /oauth2/v1/accesstoken": "conforming",
+    "PUT /fhir-r4/v1/:resourceType/:id": "conforming"
+  },
+  "failures": {},
+  "unrouted": [],
+  "deviations": []
+}

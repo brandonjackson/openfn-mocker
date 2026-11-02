@@ -1,0 +1,25 @@
+{
+  "spec": {
+    "adaptor": "dagu",
+    "origin": "synthesized"
+  },
+  "routes": {
+    "GET /api/v1/dags": "failing",
+    "GET /api/v1/dags/:name": "failing",
+    "POST /account/login": "unexercised",
+    "POST /api/v1/dags/:name": "failing"
+  },
+  "failures": {
+    "GET /api/v1/dags": [
+      "unknown-operation: no operation in the spec matches GET /api/v1/dags"
+    ],
+    "GET /api/v1/dags/:name": [
+      "unknown-operation: no operation in the spec matches GET /api/v1/dags/nightly"
+    ],
+    "POST /api/v1/dags/:name": [
+      "unknown-operation: no operation in the spec matches POST /api/v1/dags/nightly"
+    ]
+  },
+  "unrouted": [],
+  "deviations": []
+}

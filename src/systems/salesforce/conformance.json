@@ -1,0 +1,21 @@
+{
+  "spec": {
+    "adaptor": "salesforce",
+    "origin": "generated"
+  },
+  "routes": {
+    "DELETE /services/data/:ver/composite/sobjects": "unexercised",
+    "DELETE /services/data/:ver/sobjects/:type/:id": "unexercised",
+    "GET /services/data/:ver/query": "conforming",
+    "GET /services/data/:ver/sobjects/:type/:id": "conforming",
+    "GET /services/data/:ver/sobjects/:type/describe": "conforming",
+    "PATCH /services/data/:ver/composite/sobjects/:type/:extIdField": "unexercised",
+    "PATCH /services/data/:ver/sobjects/:type/:id": "unexercised",
+    "POST /services/data/:ver/sobjects/:type": "conforming",
+    "POST /services/oauth2/token": "unexercised",
+    "POST /services/Soap/u/:version": "unexercised"
+  },
+  "failures": {},
+  "unrouted": [],
+  "deviations": []
+}

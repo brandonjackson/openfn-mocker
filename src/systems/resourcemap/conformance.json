@@ -1,0 +1,14 @@
+{
+  "spec": {
+    "adaptor": "resourcemap",
+    "origin": "generated"
+  },
+  "routes": {
+    "GET /api/collections.json": "conforming",
+    "GET /api/collections/:id.json": "conforming",
+    "POST /api/collections/:collection_id/sites.json": "conforming"
+  },
+  "failures": {},
+  "unrouted": [],
+  "deviations": []
+}

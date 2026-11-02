@@ -1,0 +1,18 @@
+{
+  "spec": {
+    "adaptor": "asana",
+    "origin": "found-openapi"
+  },
+  "routes": {
+    "GET /api/1.0/projects/:pgid/tasks": "unexercised",
+    "GET /api/1.0/tasks": "conforming",
+    "GET /api/1.0/tasks/:gid": "conforming",
+    "GET /api/1.0/workspaces/:wsgid/tasks/search": "conforming",
+    "POST /api/1.0/tasks": "conforming",
+    "POST /api/1.0/tasks/:gid/stories": "conforming",
+    "PUT /api/1.0/tasks/:gid": "conforming"
+  },
+  "failures": {},
+  "unrouted": [],
+  "deviations": []
+}

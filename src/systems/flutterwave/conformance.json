@@ -1,0 +1,26 @@
+{
+  "spec": {
+    "adaptor": "flutterwave",
+    "origin": "generated"
+  },
+  "routes": {
+    "GET /customers": "failing",
+    "GET /payment-methods": "unexercised",
+    "POST /charges": "failing",
+    "POST /customers": "failing",
+    "POST /payment-methods": "conforming"
+  },
+  "failures": {
+    "GET /customers": [
+      "response-schema /data/*/name/middle: must be string"
+    ],
+    "POST /charges": [
+      "unknown-status: spec documents no response for status 200 (documented: 201)"
+    ],
+    "POST /customers": [
+      "response-schema /data/address: must be object"
+    ]
+  },
+  "unrouted": [],
+  "deviations": []
+}

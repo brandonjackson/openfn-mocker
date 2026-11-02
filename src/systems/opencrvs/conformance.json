@@ -1,0 +1,19 @@
+{
+  "spec": {
+    "adaptor": "opencrvs",
+    "origin": "found-openapi"
+  },
+  "routes": {
+    "GET /api/events/events/:eventId": "conforming",
+    "GET /api/events/locations": "conforming",
+    "POST /api/events/events": "conforming",
+    "POST /api/events/events/:eventId/notify": "conforming",
+    "POST /api/events/events/search": "conforming",
+    "POST /graphql": "conforming",
+    "POST /notification": "unexercised",
+    "POST /token": "unexercised"
+  },
+  "failures": {},
+  "unrouted": [],
+  "deviations": []
+}

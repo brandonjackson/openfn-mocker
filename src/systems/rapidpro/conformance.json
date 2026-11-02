@@ -1,0 +1,20 @@
+{
+  "spec": {
+    "adaptor": "rapidpro",
+    "origin": "generated"
+  },
+  "routes": {
+    "GET /api/v2/broadcasts.json": "unexercised",
+    "GET /api/v2/contacts.json": "conforming",
+    "GET /api/v2/fields.json": "unexercised",
+    "GET /api/v2/flow_starts.json": "unexercised",
+    "GET /api/v2/flows.json": "conforming",
+    "GET /api/v2/groups.json": "unexercised",
+    "POST /api/v2/broadcasts.json": "conforming",
+    "POST /api/v2/contacts.json": "conforming",
+    "POST /api/v2/flow_starts.json": "conforming"
+  },
+  "failures": {},
+  "unrouted": [],
+  "deviations": []
+}

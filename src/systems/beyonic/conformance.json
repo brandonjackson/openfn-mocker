@@ -1,0 +1,31 @@
+{
+  "spec": {
+    "adaptor": "beyonic",
+    "origin": "generated"
+  },
+  "routes": {
+    "GET /contacts": "unexercised",
+    "GET /payments": "failing",
+    "POST /collectionrequests": "failing",
+    "POST /contacts": "failing",
+    "POST /payments": "failing"
+  },
+  "failures": {
+    "GET /payments": [
+      "unknown-operation: no operation in the spec matches GET /payments"
+    ],
+    "POST /collectionrequests": [
+      "request-schema /amount: must be string",
+      "response-schema /amount: must be string"
+    ],
+    "POST /contacts": [
+      "request-schema: missing required property 'phone_number'"
+    ],
+    "POST /payments": [
+      "request-schema /amount: must be string",
+      "response-schema /amount: must be string"
+    ]
+  },
+  "unrouted": [],
+  "deviations": []
+}

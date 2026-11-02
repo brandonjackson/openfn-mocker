@@ -1,0 +1,25 @@
+{
+  "spec": {
+    "adaptor": "mailchimp",
+    "origin": "converted"
+  },
+  "routes": {
+    "DELETE /3.0/lists/:id/members/:hash": "unexercised",
+    "GET /3.0/batches": "unexercised",
+    "GET /3.0/lists": "conforming",
+    "GET /3.0/lists/:id": "conforming",
+    "GET /3.0/lists/:id/members": "conforming",
+    "GET /3.0/lists/:id/members/:hash": "unexercised",
+    "PATCH /3.0/lists/:id/members/:hash": "conforming",
+    "POST /3.0/batches": "conforming",
+    "POST /3.0/lists/:id": "conforming",
+    "POST /3.0/lists/:id/members": "conforming",
+    "POST /3.0/lists/:id/members/:hash/actions/delete-permanent": "conforming",
+    "POST /3.0/lists/:id/members/:hash/tags": "conforming",
+    "POST /3.0/lists/:id/segments/:segmentId": "conforming",
+    "PUT /3.0/lists/:id/members/:hash": "unexercised"
+  },
+  "failures": {},
+  "unrouted": [],
+  "deviations": []
+}

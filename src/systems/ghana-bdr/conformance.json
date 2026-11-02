@@ -1,0 +1,19 @@
+{
+  "spec": {
+    "adaptor": "ghana-bdr",
+    "origin": "converted"
+  },
+  "routes": {
+    "GET /api/v1/UserManagementService/integrations/registrations/birth/:documentNumber": "conforming",
+    "GET /api/v1/UserManagementService/integrations/registrations/death/:documentNumber": "conforming",
+    "POST /api/v1/UserManagementService/integrations/auth/refresh": "conforming",
+    "POST /api/v1/UserManagementService/integrations/auth/token": "conforming",
+    "POST /api/v1/UserManagementService/integrations/registrations/birth": "conforming",
+    "POST /api/v1/UserManagementService/integrations/registrations/birth/:documentNumber": "conforming",
+    "POST /api/v1/UserManagementService/integrations/registrations/death": "conforming",
+    "POST /api/v1/UserManagementService/integrations/utility": "conforming"
+  },
+  "failures": {},
+  "unrouted": [],
+  "deviations": []
+}

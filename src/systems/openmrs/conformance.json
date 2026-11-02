@@ -1,0 +1,41 @@
+{
+  "spec": {
+    "adaptor": "openmrs",
+    "origin": "converted"
+  },
+  "routes": {
+    "DELETE /ws/rest/v1/*": "unexercised",
+    "GET /ws/fhir2/R4/Condition": "unexercised",
+    "GET /ws/fhir2/R4/Condition/:id": "unexercised",
+    "GET /ws/fhir2/R4/Encounter": "unexercised",
+    "GET /ws/fhir2/R4/Encounter/:id": "unexercised",
+    "GET /ws/fhir2/R4/Observation": "failing",
+    "GET /ws/fhir2/R4/Observation/:id": "unexercised",
+    "GET /ws/fhir2/R4/Patient": "failing",
+    "GET /ws/fhir2/R4/Patient/:id": "unexercised",
+    "GET /ws/rest/v1/*": "failing",
+    "POST /ws/fhir2/R4/Condition": "unexercised",
+    "POST /ws/fhir2/R4/Encounter": "unexercised",
+    "POST /ws/fhir2/R4/Observation": "unexercised",
+    "POST /ws/fhir2/R4/Patient": "unexercised",
+    "POST /ws/rest/v1/*": "failing",
+    "PUT /ws/rest/v1/*": "unexercised"
+  },
+  "failures": {
+    "GET /ws/fhir2/R4/Observation": [
+      "unknown-operation: no operation in the spec matches GET /ws/fhir2/R4/Observation"
+    ],
+    "GET /ws/fhir2/R4/Patient": [
+      "unknown-operation: no operation in the spec matches GET /ws/fhir2/R4/Patient"
+    ],
+    "GET /ws/rest/v1/*": [
+      "unknown-operation: no operation in the spec matches GET /ws/rest/v1/session"
+    ],
+    "POST /ws/rest/v1/*": [
+      "request-schema /identifiers/*/identifierType: must be string",
+      "request-schema /person: must be string"
+    ]
+  },
+  "unrouted": [],
+  "deviations": []
+}

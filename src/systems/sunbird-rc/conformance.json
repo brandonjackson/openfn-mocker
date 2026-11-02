@@ -1,0 +1,27 @@
+{
+  "spec": {
+    "adaptor": "sunbird-rc",
+    "origin": "found-openapi"
+  },
+  "routes": {
+    "DELETE /api/v1/:entity/:id": "unexercised",
+    "GET /api/v1/:entity/:id": "failing",
+    "GET /credentials/:id": "conforming",
+    "POST /api/v1/:entity": "failing",
+    "POST /credentials/issue": "failing",
+    "PUT /api/v1/:entity/:id": "unexercised"
+  },
+  "failures": {
+    "GET /api/v1/:entity/:id": [
+      "unknown-operation: no operation in the spec matches GET /api/v1/Student/stu-0001"
+    ],
+    "POST /api/v1/:entity": [
+      "unknown-operation: no operation in the spec matches POST /api/v1/Student"
+    ],
+    "POST /credentials/issue": [
+      "response-schema /credential/type: must be string"
+    ]
+  },
+  "unrouted": [],
+  "deviations": []
+}

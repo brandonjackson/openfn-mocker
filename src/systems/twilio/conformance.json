@@ -1,0 +1,16 @@
+{
+  "spec": {
+    "adaptor": "twilio",
+    "origin": "found-openapi"
+  },
+  "routes": {
+    "GET /2010-04-01/Accounts/:sid/Calls.json": "conforming",
+    "GET /2010-04-01/Accounts/:sid/Calls/:callSid.json": "unexercised",
+    "GET /2010-04-01/Accounts/:sid/Messages.json": "conforming",
+    "GET /2010-04-01/Accounts/:sid/Messages/:msgSid.json": "unexercised",
+    "POST /2010-04-01/Accounts/:sid/Messages.json": "conforming"
+  },
+  "failures": {},
+  "unrouted": [],
+  "deviations": []
+}

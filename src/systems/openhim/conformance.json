@@ -1,0 +1,33 @@
+{
+  "spec": {
+    "adaptor": "openhim",
+    "origin": "generated"
+  },
+  "routes": {
+    "DELETE /channels/:id": "unexercised",
+    "DELETE /clients/:id": "unexercised",
+    "DELETE /tasks/:id": "unexercised",
+    "GET /channels": "conforming",
+    "GET /channels/:id": "unexercised",
+    "GET /chw/encounter": "unexercised",
+    "GET /clients": "conforming",
+    "GET /clients/:id": "unexercised",
+    "GET /tasks": "unexercised",
+    "GET /tasks/:id": "unexercised",
+    "GET /transactions": "conforming",
+    "GET /transactions/:id": "unexercised",
+    "PATCH /channels/:id": "unexercised",
+    "PATCH /clients/:id": "unexercised",
+    "PATCH /tasks/:id": "unexercised",
+    "POST /channels": "unexercised",
+    "POST /chw/encounter": "conforming",
+    "POST /clients": "conforming",
+    "POST /tasks": "unexercised",
+    "PUT /channels/:id": "unexercised",
+    "PUT /clients/:id": "unexercised",
+    "PUT /tasks/:id": "unexercised"
+  },
+  "failures": {},
+  "unrouted": [],
+  "deviations": []
+}

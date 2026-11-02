@@ -3,6 +3,7 @@ import { registerSystem, fastifyServerOptions } from './server.js';
 import { plugins } from './systems/index.js';
 import { makeLogLevel, type RequestLog } from './logger.js';
 import { renderSandboxPage, wantsHtml } from './sandbox.js';
+import { buildStatusReport, renderStatusPage } from './status.js';
 import { seedForDataset, DEFAULT_DATASET } from './datasets.js';
 import type { MockerConfig } from './config.js';
 import type { DataStore } from './store.js';
@@ -87,6 +88,27 @@ export async function buildServer(
       return html;
     }
     return { name: 'openfn-mocker', systems: systemList() };
+  });
+
+  // Spec-conformance status for every system the mocker ships, read from the
+  // per-system ledgers (src/status.ts). Browsers get the page; API clients the data.
+  app.get('/status', async (request, reply) => {
+    const report = buildStatusReport();
+    if (wantsHtml(request.headers.accept)) {
+      reply.type('text/html; charset=utf-8');
+      return renderStatusPage(report);
+    }
+    return {
+      totals: report.totals,
+      systems: report.systems.map(({ name, title, adaptor, rating, summary, ledger }) => ({
+        name,
+        title,
+        adaptor,
+        rating,
+        spec: ledger?.spec,
+        ...(summary ?? {}),
+      })),
+    };
   });
 
   // Root admin API, aggregated across systems.

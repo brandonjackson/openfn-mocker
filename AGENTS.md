@@ -19,11 +19,11 @@ it was dead weight and is gone.)
 
 Every system's responses are built from its hand-written `seed.ts` +
 `overrides`. The openfn-api-specs repo is the source of truth for API *shape*
-(see below). Conforming to it is a **development workflow**: consult the spec
-while authoring, then run `pnpm test:conformance -- --system <name>`, which
-fires the system's guide examples at the mock and validates every request and
-response body against the spec (README "Checking spec conformance"). It is not
-on the runtime or usage-test critical path and is not part of `pnpm test`.
+(see below). Conformance to it is measured by a **yardstick**: of the routes
+each mock serves, how many are verified against the spec. Each system's
+result lives in its ledger, `src/systems/<name>/conformance.json`; CI keeps
+the ledgers current and stops verified routes regressing; and the running
+mock shows them all at `/status`. See "Conformance work order" below.
 
 ## The two sources of truth that govern correctness
 
@@ -119,11 +119,75 @@ runtime `fs`), mirrored as real files under `test/fixtures/attachments/`, and
 - [ ] **`pnpm test:usage --system <name>` green** — every usage example runs end
       to end through the real adaptor, *or* each remaining failure is a
       documented Roadmap blocker (see below). **This is the definition of done.**
-- [ ] `pnpm test:conformance -- --system <name>` run and read. Clear every
-      violation that is the mock's (a missing required field, a wrong type, a
-      wrong status code). Where the *spec* is wrong or missing an endpoint the
-      adaptor really calls, fix it in `openfn-api-specs` rather than bending the
-      mock to a bad spec; note anything left in the README Roadmap.
+- [ ] `pnpm test:conformance -- --system <name>` run and read, worked per the
+      "Conformance work order" below, and the ledger updated with
+      `--update-baseline` (CI's `--check-baseline` fails otherwise).
+
+## Conformance work order
+
+The goal is every mock route **verified**: exercised by a guide example, and
+either passing the spec or failing only where the spec is provably wrong.
+
+**The yardstick.** `pnpm test:conformance` (10s, offline) puts every route a
+mock serves in one state, and the headline is verified / routes:
+
+| state | meaning |
+|-------|---------|
+| `conforming` | a guide example hits it; every request and response passes the spec |
+| `deviating` | hit; its only violations are accepted entries in the ledger |
+| `failing` | hit; at least one violation not accepted |
+| `unexercised` | no guide example reaches it, so nothing is known |
+
+**The ledger.** `src/systems/<name>/conformance.json` holds a snapshot of
+that system's states (`routes`, `failures`, `unrouted`, written by
+`--update-baseline`, never by hand) and the hand-written `deviations`. One file
+per system, so agents on different systems never conflict. CI runs
+`--check-baseline`, which fails if a route recorded as verified regresses, the
+snapshot is out of date, or a deviation no longer matches anything (stale).
+
+**Working one system** (one agent, one system, one PR):
+
+1. `pnpm test:conformance -- --system <name> --routes`. Read the failing and
+   unexercised routes (also at `/status#sys-<name>` on a running mock).
+2. **Unexercised route:** add a guide example to `guide.ts` that reaches it,
+   using the path the adaptor really calls. Examples show on the sandbox page,
+   so they should be ones a person would want to run.
+3. **Failing route: decide whose bug it is before changing anything.**
+   - *The mock's* (a missing required field, a wrong type, `201` where the API
+     returns `200`, a wrong envelope): fix `seed.ts` / `plugin.ts`. This is
+     the usual case, especially when the spec is a vendor OpenAPI.
+   - *The spec's*: only when you have evidence from the **real system**, such as
+     its source code, a captured live exchange, or the vendor's changelog. Two
+     documents disagreeing is not evidence. Add a ledger deviation with that
+     evidence (format below). If the spec is missing an endpoint or status
+     (`spec-gap`), also fix it in `openfn-api-specs` and remove the deviation
+     once the lockfile picks the fix up.
+   - Never loosen the mock to fit a spec you believe is wrong, and never add a
+     deviation to make a number go up.
+4. **Unrouted guide request** (the mock 404'd its own example): the example
+   path or the route is wrong; check the adaptor source.
+5. `pnpm test:conformance -- --system <name> --update-baseline`, then `pnpm
+   test`, `pnpm test:usage --system <name>` (a conformance fix must not break
+   the real adaptor), and commit the ledger with the fix. The PR description
+   gives the system's yardstick before and after.
+
+A deviation entry:
+
+```json
+{
+  "route": "GET /api/v2/assets/:uid/",
+  "kind": "response-schema",
+  "pointer": "/settings/country/*",
+  "category": "vendor-spec-wrong",
+  "reason": "KPI returns country as [{label, value}]; the OpenAPI annotation says string[]",
+  "evidence": "https://github.com/kobotoolbox/kpi/blob/<sha>/kpi/serializers/v2/asset.py#L..."
+}
+```
+
+`route` and `kind` must match the report exactly; `pointer` uses `*` for array
+indices and may be omitted to accept every violation of that kind on the
+route. `category` is one of `vendor-spec-wrong`, `spec-gap`, `modelling`
+(mock and spec model the same system through different APIs) or `mock-only`.
 
 ## When `test:usage` fails, classify before fixing
 

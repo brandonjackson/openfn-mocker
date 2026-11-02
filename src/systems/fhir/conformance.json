@@ -1,0 +1,21 @@
+{
+  "spec": {
+    "adaptor": "fhir",
+    "origin": "converted"
+  },
+  "routes": {
+    "DELETE /:resourceType/:id": "unexercised",
+    "GET /:resourceType": "conforming",
+    "GET /:resourceType/:id": "conforming",
+    "GET /:resourceType/:id/_history": "conforming",
+    "GET /:resourceType/:id/_history/:vid": "unexercised",
+    "GET /metadata": "conforming",
+    "POST /": "conforming",
+    "POST /:resourceType": "conforming",
+    "POST /:resourceType/_search": "unexercised",
+    "PUT /:resourceType/:id": "unexercised"
+  },
+  "failures": {},
+  "unrouted": [],
+  "deviations": []
+}

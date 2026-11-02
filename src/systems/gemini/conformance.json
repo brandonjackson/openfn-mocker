@@ -1,0 +1,12 @@
+{
+  "spec": {
+    "adaptor": "gemini",
+    "origin": "converted"
+  },
+  "routes": {
+    "POST /v1beta/models/:model": "conforming"
+  },
+  "failures": {},
+  "unrouted": [],
+  "deviations": []
+}

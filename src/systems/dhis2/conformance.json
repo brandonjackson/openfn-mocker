@@ -1,0 +1,48 @@
+{
+  "spec": {
+    "adaptor": "dhis2",
+    "origin": "found-openapi"
+  },
+  "routes": {
+    "DELETE /api/*": "unexercised",
+    "GET /api/*": "failing",
+    "GET /api/dataElements": "unexercised",
+    "GET /api/dataElements/:id": "unexercised",
+    "GET /api/dataValueSets": "unexercised",
+    "GET /api/enrollments": "unexercised",
+    "GET /api/events": "unexercised",
+    "GET /api/organisationUnits": "conforming",
+    "GET /api/organisationUnits/:id": "unexercised",
+    "GET /api/programs": "unexercised",
+    "GET /api/programs/:id": "failing",
+    "GET /api/system/info": "conforming",
+    "GET /api/trackedEntityInstances": "unexercised",
+    "GET /api/trackedEntityTypes": "unexercised",
+    "GET /api/trackedEntityTypes/:id": "unexercised",
+    "PATCH /api/*": "unexercised",
+    "POST /api/*": "conforming",
+    "POST /api/dataElements": "unexercised",
+    "POST /api/dataValueSets": "unexercised",
+    "POST /api/enrollments": "unexercised",
+    "POST /api/events": "unexercised",
+    "POST /api/metadata": "unexercised",
+    "POST /api/organisationUnits": "unexercised",
+    "POST /api/trackedEntityInstances": "failing",
+    "PUT /api/*": "unexercised"
+  },
+  "failures": {
+    "GET /api/*": [
+      "unknown-operation: no operation in the spec matches GET /api/40/organisationUnits"
+    ],
+    "GET /api/programs/:id": [
+      "response-schema /trackedEntityType: missing required property 'featureType'",
+      "response-schema /trackedEntityType: missing required property 'maxTeiCountToReturn'",
+      "response-schema /trackedEntityType: missing required property 'minAttributesRequiredToSearch'"
+    ],
+    "POST /api/trackedEntityInstances": [
+      "unknown-operation: no operation in the spec matches POST /api/trackedEntityInstances"
+    ]
+  },
+  "unrouted": [],
+  "deviations": []
+}

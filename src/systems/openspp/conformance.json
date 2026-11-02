@@ -1,0 +1,13 @@
+{
+  "spec": {
+    "adaptor": "openspp",
+    "origin": "synthesized"
+  },
+  "routes": {
+    "POST /xmlrpc/2/common": "conforming",
+    "POST /xmlrpc/2/object": "conforming"
+  },
+  "failures": {},
+  "unrouted": [],
+  "deviations": []
+}

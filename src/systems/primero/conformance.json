@@ -1,0 +1,26 @@
+{
+  "spec": {
+    "adaptor": "primero",
+    "origin": "generated"
+  },
+  "routes": {
+    "GET /api/v2/cases": "conforming",
+    "GET /api/v2/cases/:id": "unexercised",
+    "GET /api/v2/cases/:id/referrals": "unexercised",
+    "GET /api/v2/forms": "conforming",
+    "GET /api/v2/incidents": "unexercised",
+    "GET /api/v2/incidents/:id": "unexercised",
+    "GET /api/v2/locations": "conforming",
+    "GET /api/v2/lookups": "conforming",
+    "PATCH /api/v2/cases/:caseId/referrals/:id": "unexercised",
+    "PATCH /api/v2/cases/:id": "unexercised",
+    "POST /api/v2/cases": "conforming",
+    "POST /api/v2/cases/referrals": "unexercised",
+    "POST /api/v2/incidents": "unexercised",
+    "POST /api/v2/referrals": "unexercised",
+    "POST /api/v2/tokens": "conforming"
+  },
+  "failures": {},
+  "unrouted": [],
+  "deviations": []
+}
