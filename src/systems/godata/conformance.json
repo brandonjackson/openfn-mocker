@@ -3,6 +3,10 @@
     "adaptor": "godata",
     "origin": "generated"
   },
+  "coverage": {
+    "operations": 507,
+    "exercised": 22
+  },
   "routes": {
     "GET /locations": "conforming",
     "GET /locations/:id": "conforming",

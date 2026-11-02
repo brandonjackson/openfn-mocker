@@ -3,6 +3,10 @@
     "adaptor": "surveycto",
     "origin": "found-openapi"
   },
+  "coverage": {
+    "operations": 50,
+    "exercised": 4
+  },
   "routes": {
     "GET /api/v1/forms/data/wide/json/:formId": "failing",
     "GET /api/v2/datasets": "conforming",

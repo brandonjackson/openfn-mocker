@@ -3,6 +3,10 @@
     "adaptor": "primero",
     "origin": "generated"
   },
+  "coverage": {
+    "operations": 217,
+    "exercised": 6
+  },
   "routes": {
     "GET /api/v2/cases": "conforming",
     "GET /api/v2/cases/:id": "unexercised",

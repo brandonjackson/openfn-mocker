@@ -15,7 +15,7 @@
  * server can render them (the /status page) with no spec dependency. The build
  * copies the JSON files next to the compiled plugins (scripts/copy-ledgers.mjs).
  */
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { join } from 'node:path';
 
@@ -85,6 +85,13 @@ export interface RouteAlias {
 export interface ConformanceLedger {
   /** Which spec the system was measured against, and how that spec was obtained. */
   spec?: { adaptor: string; origin?: string };
+  /**
+   * Snapshot: how much of the spec the guide traffic reached. `operations` is
+   * every operation in the adaptor's openapi.json (the vendor's whole API, not
+   * just what the mock serves); `exercised` is how many of them at least one
+   * guide exchange matched. Spec mounts are not counted.
+   */
+  coverage?: SpecCoverage;
   /** Hand-written: other specs for parts of the system's surface. */
   specMounts?: SpecMount[];
   /** Hand-written: route prefixes that duplicate others. */
@@ -97,6 +104,11 @@ export interface ConformanceLedger {
   unrouted: string[];
   /** Hand-written: accepted deviations. */
   deviations: Deviation[];
+}
+
+export interface SpecCoverage {
+  operations: number;
+  exercised: number;
 }
 
 export const emptyLedger = (): ConformanceLedger => ({ routes: {}, failures: {}, unrouted: [], deviations: [] });
@@ -122,6 +134,8 @@ export interface LedgerSummary {
   unrouted: number;
   /** Every route verified and nothing unrouted. */
   clean: boolean;
+  /** Spec operations the guide traffic exercised, out of all operations in the spec. */
+  coverage?: SpecCoverage;
 }
 
 export function summarizeLedger(l: ConformanceLedger): LedgerSummary {
@@ -129,5 +143,73 @@ export function summarizeLedger(l: ConformanceLedger): LedgerSummary {
   for (const s of Object.values(l.routes)) counts[s]++;
   const routes = Object.keys(l.routes).length;
   const verified = counts.conforming + counts.deviating;
-  return { routes, verified, counts, unrouted: l.unrouted.length, clean: routes > 0 && verified === routes && l.unrouted.length === 0 };
+  return {
+    routes,
+    verified,
+    counts,
+    unrouted: l.unrouted.length,
+    clean: routes > 0 && verified === routes && l.unrouted.length === 0,
+    ...(l.coverage ? { coverage: l.coverage } : {}),
+  };
 }
+
+/** One system's line in the repo-root `coverage.json`. */
+export interface CoverageEntry {
+  system: string;
+  adaptor: string;
+  /** Operations in the adaptor's openapi.json. */
+  specOperations: number;
+  /** Of those, how many the guide traffic exercised. */
+  exercised: number;
+  /** exercised / specOperations, as a percentage rounded to one decimal place. */
+  percent: number;
+  /** The yardstick: the mock's own routes and their states. */
+  routes: number;
+  verified: number;
+  counts: Record<RouteState, number>;
+}
+
+export interface CoverageSummary {
+  $comment: string;
+  totals: { systems: number; specOperations: number; exercised: number; percent: number };
+  systems: CoverageEntry[];
+}
+
+const percent = (n: number, d: number): number => (d ? Math.round((n / d) * 1000) / 10 : 0);
+
+/**
+ * The repo-root `coverage.json`: every ledger that records spec coverage,
+ * flattened into one file other tools (adaptors-storybook) can fetch. A pure
+ * function of the ledgers, so `--check-baseline` can re-derive it and fail on
+ * drift, and an unchanged run rewrites it byte for byte.
+ */
+export function buildCoverageSummary(systemsDir = DEFAULT_SYSTEMS_DIR): CoverageSummary {
+  const systems: CoverageEntry[] = [];
+  for (const name of readdirSync(systemsDir).sort()) {
+    const l = readLedger(name, systemsDir);
+    if (!l?.coverage || !l.spec) continue;
+    const s = summarizeLedger(l);
+    systems.push({
+      system: name,
+      adaptor: l.spec.adaptor,
+      specOperations: l.coverage.operations,
+      exercised: l.coverage.exercised,
+      percent: percent(l.coverage.exercised, l.coverage.operations),
+      routes: s.routes,
+      verified: s.verified,
+      counts: s.counts,
+    });
+  }
+  const specOperations = systems.reduce((n, s) => n + s.specOperations, 0);
+  const exercised = systems.reduce((n, s) => n + s.exercised, 0);
+  return {
+    $comment:
+      'Generated from src/systems/*/conformance.json by `pnpm test:conformance -- --update-baseline`; do not edit by hand. ' +
+      'Mock coverage = spec operations the guide examples exercised / every operation in the adaptor\'s openapi.json.',
+    totals: { systems: systems.length, specOperations, exercised, percent: percent(exercised, specOperations) },
+    systems,
+  };
+}
+
+export const coverageSummaryJson = (systemsDir = DEFAULT_SYSTEMS_DIR): string =>
+  JSON.stringify(buildCoverageSummary(systemsDir), null, 2) + '\n';

@@ -3,6 +3,10 @@
     "adaptor": "twilio",
     "origin": "found-openapi"
   },
+  "coverage": {
+    "operations": 197,
+    "exercised": 3
+  },
   "routes": {
     "GET /2010-04-01/Accounts/:sid/Calls.json": "conforming",
     "GET /2010-04-01/Accounts/:sid/Calls/:callSid.json": "unexercised",

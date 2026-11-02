@@ -3,6 +3,10 @@
     "adaptor": "stripe",
     "origin": "found-openapi"
   },
+  "coverage": {
+    "operations": 587,
+    "exercised": 6
+  },
   "routes": {
     "GET /v1/charges": "conforming",
     "GET /v1/charges/:id": "conforming",

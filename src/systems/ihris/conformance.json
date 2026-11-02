@@ -3,6 +3,10 @@
     "adaptor": "ihris",
     "origin": "generated"
   },
+  "coverage": {
+    "operations": 168,
+    "exercised": 3
+  },
   "routes": {
     "DELETE /fhir/:resourceType/:id": "unexercised",
     "GET /fhir/:resourceType": "conforming",

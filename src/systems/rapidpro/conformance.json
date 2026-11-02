@@ -3,6 +3,10 @@
     "adaptor": "rapidpro",
     "origin": "generated"
   },
+  "coverage": {
+    "operations": 8,
+    "exercised": 5
+  },
   "routes": {
     "GET /api/v2/broadcasts.json": "unexercised",
     "GET /api/v2/contacts.json": "conforming",

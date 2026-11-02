@@ -3,6 +3,10 @@
     "adaptor": "progres",
     "origin": "synthesized"
   },
+  "coverage": {
+    "operations": 3,
+    "exercised": 3
+  },
   "routes": {
     "POST /Feedback": "conforming",
     "POST /ReceiveDecisionOutgoingReferral": "conforming",

@@ -3,6 +3,10 @@
     "adaptor": "salesforce",
     "origin": "generated"
   },
+  "coverage": {
+    "operations": 166,
+    "exercised": 4
+  },
   "routes": {
     "DELETE /services/data/:ver/composite/sobjects": "unexercised",
     "DELETE /services/data/:ver/sobjects/:type/:id": "unexercised",

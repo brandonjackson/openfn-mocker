@@ -3,6 +3,10 @@
     "adaptor": "azure-storage",
     "origin": "converted"
   },
+  "coverage": {
+    "operations": 69,
+    "exercised": 2
+  },
   "routes": {
     "GET /:container/*": "failing",
     "PUT /:container/*": "conforming"

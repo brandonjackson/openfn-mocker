@@ -3,6 +3,10 @@
     "adaptor": "ghana-bdr",
     "origin": "converted"
   },
+  "coverage": {
+    "operations": 8,
+    "exercised": 8
+  },
   "routes": {
     "GET /api/v1/UserManagementService/integrations/registrations/birth/:documentNumber": "conforming",
     "GET /api/v1/UserManagementService/integrations/registrations/death/:documentNumber": "conforming",

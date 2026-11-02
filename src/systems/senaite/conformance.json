@@ -3,6 +3,10 @@
     "adaptor": "senaite",
     "origin": "generated"
   },
+  "coverage": {
+    "operations": 35,
+    "exercised": 6
+  },
   "routes": {
     "GET /@@API/senaite/v1/auth": "unexercised",
     "GET /@@API/senaite/v1/get/:uid": "conforming",

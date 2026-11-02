@@ -202,6 +202,12 @@ function renderDetail(s: SystemStatus): string {
     `<p class="st-meta">Measured against the <b>${esc(s.adaptor)}</b> spec` +
       (origin ? ` (${esc(origin.note)})` : '') +
       `. <a href="https://github.com/brandonjackson/openfn-api-specs/tree/main/specs/adaptors/${encodeURIComponent(s.adaptor)}" target="_blank" rel="noopener">View spec</a></p>`,
+    ...(l.coverage
+      ? [
+          `<p class="st-meta">Spec coverage: the guide examples exercise <b>${l.coverage.exercised}</b> of the spec's ` +
+            `${l.coverage.operations} operation(s) (${l.coverage.operations ? Math.round((l.coverage.exercised / l.coverage.operations) * 1000) / 10 : 0}%).</p>`,
+        ]
+      : []),
     `<div class="st-table-wrap"><table class="st-routes"><thead><tr><th>State</th><th>Route</th><th>Notes</th></tr></thead><tbody>${rows}</tbody></table></div>`,
   ];
   if (l.unrouted.length) {

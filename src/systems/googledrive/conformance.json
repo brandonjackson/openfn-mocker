@@ -3,6 +3,10 @@
     "adaptor": "googledrive",
     "origin": "converted"
   },
+  "coverage": {
+    "operations": 64,
+    "exercised": 4
+  },
   "routes": {
     "GET /drive/v3/files": "conforming",
     "GET /drive/v3/files/:id": "conforming",

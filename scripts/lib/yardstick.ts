@@ -37,6 +37,7 @@ import {
   type Deviation,
   type RouteAlias,
   type RouteState,
+  type SpecCoverage,
 } from '../../src/conformance-ledger.js';
 
 export type { ConformanceLedger, Deviation, RouteState };
@@ -99,14 +100,24 @@ export const loadLedger = (systemsDir: string, system: string): ConformanceLedge
   readLedger(system, systemsDir) ?? emptyLedger();
 
 /** The snapshot part of a ledger for a score (deviations are carried over untouched). */
-export function snapshotOf(score: SystemScore, spec: ConformanceLedger['spec']): Omit<ConformanceLedger, 'deviations'> {
+export function snapshotOf(
+  score: SystemScore,
+  spec: ConformanceLedger['spec'],
+  coverage?: SpecCoverage
+): Omit<ConformanceLedger, 'deviations'> {
   const routes: Record<string, RouteState> = {};
   const failures: Record<string, string[]> = {};
   for (const r of score.routes) {
     routes[r.route] = r.state;
     if (r.violations.length) failures[r.route] = [...new Set(r.violations.map(describeViolation))].sort();
   }
-  return { spec, routes, failures, unrouted: [...new Set(score.unrouted.map((u) => u.exchange))].sort() };
+  return {
+    spec,
+    ...(coverage ? { coverage } : {}),
+    routes,
+    failures,
+    unrouted: [...new Set(score.unrouted.map((u) => u.exchange))].sort(),
+  };
 }
 
 export const describeViolation = (v: Violation): string =>
@@ -115,6 +126,7 @@ export const describeViolation = (v: Violation): string =>
 export function saveLedger(systemsDir: string, system: string, ledger: ConformanceLedger): void {
   const body: ConformanceLedger = {
     spec: ledger.spec,
+    ...(ledger.coverage ? { coverage: ledger.coverage } : {}),
     ...(ledger.specMounts?.length ? { specMounts: ledger.specMounts } : {}),
     ...(ledger.routeAliases?.length ? { routeAliases: ledger.routeAliases } : {}),
     routes: ledger.routes,
@@ -218,11 +230,16 @@ export interface BaselineDiff {
   regressed: string[];
   /** Verified now, not recorded as verified. */
   gained: string[];
-  /** Anything else in the snapshot differs (states, failure detail, routes added/removed, unrouted, spec). */
+  /** Anything else in the snapshot differs (states, failure detail, routes added/removed, unrouted, spec, coverage). */
   stale: boolean;
 }
 
-export function diffBaseline(score: SystemScore, ledger: ConformanceLedger, spec: ConformanceLedger['spec']): BaselineDiff {
+export function diffBaseline(
+  score: SystemScore,
+  ledger: ConformanceLedger,
+  spec: ConformanceLedger['spec'],
+  coverage?: SpecCoverage
+): BaselineDiff {
   const now = new Set(verifiedRoutes(score));
   const before = new Set(Object.entries(ledger.routes).filter(([, st]) => isVerified(st)).map(([r]) => r));
   const { deviations: _d, specMounts: _m, routeAliases: _a, ...recorded } = ledger;
@@ -230,7 +247,7 @@ export function diffBaseline(score: SystemScore, ledger: ConformanceLedger, spec
     system: score.system,
     regressed: [...before].filter((r) => !now.has(r)),
     gained: [...now].filter((r) => !before.has(r)),
-    stale: canonical(recorded) !== canonical(snapshotOf(score, spec)),
+    stale: canonical(recorded) !== canonical(snapshotOf(score, spec, coverage)),
   };
 }
 

@@ -3,6 +3,10 @@
     "adaptor": "lamisplus",
     "origin": "generated"
   },
+  "coverage": {
+    "operations": 106,
+    "exercised": 4
+  },
   "routes": {
     "GET /plugin/ehr/api/v1/patient": "conforming",
     "GET /plugin/ehr/api/v1/patient/:id": "conforming",

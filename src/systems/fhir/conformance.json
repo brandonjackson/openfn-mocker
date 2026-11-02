@@ -3,6 +3,10 @@
     "adaptor": "fhir",
     "origin": "converted"
   },
+  "coverage": {
+    "operations": 1872,
+    "exercised": 8
+  },
   "routes": {
     "DELETE /:resourceType/:id": "unexercised",
     "GET /:resourceType": "conforming",

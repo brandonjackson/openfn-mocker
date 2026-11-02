@@ -3,6 +3,10 @@
     "adaptor": "vtiger",
     "origin": "generated"
   },
+  "coverage": {
+    "operations": 13,
+    "exercised": 0
+  },
   "routes": {
     "GET /webservice.php": "failing",
     "POST /webservice.php": "failing"

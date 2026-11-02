@@ -3,6 +3,10 @@
     "adaptor": "inform",
     "origin": "generated"
   },
+  "coverage": {
+    "operations": 6,
+    "exercised": 0
+  },
   "routes": {
     "GET /api/v2/data/:id": "failing",
     "GET /api/v2/data/:id/:subId": "failing",

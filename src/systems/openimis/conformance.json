@@ -3,6 +3,10 @@
     "adaptor": "openimis",
     "origin": "generated"
   },
+  "coverage": {
+    "operations": 136,
+    "exercised": 5
+  },
   "routes": {
     "DELETE /api/api_fhir_r4/:resourceType/:id": "unexercised",
     "GET /api/api_fhir_r4/:resourceType": "conforming",

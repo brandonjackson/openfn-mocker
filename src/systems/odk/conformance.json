@@ -3,6 +3,10 @@
     "adaptor": "odk",
     "origin": "found-openapi"
   },
+  "coverage": {
+    "operations": 186,
+    "exercised": 10
+  },
   "routes": {
     "GET /v1/projects": "conforming",
     "GET /v1/projects/:projectId": "conforming",

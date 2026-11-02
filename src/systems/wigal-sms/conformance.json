@@ -3,6 +3,10 @@
     "adaptor": "wigal-sms",
     "origin": "generated"
   },
+  "coverage": {
+    "operations": 5,
+    "exercised": 1
+  },
   "routes": {
     "POST /api/v3/sms/send": "conforming"
   },

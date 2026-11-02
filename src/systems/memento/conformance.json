@@ -3,6 +3,10 @@
     "adaptor": "memento",
     "origin": "generated"
   },
+  "coverage": {
+    "operations": 6,
+    "exercised": 5
+  },
   "routes": {
     "GET /v1/libraries": "conforming",
     "GET /v1/libraries/:id": "conforming",

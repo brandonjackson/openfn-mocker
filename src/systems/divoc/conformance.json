@@ -3,6 +3,10 @@
     "adaptor": "divoc",
     "origin": "converted"
   },
+  "coverage": {
+    "operations": 23,
+    "exercised": 10
+  },
   "routes": {
     "DELETE /v1/certificates/:preEnrollmentCode": "conforming",
     "GET /v1/certificates": "conforming",

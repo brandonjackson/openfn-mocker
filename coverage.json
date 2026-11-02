@@ -1,0 +1,1003 @@
+{
+  "$comment": "Generated from src/systems/*/conformance.json by `pnpm test:conformance -- --update-baseline`; do not edit by hand. Mock coverage = spec operations the guide examples exercised / every operation in the adaptor's openapi.json.",
+  "totals": {
+    "systems": 62,
+    "specOperations": 16290,
+    "exercised": 332,
+    "percent": 2
+  },
+  "systems": [
+    {
+      "system": "asana",
+      "adaptor": "asana",
+      "specOperations": 249,
+      "exercised": 6,
+      "percent": 2.4,
+      "routes": 7,
+      "verified": 6,
+      "counts": {
+        "conforming": 6,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 0,
+        "unexercised": 1
+      }
+    },
+    {
+      "system": "azure-storage",
+      "adaptor": "azure-storage",
+      "specOperations": 69,
+      "exercised": 2,
+      "percent": 2.9,
+      "routes": 2,
+      "verified": 1,
+      "counts": {
+        "conforming": 1,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 1,
+        "unexercised": 0
+      }
+    },
+    {
+      "system": "beyonic",
+      "adaptor": "beyonic",
+      "specOperations": 3,
+      "exercised": 3,
+      "percent": 100,
+      "routes": 5,
+      "verified": 0,
+      "counts": {
+        "conforming": 0,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 4,
+        "unexercised": 1
+      }
+    },
+    {
+      "system": "cht",
+      "adaptor": "cht",
+      "specOperations": 86,
+      "exercised": 2,
+      "percent": 2.3,
+      "routes": 10,
+      "verified": 1,
+      "counts": {
+        "conforming": 1,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 4,
+        "unexercised": 5
+      }
+    },
+    {
+      "system": "collections",
+      "adaptor": "collections",
+      "specOperations": 7,
+      "exercised": 4,
+      "percent": 57.1,
+      "routes": 5,
+      "verified": 4,
+      "counts": {
+        "conforming": 4,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 0,
+        "unexercised": 1
+      }
+    },
+    {
+      "system": "commcare",
+      "adaptor": "commcare",
+      "specOperations": 181,
+      "exercised": 6,
+      "percent": 3.3,
+      "routes": 10,
+      "verified": 5,
+      "counts": {
+        "conforming": 5,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 0,
+        "unexercised": 5
+      }
+    },
+    {
+      "system": "dagu",
+      "adaptor": "dagu",
+      "specOperations": 4,
+      "exercised": 0,
+      "percent": 0,
+      "routes": 4,
+      "verified": 0,
+      "counts": {
+        "conforming": 0,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 3,
+        "unexercised": 1
+      }
+    },
+    {
+      "system": "dhis2",
+      "adaptor": "dhis2",
+      "specOperations": 2574,
+      "exercised": 21,
+      "percent": 0.8,
+      "routes": 25,
+      "verified": 16,
+      "counts": {
+        "conforming": 7,
+        "deviating": 9,
+        "unchecked": 9,
+        "failing": 0,
+        "unexercised": 0
+      }
+    },
+    {
+      "system": "divoc",
+      "adaptor": "divoc",
+      "specOperations": 23,
+      "exercised": 10,
+      "percent": 43.5,
+      "routes": 11,
+      "verified": 10,
+      "counts": {
+        "conforming": 10,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 0,
+        "unexercised": 1
+      }
+    },
+    {
+      "system": "erpnext",
+      "adaptor": "erpnext",
+      "specOperations": 6,
+      "exercised": 6,
+      "percent": 100,
+      "routes": 6,
+      "verified": 6,
+      "counts": {
+        "conforming": 6,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 0,
+        "unexercised": 0
+      }
+    },
+    {
+      "system": "et-mfr",
+      "adaptor": "et-mfr",
+      "specOperations": 14,
+      "exercised": 14,
+      "percent": 100,
+      "routes": 14,
+      "verified": 14,
+      "counts": {
+        "conforming": 14,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 0,
+        "unexercised": 0
+      }
+    },
+    {
+      "system": "fhir",
+      "adaptor": "fhir",
+      "specOperations": 1872,
+      "exercised": 8,
+      "percent": 0.4,
+      "routes": 10,
+      "verified": 6,
+      "counts": {
+        "conforming": 6,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 0,
+        "unexercised": 4
+      }
+    },
+    {
+      "system": "flutterwave",
+      "adaptor": "flutterwave",
+      "specOperations": 10,
+      "exercised": 4,
+      "percent": 40,
+      "routes": 5,
+      "verified": 1,
+      "counts": {
+        "conforming": 1,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 3,
+        "unexercised": 1
+      }
+    },
+    {
+      "system": "gemini",
+      "adaptor": "gemini",
+      "specOperations": 85,
+      "exercised": 2,
+      "percent": 2.4,
+      "routes": 1,
+      "verified": 1,
+      "counts": {
+        "conforming": 1,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 0,
+        "unexercised": 0
+      }
+    },
+    {
+      "system": "ghana-bdr",
+      "adaptor": "ghana-bdr",
+      "specOperations": 8,
+      "exercised": 8,
+      "percent": 100,
+      "routes": 8,
+      "verified": 8,
+      "counts": {
+        "conforming": 8,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 0,
+        "unexercised": 0
+      }
+    },
+    {
+      "system": "ghana-nia",
+      "adaptor": "ghana-nia",
+      "specOperations": 3,
+      "exercised": 3,
+      "percent": 100,
+      "routes": 3,
+      "verified": 3,
+      "counts": {
+        "conforming": 3,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 0,
+        "unexercised": 0
+      }
+    },
+    {
+      "system": "gmail",
+      "adaptor": "gmail",
+      "specOperations": 79,
+      "exercised": 4,
+      "percent": 5.1,
+      "routes": 4,
+      "verified": 4,
+      "counts": {
+        "conforming": 4,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 0,
+        "unexercised": 0
+      }
+    },
+    {
+      "system": "godata",
+      "adaptor": "godata",
+      "specOperations": 507,
+      "exercised": 22,
+      "percent": 4.3,
+      "routes": 22,
+      "verified": 22,
+      "counts": {
+        "conforming": 22,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 0,
+        "unexercised": 0
+      }
+    },
+    {
+      "system": "googledrive",
+      "adaptor": "googledrive",
+      "specOperations": 64,
+      "exercised": 4,
+      "percent": 6.3,
+      "routes": 6,
+      "verified": 4,
+      "counts": {
+        "conforming": 4,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 0,
+        "unexercised": 2
+      }
+    },
+    {
+      "system": "googlesheets",
+      "adaptor": "googlesheets",
+      "specOperations": 17,
+      "exercised": 3,
+      "percent": 17.6,
+      "routes": 2,
+      "verified": 2,
+      "counts": {
+        "conforming": 2,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 0,
+        "unexercised": 0
+      }
+    },
+    {
+      "system": "http-generic",
+      "adaptor": "http",
+      "specOperations": 6,
+      "exercised": 0,
+      "percent": 0,
+      "routes": 5,
+      "verified": 0,
+      "counts": {
+        "conforming": 0,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 2,
+        "unexercised": 3
+      }
+    },
+    {
+      "system": "ibipimo",
+      "adaptor": "ibipimo",
+      "specOperations": 4,
+      "exercised": 4,
+      "percent": 100,
+      "routes": 4,
+      "verified": 1,
+      "counts": {
+        "conforming": 1,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 3,
+        "unexercised": 0
+      }
+    },
+    {
+      "system": "ihris",
+      "adaptor": "ihris",
+      "specOperations": 168,
+      "exercised": 3,
+      "percent": 1.8,
+      "routes": 9,
+      "verified": 3,
+      "counts": {
+        "conforming": 3,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 0,
+        "unexercised": 6
+      }
+    },
+    {
+      "system": "inform",
+      "adaptor": "inform",
+      "specOperations": 6,
+      "exercised": 0,
+      "percent": 0,
+      "routes": 8,
+      "verified": 0,
+      "counts": {
+        "conforming": 0,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 6,
+        "unexercised": 2
+      }
+    },
+    {
+      "system": "kobotoolbox",
+      "adaptor": "kobotoolbox",
+      "specOperations": 280,
+      "exercised": 14,
+      "percent": 5,
+      "routes": 15,
+      "verified": 14,
+      "counts": {
+        "conforming": 11,
+        "deviating": 3,
+        "unchecked": 1,
+        "failing": 0,
+        "unexercised": 0
+      }
+    },
+    {
+      "system": "lamisplus",
+      "adaptor": "lamisplus",
+      "specOperations": 106,
+      "exercised": 4,
+      "percent": 3.8,
+      "routes": 4,
+      "verified": 4,
+      "counts": {
+        "conforming": 4,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 0,
+        "unexercised": 0
+      }
+    },
+    {
+      "system": "mailchimp",
+      "adaptor": "mailchimp",
+      "specOperations": 298,
+      "exercised": 10,
+      "percent": 3.4,
+      "routes": 14,
+      "verified": 10,
+      "counts": {
+        "conforming": 10,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 0,
+        "unexercised": 4
+      }
+    },
+    {
+      "system": "mailgun",
+      "adaptor": "mailgun",
+      "specOperations": 265,
+      "exercised": 3,
+      "percent": 1.1,
+      "routes": 3,
+      "verified": 3,
+      "counts": {
+        "conforming": 3,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 0,
+        "unexercised": 0
+      }
+    },
+    {
+      "system": "maximo",
+      "adaptor": "maximo",
+      "specOperations": 13,
+      "exercised": 0,
+      "percent": 0,
+      "routes": 5,
+      "verified": 0,
+      "counts": {
+        "conforming": 0,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 4,
+        "unexercised": 1
+      }
+    },
+    {
+      "system": "memento",
+      "adaptor": "memento",
+      "specOperations": 6,
+      "exercised": 5,
+      "percent": 83.3,
+      "routes": 6,
+      "verified": 4,
+      "counts": {
+        "conforming": 4,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 2,
+        "unexercised": 0
+      }
+    },
+    {
+      "system": "monnify",
+      "adaptor": "monnify",
+      "specOperations": 7,
+      "exercised": 2,
+      "percent": 28.6,
+      "routes": 5,
+      "verified": 2,
+      "counts": {
+        "conforming": 2,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 3,
+        "unexercised": 0
+      }
+    },
+    {
+      "system": "mpesa",
+      "adaptor": "mpesa",
+      "specOperations": 6,
+      "exercised": 6,
+      "percent": 100,
+      "routes": 6,
+      "verified": 1,
+      "counts": {
+        "conforming": 1,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 5,
+        "unexercised": 0
+      }
+    },
+    {
+      "system": "msgraph",
+      "adaptor": "msgraph",
+      "specOperations": 2605,
+      "exercised": 7,
+      "percent": 0.3,
+      "routes": 10,
+      "verified": 7,
+      "counts": {
+        "conforming": 7,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 0,
+        "unexercised": 3
+      }
+    },
+    {
+      "system": "msupply",
+      "adaptor": "msupply",
+      "specOperations": 309,
+      "exercised": 1,
+      "percent": 0.3,
+      "routes": 1,
+      "verified": 1,
+      "counts": {
+        "conforming": 1,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 0,
+        "unexercised": 0
+      }
+    },
+    {
+      "system": "mtn-momo",
+      "adaptor": "mtn-momo",
+      "specOperations": 13,
+      "exercised": 5,
+      "percent": 38.5,
+      "routes": 6,
+      "verified": 5,
+      "counts": {
+        "conforming": 5,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 0,
+        "unexercised": 1
+      }
+    },
+    {
+      "system": "ocl",
+      "adaptor": "ocl",
+      "specOperations": 1966,
+      "exercised": 7,
+      "percent": 0.4,
+      "routes": 7,
+      "verified": 7,
+      "counts": {
+        "conforming": 2,
+        "deviating": 5,
+        "unchecked": 0,
+        "failing": 0,
+        "unexercised": 0
+      }
+    },
+    {
+      "system": "odk",
+      "adaptor": "odk",
+      "specOperations": 186,
+      "exercised": 10,
+      "percent": 5.4,
+      "routes": 10,
+      "verified": 9,
+      "counts": {
+        "conforming": 8,
+        "deviating": 1,
+        "unchecked": 1,
+        "failing": 0,
+        "unexercised": 0
+      }
+    },
+    {
+      "system": "odoo",
+      "adaptor": "odoo",
+      "specOperations": 2,
+      "exercised": 0,
+      "percent": 0,
+      "routes": 2,
+      "verified": 0,
+      "counts": {
+        "conforming": 0,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 2,
+        "unexercised": 0
+      }
+    },
+    {
+      "system": "openboxes",
+      "adaptor": "openboxes",
+      "specOperations": 295,
+      "exercised": 18,
+      "percent": 6.1,
+      "routes": 18,
+      "verified": 16,
+      "counts": {
+        "conforming": 16,
+        "deviating": 0,
+        "unchecked": 2,
+        "failing": 0,
+        "unexercised": 0
+      }
+    },
+    {
+      "system": "opencrvs",
+      "adaptor": "opencrvs",
+      "specOperations": 24,
+      "exercised": 6,
+      "percent": 25,
+      "routes": 8,
+      "verified": 6,
+      "counts": {
+        "conforming": 6,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 0,
+        "unexercised": 2
+      }
+    },
+    {
+      "system": "openelis",
+      "adaptor": "openelis",
+      "specOperations": 1057,
+      "exercised": 3,
+      "percent": 0.3,
+      "routes": 16,
+      "verified": 3,
+      "counts": {
+        "conforming": 3,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 0,
+        "unexercised": 13
+      }
+    },
+    {
+      "system": "openfn",
+      "adaptor": "openfn",
+      "specOperations": 22,
+      "exercised": 4,
+      "percent": 18.2,
+      "routes": 5,
+      "verified": 4,
+      "counts": {
+        "conforming": 4,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 0,
+        "unexercised": 1
+      }
+    },
+    {
+      "system": "openhim",
+      "adaptor": "openhim",
+      "specOperations": 97,
+      "exercised": 18,
+      "percent": 18.6,
+      "routes": 18,
+      "verified": 18,
+      "counts": {
+        "conforming": 18,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 0,
+        "unexercised": 0
+      }
+    },
+    {
+      "system": "openimis",
+      "adaptor": "openimis",
+      "specOperations": 136,
+      "exercised": 5,
+      "percent": 3.7,
+      "routes": 9,
+      "verified": 3,
+      "counts": {
+        "conforming": 3,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 0,
+        "unexercised": 6
+      }
+    },
+    {
+      "system": "openlmis",
+      "adaptor": "openlmis",
+      "specOperations": 456,
+      "exercised": 5,
+      "percent": 1.1,
+      "routes": 15,
+      "verified": 5,
+      "counts": {
+        "conforming": 5,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 0,
+        "unexercised": 10
+      }
+    },
+    {
+      "system": "openmrs",
+      "adaptor": "openmrs",
+      "specOperations": 554,
+      "exercised": 6,
+      "percent": 1.1,
+      "routes": 17,
+      "verified": 14,
+      "counts": {
+        "conforming": 14,
+        "deviating": 0,
+        "unchecked": 2,
+        "failing": 0,
+        "unexercised": 1
+      }
+    },
+    {
+      "system": "openspp",
+      "adaptor": "openspp",
+      "specOperations": 33,
+      "exercised": 2,
+      "percent": 6.1,
+      "routes": 2,
+      "verified": 2,
+      "counts": {
+        "conforming": 2,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 0,
+        "unexercised": 0
+      }
+    },
+    {
+      "system": "pesapal",
+      "adaptor": "pesapal",
+      "specOperations": 7,
+      "exercised": 0,
+      "percent": 0,
+      "routes": 4,
+      "verified": 0,
+      "counts": {
+        "conforming": 0,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 4,
+        "unexercised": 0
+      }
+    },
+    {
+      "system": "primero",
+      "adaptor": "primero",
+      "specOperations": 217,
+      "exercised": 6,
+      "percent": 2.8,
+      "routes": 15,
+      "verified": 6,
+      "counts": {
+        "conforming": 6,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 0,
+        "unexercised": 9
+      }
+    },
+    {
+      "system": "progres",
+      "adaptor": "progres",
+      "specOperations": 3,
+      "exercised": 3,
+      "percent": 100,
+      "routes": 3,
+      "verified": 3,
+      "counts": {
+        "conforming": 3,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 0,
+        "unexercised": 0
+      }
+    },
+    {
+      "system": "rapidpro",
+      "adaptor": "rapidpro",
+      "specOperations": 8,
+      "exercised": 5,
+      "percent": 62.5,
+      "routes": 9,
+      "verified": 5,
+      "counts": {
+        "conforming": 5,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 0,
+        "unexercised": 4
+      }
+    },
+    {
+      "system": "resourcemap",
+      "adaptor": "resourcemap",
+      "specOperations": 37,
+      "exercised": 3,
+      "percent": 8.1,
+      "routes": 3,
+      "verified": 3,
+      "counts": {
+        "conforming": 3,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 0,
+        "unexercised": 0
+      }
+    },
+    {
+      "system": "salesforce",
+      "adaptor": "salesforce",
+      "specOperations": 166,
+      "exercised": 4,
+      "percent": 2.4,
+      "routes": 10,
+      "verified": 4,
+      "counts": {
+        "conforming": 4,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 0,
+        "unexercised": 6
+      }
+    },
+    {
+      "system": "satusehat",
+      "adaptor": "satusehat",
+      "specOperations": 152,
+      "exercised": 7,
+      "percent": 4.6,
+      "routes": 10,
+      "verified": 6,
+      "counts": {
+        "conforming": 6,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 0,
+        "unexercised": 4
+      }
+    },
+    {
+      "system": "senaite",
+      "adaptor": "senaite",
+      "specOperations": 35,
+      "exercised": 6,
+      "percent": 17.1,
+      "routes": 9,
+      "verified": 5,
+      "counts": {
+        "conforming": 5,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 1,
+        "unexercised": 3
+      }
+    },
+    {
+      "system": "stripe",
+      "adaptor": "stripe",
+      "specOperations": 587,
+      "exercised": 6,
+      "percent": 1,
+      "routes": 6,
+      "verified": 6,
+      "counts": {
+        "conforming": 6,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 0,
+        "unexercised": 0
+      }
+    },
+    {
+      "system": "sunbird-rc",
+      "adaptor": "sunbird-rc",
+      "specOperations": 6,
+      "exercised": 2,
+      "percent": 33.3,
+      "routes": 6,
+      "verified": 0,
+      "counts": {
+        "conforming": 0,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 4,
+        "unexercised": 2
+      }
+    },
+    {
+      "system": "surveycto",
+      "adaptor": "surveycto",
+      "specOperations": 50,
+      "exercised": 4,
+      "percent": 8,
+      "routes": 8,
+      "verified": 3,
+      "counts": {
+        "conforming": 3,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 1,
+        "unexercised": 4
+      }
+    },
+    {
+      "system": "twilio",
+      "adaptor": "twilio",
+      "specOperations": 197,
+      "exercised": 3,
+      "percent": 1.5,
+      "routes": 5,
+      "verified": 3,
+      "counts": {
+        "conforming": 3,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 0,
+        "unexercised": 2
+      }
+    },
+    {
+      "system": "vtiger",
+      "adaptor": "vtiger",
+      "specOperations": 13,
+      "exercised": 0,
+      "percent": 0,
+      "routes": 2,
+      "verified": 0,
+      "counts": {
+        "conforming": 0,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 2,
+        "unexercised": 0
+      }
+    },
+    {
+      "system": "wigal-sms",
+      "adaptor": "wigal-sms",
+      "specOperations": 5,
+      "exercised": 1,
+      "percent": 20,
+      "routes": 1,
+      "verified": 1,
+      "counts": {
+        "conforming": 1,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 0,
+        "unexercised": 0
+      }
+    },
+    {
+      "system": "zata",
+      "adaptor": "zata",
+      "specOperations": 26,
+      "exercised": 2,
+      "percent": 7.7,
+      "routes": 3,
+      "verified": 0,
+      "counts": {
+        "conforming": 0,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 3,
+        "unexercised": 0
+      }
+    }
+  ]
+}

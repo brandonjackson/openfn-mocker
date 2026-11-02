@@ -151,6 +151,15 @@ per system, so agents on different systems never conflict. CI runs
 `--check-baseline`, which fails if a route recorded as verified regresses, the
 snapshot is out of date, or a deviation no longer matches anything (stale).
 
+**Spec coverage.** The snapshot also records `coverage`: how many of the
+operations in the adaptor's whole `openapi.json` the guide traffic exercised.
+It is a second number, separate from the yardstick (whose denominator is the
+mock's own routes), and answers "how much of the real API does this mock
+cover?". `--update-baseline` also rebuilds the repo-root `coverage.json`, every
+system's coverage in one file, which adaptors-storybook reads; `--check-baseline`
+and `pnpm test` fail if it drifts from the ledgers. Adding a guide example that
+reaches a new spec operation raises coverage.
+
 **Working one system** (one agent, one system, one PR):
 
 1. `pnpm test:conformance -- --system <name> --routes`. Read the failing and

@@ -3,6 +3,10 @@
     "adaptor": "openlmis",
     "origin": "converted"
   },
+  "coverage": {
+    "operations": 456,
+    "exercised": 5
+  },
   "routes": {
     "GET /api/facilities": "conforming",
     "GET /api/facilities/:id": "unexercised",

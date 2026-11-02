@@ -1186,6 +1186,14 @@ sweep: **301 of 482 mock routes verified (62%; 283 pass the spec outright);
 18 of 62 systems fully verified; 15 unchecked; 57 failing; 109 unexercised.** The running mock shows the whole
 picture, rated per system, at [`/status`](#conformance-status-page).
 
+**Spec coverage** is a separate number: of every operation in the adaptor's
+whole `openapi.json`, how many the guide examples exercise. It is recorded in
+each ledger and collected in the repo-root [`coverage.json`](./coverage.json)
+(rebuilt by `--update-baseline`, checked in CI), which the adaptors storybook
+shows next to spec and snippet coverage. Today: **332 of 16,290 spec
+operations (2%)** across 62 systems. Mocks cover what adaptors commonly call,
+so a low share of a large vendor API is expected.
+
 **The ledgers.** Each system has `src/systems/<name>/conformance.json`: a
 snapshot of its route states (written by `--update-baseline`) plus its
 hand-written accepted deviations, each with a category, reason and evidence.

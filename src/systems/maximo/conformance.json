@@ -3,6 +3,10 @@
     "adaptor": "maximo",
     "origin": "generated"
   },
+  "coverage": {
+    "operations": 13,
+    "exercised": 0
+  },
   "routes": {
     "GET /oslc/os/:os": "failing",
     "GET /oslc/os/:os/:id": "failing",

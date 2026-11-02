@@ -3,6 +3,10 @@
     "adaptor": "mtn-momo",
     "origin": "generated"
   },
+  "coverage": {
+    "operations": 13,
+    "exercised": 5
+  },
   "routes": {
     "GET /collection/v1_0/account/balance": "conforming",
     "GET /collection/v1_0/accountholder/msisdn/:msisdn/active": "conforming",

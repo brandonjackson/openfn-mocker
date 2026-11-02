@@ -3,6 +3,10 @@
     "adaptor": "mpesa",
     "origin": "generated"
   },
+  "coverage": {
+    "operations": 6,
+    "exercised": 6
+  },
   "routes": {
     "GET /oauth/v1/generate": "conforming",
     "POST /mpesa/b2b/v1/paymentrequest": "failing",

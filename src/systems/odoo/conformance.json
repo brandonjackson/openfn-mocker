@@ -3,6 +3,10 @@
     "adaptor": "odoo",
     "origin": "synthesized"
   },
+  "coverage": {
+    "operations": 2,
+    "exercised": 0
+  },
   "routes": {
     "POST /xmlrpc/2/common": "failing",
     "POST /xmlrpc/2/object": "failing"

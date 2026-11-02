@@ -3,6 +3,10 @@
     "adaptor": "googlesheets",
     "origin": "converted"
   },
+  "coverage": {
+    "operations": 17,
+    "exercised": 3
+  },
   "routes": {
     "GET /v4/spreadsheets/:sid/values/:range": "conforming",
     "POST /v4/spreadsheets/:sid/*": "conforming"

@@ -3,6 +3,10 @@
     "adaptor": "cht",
     "origin": "found-openapi"
   },
+  "coverage": {
+    "operations": 86,
+    "exercised": 2
+  },
   "routes": {
     "GET /api/v1/settings": "unexercised",
     "GET /api/v2/export/contacts": "failing",

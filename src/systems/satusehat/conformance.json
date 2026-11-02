@@ -3,6 +3,10 @@
     "adaptor": "satusehat",
     "origin": "generated"
   },
+  "coverage": {
+    "operations": 152,
+    "exercised": 7
+  },
   "routes": {
     "DELETE /fhir-r4/v1/:resourceType/:id": "unexercised",
     "GET /fhir-r4/v1/:resourceType": "conforming",

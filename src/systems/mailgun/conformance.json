@@ -3,6 +3,10 @@
     "adaptor": "mailgun",
     "origin": "found-openapi"
   },
+  "coverage": {
+    "operations": 265,
+    "exercised": 3
+  },
   "routes": {
     "GET /v3/:domain/events": "conforming",
     "GET /v3/:domain/stats/total": "conforming",

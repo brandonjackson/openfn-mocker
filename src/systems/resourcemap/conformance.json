@@ -3,6 +3,10 @@
     "adaptor": "resourcemap",
     "origin": "generated"
   },
+  "coverage": {
+    "operations": 37,
+    "exercised": 3
+  },
   "routes": {
     "GET /api/collections.json": "conforming",
     "GET /api/collections/:id.json": "conforming",

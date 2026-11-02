@@ -3,6 +3,10 @@
     "adaptor": "zata",
     "origin": "generated"
   },
+  "coverage": {
+    "operations": 26,
+    "exercised": 2
+  },
   "routes": {
     "GET /v1/transaction/:id": "failing",
     "GET /v1/transactions": "failing",

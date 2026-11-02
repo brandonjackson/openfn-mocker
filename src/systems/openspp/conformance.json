@@ -3,6 +3,10 @@
     "adaptor": "openspp",
     "origin": "synthesized"
   },
+  "coverage": {
+    "operations": 33,
+    "exercised": 2
+  },
   "routes": {
     "POST /xmlrpc/2/common": "conforming",
     "POST /xmlrpc/2/object": "conforming"

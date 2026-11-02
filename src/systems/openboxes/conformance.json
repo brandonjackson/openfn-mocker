@@ -3,6 +3,10 @@
     "adaptor": "openboxes",
     "origin": "generated"
   },
+  "coverage": {
+    "operations": 295,
+    "exercised": 18
+  },
   "routeAliases": [
     {
       "prefix": "/",

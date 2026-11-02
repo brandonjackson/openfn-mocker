@@ -3,6 +3,10 @@
     "adaptor": "pesapal",
     "origin": "generated"
   },
+  "coverage": {
+    "operations": 7,
+    "exercised": 0
+  },
   "routes": {
     "GET /v3/api/Transactions/GetTransactionStatus": "failing",
     "POST /v3/api/Auth/RequestToken": "failing",

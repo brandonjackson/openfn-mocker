@@ -3,6 +3,10 @@
     "adaptor": "kobotoolbox",
     "origin": "found-openapi"
   },
+  "coverage": {
+    "operations": 280,
+    "exercised": 14
+  },
   "routes": {
     "DELETE /api/v2/assets/:uid/": "conforming",
     "DELETE /api/v2/assets/:uid/data/:id/": "conforming",
