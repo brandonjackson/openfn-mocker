@@ -21,6 +21,16 @@ export const guide: SystemGuide = {
     },
     {
       method: 'GET',
+      path: '/orgs/DemoOrg/sources/DemoSource/HEAD/mappings',
+      label: "Mappings in a source (getMappings with repository: 'sources')",
+    },
+    {
+      method: 'GET',
+      path: '/orgs/DemoOrg/collections/DemoCollection/HEAD/concepts',
+      label: 'Concepts in a collection version (get)',
+    },
+    {
+      method: 'GET',
       path: '/orgs/DemoOrg/sources/DemoSource/concepts',
       label: 'Concepts in a source (get)',
       id: 'concepts',
