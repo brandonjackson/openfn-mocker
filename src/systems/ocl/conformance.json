@@ -5,24 +5,60 @@
   },
   "routes": {
     "GET /orgs/:ownerId": "conforming",
-    "GET /orgs/:ownerId/collections/:repo/:version/concepts": "unexercised",
-    "GET /orgs/:ownerId/collections/:repo/:version/mappings": "failing",
-    "GET /orgs/:ownerId/sources": "failing",
+    "GET /orgs/:ownerId/collections/:repo/:version/concepts": "deviating",
+    "GET /orgs/:ownerId/collections/:repo/:version/mappings": "deviating",
+    "GET /orgs/:ownerId/sources": "deviating",
     "GET /orgs/:ownerId/sources/:repo": "conforming",
-    "GET /orgs/:ownerId/sources/:repo/:version/mappings": "unexercised",
-    "GET /orgs/:ownerId/sources/:repo/concepts": "failing"
+    "GET /orgs/:ownerId/sources/:repo/:version/mappings": "deviating",
+    "GET /orgs/:ownerId/sources/:repo/concepts": "deviating"
   },
-  "failures": {
-    "GET /orgs/:ownerId/collections/:repo/:version/mappings": [
-      "response-schema: must be object"
-    ],
-    "GET /orgs/:ownerId/sources": [
-      "response-schema: must be object"
-    ],
-    "GET /orgs/:ownerId/sources/:repo/concepts": [
-      "response-schema: must be object"
-    ]
-  },
+  "failures": {},
   "unrouted": [],
-  "deviations": []
+  "deviations": [
+    {
+      "route": "GET /orgs/:ownerId/collections/:repo/:version/concepts",
+      "kind": "response-schema",
+      "pointer": "/",
+      "message": "must be object",
+      "category": "vendor-spec-wrong",
+      "reason": "OCL's list views (ListWithHeadersMixin) return a bare JSON array and paginate in num_found/num_returned/pages/page_number/next/previous response headers; the drf-yasg spec documents DRF's default {count, next, previous, results} envelope, which OCL never sends. Accepted at the root only; the array items were checked against the spec's item schema (by wrapping them in the envelope) and pass.",
+      "evidence": "https://github.com/OpenConceptLab/oclapi2/blob/3082379d6f21e1b433fc15eab74ec5f34b862c2a/core/concepts/views.py#L178 (the view mixes in ListWithHeadersMixin); https://github.com/OpenConceptLab/oclapi2/blob/3082379d6f21e1b433fc15eab74ec5f34b862c2a/core/common/mixins.py#L305-L321 (serialize_list returns the serialized list itself as the body) + https://github.com/OpenConceptLab/oclapi2/blob/3082379d6f21e1b433fc15eab74ec5f34b862c2a/core/common/mixins.py#L122-L138 (CustomPaginator.headers: num_found, num_returned, pages, page_number, next, previous) applied as response headers in ListWithHeadersMixin._list, https://github.com/OpenConceptLab/oclapi2/blob/3082379d6f21e1b433fc15eab74ec5f34b862c2a/core/common/mixins.py#L278-L298"
+    },
+    {
+      "route": "GET /orgs/:ownerId/collections/:repo/:version/mappings",
+      "kind": "response-schema",
+      "pointer": "/",
+      "message": "must be object",
+      "category": "vendor-spec-wrong",
+      "reason": "OCL's list views (ListWithHeadersMixin) return a bare JSON array and paginate in num_found/num_returned/pages/page_number/next/previous response headers; the drf-yasg spec documents DRF's default {count, next, previous, results} envelope, which OCL never sends. Accepted at the root only; the array items were checked against the spec's item schema (by wrapping them in the envelope) and pass.",
+      "evidence": "https://github.com/OpenConceptLab/oclapi2/blob/3082379d6f21e1b433fc15eab74ec5f34b862c2a/core/mappings/views.py#L46 (the view mixes in ListWithHeadersMixin); https://github.com/OpenConceptLab/oclapi2/blob/3082379d6f21e1b433fc15eab74ec5f34b862c2a/core/common/mixins.py#L305-L321 (serialize_list returns the serialized list itself as the body) + https://github.com/OpenConceptLab/oclapi2/blob/3082379d6f21e1b433fc15eab74ec5f34b862c2a/core/common/mixins.py#L122-L138 (CustomPaginator.headers: num_found, num_returned, pages, page_number, next, previous) applied as response headers in ListWithHeadersMixin._list, https://github.com/OpenConceptLab/oclapi2/blob/3082379d6f21e1b433fc15eab74ec5f34b862c2a/core/common/mixins.py#L278-L298"
+    },
+    {
+      "route": "GET /orgs/:ownerId/sources",
+      "kind": "response-schema",
+      "pointer": "/",
+      "message": "must be object",
+      "category": "vendor-spec-wrong",
+      "reason": "OCL's list views (ListWithHeadersMixin) return a bare JSON array and paginate in num_found/num_returned/pages/page_number/next/previous response headers; the drf-yasg spec documents DRF's default {count, next, previous, results} envelope, which OCL never sends. Accepted at the root only; the array items were checked against the spec's item schema (by wrapping them in the envelope) and pass.",
+      "evidence": "https://github.com/OpenConceptLab/oclapi2/blob/3082379d6f21e1b433fc15eab74ec5f34b862c2a/core/sources/views.py#L104 (the view mixes in ListWithHeadersMixin); https://github.com/OpenConceptLab/oclapi2/blob/3082379d6f21e1b433fc15eab74ec5f34b862c2a/core/common/mixins.py#L305-L321 (serialize_list returns the serialized list itself as the body) + https://github.com/OpenConceptLab/oclapi2/blob/3082379d6f21e1b433fc15eab74ec5f34b862c2a/core/common/mixins.py#L122-L138 (CustomPaginator.headers: num_found, num_returned, pages, page_number, next, previous) applied as response headers in ListWithHeadersMixin._list, https://github.com/OpenConceptLab/oclapi2/blob/3082379d6f21e1b433fc15eab74ec5f34b862c2a/core/common/mixins.py#L278-L298"
+    },
+    {
+      "route": "GET /orgs/:ownerId/sources/:repo/:version/mappings",
+      "kind": "response-schema",
+      "pointer": "/",
+      "message": "must be object",
+      "category": "vendor-spec-wrong",
+      "reason": "OCL's list views (ListWithHeadersMixin) return a bare JSON array and paginate in num_found/num_returned/pages/page_number/next/previous response headers; the drf-yasg spec documents DRF's default {count, next, previous, results} envelope, which OCL never sends. Accepted at the root only; the array items were checked against the spec's item schema (by wrapping them in the envelope) and pass.",
+      "evidence": "https://github.com/OpenConceptLab/oclapi2/blob/3082379d6f21e1b433fc15eab74ec5f34b862c2a/core/mappings/views.py#L46 (the view mixes in ListWithHeadersMixin); https://github.com/OpenConceptLab/oclapi2/blob/3082379d6f21e1b433fc15eab74ec5f34b862c2a/core/common/mixins.py#L305-L321 (serialize_list returns the serialized list itself as the body) + https://github.com/OpenConceptLab/oclapi2/blob/3082379d6f21e1b433fc15eab74ec5f34b862c2a/core/common/mixins.py#L122-L138 (CustomPaginator.headers: num_found, num_returned, pages, page_number, next, previous) applied as response headers in ListWithHeadersMixin._list, https://github.com/OpenConceptLab/oclapi2/blob/3082379d6f21e1b433fc15eab74ec5f34b862c2a/core/common/mixins.py#L278-L298"
+    },
+    {
+      "route": "GET /orgs/:ownerId/sources/:repo/concepts",
+      "kind": "response-schema",
+      "pointer": "/",
+      "message": "must be object",
+      "category": "vendor-spec-wrong",
+      "reason": "OCL's list views (ListWithHeadersMixin) return a bare JSON array and paginate in num_found/num_returned/pages/page_number/next/previous response headers; the drf-yasg spec documents DRF's default {count, next, previous, results} envelope, which OCL never sends. Accepted at the root only; the array items were checked against the spec's item schema (by wrapping them in the envelope) and pass.",
+      "evidence": "https://github.com/OpenConceptLab/oclapi2/blob/3082379d6f21e1b433fc15eab74ec5f34b862c2a/core/concepts/views.py#L178 (the view mixes in ListWithHeadersMixin); https://github.com/OpenConceptLab/oclapi2/blob/3082379d6f21e1b433fc15eab74ec5f34b862c2a/core/common/mixins.py#L305-L321 (serialize_list returns the serialized list itself as the body) + https://github.com/OpenConceptLab/oclapi2/blob/3082379d6f21e1b433fc15eab74ec5f34b862c2a/core/common/mixins.py#L122-L138 (CustomPaginator.headers: num_found, num_returned, pages, page_number, next, previous) applied as response headers in ListWithHeadersMixin._list, https://github.com/OpenConceptLab/oclapi2/blob/3082379d6f21e1b433fc15eab74ec5f34b862c2a/core/common/mixins.py#L278-L298"
+    }
+  ]
 }
