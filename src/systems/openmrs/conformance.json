@@ -3,39 +3,57 @@
     "adaptor": "openmrs",
     "origin": "converted"
   },
+  "specMounts": [
+    {
+      "prefix": "/ws/fhir2/R4",
+      "adaptor": "fhir"
+    }
+  ],
   "routes": {
-    "DELETE /ws/rest/v1/*": "unexercised",
-    "GET /ws/fhir2/R4/Condition": "unexercised",
-    "GET /ws/fhir2/R4/Condition/:id": "unexercised",
-    "GET /ws/fhir2/R4/Encounter": "unexercised",
-    "GET /ws/fhir2/R4/Encounter/:id": "unexercised",
-    "GET /ws/fhir2/R4/Observation": "failing",
-    "GET /ws/fhir2/R4/Observation/:id": "unexercised",
-    "GET /ws/fhir2/R4/Patient": "failing",
-    "GET /ws/fhir2/R4/Patient/:id": "unexercised",
-    "GET /ws/rest/v1/*": "failing",
-    "POST /ws/fhir2/R4/Condition": "unexercised",
-    "POST /ws/fhir2/R4/Encounter": "unexercised",
-    "POST /ws/fhir2/R4/Observation": "unexercised",
-    "POST /ws/fhir2/R4/Patient": "unexercised",
-    "POST /ws/rest/v1/*": "failing",
+    "DELETE /ws/rest/v1/*": "conforming",
+    "GET /ws/fhir2/R4/Condition": "conforming",
+    "GET /ws/fhir2/R4/Condition/:id": "conforming",
+    "GET /ws/fhir2/R4/Encounter": "conforming",
+    "GET /ws/fhir2/R4/Encounter/:id": "conforming",
+    "GET /ws/fhir2/R4/Observation": "conforming",
+    "GET /ws/fhir2/R4/Observation/:id": "conforming",
+    "GET /ws/fhir2/R4/Patient": "conforming",
+    "GET /ws/fhir2/R4/Patient/:id": "conforming",
+    "GET /ws/rest/v1/*": "conforming",
+    "GET /ws/rest/v1/session": "unchecked",
+    "POST /ws/fhir2/R4/Condition": "conforming",
+    "POST /ws/fhir2/R4/Encounter": "conforming",
+    "POST /ws/fhir2/R4/Observation": "conforming",
+    "POST /ws/fhir2/R4/Patient": "conforming",
+    "POST /ws/rest/v1/*": "unchecked",
     "PUT /ws/rest/v1/*": "unexercised"
   },
-  "failures": {
-    "GET /ws/fhir2/R4/Observation": [
-      "unknown-operation: no operation in the spec matches GET /ws/fhir2/R4/Observation"
-    ],
-    "GET /ws/fhir2/R4/Patient": [
-      "unknown-operation: no operation in the spec matches GET /ws/fhir2/R4/Patient"
-    ],
-    "GET /ws/rest/v1/*": [
-      "unknown-operation: no operation in the spec matches GET /ws/rest/v1/session"
-    ],
-    "POST /ws/rest/v1/*": [
-      "request-schema /identifiers/*/identifierType: must be string",
-      "request-schema /person: must be string"
-    ]
-  },
+  "failures": {},
   "unrouted": [],
-  "deviations": []
+  "deviations": [
+    {
+      "route": "GET /ws/rest/v1/session",
+      "kind": "unknown-operation",
+      "category": "spec-gap",
+      "reason": "OpenMRS serves GET /ws/rest/v1/session from a Spring controller (SessionController1_9), not a resource handler; SwaggerSpecificationCreator only documents resource handlers, so the generated spec never lists it.",
+      "evidence": "https://github.com/openmrs/openmrs-module-webservices.rest/blob/685eedf1b6eef1e6f250aab1bfcf502c37078be8/omod/src/main/java/org/openmrs/module/webservices/rest/web/v1_0/controller/openmrs1_9/SessionController1_9.java#L50-L87"
+    },
+    {
+      "route": "POST /ws/rest/v1/*",
+      "kind": "request-schema",
+      "pointer": "/person",
+      "message": "must be string",
+      "category": "vendor-spec-wrong",
+      "reason": "Creating a patient accepts person as either an existing person's uuid or a full nested person object (PatientResource1_8.getPatient branches on String vs Map). The Swagger CREATE model emits the string form for the default representation and PersonCreate only for the full representation, so the spec says string.",
+      "evidence": "https://github.com/openmrs/openmrs-module-webservices.rest/blob/685eedf1b6eef1e6f250aab1bfcf502c37078be8/omod/src/main/java/org/openmrs/module/webservices/rest/web/v1_0/resource/openmrs1_8/PatientResource1_8.java#L173-L185 and #L256-L266"
+    },
+    {
+      "route": "POST /ws/rest/v1/*",
+      "kind": "unknown-status",
+      "category": "vendor-spec-wrong",
+      "reason": "An update (POST /{resource}/{uuid}) returns 200 OK: MainResourceController.update returns RestUtil.updated(), which sets SC_OK. The generated spec documents 201 for every POST, updates included.",
+      "evidence": "https://github.com/openmrs/openmrs-module-webservices.rest/blob/685eedf1b6eef1e6f250aab1bfcf502c37078be8/omod-common/src/main/java/org/openmrs/module/webservices/rest/web/RestUtil.java#L597-L598 (called from omod-common/src/main/java/org/openmrs/module/webservices/rest/web/v1_0/controller/MainResourceController.java#L119-L141)",
+      "message": "no response for status 200 (documented: 201, 401)"
+    }
+  ]
 }
