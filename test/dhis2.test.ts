@@ -31,7 +31,7 @@ describe('dhis2', () => {
 
   it('serves the metadata fields DHIS2 marks required on each resource', async () => {
     const { app } = await boot();
-    const ous = await app.inject({ method: 'GET', url: '/api/organisationUnits' });
+    const ous = await app.inject({ method: 'GET', url: '/api/organisationUnits?fields=*' });
     for (const ou of ous.json().organisationUnits) {
       expect(ou.aggregationType).toBe('NONE');
       // openingDate is a date-time, not a bare calendar date.
@@ -62,7 +62,7 @@ describe('dhis2', () => {
 
   it('GET /api/organisationUnits returns pager + resource-typed array with seed data', async () => {
     const { app } = await boot();
-    const res = await app.inject({ method: 'GET', url: '/api/organisationUnits' });
+    const res = await app.inject({ method: 'GET', url: '/api/organisationUnits?fields=id,name,level,parent' });
     expect(res.statusCode).toBe(200);
     const body = res.json();
     expect(body.pager).toMatchObject({ page: 1, pageSize: 50, pageCount: 1, total: 3 });
@@ -81,12 +81,13 @@ describe('dhis2', () => {
     });
     const body = res.json();
     expect(body.pager.total).toBe(1);
-    expect(body.organisationUnits[0].name).toBe('Bo');
+    // A list with no `fields` renders DHIS2's ID_NAME preset.
+    expect(body.organisationUnits[0]).toEqual({ id: 'O6uvpzGd5pu', displayName: 'Bo' });
   });
 
   it('supports ?paging=false (no pager, all items)', async () => {
     const { app } = await boot();
-    const res = await app.inject({ method: 'GET', url: '/api/dataElements?paging=false' });
+    const res = await app.inject({ method: 'GET', url: '/api/dataElements?paging=false&fields=id,name,valueType' });
     const body = res.json();
     expect(body.pager).toBeUndefined();
     expect(body.dataElements).toHaveLength(5);
@@ -106,12 +107,16 @@ describe('dhis2', () => {
 
   it('programs list includes a program with two stages', async () => {
     const { app } = await boot();
-    const res = await app.inject({ method: 'GET', url: '/api/programs' });
+    const res = await app.inject({ method: 'GET', url: '/api/programs?fields=id,programStages[id,name]' });
     const prog = res.json().programs.find((p: any) => p.id === 'IpHINAT79UW');
     expect(prog.programStages).toHaveLength(2);
+    expect(prog.programStages[0]).toEqual({ id: 'A03MvHHogjR', name: 'Birth' });
+    // Unexpanded, a nested collection comes back as id-only references.
+    const single = await app.inject({ method: 'GET', url: '/api/programs/IpHINAT79UW' });
+    expect(single.json().programStages).toEqual([{ id: 'A03MvHHogjR' }, { id: 'ZzYYXq4fJie' }]);
   });
 
-  it('POST /api/trackedEntityInstances returns an ImportSummary and is read-back-able', async () => {
+  it('POST /api/trackedEntityInstances (legacy) returns ImportSummaries and is read-back-able', async () => {
     const { app, store } = await boot();
     const res = await app.inject({
       method: 'POST',
@@ -125,10 +130,13 @@ describe('dhis2', () => {
     expect(res.statusCode).toBe(200);
     const body = res.json();
     expect(body.httpStatusCode).toBe(200);
-    expect(body.response.responseType).toBe('ImportSummary');
+    expect(body.response.responseType).toBe('ImportSummaries');
     expect(body.response.status).toBe('SUCCESS');
-    expect(body.response.importCount.imported).toBe(1);
-    const uid = body.response.reference;
+    expect(body.response.imported).toBe(1);
+    expect(body.response.importSummaries[0].responseType).toBe('ImportSummary');
+    expect(body.response.importSummaries[0].importCount.imported).toBe(1);
+    const uid = body.response.importSummaries[0].reference;
+    expect(res.headers.location).toContain(`/api/trackedEntityInstances/${uid}`);
     // 11-char uid, first char a letter.
     expect(uid).toMatch(/^[A-Za-z][A-Za-z0-9]{10}$/);
 
@@ -157,7 +165,7 @@ describe('dhis2', () => {
       },
     });
     expect(res.statusCode).toBe(200);
-    const uid = res.json().response.reference;
+    const uid = res.json().response.importSummaries[0].reference;
     const list = await app.inject({ method: 'GET', url: '/api/events' });
     expect(list.json().events.find((e: any) => e.event === uid)).toBeTruthy();
   });
@@ -197,8 +205,10 @@ describe('dhis2', () => {
     expect(res.statusCode).toBe(200);
     const body = res.json();
     expect(body.status).toBe('OK');
-    expect(body.stats.created).toBe(3);
-    expect(body.stats.total).toBe(3);
+    expect(body.response.responseType).toBe('ImportReport');
+    expect(body.response.stats.created).toBe(3);
+    expect(body.response.stats.total).toBe(3);
+    expect(body.response.typeReports).toHaveLength(2);
 
     const ou = await app.inject({ method: 'GET', url: '/api/organisationUnits/newOrgUnit1' });
     expect(ou.statusCode).toBe(200);
@@ -286,8 +296,10 @@ describe('dhis2', () => {
       url: '/api/dataSets',
       payload: { name: 'Monthly Report', periodType: 'Monthly' },
     });
-    expect(create.statusCode).toBe(200);
-    const uid = create.json().response.reference;
+    // A metadata create answers 201 Created with an ObjectReport.
+    expect(create.statusCode).toBe(201);
+    expect(create.json().response).toMatchObject({ responseType: 'ObjectReport', klass: 'org.hisp.dhis.dataset.DataSet' });
+    const uid = create.json().response.uid;
     expect(uid).toMatch(/^[A-Za-z][A-Za-z0-9]{10}$/);
 
     const list = await app.inject({ method: 'GET', url: '/api/dataSets' });
@@ -301,6 +313,21 @@ describe('dhis2', () => {
     expect(patch.statusCode).toBe(200);
     const read = await app.inject({ method: 'GET', url: `/api/dataSets/${uid}` });
     expect(read.json().name).toBe('Renamed Report');
+
+    // DHIS2's own PATCH body is an RFC 6902 JSON Patch.
+    const jsonPatch = await app.inject({
+      method: 'PATCH',
+      url: `/api/dataSets/${uid}`,
+      headers: { 'content-type': 'application/json-patch+json' },
+      payload: JSON.stringify([{ op: 'replace', path: '/name', value: 'Patched Report' }]),
+    });
+    expect(jsonPatch.statusCode).toBe(200);
+    expect(jsonPatch.json().response.responseType).toBe('ObjectReport');
+    const reread = await app.inject({ method: 'GET', url: `/api/dataSets/${uid}` });
+    expect(reread.json().name).toBe('Patched Report');
+
+    const put = await app.inject({ method: 'PUT', url: '/api/dataSets/doesNotExist1', payload: { name: 'x' } });
+    expect(put.statusCode).toBe(404);
 
     const del = await app.inject({ method: 'DELETE', url: `/api/dataSets/${uid}` });
     expect(del.statusCode).toBe(200);

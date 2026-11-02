@@ -4,45 +4,240 @@
     "origin": "found-openapi"
   },
   "routes": {
-    "DELETE /api/*": "unexercised",
-    "GET /api/*": "failing",
-    "GET /api/dataElements": "unexercised",
-    "GET /api/dataElements/:id": "unexercised",
-    "GET /api/dataValueSets": "unexercised",
-    "GET /api/enrollments": "unexercised",
-    "GET /api/events": "unexercised",
-    "GET /api/organisationUnits": "conforming",
-    "GET /api/organisationUnits/:id": "unexercised",
-    "GET /api/programs": "unexercised",
-    "GET /api/programs/:id": "failing",
+    "DELETE /api/*": "deviating",
+    "GET /api/*": "unchecked",
+    "GET /api/dataElements": "conforming",
+    "GET /api/dataElements/:id": "conforming",
+    "GET /api/dataValueSets": "conforming",
+    "GET /api/enrollments": "unchecked",
+    "GET /api/events": "unchecked",
+    "GET /api/organisationUnits": "deviating",
+    "GET /api/organisationUnits/:id": "conforming",
+    "GET /api/programs": "deviating",
+    "GET /api/programs/:id": "deviating",
     "GET /api/system/info": "conforming",
-    "GET /api/trackedEntityInstances": "unexercised",
-    "GET /api/trackedEntityTypes": "unexercised",
-    "GET /api/trackedEntityTypes/:id": "unexercised",
-    "PATCH /api/*": "unexercised",
+    "GET /api/trackedEntityInstances": "unchecked",
+    "GET /api/trackedEntityTypes": "deviating",
+    "GET /api/trackedEntityTypes/:id": "conforming",
+    "PATCH /api/*": "deviating",
     "POST /api/*": "conforming",
-    "POST /api/dataElements": "unexercised",
-    "POST /api/dataValueSets": "unexercised",
-    "POST /api/enrollments": "unexercised",
-    "POST /api/events": "unexercised",
-    "POST /api/metadata": "unexercised",
-    "POST /api/organisationUnits": "unexercised",
-    "POST /api/trackedEntityInstances": "failing",
-    "PUT /api/*": "unexercised"
+    "POST /api/dataElements": "unchecked",
+    "POST /api/dataValueSets": "deviating",
+    "POST /api/enrollments": "unchecked",
+    "POST /api/events": "unchecked",
+    "POST /api/metadata": "deviating",
+    "POST /api/organisationUnits": "unchecked",
+    "POST /api/trackedEntityInstances": "unchecked",
+    "PUT /api/*": "deviating"
   },
-  "failures": {
-    "GET /api/*": [
-      "unknown-operation: no operation in the spec matches GET /api/40/organisationUnits"
-    ],
-    "GET /api/programs/:id": [
-      "response-schema /trackedEntityType: missing required property 'featureType'",
-      "response-schema /trackedEntityType: missing required property 'maxTeiCountToReturn'",
-      "response-schema /trackedEntityType: missing required property 'minAttributesRequiredToSearch'"
-    ],
-    "POST /api/trackedEntityInstances": [
-      "unknown-operation: no operation in the spec matches POST /api/trackedEntityInstances"
-    ]
-  },
+  "failures": {},
   "unrouted": [],
-  "deviations": []
+  "deviations": [
+    {
+      "route": "GET /api/*",
+      "kind": "unknown-operation",
+      "category": "spec-gap",
+      "reason": "DHIS2 serves every endpoint behind an optional /api/{version}/ segment (versions 28 to 43): ApiVersionFilter strips the version and reroutes /api/40/organisationUnits to /api/organisationUnits. The adaptor builds that prefix whenever a job sets apiVersion. The spec writes every path without it, so a versioned request matches no operation. (The wildcard route only hits unknown-operation for versioned paths; its unversioned reads all match.)",
+      "evidence": "https://github.com/dhis2/dhis2-core/blob/7504d4374822ae097ed2caaba86af363cc5d1e2d/dhis-2/dhis-web-api/src/main/java/org/hisp/dhis/webapi/filter/ApiVersionFilter.java#L78-L101"
+    },
+    {
+      "route": "GET /api/trackedEntityInstances",
+      "kind": "unknown-operation",
+      "category": "spec-gap",
+      "reason": "GET /api/trackedEntityInstances is the deprecated tracker API that DHIS2 2.40 and earlier serve (the mock models 2.39, and the adaptor still calls it for get('trackedEntityInstances')); 2.41 replaced it with /api/tracker, and the spec was generated from a 2.43 server, so it has no operation for it.",
+      "evidence": "https://github.com/dhis2/dhis2-core/blob/0fbab6ac317b13effe37fd736bb36e864e17a5d4/dhis-2/dhis-web-api/src/main/java/org/hisp/dhis/webapi/controller/event/TrackedEntityInstanceController.java#L165-L172"
+    },
+    {
+      "route": "POST /api/trackedEntityInstances",
+      "kind": "unknown-operation",
+      "category": "spec-gap",
+      "reason": "POST /api/trackedEntityInstances is the deprecated tracker API that DHIS2 2.40 and earlier serve (the mock models 2.39, and the adaptor still calls it for create('trackedEntityInstances')); 2.41 replaced it with /api/tracker, and the spec was generated from a 2.43 server, so it has no operation for it.",
+      "evidence": "https://github.com/dhis2/dhis2-core/blob/0fbab6ac317b13effe37fd736bb36e864e17a5d4/dhis-2/dhis-web-api/src/main/java/org/hisp/dhis/webapi/controller/event/TrackedEntityInstanceController.java#L398-L406"
+    },
+    {
+      "route": "GET /api/events",
+      "kind": "unknown-operation",
+      "category": "spec-gap",
+      "reason": "GET /api/events is the deprecated tracker API that DHIS2 2.40 and earlier serve (the mock models 2.39, and the adaptor still calls it for get('events')); 2.41 replaced it with /api/tracker, and the spec was generated from a 2.43 server, so it has no operation for it.",
+      "evidence": "https://github.com/dhis2/dhis2-core/blob/0fbab6ac317b13effe37fd736bb36e864e17a5d4/dhis-2/dhis-web-api/src/main/java/org/hisp/dhis/webapi/controller/event/EventController.java#L640-L641"
+    },
+    {
+      "route": "POST /api/events",
+      "kind": "unknown-operation",
+      "category": "spec-gap",
+      "reason": "POST /api/events is the deprecated tracker API that DHIS2 2.40 and earlier serve (the mock models 2.39, and the adaptor still calls it for http.post('events')); 2.41 replaced it with /api/tracker, and the spec was generated from a 2.43 server, so it has no operation for it.",
+      "evidence": "https://github.com/dhis2/dhis2-core/blob/0fbab6ac317b13effe37fd736bb36e864e17a5d4/dhis-2/dhis-web-api/src/main/java/org/hisp/dhis/webapi/controller/event/EventController.java#L999-L1007"
+    },
+    {
+      "route": "GET /api/enrollments",
+      "kind": "unknown-operation",
+      "category": "spec-gap",
+      "reason": "GET /api/enrollments is the deprecated tracker API that DHIS2 2.40 and earlier serve (the mock models 2.39, and the adaptor still calls it for get('enrollments')); 2.41 replaced it with /api/tracker, and the spec was generated from a 2.43 server, so it has no operation for it.",
+      "evidence": "https://github.com/dhis2/dhis2-core/blob/0fbab6ac317b13effe37fd736bb36e864e17a5d4/dhis-2/dhis-web-api/src/main/java/org/hisp/dhis/webapi/controller/event/EnrollmentController.java#L120-L121"
+    },
+    {
+      "route": "POST /api/enrollments",
+      "kind": "unknown-operation",
+      "category": "spec-gap",
+      "reason": "POST /api/enrollments is the deprecated tracker API that DHIS2 2.40 and earlier serve (the mock models 2.39, and the adaptor still calls it for http.post('enrollments')); 2.41 replaced it with /api/tracker, and the spec was generated from a 2.43 server, so it has no operation for it.",
+      "evidence": "https://github.com/dhis2/dhis2-core/blob/0fbab6ac317b13effe37fd736bb36e864e17a5d4/dhis-2/dhis-web-api/src/main/java/org/hisp/dhis/webapi/controller/event/EnrollmentController.java#L198-L240"
+    },
+    {
+      "route": "GET /api/programs/:id",
+      "kind": "response-schema",
+      "pointer": "/trackedEntityType",
+      "category": "vendor-spec-wrong",
+      "reason": "A single-object read with no `fields` uses `*`, and FieldPathHelper expands every nested reference that is not explicitly selected to its id alone, so DHIS2 returns trackedEntityType as {\"id\": \"…\"}. The spec types it as a full TrackedEntityType whose featureType / maxTeiCountToReturn / minAttributesRequiredToSearch are required (an enum and two primitives, which the generator always marks required).",
+      "evidence": "https://github.com/dhis2/dhis2-core/blob/7504d4374822ae097ed2caaba86af363cc5d1e2d/dhis-2/dhis-services/dhis-service-core/src/main/java/org/hisp/dhis/query/GetObjectParams.java#L99-L102 + https://github.com/dhis2/dhis2-core/blob/7504d4374822ae097ed2caaba86af363cc5d1e2d/dhis-2/dhis-services/dhis-service-field-filtering/src/main/java/org/hisp/dhis/fieldfiltering/FieldPathHelper.java#L129-L191 + https://github.com/dhis2/dhis2-core/blob/7504d4374822ae097ed2caaba86af363cc5d1e2d/dhis-2/dhis-web-api/src/main/java/org/hisp/dhis/webapi/openapi/Property.java#L287-L297"
+    },
+    {
+      "route": "GET /api/organisationUnits",
+      "kind": "response-schema",
+      "pointer": "/organisationUnits/*",
+      "category": "vendor-spec-wrong",
+      "reason": "A metadata list with no `fields` renders the ID_NAME preset, so each organisationUnits item is {id, displayName}. The spec types the list items as the full entity, with every enum and primitive property required, which only a `fields=*` read could satisfy.",
+      "evidence": "https://github.com/dhis2/dhis2-core/blob/7504d4374822ae097ed2caaba86af363cc5d1e2d/dhis-2/dhis-web-api/src/main/java/org/hisp/dhis/webapi/controller/AbstractFullReadOnlyController.java#L224 + https://github.com/dhis2/dhis2-core/blob/7504d4374822ae097ed2caaba86af363cc5d1e2d/dhis-2/dhis-services/dhis-service-core/src/main/java/org/hisp/dhis/query/GetObjectParams.java#L104-L112 + https://github.com/dhis2/dhis2-core/blob/7504d4374822ae097ed2caaba86af363cc5d1e2d/dhis-2/dhis-api/src/main/java/org/hisp/dhis/fieldfiltering/FieldPreset.java#L68-L70"
+    },
+    {
+      "route": "GET /api/programs",
+      "kind": "response-schema",
+      "pointer": "/programs/*",
+      "category": "vendor-spec-wrong",
+      "reason": "A metadata list with no `fields` renders the ID_NAME preset, so each programs item is {id, displayName}. The spec types the list items as the full entity, with every enum and primitive property required, which only a `fields=*` read could satisfy.",
+      "evidence": "https://github.com/dhis2/dhis2-core/blob/7504d4374822ae097ed2caaba86af363cc5d1e2d/dhis-2/dhis-web-api/src/main/java/org/hisp/dhis/webapi/controller/AbstractFullReadOnlyController.java#L224 + https://github.com/dhis2/dhis2-core/blob/7504d4374822ae097ed2caaba86af363cc5d1e2d/dhis-2/dhis-services/dhis-service-core/src/main/java/org/hisp/dhis/query/GetObjectParams.java#L104-L112 + https://github.com/dhis2/dhis2-core/blob/7504d4374822ae097ed2caaba86af363cc5d1e2d/dhis-2/dhis-api/src/main/java/org/hisp/dhis/fieldfiltering/FieldPreset.java#L68-L70"
+    },
+    {
+      "route": "GET /api/trackedEntityTypes",
+      "kind": "response-schema",
+      "pointer": "/trackedEntityTypes/*",
+      "category": "vendor-spec-wrong",
+      "reason": "A metadata list with no `fields` renders the ID_NAME preset, so each trackedEntityTypes item is {id, displayName}. The spec types the list items as the full entity, with every enum and primitive property required, which only a `fields=*` read could satisfy.",
+      "evidence": "https://github.com/dhis2/dhis2-core/blob/7504d4374822ae097ed2caaba86af363cc5d1e2d/dhis-2/dhis-web-api/src/main/java/org/hisp/dhis/webapi/controller/AbstractFullReadOnlyController.java#L224 + https://github.com/dhis2/dhis2-core/blob/7504d4374822ae097ed2caaba86af363cc5d1e2d/dhis-2/dhis-services/dhis-service-core/src/main/java/org/hisp/dhis/query/GetObjectParams.java#L104-L112 + https://github.com/dhis2/dhis2-core/blob/7504d4374822ae097ed2caaba86af363cc5d1e2d/dhis-2/dhis-api/src/main/java/org/hisp/dhis/fieldfiltering/FieldPreset.java#L68-L70"
+    },
+    {
+      "route": "POST /api/dataElements",
+      "kind": "unknown-status",
+      "category": "vendor-spec-wrong",
+      "reason": "A metadata create answers 201 Created: AbstractCrudController.postObject sets HttpStatus.CREATED (and a Location) on the ObjectReport WebMessage, and WebMessageControllerAdvice copies that status onto the response. The spec documents only 200.",
+      "evidence": "https://github.com/dhis2/dhis2-core/blob/7504d4374822ae097ed2caaba86af363cc5d1e2d/dhis-2/dhis-web-api/src/main/java/org/hisp/dhis/webapi/controller/AbstractCrudController.java#L319-L324 + https://github.com/dhis2/dhis2-core/blob/7504d4374822ae097ed2caaba86af363cc5d1e2d/dhis-2/dhis-web-api/src/main/java/org/hisp/dhis/webapi/controller/WebMessageControllerAdvice.java#L82-L84"
+    },
+    {
+      "route": "POST /api/organisationUnits",
+      "kind": "unknown-status",
+      "category": "vendor-spec-wrong",
+      "reason": "A metadata create answers 201 Created: AbstractCrudController.postObject sets HttpStatus.CREATED (and a Location) on the ObjectReport WebMessage, and WebMessageControllerAdvice copies that status onto the response. The spec documents only 200.",
+      "evidence": "https://github.com/dhis2/dhis2-core/blob/7504d4374822ae097ed2caaba86af363cc5d1e2d/dhis-2/dhis-web-api/src/main/java/org/hisp/dhis/webapi/controller/AbstractCrudController.java#L319-L324 + https://github.com/dhis2/dhis2-core/blob/7504d4374822ae097ed2caaba86af363cc5d1e2d/dhis-2/dhis-web-api/src/main/java/org/hisp/dhis/webapi/controller/WebMessageControllerAdvice.java#L82-L84"
+    },
+    {
+      "route": "POST /api/organisationUnits",
+      "kind": "request-schema",
+      "pointer": "/",
+      "message": "missing required property 'aggregationType'",
+      "category": "vendor-spec-wrong",
+      "reason": "OrganisationUnitParams lists aggregationType as required only because the generator marks every enum-typed property required; an org unit is not an aggregated data item, and nothing in the server requires it on create.",
+      "evidence": "https://github.com/dhis2/dhis2-core/blob/7504d4374822ae097ed2caaba86af363cc5d1e2d/dhis-2/dhis-web-api/src/main/java/org/hisp/dhis/webapi/openapi/Property.java#L287-L297"
+    },
+    {
+      "route": "POST /api/organisationUnits",
+      "kind": "request-schema",
+      "pointer": "/parent",
+      "category": "vendor-spec-wrong",
+      "reason": "The parent is a reference, sent as {\"id\": \"…\"} and resolved by the metadata importer; the spec types it as a full OrganisationUnit whose aggregationType is required only because it is an enum.",
+      "evidence": "https://github.com/dhis2/dhis2-core/blob/7504d4374822ae097ed2caaba86af363cc5d1e2d/dhis-2/dhis-web-api/src/main/java/org/hisp/dhis/webapi/openapi/Property.java#L287-L297"
+    },
+    {
+      "route": "PATCH /api/*",
+      "kind": "request-schema",
+      "pointer": "/",
+      "message": "must be object",
+      "category": "vendor-spec-wrong",
+      "reason": "PATCH /api/{type}/{uid} consumes application/json-patch+json, an RFC 6902 array of operations: JsonPatch's @JsonCreator takes the List<JsonPatchOperation> directly. The spec models the body as an object wrapping an `operations` array, which the server would not accept.",
+      "evidence": "https://github.com/dhis2/dhis2-core/blob/7504d4374822ae097ed2caaba86af363cc5d1e2d/dhis-2/dhis-support/dhis-support-commons/src/main/java/org/hisp/dhis/commons/jackson/jsonpatch/JsonPatch.java#L51-L54 + https://github.com/dhis2/dhis2-core/blob/7504d4374822ae097ed2caaba86af363cc5d1e2d/dhis-2/dhis-web-api/src/main/java/org/hisp/dhis/webapi/controller/AbstractCrudController.java#L170-L175"
+    },
+    {
+      "route": "PATCH /api/*",
+      "kind": "response-schema",
+      "pointer": "/",
+      "message": "missing required property 'errorCode'",
+      "category": "vendor-spec-wrong",
+      "reason": "The spec marks WebMessage.errorCode required only because DHIS2's OpenAPI generator marks every enum-typed property required. errorCode is documented as relevant only for Status ERROR, is null on success, and DHIS2 serialises with NON_NULL, so a successful write never carries it.",
+      "evidence": "https://github.com/dhis2/dhis2-core/blob/7504d4374822ae097ed2caaba86af363cc5d1e2d/dhis-2/dhis-api/src/main/java/org/hisp/dhis/webmessage/WebResponse.java#L69-L75 + https://github.com/dhis2/dhis2-core/blob/7504d4374822ae097ed2caaba86af363cc5d1e2d/dhis-2/dhis-support/dhis-support-commons/src/main/java/org/hisp/dhis/commons/jackson/config/JacksonObjectMapperConfig.java#L173-L174 + https://github.com/dhis2/dhis2-core/blob/7504d4374822ae097ed2caaba86af363cc5d1e2d/dhis-2/dhis-web-api/src/main/java/org/hisp/dhis/webapi/openapi/Property.java#L287-L297"
+    },
+    {
+      "route": "PATCH /api/*",
+      "kind": "response-schema",
+      "pointer": "/response",
+      "category": "vendor-spec-wrong",
+      "reason": "WebMessage.response is a polymorphic WebMessageResponse the generator renders as a oneOf over 16 subtypes with no discriminator. Eight of them (ObjectReportWebMessageResponse, ApiTokenCreationResponse, ErrorReportsWebMessageResponse, FileResourceWebMessageResponse, MergeWebResponse, MetadataSyncSummary, SoftwareUpdateResponse, TrackerJobWebMessageResponse) have no required properties, so every object matches several and no response body can satisfy the oneOf. It should be an anyOf (or carry a responseType discriminator).",
+      "evidence": "https://github.com/dhis2/dhis2-core/blob/7504d4374822ae097ed2caaba86af363cc5d1e2d/dhis-2/dhis-services/dhis-service-dxf2/src/main/java/org/hisp/dhis/dxf2/webmessage/WebMessage.java#L91-L110"
+    },
+    {
+      "route": "PUT /api/*",
+      "kind": "response-schema",
+      "pointer": "/",
+      "message": "missing required property 'errorCode'",
+      "category": "vendor-spec-wrong",
+      "reason": "The spec marks WebMessage.errorCode required only because DHIS2's OpenAPI generator marks every enum-typed property required. errorCode is documented as relevant only for Status ERROR, is null on success, and DHIS2 serialises with NON_NULL, so a successful write never carries it.",
+      "evidence": "https://github.com/dhis2/dhis2-core/blob/7504d4374822ae097ed2caaba86af363cc5d1e2d/dhis-2/dhis-api/src/main/java/org/hisp/dhis/webmessage/WebResponse.java#L69-L75 + https://github.com/dhis2/dhis2-core/blob/7504d4374822ae097ed2caaba86af363cc5d1e2d/dhis-2/dhis-support/dhis-support-commons/src/main/java/org/hisp/dhis/commons/jackson/config/JacksonObjectMapperConfig.java#L173-L174 + https://github.com/dhis2/dhis2-core/blob/7504d4374822ae097ed2caaba86af363cc5d1e2d/dhis-2/dhis-web-api/src/main/java/org/hisp/dhis/webapi/openapi/Property.java#L287-L297"
+    },
+    {
+      "route": "PUT /api/*",
+      "kind": "response-schema",
+      "pointer": "/response",
+      "category": "vendor-spec-wrong",
+      "reason": "WebMessage.response is a polymorphic WebMessageResponse the generator renders as a oneOf over 16 subtypes with no discriminator. Eight of them (ObjectReportWebMessageResponse, ApiTokenCreationResponse, ErrorReportsWebMessageResponse, FileResourceWebMessageResponse, MergeWebResponse, MetadataSyncSummary, SoftwareUpdateResponse, TrackerJobWebMessageResponse) have no required properties, so every object matches several and no response body can satisfy the oneOf. It should be an anyOf (or carry a responseType discriminator).",
+      "evidence": "https://github.com/dhis2/dhis2-core/blob/7504d4374822ae097ed2caaba86af363cc5d1e2d/dhis-2/dhis-services/dhis-service-dxf2/src/main/java/org/hisp/dhis/dxf2/webmessage/WebMessage.java#L91-L110"
+    },
+    {
+      "route": "DELETE /api/*",
+      "kind": "response-schema",
+      "pointer": "/",
+      "message": "missing required property 'errorCode'",
+      "category": "vendor-spec-wrong",
+      "reason": "The spec marks WebMessage.errorCode required only because DHIS2's OpenAPI generator marks every enum-typed property required. errorCode is documented as relevant only for Status ERROR, is null on success, and DHIS2 serialises with NON_NULL, so a successful write never carries it.",
+      "evidence": "https://github.com/dhis2/dhis2-core/blob/7504d4374822ae097ed2caaba86af363cc5d1e2d/dhis-2/dhis-api/src/main/java/org/hisp/dhis/webmessage/WebResponse.java#L69-L75 + https://github.com/dhis2/dhis2-core/blob/7504d4374822ae097ed2caaba86af363cc5d1e2d/dhis-2/dhis-support/dhis-support-commons/src/main/java/org/hisp/dhis/commons/jackson/config/JacksonObjectMapperConfig.java#L173-L174 + https://github.com/dhis2/dhis2-core/blob/7504d4374822ae097ed2caaba86af363cc5d1e2d/dhis-2/dhis-web-api/src/main/java/org/hisp/dhis/webapi/openapi/Property.java#L287-L297"
+    },
+    {
+      "route": "DELETE /api/*",
+      "kind": "response-schema",
+      "pointer": "/response",
+      "category": "vendor-spec-wrong",
+      "reason": "WebMessage.response is a polymorphic WebMessageResponse the generator renders as a oneOf over 16 subtypes with no discriminator. Eight of them (ObjectReportWebMessageResponse, ApiTokenCreationResponse, ErrorReportsWebMessageResponse, FileResourceWebMessageResponse, MergeWebResponse, MetadataSyncSummary, SoftwareUpdateResponse, TrackerJobWebMessageResponse) have no required properties, so every object matches several and no response body can satisfy the oneOf. It should be an anyOf (or carry a responseType discriminator).",
+      "evidence": "https://github.com/dhis2/dhis2-core/blob/7504d4374822ae097ed2caaba86af363cc5d1e2d/dhis-2/dhis-services/dhis-service-dxf2/src/main/java/org/hisp/dhis/dxf2/webmessage/WebMessage.java#L91-L110"
+    },
+    {
+      "route": "POST /api/dataValueSets",
+      "kind": "response-schema",
+      "pointer": "/",
+      "message": "missing required property 'errorCode'",
+      "category": "vendor-spec-wrong",
+      "reason": "The spec marks WebMessage.errorCode required only because DHIS2's OpenAPI generator marks every enum-typed property required. errorCode is documented as relevant only for Status ERROR, is null on success, and DHIS2 serialises with NON_NULL, so a successful write never carries it.",
+      "evidence": "https://github.com/dhis2/dhis2-core/blob/7504d4374822ae097ed2caaba86af363cc5d1e2d/dhis-2/dhis-api/src/main/java/org/hisp/dhis/webmessage/WebResponse.java#L69-L75 + https://github.com/dhis2/dhis2-core/blob/7504d4374822ae097ed2caaba86af363cc5d1e2d/dhis-2/dhis-support/dhis-support-commons/src/main/java/org/hisp/dhis/commons/jackson/config/JacksonObjectMapperConfig.java#L173-L174 + https://github.com/dhis2/dhis2-core/blob/7504d4374822ae097ed2caaba86af363cc5d1e2d/dhis-2/dhis-web-api/src/main/java/org/hisp/dhis/webapi/openapi/Property.java#L287-L297"
+    },
+    {
+      "route": "POST /api/dataValueSets",
+      "kind": "response-schema",
+      "pointer": "/response",
+      "category": "vendor-spec-wrong",
+      "reason": "WebMessage.response is a polymorphic WebMessageResponse the generator renders as a oneOf over 16 subtypes with no discriminator. Eight of them (ObjectReportWebMessageResponse, ApiTokenCreationResponse, ErrorReportsWebMessageResponse, FileResourceWebMessageResponse, MergeWebResponse, MetadataSyncSummary, SoftwareUpdateResponse, TrackerJobWebMessageResponse) have no required properties, so every object matches several and no response body can satisfy the oneOf. It should be an anyOf (or carry a responseType discriminator).",
+      "evidence": "https://github.com/dhis2/dhis2-core/blob/7504d4374822ae097ed2caaba86af363cc5d1e2d/dhis-2/dhis-services/dhis-service-dxf2/src/main/java/org/hisp/dhis/dxf2/webmessage/WebMessage.java#L91-L110"
+    },
+    {
+      "route": "POST /api/metadata",
+      "kind": "response-schema",
+      "pointer": "/",
+      "message": "missing required property 'errorCode'",
+      "category": "vendor-spec-wrong",
+      "reason": "The spec marks WebMessage.errorCode required only because DHIS2's OpenAPI generator marks every enum-typed property required. errorCode is documented as relevant only for Status ERROR, is null on success, and DHIS2 serialises with NON_NULL, so a successful write never carries it.",
+      "evidence": "https://github.com/dhis2/dhis2-core/blob/7504d4374822ae097ed2caaba86af363cc5d1e2d/dhis-2/dhis-api/src/main/java/org/hisp/dhis/webmessage/WebResponse.java#L69-L75 + https://github.com/dhis2/dhis2-core/blob/7504d4374822ae097ed2caaba86af363cc5d1e2d/dhis-2/dhis-support/dhis-support-commons/src/main/java/org/hisp/dhis/commons/jackson/config/JacksonObjectMapperConfig.java#L173-L174 + https://github.com/dhis2/dhis2-core/blob/7504d4374822ae097ed2caaba86af363cc5d1e2d/dhis-2/dhis-web-api/src/main/java/org/hisp/dhis/webapi/openapi/Property.java#L287-L297"
+    },
+    {
+      "route": "POST /api/metadata",
+      "kind": "response-schema",
+      "pointer": "/response",
+      "category": "vendor-spec-wrong",
+      "reason": "WebMessage.response is a polymorphic WebMessageResponse the generator renders as a oneOf over 16 subtypes with no discriminator. Eight of them (ObjectReportWebMessageResponse, ApiTokenCreationResponse, ErrorReportsWebMessageResponse, FileResourceWebMessageResponse, MergeWebResponse, MetadataSyncSummary, SoftwareUpdateResponse, TrackerJobWebMessageResponse) have no required properties, so every object matches several and no response body can satisfy the oneOf. It should be an anyOf (or carry a responseType discriminator).",
+      "evidence": "https://github.com/dhis2/dhis2-core/blob/7504d4374822ae097ed2caaba86af363cc5d1e2d/dhis-2/dhis-services/dhis-service-dxf2/src/main/java/org/hisp/dhis/dxf2/webmessage/WebMessage.java#L91-L110"
+    }
+  ]
 }
