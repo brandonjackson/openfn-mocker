@@ -1,0 +1,13 @@
+{
+  "spec": {
+    "adaptor": "googlesheets",
+    "origin": "converted"
+  },
+  "routes": {
+    "GET /v4/spreadsheets/:sid/values/:range": "conforming",
+    "POST /v4/spreadsheets/:sid/*": "conforming"
+  },
+  "failures": {},
+  "unrouted": [],
+  "deviations": []
+}

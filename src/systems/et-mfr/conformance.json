@@ -1,0 +1,25 @@
+{
+  "spec": {
+    "adaptor": "et-mfr",
+    "origin": "generated"
+  },
+  "routes": {
+    "DELETE /api/Facility/:dhis2Id": "conforming",
+    "GET /api/Facility": "conforming",
+    "GET /api/Facility/:dhis2Id": "conforming",
+    "GET /api/Facility/All": "conforming",
+    "GET /api/Health": "conforming",
+    "GET /api/Location/Regions": "conforming",
+    "GET /api/Location/Woredas": "conforming",
+    "GET /api/Location/Zones": "conforming",
+    "GET /api/Lookup": "conforming",
+    "POST /api/Facility": "conforming",
+    "POST /api/Facility/ExportCSV": "conforming",
+    "POST /api/Facility/GetFacilities": "conforming",
+    "POST /api/Lookup": "conforming",
+    "PUT /api/Facility": "conforming"
+  },
+  "failures": {},
+  "unrouted": [],
+  "deviations": []
+}

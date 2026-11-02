@@ -1,0 +1,26 @@
+{
+  "spec": {
+    "adaptor": "odk",
+    "origin": "found-openapi"
+  },
+  "routes": {
+    "GET /v1/projects": "conforming",
+    "GET /v1/projects/:projectId": "unexercised",
+    "GET /v1/projects/:projectId/forms": "conforming",
+    "GET /v1/projects/:projectId/forms/:formSvc/Submissions": "failing",
+    "GET /v1/projects/:projectId/forms/:xmlFormId": "unexercised",
+    "GET /v1/projects/:projectId/forms/:xmlFormId/submissions/:instanceId/attachments": "conforming",
+    "GET /v1/projects/:projectId/forms/:xmlFormId/submissions/:instanceId/attachments/:filename": "conforming",
+    "GET /v1/projects/:projectId/forms/:xmlFormId/submissions/:instanceId/comments": "conforming",
+    "POST /v1/projects/:projectId/forms/:xmlFormId/submissions/:instanceId/comments": "conforming",
+    "POST /v1/sessions": "conforming"
+  },
+  "failures": {
+    "GET /v1/projects/:projectId/forms/:formSvc/Submissions": [
+      "response-schema /value/*: missing required property 'age'",
+      "response-schema /value/*: missing required property 'name'"
+    ]
+  },
+  "unrouted": [],
+  "deviations": []
+}

@@ -1,0 +1,17 @@
+{
+  "spec": {
+    "adaptor": "googledrive",
+    "origin": "converted"
+  },
+  "routes": {
+    "GET /drive/v3/files": "conforming",
+    "GET /drive/v3/files/:id": "conforming",
+    "PATCH /drive/v3/files/:id": "conforming",
+    "PATCH /upload/drive/v3/files/:id": "unexercised",
+    "POST /drive/v3/files": "conforming",
+    "POST /upload/drive/v3/files": "unexercised"
+  },
+  "failures": {},
+  "unrouted": [],
+  "deviations": []
+}

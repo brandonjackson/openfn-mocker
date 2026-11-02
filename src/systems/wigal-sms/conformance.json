@@ -1,0 +1,12 @@
+{
+  "spec": {
+    "adaptor": "wigal-sms",
+    "origin": "generated"
+  },
+  "routes": {
+    "POST /api/v3/sms/send": "conforming"
+  },
+  "failures": {},
+  "unrouted": [],
+  "deviations": []
+}

@@ -1,0 +1,20 @@
+{
+  "spec": {
+    "adaptor": "senaite",
+    "origin": "generated"
+  },
+  "routes": {
+    "GET /@@API/senaite/v1/auth": "unexercised",
+    "GET /@@API/senaite/v1/get/:uid": "conforming",
+    "GET /@@API/senaite/v1/login": "unexercised",
+    "GET /@@API/senaite/v1/search": "conforming",
+    "GET /@@API/senaite/v1/version": "conforming",
+    "GET /login": "conforming",
+    "POST /@@API/senaite/v1/create/:portalType": "conforming",
+    "POST /@@API/senaite/v1/delete/:uid": "unexercised",
+    "POST /@@API/senaite/v1/update/:uid": "conforming"
+  },
+  "failures": {},
+  "unrouted": [],
+  "deviations": []
+}

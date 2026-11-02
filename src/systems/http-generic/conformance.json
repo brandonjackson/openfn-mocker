@@ -1,0 +1,24 @@
+{
+  "spec": {
+    "adaptor": "http",
+    "origin": "synthesized"
+  },
+  "routes": {
+    "DELETE /*": "unexercised",
+    "GET /*": "failing",
+    "PATCH /*": "unexercised",
+    "POST /*": "failing",
+    "PUT /*": "unexercised"
+  },
+  "failures": {
+    "GET /*": [
+      "unknown-operation: no operation in the spec matches GET /anything/you/want",
+      "unknown-operation: no operation in the spec matches GET /api/v1/referrals"
+    ],
+    "POST /*": [
+      "unknown-operation: no operation in the spec matches POST /api/v1/referrals"
+    ]
+  },
+  "unrouted": [],
+  "deviations": []
+}

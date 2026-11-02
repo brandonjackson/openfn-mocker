@@ -1,0 +1,20 @@
+{
+  "spec": {
+    "adaptor": "ihris",
+    "origin": "generated"
+  },
+  "routes": {
+    "DELETE /fhir/:resourceType/:id": "unexercised",
+    "GET /fhir/:resourceType": "conforming",
+    "GET /fhir/:resourceType/:id": "conforming",
+    "GET /fhir/metadata": "unexercised",
+    "POST /auth/login": "unexercised",
+    "POST /fhir": "unexercised",
+    "POST /fhir/:resourceType": "conforming",
+    "POST /fhir/:resourceType/_search": "unexercised",
+    "PUT /fhir/:resourceType/:id": "unexercised"
+  },
+  "failures": {},
+  "unrouted": [],
+  "deviations": []
+}

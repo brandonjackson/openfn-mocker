@@ -1,0 +1,21 @@
+{
+  "spec": {
+    "adaptor": "msgraph",
+    "origin": "found-openapi"
+  },
+  "routes": {
+    "GET /v1.0/drives/:driveId": "conforming",
+    "GET /v1.0/drives/:driveId/items/:itemId": "conforming",
+    "GET /v1.0/drives/:driveId/items/:itemId/children": "conforming",
+    "GET /v1.0/drives/:driveId/items/:itemId/content": "conforming",
+    "GET /v1.0/drives/:driveId/root/children": "unexercised",
+    "GET /v1.0/me": "conforming",
+    "GET /v1.0/sites/:siteId/drives": "unexercised",
+    "POST /v1.0/*": "conforming",
+    "PUT /v1.0/_uploadSession/:id": "unexercised",
+    "PUT /v1.0/drives/:driveId/items/:itemId/content": "conforming"
+  },
+  "failures": {},
+  "unrouted": [],
+  "deviations": []
+}

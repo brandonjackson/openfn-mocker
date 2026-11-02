@@ -1,0 +1,37 @@
+{
+  "spec": {
+    "adaptor": "mpesa",
+    "origin": "generated"
+  },
+  "routes": {
+    "GET /oauth/v1/generate": "conforming",
+    "POST /mpesa/b2b/v1/paymentrequest": "failing",
+    "POST /mpesa/b2b/v1/remittax": "failing",
+    "POST /mpesa/c2b/v1/registerurl": "failing",
+    "POST /mpesa/stkpush/v1/processrequest": "failing",
+    "POST /mpesa/transactionstatus/v1/query": "failing"
+  },
+  "failures": {
+    "POST /mpesa/b2b/v1/paymentrequest": [
+      "request-schema /PartyA: must be string",
+      "request-schema /PartyB: must be string"
+    ],
+    "POST /mpesa/b2b/v1/remittax": [
+      "request-schema /PartyA: must be string"
+    ],
+    "POST /mpesa/c2b/v1/registerurl": [
+      "request-schema /ShortCode: must be string"
+    ],
+    "POST /mpesa/stkpush/v1/processrequest": [
+      "request-schema /PartyA: must be string",
+      "request-schema /PartyB: must be string",
+      "request-schema /PhoneNumber: must be string"
+    ],
+    "POST /mpesa/transactionstatus/v1/query": [
+      "request-schema /IdentifierType: must be string",
+      "request-schema /PartyA: must be string"
+    ]
+  },
+  "unrouted": [],
+  "deviations": []
+}

@@ -1,0 +1,28 @@
+{
+  "spec": {
+    "adaptor": "ibipimo",
+    "origin": "generated"
+  },
+  "routes": {
+    "GET /api/v1/samples/status": "conforming",
+    "GET /api/v1/sites": "failing",
+    "POST /api/v1/ask-for-vl-results": "failing",
+    "POST /api/v1/post-viral-load-requests": "failing"
+  },
+  "failures": {
+    "GET /api/v1/sites": [
+      "response-schema: must be array"
+    ],
+    "POST /api/v1/ask-for-vl-results": [
+      "request-schema: missing required property 'sample_uids'",
+      "request-schema: missing required property 'siteid'"
+    ],
+    "POST /api/v1/post-viral-load-requests": [
+      "request-schema: missing required property 'samples'",
+      "request-schema: missing required property 'siteid'",
+      "unknown-status: spec documents no response for status 201 (documented: 200)"
+    ]
+  },
+  "unrouted": [],
+  "deviations": []
+}

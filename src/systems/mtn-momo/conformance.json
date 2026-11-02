@@ -1,0 +1,17 @@
+{
+  "spec": {
+    "adaptor": "mtn-momo",
+    "origin": "generated"
+  },
+  "routes": {
+    "GET /collection/v1_0/account/balance": "conforming",
+    "GET /collection/v1_0/accountholder/msisdn/:msisdn/active": "conforming",
+    "GET /collection/v1_0/accountholder/msisdn/:msisdn/basicuserinfo": "unexercised",
+    "GET /collection/v1_0/requesttopay/:referenceId": "conforming",
+    "POST /collection/token/": "conforming",
+    "POST /collection/v1_0/requesttopay": "conforming"
+  },
+  "failures": {},
+  "unrouted": [],
+  "deviations": []
+}

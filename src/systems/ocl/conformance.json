@@ -1,0 +1,28 @@
+{
+  "spec": {
+    "adaptor": "ocl",
+    "origin": "converted"
+  },
+  "routes": {
+    "GET /orgs/:ownerId": "conforming",
+    "GET /orgs/:ownerId/collections/:repo/:version/concepts": "unexercised",
+    "GET /orgs/:ownerId/collections/:repo/:version/mappings": "failing",
+    "GET /orgs/:ownerId/sources": "failing",
+    "GET /orgs/:ownerId/sources/:repo": "conforming",
+    "GET /orgs/:ownerId/sources/:repo/:version/mappings": "unexercised",
+    "GET /orgs/:ownerId/sources/:repo/concepts": "failing"
+  },
+  "failures": {
+    "GET /orgs/:ownerId/collections/:repo/:version/mappings": [
+      "response-schema: must be object"
+    ],
+    "GET /orgs/:ownerId/sources": [
+      "response-schema: must be object"
+    ],
+    "GET /orgs/:ownerId/sources/:repo/concepts": [
+      "response-schema: must be object"
+    ]
+  },
+  "unrouted": [],
+  "deviations": []
+}

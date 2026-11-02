@@ -1,0 +1,23 @@
+{
+  "spec": {
+    "adaptor": "surveycto",
+    "origin": "found-openapi"
+  },
+  "routes": {
+    "GET /api/v1/forms/data/wide/json/:formId": "failing",
+    "GET /api/v2/datasets": "conforming",
+    "GET /api/v2/datasets/:datasetId": "unexercised",
+    "GET /api/v2/forms/data/wide/json/:formId": "unexercised",
+    "PATCH /api/v2/datasets/:datasetId/record": "conforming",
+    "POST /api/v2/datasets": "conforming",
+    "POST /api/v2/datasets/:datasetId/upload": "unexercised",
+    "PUT /api/v2/datasets/:datasetId": "unexercised"
+  },
+  "failures": {
+    "GET /api/v1/forms/data/wide/json/:formId": [
+      "response-schema: must be string"
+    ]
+  },
+  "unrouted": [],
+  "deviations": []
+}

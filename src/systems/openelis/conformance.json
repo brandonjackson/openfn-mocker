@@ -1,0 +1,27 @@
+{
+  "spec": {
+    "adaptor": "openelis",
+    "origin": "generated"
+  },
+  "routes": {
+    "DELETE /api/OpenELIS-Global/rest/fhir/:resourceType/:id": "unexercised",
+    "DELETE /fhir/:resourceType/:id": "unexercised",
+    "GET /api/OpenELIS-Global/rest/fhir/:resourceType": "unexercised",
+    "GET /api/OpenELIS-Global/rest/fhir/:resourceType/:id": "unexercised",
+    "GET /api/OpenELIS-Global/rest/fhir/metadata": "unexercised",
+    "GET /fhir/:resourceType": "conforming",
+    "GET /fhir/:resourceType/:id": "conforming",
+    "GET /fhir/metadata": "unexercised",
+    "POST /api/OpenELIS-Global/rest/fhir": "unexercised",
+    "POST /api/OpenELIS-Global/rest/fhir/:resourceType": "unexercised",
+    "POST /api/OpenELIS-Global/rest/fhir/:resourceType/_search": "unexercised",
+    "POST /fhir": "unexercised",
+    "POST /fhir/:resourceType": "conforming",
+    "POST /fhir/:resourceType/_search": "unexercised",
+    "PUT /api/OpenELIS-Global/rest/fhir/:resourceType/:id": "unexercised",
+    "PUT /fhir/:resourceType/:id": "unexercised"
+  },
+  "failures": {},
+  "unrouted": [],
+  "deviations": []
+}

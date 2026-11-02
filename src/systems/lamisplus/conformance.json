@@ -1,0 +1,15 @@
+{
+  "spec": {
+    "adaptor": "lamisplus",
+    "origin": "generated"
+  },
+  "routes": {
+    "GET /plugin/ehr/api/v1/patient": "conforming",
+    "GET /plugin/ehr/api/v1/patient/:id": "conforming",
+    "POST /core/api/v1/auth/login": "conforming",
+    "POST /plugin/ehr/api/v1/patient": "conforming"
+  },
+  "failures": {},
+  "unrouted": [],
+  "deviations": []
+}

@@ -1,0 +1,56 @@
+{
+  "spec": {
+    "adaptor": "kobotoolbox",
+    "origin": "found-openapi"
+  },
+  "routes": {
+    "DELETE /api/v2/assets/:uid/": "unexercised",
+    "DELETE /api/v2/assets/:uid/data/:id/": "unexercised",
+    "GET /api/v2/assets/": "failing",
+    "GET /api/v2/assets/:uid/": "failing",
+    "GET /api/v2/assets/:uid/data/": "conforming",
+    "GET /api/v2/assets/:uid/data/:id/": "unexercised",
+    "GET /api/v2/assets/:uid/data/:id/attachments/:attId/": "conforming",
+    "GET /api/v2/assets/:uid/deployment/": "failing",
+    "PATCH /api/v2/assets/:uid/": "unexercised",
+    "PATCH /api/v2/assets/:uid/data/:id/": "unexercised",
+    "PATCH /api/v2/assets/:uid/data/bulk/": "unexercised",
+    "PATCH /api/v2/assets/:uid/deployment/": "unexercised",
+    "POST /api/v2/assets/": "unexercised",
+    "POST /api/v2/assets/:uid/data/:id/duplicate/": "conforming",
+    "POST /api/v2/assets/:uid/deployment/": "unexercised",
+    "PUT /api/v2/assets/:uid/": "unexercised",
+    "PUT /api/v2/assets/:uid/deployment/": "unexercised"
+  },
+  "failures": {
+    "GET /api/v2/assets/": [
+      "response-schema /results/*/access_types: must be array",
+      "response-schema /results/*/deployed_versions/next: must be string",
+      "response-schema /results/*/deployed_versions/previous: must be string",
+      "response-schema /results/*/permissions/*: must be string",
+      "response-schema /results/*/settings/country/*: must be string",
+      "response-schema /results/*/summary/default_translation: must be string",
+      "response-schema /results/*/summary/languages/*: must be string"
+    ],
+    "GET /api/v2/assets/:uid/": [
+      "response-schema /access_types: must be array",
+      "response-schema /deployed_versions/next: must be string",
+      "response-schema /deployed_versions/previous: must be string",
+      "response-schema /permissions/*: must be string",
+      "response-schema /settings/country/*: must be string",
+      "response-schema /summary/default_translation: must be string",
+      "response-schema /summary/languages/*: must be string"
+    ],
+    "GET /api/v2/assets/:uid/deployment/": [
+      "response-schema /asset/access_types: must be array",
+      "response-schema /asset/deployed_versions/next: must be string",
+      "response-schema /asset/deployed_versions/previous: must be string",
+      "response-schema /asset/permissions/*: must be string",
+      "response-schema /asset/settings/country/*: must be string",
+      "response-schema /asset/summary/default_translation: must be string",
+      "response-schema /asset/summary/languages/*: must be string"
+    ]
+  },
+  "unrouted": [],
+  "deviations": []
+}

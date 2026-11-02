@@ -1,0 +1,17 @@
+{
+  "spec": {
+    "adaptor": "stripe",
+    "origin": "found-openapi"
+  },
+  "routes": {
+    "GET /v1/charges": "conforming",
+    "GET /v1/charges/:id": "conforming",
+    "GET /v1/customers": "conforming",
+    "GET /v1/customers/:id": "conforming",
+    "POST /v1/charges": "conforming",
+    "POST /v1/customers": "conforming"
+  },
+  "failures": {},
+  "unrouted": [],
+  "deviations": []
+}

@@ -1,0 +1,20 @@
+{
+  "spec": {
+    "adaptor": "vtiger",
+    "origin": "generated"
+  },
+  "routes": {
+    "GET /webservice.php": "failing",
+    "POST /webservice.php": "failing"
+  },
+  "failures": {
+    "GET /webservice.php": [
+      "unknown-operation: no operation in the spec matches GET /webservice.php"
+    ],
+    "POST /webservice.php": [
+      "unknown-operation: no operation in the spec matches POST /webservice.php"
+    ]
+  },
+  "unrouted": [],
+  "deviations": []
+}

@@ -1,0 +1,22 @@
+{
+  "spec": {
+    "adaptor": "divoc",
+    "origin": "converted"
+  },
+  "routes": {
+    "DELETE /v1/certificates/:preEnrollmentCode": "conforming",
+    "GET /v1/certificates": "conforming",
+    "GET /v1/ping": "conforming",
+    "GET /v1/preEnrollments": "conforming",
+    "GET /v1/preEnrollments/:preEnrollmentCode": "conforming",
+    "GET /v1/programs/current": "conforming",
+    "GET /v1/users/me": "conforming",
+    "GET /v1/vaccinators": "conforming",
+    "POST /authorize": "conforming",
+    "POST /keycloak/auth/realms/divoc/protocol/openid-connect/token": "unexercised",
+    "POST /v1/certify": "conforming"
+  },
+  "failures": {},
+  "unrouted": [],
+  "deviations": []
+}

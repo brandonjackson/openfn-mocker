@@ -1,0 +1,29 @@
+{
+  "spec": {
+    "adaptor": "maximo",
+    "origin": "generated"
+  },
+  "routes": {
+    "GET /oslc/os/:os": "failing",
+    "GET /oslc/os/:os/:id": "failing",
+    "POST /collector": "unexercised",
+    "POST /oslc/os/:os": "failing",
+    "POST /oslc/os/:os/:id": "failing"
+  },
+  "failures": {
+    "GET /oslc/os/:os": [
+      "unknown-operation: no operation in the spec matches GET /oslc/os/mxasset"
+    ],
+    "GET /oslc/os/:os/:id": [
+      "unknown-operation: no operation in the spec matches GET /oslc/os/mxasset/11430"
+    ],
+    "POST /oslc/os/:os": [
+      "unknown-operation: no operation in the spec matches POST /oslc/os/mxwo"
+    ],
+    "POST /oslc/os/:os/:id": [
+      "unknown-operation: no operation in the spec matches POST /oslc/os/mxwo/1001"
+    ]
+  },
+  "unrouted": [],
+  "deviations": []
+}

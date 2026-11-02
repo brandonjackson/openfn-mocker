@@ -1,0 +1,12 @@
+{
+  "spec": {
+    "adaptor": "msupply",
+    "origin": "converted"
+  },
+  "routes": {
+    "POST /graphql": "conforming"
+  },
+  "failures": {},
+  "unrouted": [],
+  "deviations": []
+}

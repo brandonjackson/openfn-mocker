@@ -1,0 +1,26 @@
+{
+  "spec": {
+    "adaptor": "monnify",
+    "origin": "generated"
+  },
+  "routes": {
+    "GET /api/v1/banks": "failing",
+    "GET /api/v2/disbursements/search-transactions": "conforming",
+    "GET /api/v2/transactions/:reference": "failing",
+    "POST /api/v1/auth/login": "conforming",
+    "POST /api/v1/merchant/transactions/init-transaction": "failing"
+  },
+  "failures": {
+    "GET /api/v1/banks": [
+      "unknown-operation: no operation in the spec matches GET /api/v1/banks"
+    ],
+    "GET /api/v2/transactions/:reference": [
+      "unknown-operation: no operation in the spec matches GET /api/v2/transactions/MNFY-TXN-0000000001"
+    ],
+    "POST /api/v1/merchant/transactions/init-transaction": [
+      "unknown-operation: no operation in the spec matches POST /api/v1/merchant/transactions/init-transaction"
+    ]
+  },
+  "unrouted": [],
+  "deviations": []
+}

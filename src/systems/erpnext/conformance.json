@@ -1,0 +1,17 @@
+{
+  "spec": {
+    "adaptor": "erpnext",
+    "origin": "generated"
+  },
+  "routes": {
+    "DELETE /api/resource/:doctype/:name": "conforming",
+    "GET /api/method/frappe.client.get_count": "conforming",
+    "GET /api/resource/:doctype": "conforming",
+    "GET /api/resource/:doctype/:name": "conforming",
+    "POST /api/resource/:doctype": "conforming",
+    "PUT /api/resource/:doctype/:name": "conforming"
+  },
+  "failures": {},
+  "unrouted": [],
+  "deviations": []
+}

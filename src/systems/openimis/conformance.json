@@ -1,0 +1,20 @@
+{
+  "spec": {
+    "adaptor": "openimis",
+    "origin": "generated"
+  },
+  "routes": {
+    "DELETE /api/api_fhir_r4/:resourceType/:id": "unexercised",
+    "GET /api/api_fhir_r4/:resourceType": "conforming",
+    "GET /api/api_fhir_r4/:resourceType/:id": "conforming",
+    "GET /api/api_fhir_r4/metadata": "unexercised",
+    "POST /api/api_fhir_r4": "unexercised",
+    "POST /api/api_fhir_r4/:resourceType": "unexercised",
+    "POST /api/api_fhir_r4/:resourceType/_search": "unexercised",
+    "POST /api/api_fhir_r4/login/": "conforming",
+    "PUT /api/api_fhir_r4/:resourceType/:id": "unexercised"
+  },
+  "failures": {},
+  "unrouted": [],
+  "deviations": []
+}

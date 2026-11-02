@@ -1,0 +1,26 @@
+{
+  "spec": {
+    "adaptor": "openlmis",
+    "origin": "converted"
+  },
+  "routes": {
+    "GET /api/facilities": "conforming",
+    "GET /api/facilities/:id": "unexercised",
+    "GET /api/orderables": "conforming",
+    "GET /api/orderables/:id": "unexercised",
+    "GET /api/programs": "unexercised",
+    "GET /api/programs/:id": "unexercised",
+    "GET /api/requisitions": "conforming",
+    "GET /api/requisitions/:id": "unexercised",
+    "POST /api/oauth/token": "conforming",
+    "POST /api/requisitions": "unexercised",
+    "POST /api/requisitions/initiate": "conforming",
+    "PUT /api/facilities/:id": "unexercised",
+    "PUT /api/orderables/:id": "unexercised",
+    "PUT /api/programs/:id": "unexercised",
+    "PUT /api/requisitions/:id": "unexercised"
+  },
+  "failures": {},
+  "unrouted": [],
+  "deviations": []
+}

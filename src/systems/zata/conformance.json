@@ -1,0 +1,25 @@
+{
+  "spec": {
+    "adaptor": "zata",
+    "origin": "generated"
+  },
+  "routes": {
+    "GET /v1/transaction/:id": "failing",
+    "GET /v1/transactions": "failing",
+    "POST /v1/transaction/sale": "failing"
+  },
+  "failures": {
+    "GET /v1/transaction/:id": [
+      "response-schema /status: must be boolean"
+    ],
+    "GET /v1/transactions": [
+      "unknown-operation: no operation in the spec matches GET /v1/transactions"
+    ],
+    "POST /v1/transaction/sale": [
+      "request-schema: missing required property 'items'",
+      "unknown-status: spec documents no response for status 201 (documented: 200, 404)"
+    ]
+  },
+  "unrouted": [],
+  "deviations": []
+}

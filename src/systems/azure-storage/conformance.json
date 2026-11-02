@@ -1,0 +1,13 @@
+{
+  "spec": {
+    "adaptor": "azure-storage",
+    "origin": "converted"
+  },
+  "routes": {
+    "GET /:container/*": "conforming",
+    "PUT /:container/*": "conforming"
+  },
+  "failures": {},
+  "unrouted": [],
+  "deviations": []
+}

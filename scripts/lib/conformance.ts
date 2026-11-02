@@ -12,7 +12,9 @@
  *     by the real adaptor (`pnpm test:usage -- --capture=<dir>`).
  *   - `guideExchanges(plugin)` boots one system in-process and fires every
  *     example request from its sandbox guide (`guide.ts`) through the mock,
- *     returning the captured exchanges. No network, no CLI, deterministic.
+ *     returning the captured exchanges, the route that served each, and every
+ *     route the mock serves (the yardstick's denominator; see yardstick.ts).
+ *     No network, no CLI, deterministic.
  *
  * Nothing here imports the engine at runtime; the `Exchange` type is the only
  * coupling, so this file also serves `pnpm test` without touching api-specs.
@@ -38,8 +40,13 @@ const isJsonMedia = (ct: string): boolean => {
  * `createSystemServer`, before `listen`/`inject`). The mock's own `/_admin`
  * API is skipped: it is not part of the impersonated system's surface.
  */
-export function attachExchangeCapture(app: FastifyInstance): { exchanges: Exchange[] } {
+export function attachExchangeCapture(app: FastifyInstance): {
+  exchanges: Exchange[];
+  /** Parallel to `exchanges`: the mock route template that served each one ('GET /api/:id'), or undefined if none matched. */
+  routeOf: (string | undefined)[];
+} {
   const exchanges: Exchange[] = [];
+  const routeOf: (string | undefined)[] = [];
   app.addHook('onSend', async (request, reply, payload) => {
     const path = request.url;
     const pathOnly = path.split(/[?#]/)[0];
@@ -69,9 +76,11 @@ export function attachExchangeCapture(app: FastifyInstance): { exchanges: Exchan
       }
     }
     exchanges.push(ex);
+    const template = request.routeOptions?.url;
+    routeOf.push(template ? `${request.method} ${template}` : undefined);
     return payload;
   });
-  return { exchanges };
+  return { exchanges, routeOf };
 }
 
 /**
@@ -112,9 +121,13 @@ export function resolveGuideExamples(plugin: MockSystemPlugin, config: SystemCon
 export async function guideExchanges(
   plugin: MockSystemPlugin,
   config: SystemConfig = harnessConfig(plugin.name)
-): Promise<{ exchanges: Exchange[]; examples: SandboxExample[] }> {
+): Promise<GuideRun> {
   const examples = resolveGuideExamples(plugin, config);
-  const { app } = await createSystemServer(plugin, config, { logLevel: 'silent' });
+  const routes = new Set<string>();
+  const { app } = await createSystemServer(plugin, config, {
+    logLevel: 'silent',
+    beforeRegister: (a) => a.addHook('onRoute', (r) => collectRoute(routes, r.method, r.url)),
+  });
   const capture = attachExchangeCapture(app);
   try {
     for (const ex of examples) {
@@ -126,5 +139,22 @@ export async function guideExchanges(
   } finally {
     await app.close();
   }
-  return { exchanges: capture.exchanges, examples };
+  return { exchanges: capture.exchanges, routeOf: capture.routeOf, routes: [...routes].sort(), examples };
+}
+
+export interface GuideRun {
+  exchanges: Exchange[];
+  /** Parallel to `exchanges`: the mock route that served each one (undefined: no route matched). */
+  routeOf: (string | undefined)[];
+  /** Every route the mock serves for this system, as 'GET /api/:id' (HEAD/OPTIONS and /_admin excluded). */
+  routes: string[];
+  examples: SandboxExample[];
+}
+
+function collectRoute(into: Set<string>, method: string | string[], url: string): void {
+  if (url === '/_admin' || url.includes('/_admin/')) return;
+  for (const m of ([] as string[]).concat(method)) {
+    if (m === 'HEAD' || m === 'OPTIONS') continue;
+    into.add(`${m} ${url}`);
+  }
 }

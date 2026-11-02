@@ -1,0 +1,14 @@
+{
+  "spec": {
+    "adaptor": "progres",
+    "origin": "synthesized"
+  },
+  "routes": {
+    "POST /Feedback": "conforming",
+    "POST /ReceiveDecisionOutgoingReferral": "conforming",
+    "POST /ReceiveIncomingReferral": "conforming"
+  },
+  "failures": {},
+  "unrouted": [],
+  "deviations": []
+}

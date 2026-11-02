@@ -1,0 +1,28 @@
+{
+  "spec": {
+    "adaptor": "pesapal",
+    "origin": "generated"
+  },
+  "routes": {
+    "GET /v3/api/Transactions/GetTransactionStatus": "failing",
+    "POST /v3/api/Auth/RequestToken": "failing",
+    "POST /v3/api/Transactions/SubmitOrderRequest": "failing",
+    "POST /v3/api/URLSetup/RegisterIPN": "failing"
+  },
+  "failures": {
+    "GET /v3/api/Transactions/GetTransactionStatus": [
+      "unknown-operation: no operation in the spec matches GET /v3/api/Transactions/GetTransactionStatus"
+    ],
+    "POST /v3/api/Auth/RequestToken": [
+      "unknown-operation: no operation in the spec matches POST /v3/api/Auth/RequestToken"
+    ],
+    "POST /v3/api/Transactions/SubmitOrderRequest": [
+      "unknown-operation: no operation in the spec matches POST /v3/api/Transactions/SubmitOrderRequest"
+    ],
+    "POST /v3/api/URLSetup/RegisterIPN": [
+      "unknown-operation: no operation in the spec matches POST /v3/api/URLSetup/RegisterIPN"
+    ]
+  },
+  "unrouted": [],
+  "deviations": []
+}

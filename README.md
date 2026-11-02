@@ -792,6 +792,7 @@ Root routes on the shared port aggregate across systems:
 | Method | Path | Description |
 |--------|------|-------------|
 | GET | `/` | Browser (`Accept: text/html`): interactive API sandbox. API clients: `{ name, systems: [{ name, path }] }`. |
+| GET | `/status` | Spec-conformance status of every shipped system, rated from its ledger (see [Conformance status page](#conformance-status-page)). Browser: the page. API clients: `{ totals, systems }`. |
 | GET | `/_admin/systems` | `[{ name, path, status }]` for every mounted system. |
 | GET | `/_admin/requests` | Recent requests across **all** systems, **most recent first**, merged into one timeline. `?limit=` caps how many come back (default 200, max 2000); `?system=` narrows to one system. Powers the sandbox's live [Request log](#browser-sandbox). |
 | POST | `/_admin/reset-all` | Reset every enabled system's store. |
@@ -1171,13 +1172,55 @@ check it in the spec repo directly with
 `pnpm specs conform <adaptor> --exchanges=<file>`. A file recorded from a live
 system with a real credential goes through exactly the same path.
 
-The check is **not part of `pnpm test`**: it depends on the spec repo's
-contents, and the current sweep across all systems finds 18 of 62 conforming
-(see the [Roadmap](#roadmap)). Stripe is the worked example of getting a system
-to zero: every violation was the mock's, and closing them (spec-complete seed
-records, a shared record builder for the create routes, a full 404 envelope)
-took one pass; see `src/systems/stripe/seed.ts`. It exits non-zero on any violation so a single
-system can be gated once it is clean.
+**The yardstick.** Violation counts alone flatter a mock whose guide barely
+touches it, so the headline is measured against the mock's own routes: each one
+is `conforming` (a guide example hits it and it passes), `deviating` (its only
+violations are accepted, evidenced spec errors), `failing`, or `unexercised`
+(nothing reaches it). **Verified** is conforming plus deviating. The current
+sweep: **219 of 509 mock routes verified (43%); 16 of 62 systems fully
+verified; 67 failing; 223 unexercised.** The running mock shows the whole
+picture, rated per system, at [`/status`](#conformance-status-page).
+
+**The ledgers.** Each system has `src/systems/<name>/conformance.json`: a
+snapshot of its route states (written by `--update-baseline`) plus its
+hand-written accepted deviations, each with a category, reason and evidence.
+CI runs `pnpm test:conformance -- --check-baseline`, which fails if a verified
+route regresses, a ledger snapshot is out of date, or a deviation no longer
+matches any violation. That makes it a ratchet: the number can only go up, and
+an excuse cannot outlive the problem it covers. The step-by-step for working a
+system is in [`AGENTS.md`](AGENTS.md) ("Conformance work order").
+
+```bash
+pnpm test:conformance -- --system kobotoolbox --routes   # every route and its state
+pnpm test:conformance -- --system kobotoolbox --update-baseline
+pnpm test:conformance -- --check-baseline                 # what CI runs
+```
+
+Stripe is the worked example of getting a system to zero: every violation was
+the mock's, and closing them (spec-complete seed records, a shared record
+builder for the create routes, a full 404 envelope) took one pass; see
+`src/systems/stripe/seed.ts`.
+
+### Conformance status page
+
+`GET /status` on a running mock lists every system the mocker ships, whether or
+not it is enabled, rated from its ledger:
+
+| rating | rule |
+|--------|------|
+| Verified | every route verified, every guide request routed |
+| Strong | 75% or more of routes verified |
+| Partial | 40% to 75% |
+| Weak | under 40% |
+| Unverified | no route verified yet |
+| Not measured | no ledger (no guide examples, or no spec) |
+
+Each row expands to its routes, the violations behind each failing one, and
+its accepted deviations with their evidence. It also shows which kind of spec
+the system is measured against, because a vendor-published OpenAPI is stronger
+evidence than one written from HTML docs. API clients get the same data as
+JSON from the same URL. The build copies the ledgers into `dist/`
+(`scripts/copy-ledgers.mjs`), so the page needs no spec at runtime.
 
 **Start with the systems whose spec is settled.** A violation only tells you
 something if the spec it is measured against is trustworthy, so the systems
@@ -1185,10 +1228,12 @@ worth driving to zero first are the ones `pnpm specs report` puts in its `ok`
 bucket — full coverage, complete, and either a vendor-published OpenAPI or a
 conversion of a vendor machine spec. Fourteen of them have a mock here (asana,
 azure-storage, dhis2, gemini, gmail, googledrive, googlesheets, kobotoolbox,
-mailchimp, mailgun, ocl, odk, stripe, twilio), ten of which now conform. Every
-violation left in those ten-plus-four is a place the *vendor's own document*
-disagrees with the system it describes, each checked against the vendor's source
-and written into that adaptor's `source.json` notes in `openfn-api-specs`:
+mailchimp, mailgun, ocl, odk, stripe, twilio), ten of which are free of
+violations. Every violation left in the other four is a place the *vendor's own
+document* disagrees with the system it describes, each checked against the
+vendor's source and written into that adaptor's `source.json` notes in
+`openfn-api-specs` (they belong in those systems' ledgers as `vendor-spec-wrong`
+deviations next):
 
 | system | left | what the spec gets wrong |
 |--------|------|--------------------------|
@@ -1264,32 +1309,18 @@ box:
   returns, so `createReferrals` always throws `Cannot read properties of
   undefined (reading 'body')` — a bug in `@openfn/language-primero` (confirmed
   against 4.1.2), not something the mock's response shape can work around.
-- **Spec conformance baseline.** [`pnpm test:conformance`](#checking-spec-conformance)
-  currently finds 18 of 62 systems conforming to their `openfn-api-specs` spec,
-  with 207 violations in total. The systems whose spec is settled (the `ok`
-  bucket of `pnpm specs report`) were taken first: ten of the fourteen with a
-  mock here are now clean, and the rest are the vendor documents' own errors,
-  listed in [Checking spec conformance](#checking-spec-conformance) and recorded
-  in each adaptor's `source.json`. The remaining ~160 violations are on systems
-  whose spec was written from vendor docs by hand, and fall into three buckets,
-  each needing different work: **mock gaps** (ERPNext and the mock disagree on
-  `200` vs `201` for a create; lamisplus, mpesa and ibipimo have field-level
-  mismatches), **spec gaps** (FHIR `/metadata` and `_history`, OpenMRS
-  `/session` and its `fhir2` facade are served by the mock but absent from the
-  spec), and **modelling disagreements** where the two describe the same system
-  through different APIs (Odoo/OpenSPP XML-RPC vs the spec's JSON-RPC/REST view;
-  OpenELIS FHIR facade vs its REST API; Maximo `/oslc` vs `/maxrest`; vTiger
-  `?operation=` vs path operations; the `dagu` spec's paths belong to a
-  different system altogether). Work through them per system as Stripe was,
-  fixing the mock or the spec as appropriate, until the check can gate CI.
-- **Gate CI on the systems that conform.** The check exits non-zero on any
-  violation, so the eighteen clean systems could be gated today
-  (`pnpm test:conformance -- --system asana,gmail,stripe,twilio,…`) to stop them
-  regressing. What stands in the way is that a vendor document's own errors
-  (above) are indistinguishable from a real regression in the report: a
-  known-deviations list per adaptor in `openfn-api-specs` — asserted, so it
-  fails when a deviation is *fixed* upstream — would let the whole sweep gate
-  rather than a hand-kept list of system names.
+- **Drive the conformance yardstick to 100%.** 219 of 509 mock routes are
+  verified today (see [Checking spec conformance](#checking-spec-conformance)
+  and `/status`). The work splits three ways: **unexercised routes** (223) need
+  guide examples; **failing routes** (67) need the mock fixed, or the spec
+  fixed or a deviation recorded where the vendor's document is wrong (the
+  kobotoolbox/dhis2/odk/ocl cases above); and **modelling disagreements**
+  where the mock and spec describe the same system through different APIs
+  (Odoo/OpenSPP XML-RPC vs JSON-RPC/REST; OpenELIS FHIR facade vs REST; Maximo
+  `/oslc` vs `/maxrest`; vTiger `?operation=` vs path operations; the `dagu`
+  spec's paths belong to a different system). Each system is independent work
+  with its own ledger, so it parallelises cleanly; see AGENTS.md "Conformance
+  work order".
 - **Credential value validation (optional).** Auth is presence-checked, never
   value-checked, so negative-path tests (wrong password, expired or refreshed
   token) can't be exercised. An opt-in "strict credential" mode would let
