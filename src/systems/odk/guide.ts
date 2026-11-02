@@ -51,5 +51,17 @@ export const guide: SystemGuide = {
       path: '/v1/projects/1/forms/household-survey/submissions/uuid:sub-0001/attachments/example.png',
       label: 'Download a submission attachment (bytes)',
     },
+    {
+      id: 'project',
+      method: 'GET',
+      path: '/v1/projects/1',
+      label: 'Get one project',
+    },
+    {
+      id: 'form',
+      method: 'GET',
+      path: '/v1/projects/1/forms/household-survey',
+      label: 'Get one form’s metadata',
+    },
   ],
 };
