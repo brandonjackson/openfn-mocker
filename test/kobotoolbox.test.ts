@@ -24,7 +24,8 @@ describe('kobotoolbox (DRF-style envelopes)', () => {
     const res = await app.inject({ method: 'GET', url: '/api/v2/assets/?format=json' });
     expect(res.statusCode).toBe(200);
     const body = res.json();
-    expect(body.count).toBe(3);
+    // 3 deployed surveys + 1 draft.
+    expect(body.count).toBe(4);
     expect(body.next).toBeNull();
     expect(body.previous).toBeNull();
     expect(Array.isArray(body.results)).toBe(true);
@@ -39,6 +40,13 @@ describe('kobotoolbox (DRF-style envelopes)', () => {
     // Full Asset serializer fields a real /assets/ response returns.
     expect(asset.kind).toBe('asset');
     expect(asset.deployment_status).toBe('deployed');
+    // KPI's openrosa backend link set; a draft has none.
+    expect(Object.keys(asset.deployment__data_download_links).sort()).toEqual(
+      ['csv', 'csv_legacy', 'xls', 'xls_legacy', 'zip_legacy']
+    );
+    const draft = body.results.find((a: any) => a.uid === 'aMarketPrice04');
+    expect(draft.has_deployment).toBe(false);
+    expect(draft.deployment__data_download_links).toEqual({});
     expect(asset.data).toBe(`${asset.url}data/`);
     expect(asset.owner).toContain('/api/v2/users/');
     expect(Array.isArray(asset.summary.columns)).toBe(true);
@@ -171,7 +179,7 @@ describe('kobotoolbox (DRF-style envelopes)', () => {
       url: '/api/v2/assets/?format=json&asset_type=survey',
     });
     expect(res.statusCode).toBe(200);
-    expect(res.json().count).toBe(3);
+    expect(res.json().count).toBe(4);
     const none = await app.inject({
       method: 'GET',
       url: '/api/v2/assets/?asset_type=question',
@@ -237,10 +245,59 @@ describe('kobotoolbox (DRF-style envelopes)', () => {
     const uid = create.json().uid;
     expect(typeof uid).toBe('string');
 
-    // Deploy it, then confirm deployment info flips active.
-    const deploy = await app.inject({ method: 'POST', url: `/api/v2/assets/${uid}/deployment/` });
+    // A draft has no deployment yet.
+    const none = await app.inject({ method: 'GET', url: `/api/v2/assets/${uid}/deployment/` });
+    expect(none.statusCode).toBe(404);
+    const early = await app.inject({
+      method: 'PATCH',
+      url: `/api/v2/assets/${uid}/deployment/`,
+      payload: { active: false },
+    });
+    expect(early.statusCode).toBe(405);
+
+    // Deploy it (active as asked), then confirm deployment info flips active.
+    const deploy = await app.inject({
+      method: 'POST',
+      url: `/api/v2/assets/${uid}/deployment/`,
+      payload: { active: true },
+    });
     expect(deploy.statusCode).toBe(200);
     expect(deploy.json().active).toBe(true);
+    expect(deploy.json().asset.deployment_status).toBe('deployed');
+
+    // A second POST is refused: KPI wants PATCH for an existing deployment.
+    const again = await app.inject({
+      method: 'POST',
+      url: `/api/v2/assets/${uid}/deployment/`,
+      payload: { active: true },
+    });
+    expect(again.statusCode).toBe(405);
+
+    // PATCH { active: false } archives it.
+    const archive = await app.inject({
+      method: 'PATCH',
+      url: `/api/v2/assets/${uid}/deployment/`,
+      payload: { active: false },
+    });
+    expect(archive.statusCode).toBe(200);
+    expect(archive.json().active).toBe(false);
+    expect(archive.json().asset.deployment_status).toBe('archived');
+
+    // PUT needs asset_type, and keeps the fields it does not send.
+    const badPut = await app.inject({
+      method: 'PUT',
+      url: `/api/v2/assets/${uid}/`,
+      payload: { name: 'No type' },
+    });
+    expect(badPut.statusCode).toBe(400);
+    const put = await app.inject({
+      method: 'PUT',
+      url: `/api/v2/assets/${uid}/`,
+      payload: { name: 'Put Survey', asset_type: 'survey' },
+    });
+    expect(put.statusCode).toBe(200);
+    expect(put.json().name).toBe('Put Survey');
+    expect(put.json().has_deployment).toBe(true);
 
     const patch = await app.inject({
       method: 'PATCH',
@@ -260,16 +317,33 @@ describe('kobotoolbox (DRF-style envelopes)', () => {
     const res = await app.inject({
       method: 'PATCH',
       url: `/api/v2/assets/${ASSET_UID}/data/bulk/`,
-      payload: { submission_ids: ids, data: { reviewed: true } },
+      payload: { payload: { submission_ids: ids, data: { reviewed: true, 'meta/instanceID': 'x' } } },
     });
     expect(res.statusCode).toBe(200);
     expect(res.json().successes).toBe(2);
+    expect(res.json().results).toHaveLength(2);
+    expect(res.json().results[0].status_code).toBe(201);
+
+    // KPI reads everything from `payload`; a bare body is a 400.
+    const bare = await app.inject({
+      method: 'PATCH',
+      url: `/api/v2/assets/${ASSET_UID}/data/bulk/`,
+      payload: { submission_ids: ids, data: { reviewed: true } },
+    });
+    expect(bare.statusCode).toBe(400);
 
     const check = await app.inject({
       method: 'GET',
       url: `/api/v2/assets/${ASSET_UID}/data/${ids[0]}/`,
     });
     expect(check.json().reviewed).toBe(true);
+    // The edit is a new instance: new instanceID, old one kept as deprecatedID,
+    // and the protected meta/ key in the edit was ignored.
+    const before = list.json().results[0];
+    expect(check.json()['meta/instanceID']).not.toBe(before['meta/instanceID']);
+    expect(check.json()['meta/instanceID']).not.toBe('x');
+    expect(check.json()['meta/deprecatedID']).toBe(before['meta/instanceID']);
+    expect(check.json()['meta/rootUuid']).toBe(before['meta/rootUuid']);
   });
 
   it('surfaces a submission attachment and downloads its bytes', async () => {

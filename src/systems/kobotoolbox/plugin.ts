@@ -189,8 +189,13 @@ const plugin: MockSystemPlugin = {
       return shapeAsset(store, asset, port);
     });
 
-    // PATCH/PUT /api/v2/assets/:uid/ — update an asset (http.patch/put).
-    const updateAsset = (merge: boolean) => async (req: any, reply: any) => {
+    // PATCH/PUT /api/v2/assets/:uid/ — update an asset (http.request('PATCH')
+    // / http.put). KPI's AssetViewSet is a ModelViewSet, so both reach
+    // AssetSerializer.update(): DRF only writes the validated fields, so a PUT
+    // keeps every field it does not send, exactly like a PATCH. The one
+    // difference is validation: a full (non-partial) PUT must carry the
+    // serializer's required `asset_type`.
+    const updateAsset = (partial: boolean) => async (req: any, reply: any) => {
       const uid = (req.params as Record<string, any>).uid;
       const existing = store.get('assets', uid);
       if (existing === undefined) {
@@ -198,9 +203,11 @@ const plugin: MockSystemPlugin = {
         return { detail: 'Not found.' };
       }
       const body = (req.body ?? {}) as Record<string, any>;
-      const updated = merge
-        ? { ...existing, ...body, uid, url: assetUrl(port, uid) }
-        : { ...body, uid, url: assetUrl(port, uid) };
+      if (!partial && body.asset_type === undefined) {
+        reply.code(400);
+        return { asset_type: ['This field is required.'] };
+      }
+      const updated = { ...existing, ...body, uid, url: assetUrl(port, uid) };
       updated.date_modified = new Date().toISOString();
       store.replace('assets', uid, updated);
       return shapeAsset(store, updated, port);
@@ -220,30 +227,59 @@ const plugin: MockSystemPlugin = {
     });
 
     // GET /api/v2/assets/:uid/deployment/ — deployment info (getDeploymentInfo).
+    // KPI raises Http404 for an asset that has never been deployed.
     app.get('/api/v2/assets/:uid/deployment/', async (req, reply) => {
       const uid = (req.params as Record<string, any>).uid;
       const asset = store.get('assets', uid);
-      if (asset === undefined) {
+      if (asset === undefined || !asset.has_deployment) {
         reply.code(404);
         return { detail: 'Not found.' };
       }
       return deploymentInfo(store, asset, port);
     });
 
-    // POST/PUT/PATCH /api/v2/assets/:uid/deployment/ — (re)deploy an asset.
-    const deploy = async (req: any, reply: any) => {
+    // POST /api/v2/assets/:uid/deployment/ — first deployment of a draft.
+    // PATCH /api/v2/assets/:uid/deployment/ — redeploy, or (un)archive with
+    // `{ active }`. KPI's deployment action takes GET/POST/PATCH only (no
+    // PUT), answers 405 to a POST on an already-deployed asset ("Use PATCH")
+    // and to a PATCH on a draft ("Use POST"), and deploys inactive unless the
+    // POST says `active: true`.
+    app.post('/api/v2/assets/:uid/deployment/', async (req, reply) => {
       const uid = (req.params as Record<string, any>).uid;
       const asset = store.get('assets', uid);
       if (asset === undefined) {
         reply.code(404);
         return { detail: 'Not found.' };
       }
-      store.update('assets', uid, { deployment__active: true, has_deployment: true });
+      if (asset.has_deployment) {
+        reply.code(405);
+        return { detail: 'Use PATCH to update an existing deployment' };
+      }
+      const body = (req.body ?? {}) as Record<string, any>;
+      store.update('assets', uid, {
+        deployment__active: body.active === true,
+        has_deployment: true,
+        date_modified: new Date().toISOString(),
+      });
       return deploymentInfo(store, store.get('assets', uid), port);
-    };
-    app.post('/api/v2/assets/:uid/deployment/', deploy);
-    app.put('/api/v2/assets/:uid/deployment/', deploy);
-    app.patch('/api/v2/assets/:uid/deployment/', deploy);
+    });
+    app.patch('/api/v2/assets/:uid/deployment/', async (req, reply) => {
+      const uid = (req.params as Record<string, any>).uid;
+      const asset = store.get('assets', uid);
+      if (asset === undefined) {
+        reply.code(404);
+        return { detail: 'Not found.' };
+      }
+      if (!asset.has_deployment) {
+        reply.code(405);
+        return { detail: 'Use POST to create a new deployment' };
+      }
+      const body = (req.body ?? {}) as Record<string, any>;
+      const patch: Record<string, any> = { date_modified: new Date().toISOString() };
+      if (typeof body.active === 'boolean') patch.deployment__active = body.active;
+      store.update('assets', uid, patch);
+      return deploymentInfo(store, store.get('assets', uid), port);
+    });
 
     // GET /api/v2/assets/:uid/data/ — submissions for an asset (DRF envelope).
     // Supports ?start= &limit= (paging), ?query= (JSON Mongo filter) and
@@ -273,8 +309,14 @@ const plugin: MockSystemPlugin = {
     });
 
     // PATCH /api/v2/assets/:uid/data/bulk/ — bulk-update submissions
-    // (http.request('PATCH', 'assets/{uid}/data/bulk/', { data: { submission_ids, data } })).
-    // Static 'bulk' wins over the :id data route below.
+    // (http.request('PATCH', 'assets/{uid}/data/bulk/', { data: { payload: {
+    // submission_ids, data } } })). KPI's DataBulkActionsValidator reads
+    // everything from a `payload` object; each edited submission is re-stored
+    // as a new instance (fresh _uuid / meta/instanceID, the old one kept as
+    // meta/deprecatedID, meta/rootUuid unchanged), protected XML fields
+    // (__version__, formhub/*, meta/*) are dropped from the edit, and the
+    // response reports a per-submission result. Static 'bulk' wins over the
+    // :id data route below.
     app.patch('/api/v2/assets/:uid/data/bulk/', async (req, reply) => {
       const uid = (req.params as Record<string, any>).uid;
       if (store.get('assets', uid) === undefined) {
@@ -282,17 +324,42 @@ const plugin: MockSystemPlugin = {
         return { detail: 'Not found.' };
       }
       const body = (req.body ?? {}) as Record<string, any>;
-      const ids: any[] = Array.isArray(body.submission_ids) ? body.submission_ids : [];
-      const patch = (body.data && typeof body.data === 'object' ? body.data : {}) as Record<string, any>;
-      let successes = 0;
-      for (const id of ids) {
-        const sub = store.get('submissions', String(id));
-        if (sub && sub._xform_id_string === uid) {
-          store.update('submissions', String(id), patch);
-          successes++;
-        }
+      const payload = body.payload;
+      if (!payload || typeof payload !== 'object') {
+        reply.code(400);
+        return { payload: ['This field is required.'] };
       }
-      return { count: ids.length, successes, failures: ids.length - successes };
+      const ids: any[] = Array.isArray(payload.submission_ids) ? payload.submission_ids : [];
+      const raw = (payload.data && typeof payload.data === 'object' ? payload.data : {}) as Record<string, any>;
+      const protectedRoots = ['__version__', 'formhub', 'meta'];
+      const patch = Object.fromEntries(
+        Object.entries(raw).filter(([k]) => !protectedRoots.includes(k.split('/')[0]))
+      );
+      const matched = ids
+        .map((id) => store.get('submissions', String(id)))
+        .filter((sub) => sub && sub._xform_id_string === uid);
+      if (!matched.length) {
+        reply.code(400);
+        return { detail: 'No submissions match the given `submission_ids`' };
+      }
+      const results = matched.map((sub) => {
+        const uuid = randomUUID();
+        const rootUuid = sub['meta/rootUuid'] ?? sub['meta/instanceID'];
+        store.update('submissions', String(sub._id), {
+          ...patch,
+          _uuid: uuid,
+          'meta/instanceID': `uuid:${uuid}`,
+          'meta/deprecatedID': sub['meta/instanceID'],
+          'meta/rootUuid': rootUuid,
+        });
+        return {
+          uuid,
+          root_uuid: String(rootUuid).replace(/^uuid:/, ''),
+          status_code: 201,
+          message: 'Successful submission',
+        };
+      });
+      return { count: results.length, successes: results.length, failures: 0, results };
     });
 
     // GET /api/v2/assets/:uid/data/:id/attachments/:attId/ — download a
@@ -321,17 +388,8 @@ const plugin: MockSystemPlugin = {
       return submission;
     });
 
-    // PATCH /api/v2/assets/:uid/data/:id/ — update a single submission.
-    app.patch('/api/v2/assets/:uid/data/:id/', async (req, reply) => {
-      const { uid, id } = req.params as Record<string, any>;
-      const submission = store.get('submissions', String(id));
-      if (submission === undefined || submission._xform_id_string !== uid) {
-        reply.code(404);
-        return { detail: 'Not found.' };
-      }
-      const patch = (req.body ?? {}) as Record<string, any>;
-      return store.update('submissions', String(id), patch);
-    });
+    // (No PATCH /api/v2/assets/:uid/data/:id/: KPI's DataViewSet has no
+    // update action; submissions are edited through data/bulk/ or Enketo.)
 
     // DELETE /api/v2/assets/:uid/data/:id/ — delete a single submission.
     app.delete('/api/v2/assets/:uid/data/:id/', async (req, reply) => {

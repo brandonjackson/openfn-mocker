@@ -4,41 +4,66 @@
     "origin": "found-openapi"
   },
   "routes": {
-    "DELETE /api/v2/assets/:uid/": "unexercised",
-    "DELETE /api/v2/assets/:uid/data/:id/": "unexercised",
-    "GET /api/v2/assets/": "failing",
-    "GET /api/v2/assets/:uid/": "failing",
+    "DELETE /api/v2/assets/:uid/": "conforming",
+    "DELETE /api/v2/assets/:uid/data/:id/": "conforming",
+    "GET /api/v2/assets/": "deviating",
+    "GET /api/v2/assets/:uid/": "conforming",
     "GET /api/v2/assets/:uid/data/": "conforming",
-    "GET /api/v2/assets/:uid/data/:id/": "unexercised",
+    "GET /api/v2/assets/:uid/data/:id/": "conforming",
     "GET /api/v2/assets/:uid/data/:id/attachments/:attId/": "conforming",
-    "GET /api/v2/assets/:uid/deployment/": "failing",
-    "PATCH /api/v2/assets/:uid/": "unexercised",
-    "PATCH /api/v2/assets/:uid/data/:id/": "unexercised",
-    "PATCH /api/v2/assets/:uid/data/bulk/": "unexercised",
-    "PATCH /api/v2/assets/:uid/deployment/": "unexercised",
-    "POST /api/v2/assets/": "unexercised",
+    "GET /api/v2/assets/:uid/deployment/": "conforming",
+    "PATCH /api/v2/assets/:uid/": "deviating",
+    "PATCH /api/v2/assets/:uid/data/bulk/": "conforming",
+    "PATCH /api/v2/assets/:uid/deployment/": "conforming",
+    "POST /api/v2/assets/": "deviating",
     "POST /api/v2/assets/:uid/data/:id/duplicate/": "conforming",
-    "POST /api/v2/assets/:uid/deployment/": "unexercised",
-    "PUT /api/v2/assets/:uid/": "unexercised",
-    "PUT /api/v2/assets/:uid/deployment/": "unexercised"
+    "POST /api/v2/assets/:uid/deployment/": "conforming",
+    "PUT /api/v2/assets/:uid/": "unchecked"
   },
-  "failures": {
-    "GET /api/v2/assets/": [
-      "response-schema /results/*/deployment__data_download_links: missing required property 'csv_legacy'",
-      "response-schema /results/*/deployment__data_download_links: missing required property 'xls_legacy'",
-      "response-schema /results/*/deployment__data_download_links: missing required property 'zip_legacy'"
-    ],
-    "GET /api/v2/assets/:uid/": [
-      "response-schema /deployment__data_download_links: missing required property 'csv_legacy'",
-      "response-schema /deployment__data_download_links: missing required property 'xls_legacy'",
-      "response-schema /deployment__data_download_links: missing required property 'zip_legacy'"
-    ],
-    "GET /api/v2/assets/:uid/deployment/": [
-      "response-schema /asset/deployment__data_download_links: missing required property 'csv_legacy'",
-      "response-schema /asset/deployment__data_download_links: missing required property 'xls_legacy'",
-      "response-schema /asset/deployment__data_download_links: missing required property 'zip_legacy'"
-    ]
-  },
+  "failures": {},
   "unrouted": [],
-  "deviations": []
+  "deviations": [
+    {
+      "route": "GET /api/v2/assets/",
+      "pointer": "/results/*/deployment__data_download_links",
+      "kind": "response-schema",
+      "category": "vendor-spec-wrong",
+      "message": "missing required property",
+      "reason": "get_deployment__data_download_links returns {} for an asset with no deployment (a draft); the schema requires csv/csv_legacy/xls/xls_legacy/zip_legacy, which only a deployed asset's openrosa backend produces.",
+      "evidence": "https://github.com/kobotoolbox/kpi/blob/bcb83887a120c7ca85cedfa749bf7e994cc0a9e1/kpi/serializers/v2/asset.py#L773-L778 ; https://github.com/kobotoolbox/kpi/blob/bcb83887a120c7ca85cedfa749bf7e994cc0a9e1/kpi/deployment_backends/openrosa_backend.py#L703-L729"
+    },
+    {
+      "route": "POST /api/v2/assets/",
+      "pointer": "/deployment__data_download_links",
+      "kind": "response-schema",
+      "category": "vendor-spec-wrong",
+      "message": "missing required property",
+      "reason": "get_deployment__data_download_links returns {} for an asset with no deployment (a draft); the schema requires csv/csv_legacy/xls/xls_legacy/zip_legacy, which only a deployed asset's openrosa backend produces.",
+      "evidence": "https://github.com/kobotoolbox/kpi/blob/bcb83887a120c7ca85cedfa749bf7e994cc0a9e1/kpi/serializers/v2/asset.py#L773-L778 ; https://github.com/kobotoolbox/kpi/blob/bcb83887a120c7ca85cedfa749bf7e994cc0a9e1/kpi/deployment_backends/openrosa_backend.py#L703-L729"
+    },
+    {
+      "route": "PATCH /api/v2/assets/:uid/",
+      "pointer": "/deployment__data_download_links",
+      "kind": "response-schema",
+      "category": "vendor-spec-wrong",
+      "message": "missing required property",
+      "reason": "get_deployment__data_download_links returns {} for an asset with no deployment (a draft); the schema requires csv/csv_legacy/xls/xls_legacy/zip_legacy, which only a deployed asset's openrosa backend produces.",
+      "evidence": "https://github.com/kobotoolbox/kpi/blob/bcb83887a120c7ca85cedfa749bf7e994cc0a9e1/kpi/serializers/v2/asset.py#L773-L778 ; https://github.com/kobotoolbox/kpi/blob/bcb83887a120c7ca85cedfa749bf7e994cc0a9e1/kpi/deployment_backends/openrosa_backend.py#L703-L729"
+    },
+    {
+      "route": "PATCH /api/v2/assets/:uid/",
+      "kind": "request-schema",
+      "message": "must match exactly one schema in oneOf",
+      "category": "vendor-spec-wrong",
+      "reason": "The PATCH body is a PolymorphicProxySerializer oneOf of AssetPatchRequestContent {content, name}, AssetPatchRequestDataSharing {data_sharing} and AssetPatchRequestTagString {tag_string}. As a PATCH, drf-spectacular emits them with no required fields and no additionalProperties: false, so every JSON object matches all three and the oneOf can never pass. KPI itself validates the body with AssetSerializer(partial=True), which accepts {name, content} (content parsed from a JSON string by WritableJSONField).",
+      "evidence": "https://github.com/kobotoolbox/kpi/blob/bcb83887a120c7ca85cedfa749bf7e994cc0a9e1/kpi/schema_extensions/v2/assets/serializers.py#L51-L89 ; https://github.com/kobotoolbox/kpi/blob/bcb83887a120c7ca85cedfa749bf7e994cc0a9e1/kpi/views/v2/asset.py#L295 ; https://github.com/kobotoolbox/kpi/blob/bcb83887a120c7ca85cedfa749bf7e994cc0a9e1/kpi/fields/writable_json.py#L20-L30"
+    },
+    {
+      "route": "PUT /api/v2/assets/:uid/",
+      "kind": "unknown-operation",
+      "category": "spec-gap",
+      "reason": "KPI serves PUT on an asset: AssetViewSet extends AuditLoggedModelViewSet, which mixes in DRF's UpdateModelMixin (update + partial_update). The schema omits it only because AssetViewSet declares update=extend_schema(exclude=True).",
+      "evidence": "https://github.com/kobotoolbox/kpi/blob/bcb83887a120c7ca85cedfa749bf7e994cc0a9e1/kobo/apps/audit_log/base_views.py#L126-L134 ; https://github.com/kobotoolbox/kpi/blob/bcb83887a120c7ca85cedfa749bf7e994cc0a9e1/kpi/views/v2/asset.py#L323 ; https://github.com/kobotoolbox/kpi/blob/bcb83887a120c7ca85cedfa749bf7e994cc0a9e1/kpi/views/v2/asset.py#L387-L392"
+    }
+  ]
 }
