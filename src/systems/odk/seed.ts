@@ -107,9 +107,13 @@ export function seed(store: DataStore, _config: SystemConfig): void {
     });
   }
 
+  // Central builds each row from the form's own field list and starts every
+  // field at null (lib/data/odata.js generateDataFrame, gh#206), so a field the
+  // respondent left empty comes back as `null`, never missing: sub-0002 took no
+  // photo, so its `photo` is null.
   const submissions = [
     { form: 'household-survey', __id: 'uuid:sub-0001', head_name: 'Jane Doe', household_size: 4, district: 'Bo', water_source: 'borehole', photo: 'example.png' },
-    { form: 'household-survey', __id: 'uuid:sub-0002', head_name: 'Amina Kamara', household_size: 6, district: 'Kenema', water_source: 'well' },
+    { form: 'household-survey', __id: 'uuid:sub-0002', head_name: 'Amina Kamara', household_size: 6, district: 'Kenema', water_source: 'well', photo: null },
     { form: 'clinic-visit', __id: 'uuid:sub-0003', patient_name: 'John Smith', visit_reason: 'antenatal', facility: 'Ngelehun CHC' },
   ];
   for (const s of submissions) {

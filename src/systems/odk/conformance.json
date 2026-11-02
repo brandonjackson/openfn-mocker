@@ -5,25 +5,44 @@
   },
   "routes": {
     "GET /v1/projects": "conforming",
-    "GET /v1/projects/:projectId": "unexercised",
+    "GET /v1/projects/:projectId": "conforming",
     "GET /v1/projects/:projectId/forms": "conforming",
-    "GET /v1/projects/:projectId/forms/:formSvc/Submissions": "failing",
-    "GET /v1/projects/:projectId/forms/:xmlFormId": "unexercised",
+    "GET /v1/projects/:projectId/forms/:formSvc/Submissions": "deviating",
+    "GET /v1/projects/:projectId/forms/:xmlFormId": "conforming",
     "GET /v1/projects/:projectId/forms/:xmlFormId/submissions/:instanceId/attachments": "conforming",
-    "GET /v1/projects/:projectId/forms/:xmlFormId/submissions/:instanceId/attachments/:filename": "failing",
+    "GET /v1/projects/:projectId/forms/:xmlFormId/submissions/:instanceId/attachments/:filename": "unchecked",
     "GET /v1/projects/:projectId/forms/:xmlFormId/submissions/:instanceId/comments": "conforming",
     "POST /v1/projects/:projectId/forms/:xmlFormId/submissions/:instanceId/comments": "conforming",
     "POST /v1/sessions": "conforming"
   },
-  "failures": {
-    "GET /v1/projects/:projectId/forms/:formSvc/Submissions": [
-      "response-schema /value/*: missing required property 'age'",
-      "response-schema /value/*: missing required property 'name'"
-    ],
-    "GET /v1/projects/:projectId/forms/:xmlFormId/submissions/:instanceId/attachments/:filename": [
-      "content-type: response is image/png; spec documents {the MIME type of the attachment file itself} for status 200"
-    ]
-  },
+  "failures": {},
   "unrouted": [],
-  "deviations": []
+  "deviations": [
+    {
+      "route": "GET /v1/projects/:projectId/forms/:formSvc/Submissions",
+      "kind": "response-schema",
+      "pointer": "/value/*",
+      "message": "missing required property 'age'",
+      "category": "vendor-spec-wrong",
+      "reason": "The spec (docs/api.yaml, the .svc/{table} 200 response) types every OData row with the docs' demo 'simple' form and marks its age/name required. Central builds each row from the requested form's own field list (generateDataFrame / submissionToOData), so a row carries that form's fields (here head_name, household_size, ...), never a fixed age.",
+      "evidence": "https://github.com/getodk/central-backend/blob/729881b291962e7c67818a5e5883466347c81fb8/lib/data/odata.js#L47-L133"
+    },
+    {
+      "route": "GET /v1/projects/:projectId/forms/:formSvc/Submissions",
+      "kind": "response-schema",
+      "pointer": "/value/*",
+      "message": "missing required property 'name'",
+      "category": "vendor-spec-wrong",
+      "reason": "Same spec defect as the 'age' entry: 'name' is a field of the docs' demo form, not of every form. Central's row columns come from the requested form's fields.",
+      "evidence": "https://github.com/getodk/central-backend/blob/729881b291962e7c67818a5e5883466347c81fb8/lib/data/odata.js#L47-L133"
+    },
+    {
+      "route": "GET /v1/projects/:projectId/forms/:xmlFormId/submissions/:instanceId/attachments/:filename",
+      "kind": "content-type",
+      "message": "{the MIME type of the attachment file itself}",
+      "category": "vendor-spec-wrong",
+      "reason": "The spec's 200 media-type key is a prose placeholder ('{the MIME type of the attachment file itself}', docs/api.yaml L10652), not a media type. Central serves the attachment's stored content type (here image/png): the route calls blobResponse(), which sets Content-Type to blob.contentType.",
+      "evidence": "https://github.com/getodk/central-backend/blob/729881b291962e7c67818a5e5883466347c81fb8/lib/util/blob.js#L66-L85"
+    }
+  ]
 }
