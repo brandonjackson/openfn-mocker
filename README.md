@@ -1175,8 +1175,13 @@ system with a real credential goes through exactly the same path.
 **The yardstick.** Violation counts alone flatter a mock whose guide barely
 touches it, so the headline is measured against the mock's own routes: each one
 is `conforming` (a guide example hits it and it passes), `deviating` (its only
-violations are accepted, evidenced spec errors), `failing`, or `unexercised`
-(nothing reaches it). **Verified** is conforming plus deviating. The current
+violations are accepted, evidenced spec errors, and its response was still
+checked), `unchecked` (an accepted error means its response was never checked:
+the spec has no such operation, status or media type), `failing`, or
+`unexercised` (nothing reaches it). **Verified** is conforming plus deviating.
+The engine does not wave through a wrong success code (a 2xx the spec doesn't
+list never falls back to its `default` error shape) or a media type the spec
+doesn't document. The current
 sweep: **219 of 509 mock routes verified (43%); 16 of 62 systems fully
 verified; 67 failing; 223 unexercised.** The running mock shows the whole
 picture, rated per system, at [`/status`](#conformance-status-page).

@@ -160,10 +160,11 @@ function printSystem(r: SystemResult, verbose: boolean, showRoutes = false): voi
     const c = r.score.counts;
     console.log(
       `   yardstick: ${c.verified}/${c.routes} route(s) verified (${pct(c.verified, c.routes)}): ` +
-        `${c.conforming} conforming, ${c.deviating} deviating, ${c.failing} failing, ${c.unexercised} unexercised`
+        `${c.conforming} conforming, ${c.deviating} deviating, ${c.unchecked} unchecked, ${c.failing} failing, ${c.unexercised} unexercised`
     );
     for (const u of r.score.unrouted) console.log(`     ! no mock route served ${u.exchange}`);
     for (const d of r.score.stale) console.log(`     ! stale deviation (matches nothing): ${d.route} [${d.kind}]${d.pointer ? ` ${d.pointer}` : ''}`);
+    for (const { deviation: d, reason } of r.score.invalid) console.log(`     ! invalid deviation ${d.route} [${d.kind}]: ${reason}`);
     if (showRoutes) for (const rr of r.score.routes) console.log(`     ${rr.state.padEnd(11)} ${rr.route}`);
   }
   for (const [op, list] of groupViolations(r.violations)) {
@@ -256,17 +257,37 @@ async function main(): Promise<void> {
       strictAdditional: args.strictAdditional,
       checkRequests: args.checkRequests,
     });
-    const violationsOf = exchanges.map((ex) => conformer.check(ex));
+    // Spec mounts: parts of the surface measured against another adaptor's spec
+    // (an OpenMRS FHIR facade against `fhir`), declared in the system's ledger.
+    const ledger = loadLedger(SYSTEMS_DIR, system);
+    const mounts: { prefix: string; conformer: ReturnType<typeof createConformer> }[] = [];
+    for (const m of ledger.specMounts ?? []) {
+      const mountSpec = await loadSpec(m.adaptor, args.latest);
+      if (!mountSpec) throw new Error(`${system}: specMounts names '${m.adaptor}', which has no openapi.json in openfn-api-specs`);
+      mounts.push({
+        prefix: m.prefix,
+        conformer: createConformer(mountSpec, { strictAdditional: args.strictAdditional, checkRequests: args.checkRequests, serverPrefixes: [m.prefix] }),
+      });
+    }
+    const conformerFor = (ex: Exchange) =>
+      mounts.find((m) => ex.path === m.prefix || ex.path.startsWith(m.prefix + '/') || ex.path.startsWith(m.prefix + '?'))?.conformer ?? conformer;
+    const violationsOf = exchanges.map((ex) => conformerFor(ex).check(ex));
     let violations = violationsOf.flat();
     let score: SystemScore | undefined;
     let baseline: BaselineDiff | undefined;
     if (routes) {
-      const ledger = loadLedger(SYSTEMS_DIR, system);
       const specRef = { adaptor, ...(base.specOrigin ? { origin: base.specOrigin } : {}) };
-      score = scoreSystem({ system, routes, exchanges, routeOf, violationsOf, deviations: ledger.deviations });
+      score = scoreSystem({ system, routes, exchanges, routeOf, violationsOf, deviations: ledger.deviations, routeAliases: ledger.routeAliases });
       violations = [...score.routes.flatMap((rr) => rr.violations), ...score.unrouted.flatMap((u) => u.violations)];
       baseline = diffBaseline(score, ledger, specRef);
-      if (args.updateBaseline) saveLedger(SYSTEMS_DIR, system, { ...snapshotOf(score, specRef), deviations: ledger.deviations });
+      if (args.updateBaseline) {
+        saveLedger(SYSTEMS_DIR, system, {
+          ...snapshotOf(score, specRef),
+          specMounts: ledger.specMounts,
+          routeAliases: ledger.routeAliases,
+          deviations: ledger.deviations,
+        });
+      }
     }
     const r: SystemResult = { ...base, exchanges: exchanges.length, violations, coverage: conformer.coverage(), score, baseline };
     results.push(r);
@@ -286,12 +307,14 @@ async function main(): Promise<void> {
     deviating: scored.reduce((n, s) => n + s.counts.deviating, 0),
     failing: scored.reduce((n, s) => n + s.counts.failing, 0),
     unexercised: scored.reduce((n, s) => n + s.counts.unexercised, 0),
+    unchecked: scored.reduce((n, s) => n + s.counts.unchecked, 0),
     systems: scored.length,
     systemsClean: scored.filter((s) => s.clean).length,
   };
   const regressions = checked.filter((r) => r.baseline?.regressed.length);
   const unrecorded = checked.filter((r) => r.baseline && (r.baseline.gained.length || r.baseline.stale));
   const stale = scored.filter((s) => s.stale.length);
+  const invalid = scored.filter((s) => s.invalid.length);
 
   if (args.json) {
     console.log(
@@ -327,7 +350,7 @@ async function main(): Promise<void> {
   if (scored.length) {
     console.log(
       `\n  YARDSTICK: ${yardstick.verified}/${yardstick.routes} mock routes verified against the spec (${pct(yardstick.verified, yardstick.routes)})\n` +
-        `             ${yardstick.conforming} conforming; ${yardstick.deviating} deviating (accepted); ${yardstick.failing} failing; ${yardstick.unexercised} unexercised\n` +
+        `             ${yardstick.conforming} conforming; ${yardstick.deviating} deviating (accepted); ${yardstick.unchecked} unchecked; ${yardstick.failing} failing; ${yardstick.unexercised} unexercised\n` +
         `             ${yardstick.systemsClean}/${yardstick.systems} system(s) fully verified`
     );
   }
@@ -339,6 +362,7 @@ async function main(): Promise<void> {
   if (args.checkBaseline || args.updateBaseline) {
     for (const r of regressions) console.log(`\n✗ ${r.system}: ${r.baseline!.regressed.length} verified route(s) regressed:\n    ${r.baseline!.regressed.join('\n    ')}`);
     for (const s of stale) console.log(`\n✗ ${s.system}: ${s.stale.length} stale deviation(s); delete them from src/systems/${s.system}/conformance.json`);
+    for (const s of invalid) console.log(`\n✗ ${s.system}: ${s.invalid.length} deviation(s) too broad to accept; add a \`message\` (see AGENTS.md)`);
     if (!args.updateBaseline) {
       for (const r of unrecorded) {
         const gained = r.baseline!.gained.length;
@@ -349,7 +373,7 @@ async function main(): Promise<void> {
         );
       }
     }
-    const failed = regressions.length > 0 || stale.length > 0 || errored > 0 || (!args.updateBaseline && unrecorded.length > 0);
+    const failed = regressions.length > 0 || stale.length > 0 || invalid.length > 0 || errored > 0 || (!args.updateBaseline && unrecorded.length > 0);
     if (!failed) console.log('\n✓ yardstick matches the baseline');
     process.exit(failed ? 1 : 0);
   }

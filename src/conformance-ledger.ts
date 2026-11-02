@@ -19,9 +19,22 @@ import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { join } from 'node:path';
 
-export type RouteState = 'conforming' | 'deviating' | 'failing' | 'unexercised';
+/**
+ * conforming   a guide example hits it; every request and response passes the spec
+ * deviating    hit; its only violations are accepted deviations, and its response was still schema-checked
+ * unchecked    hit; nothing failed, but an accepted deviation means its response was never schema-checked
+ *              (the spec has no such operation, documents no such status, or a different media type)
+ * failing      hit; at least one violation not accepted
+ * unexercised  no guide example reaches it
+ *
+ * Only conforming and deviating count as verified.
+ */
+export type RouteState = 'conforming' | 'deviating' | 'unchecked' | 'failing' | 'unexercised';
 
-export const ROUTE_STATES: RouteState[] = ['conforming', 'deviating', 'failing', 'unexercised'];
+export const ROUTE_STATES: RouteState[] = ['conforming', 'deviating', 'unchecked', 'failing', 'unexercised'];
+
+/** Violation kinds that, once accepted, leave the response body unvalidated. */
+export const UNCHECKING_KINDS = ['unknown-operation', 'unknown-status', 'content-type', 'schema-error'];
 
 export type DeviationCategory =
   /** The vendor's own spec disagrees with the real system (checked against the system's source or live traffic). */
@@ -40,6 +53,12 @@ export interface Deviation {
   kind: string;
   /** JSON pointer, array indices written as `*` (so one entry covers every row). Omit to accept every violation of `kind` on the route. */
   pointer?: string;
+  /**
+   * Substring the violation's message must contain ("must have required property 'errorCode'").
+   * Required for a request- or response-schema deviation at the body root (no pointer, or '/'),
+   * which would otherwise accept any future violation of the whole body.
+   */
+  message?: string;
   category: DeviationCategory;
   /** Why the spec, not the mock, is wrong. */
   reason: string;
@@ -47,9 +66,29 @@ export interface Deviation {
   evidence: string;
 }
 
+/** Exchanges under `prefix` are checked against another adaptor's spec (e.g. an OpenMRS FHIR facade against `fhir`). */
+export interface SpecMount {
+  prefix: string;
+  adaptor: string;
+}
+
+/**
+ * Routes under `prefix` are the same endpoints as the routes under `canonical`
+ * (openboxes serves `/products` and `/api/products`). An alias is not counted as
+ * a separate route; traffic to it is scored against its canonical route.
+ */
+export interface RouteAlias {
+  prefix: string;
+  canonical: string;
+}
+
 export interface ConformanceLedger {
   /** Which spec the system was measured against, and how that spec was obtained. */
   spec?: { adaptor: string; origin?: string };
+  /** Hand-written: other specs for parts of the system's surface. */
+  specMounts?: SpecMount[];
+  /** Hand-written: route prefixes that duplicate others. */
+  routeAliases?: RouteAlias[];
   /** Snapshot: every route the mock serves, and its yardstick state. */
   routes: Record<string, RouteState>;
   /** Snapshot: for each failing route, its unaccepted violations ('kind /pointer: message'), deduplicated. */
@@ -86,7 +125,7 @@ export interface LedgerSummary {
 }
 
 export function summarizeLedger(l: ConformanceLedger): LedgerSummary {
-  const counts: Record<RouteState, number> = { conforming: 0, deviating: 0, failing: 0, unexercised: 0 };
+  const counts: Record<RouteState, number> = { conforming: 0, deviating: 0, unchecked: 0, failing: 0, unexercised: 0 };
   for (const s of Object.values(l.routes)) counts[s]++;
   const routes = Object.keys(l.routes).length;
   const verified = counts.conforming + counts.deviating;

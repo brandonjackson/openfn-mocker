@@ -96,7 +96,7 @@ export function buildStatusReport(): StatusReport {
   });
   systems.sort(byScore);
 
-  const counts: Record<RouteState, number> = { conforming: 0, deviating: 0, failing: 0, unexercised: 0 };
+  const counts: Record<RouteState, number> = { conforming: 0, deviating: 0, unchecked: 0, failing: 0, unexercised: 0 };
   const byRating = Object.fromEntries(RATING_ORDER.map((r) => [r, 0])) as Record<Rating, number>;
   let routes = 0;
   let deviations = 0;
@@ -151,6 +151,7 @@ const pct = (n: number, d: number): string => (d ? `${Math.round((n / d) * 100)}
 const STATE_LABEL: Record<RouteState, string> = {
   conforming: 'Conforming',
   deviating: 'Deviating (accepted)',
+  unchecked: 'Unchecked (accepted, body not validated)',
   failing: 'Failing',
   unexercised: 'Unexercised',
 };
@@ -171,7 +172,7 @@ const linkOrText = (s: string): string =>
   /^https?:\/\//.test(s) ? `<a href="${esc(s).replace(/"/g, '&quot;')}" target="_blank" rel="noopener">${esc(s)}</a>` : esc(s);
 
 /** Route table order in a system's detail: what needs work first. */
-const DETAIL_ORDER: RouteState[] = ['failing', 'unexercised', 'deviating', 'conforming'];
+const DETAIL_ORDER: RouteState[] = ['failing', 'unexercised', 'unchecked', 'deviating', 'conforming'];
 
 function renderDetail(s: SystemStatus): string {
   const l = s.ledger;
@@ -183,14 +184,14 @@ function renderDetail(s: SystemStatus): string {
     .map(([route, state]) => {
       const notes: string[] = [];
       for (const f of l.failures[route] ?? []) notes.push(`<li>${esc(f)}</li>`);
-      if (state === 'deviating') {
+      if (state === 'deviating' || state === 'unchecked') {
         for (const d of l.deviations.filter((d) => d.route === route)) {
           notes.push(`<li><span class="st-cat">${esc(d.category)}</span> ${esc(d.reason)}</li>`);
         }
       }
       const [method, ...rest] = route.split(' ');
       return (
-        `<tr class="r-${state}"><td><span class="st-state ${state}">${esc(STATE_LABEL[state].replace(' (accepted)', ''))}</span></td>` +
+        `<tr class="r-${state}"><td><span class="st-state ${state}">${esc(STATE_LABEL[state].replace(/ \(.*\)$/, ''))}</span></td>` +
         `<td class="mono"><b>${esc(method)}</b> ${esc(rest.join(' '))}</td>` +
         `<td>${notes.length ? `<ul class="st-notes">${notes.join('')}</ul>` : ''}</td></tr>`
       );
@@ -228,7 +229,7 @@ function renderRow(s: SystemStatus): string {
   const origin = s.ledger?.spec?.origin;
   const originInfo = origin ? SPEC_ORIGINS[origin] : undefined;
   const score = sum && sum.routes ? sum.verified / sum.routes : -1;
-  const counts = sum?.counts ?? { conforming: 0, deviating: 0, failing: 0, unexercised: 0 };
+  const counts = sum?.counts ?? { conforming: 0, deviating: 0, unchecked: 0, failing: 0, unexercised: 0 };
   const attrs =
     `data-name="${esc(`${s.title} ${s.name} ${s.adaptor}`.toLowerCase())}" data-rating="${s.rating}" ` +
     `data-score="${score.toFixed(4)}" data-routes="${sum?.routes ?? 0}" data-failing="${counts.failing}" data-title="${esc(s.title.toLowerCase())}"`;
@@ -293,7 +294,8 @@ export function renderStatusPage(report: StatusReport = buildStatusReport()): st
     `<ul class="st-scale">${scale}</ul>` +
     '<p>For each system, the mock’s guide examples are fired at it in-process and every request and response is checked against the spec by ' +
     'the openfn-api-specs conformance engine. Every route the mock serves is then either <b>conforming</b>, <b>deviating</b> (its only ' +
-    'violations are accepted, with evidence that the spec is wrong), <b>failing</b>, or <b>unexercised</b> (no example reaches it, so nothing is known). ' +
+    'violations are accepted, with evidence that the spec is wrong, and its response was still checked), <b>unchecked</b> (an accepted deviation means its response was never ' +
+    'checked: the spec has no such operation or status), <b>failing</b>, or <b>unexercised</b> (no example reaches it, so nothing is known). Only conforming and deviating count as verified. ' +
     'Results come from each system’s ledger, <span class="mono">src/systems/&lt;name&gt;/conformance.json</span>, refreshed with ' +
     '<span class="mono">pnpm test:conformance -- --update-baseline</span> and checked in CI, so a verified route cannot quietly regress.</p>' +
     '<p>A rating is only as good as the spec behind it: a vendor-published OpenAPI is stronger evidence than one written from the vendor’s HTML docs. ' +
@@ -364,6 +366,7 @@ const STATUS_STYLES = [
   '.st-bar .seg{display:block;min-width:3px}',
   '.seg.conforming,.sw.conforming{background:#16a34a}.seg.deviating,.sw.deviating{background:#0ea5e9}',
   '.seg.failing,.sw.failing{background:#dc2626}.seg.unexercised,.sw.unexercised{background:#cbd2d9}',
+  '.seg.unchecked,.sw.unchecked{background:#f59e0b}',
   '.st-legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:10px;font-size:13.5px;color:var(--muted)}',
   '.st-key{display:inline-flex;align-items:center;gap:6px}.st-key b{color:var(--ink)}',
   '.sw{display:inline-block;width:11px;height:11px;border-radius:3px}',
@@ -402,6 +405,7 @@ const STATUS_STYLES = [
   '.st-state{font-size:11.5px;font-weight:700;border-radius:4px;padding:1px 7px;white-space:nowrap}',
   '.st-state.conforming{background:#e3f4e8;color:#0a6b2c}.st-state.deviating{background:#e6f4fb;color:#0369a1}',
   '.st-state.failing{background:#fde8e8;color:#a61b1b}.st-state.unexercised{background:var(--wash);color:var(--muted)}',
+  '.st-state.unchecked{background:#fff3df;color:#9a4a07}',
   '.st-notes{margin:0;padding-left:16px;font-size:12.5px}.st-notes li{margin:1px 0;word-break:break-word}',
   '.st-sub{margin:14px 0 6px;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}',
   '.st-devs{margin:0;padding-left:16px;font-size:13px}.st-devs li{margin-bottom:8px}',

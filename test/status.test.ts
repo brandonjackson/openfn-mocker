@@ -17,7 +17,7 @@ describe('conformance status page', () => {
       routes,
       verified,
       unrouted,
-      counts: { conforming: verified, deviating: 0, failing: routes - verified, unexercised: 0 },
+      counts: { conforming: verified, deviating: 0, unchecked: 0, failing: routes - verified, unexercised: 0 },
       clean: verified === routes && unrouted === 0,
     });
     expect(rate(undefined)).toBe('not-measured');
