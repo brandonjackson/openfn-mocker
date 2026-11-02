@@ -54,5 +54,11 @@
     ]
   },
   "unrouted": [],
-  "deviations": []
+  "deviations": [],
+  "routeAliases": [
+    {
+      "prefix": "/",
+      "canonical": "/api/"
+    }
+  ]
 }
