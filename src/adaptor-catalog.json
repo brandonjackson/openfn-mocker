@@ -1,0 +1,572 @@
+{
+  "source": "https://github.com/OpenFn/adaptors/tree/de7a2d35e80c3543a3b670c19e28698cb326c9e8/packages",
+  "asOf": "2026-10-27",
+  "adaptors": [
+    {
+      "name": "airqo",
+      "kind": "http"
+    },
+    {
+      "name": "arcgis",
+      "kind": "http",
+      "specOrigin": "generated"
+    },
+    {
+      "name": "asana",
+      "kind": "http",
+      "specOrigin": "found-openapi"
+    },
+    {
+      "name": "aws-s3",
+      "kind": "http",
+      "specOrigin": "converted"
+    },
+    {
+      "name": "azure-storage",
+      "kind": "http",
+      "specOrigin": "converted"
+    },
+    {
+      "name": "beyonic",
+      "kind": "http",
+      "specOrigin": "generated"
+    },
+    {
+      "name": "bigquery",
+      "kind": "http",
+      "specOrigin": "converted"
+    },
+    {
+      "name": "browserless",
+      "kind": "http",
+      "specOrigin": "generated"
+    },
+    {
+      "name": "cartodb",
+      "kind": "http",
+      "specOrigin": "generated"
+    },
+    {
+      "name": "chatgpt",
+      "kind": "http",
+      "specOrigin": "found-openapi"
+    },
+    {
+      "name": "cht",
+      "kind": "http",
+      "specOrigin": "found-openapi"
+    },
+    {
+      "name": "claude",
+      "kind": "http",
+      "specOrigin": "generated"
+    },
+    {
+      "name": "collections",
+      "kind": "http",
+      "specOrigin": "synthesized"
+    },
+    {
+      "name": "commcare",
+      "kind": "http",
+      "specOrigin": "generated"
+    },
+    {
+      "name": "common",
+      "kind": "no-remote",
+      "note": "shared helpers; no external system",
+      "specOrigin": "synthesized"
+    },
+    {
+      "name": "copper",
+      "kind": "http"
+    },
+    {
+      "name": "dagu",
+      "kind": "http",
+      "specOrigin": "synthesized"
+    },
+    {
+      "name": "dhis2",
+      "kind": "http",
+      "specOrigin": "found-openapi"
+    },
+    {
+      "name": "divoc",
+      "kind": "http",
+      "specOrigin": "converted"
+    },
+    {
+      "name": "dynamics",
+      "kind": "http",
+      "specOrigin": "generated"
+    },
+    {
+      "name": "erpnext",
+      "kind": "http",
+      "specOrigin": "generated"
+    },
+    {
+      "name": "et-mfr",
+      "kind": "http",
+      "specOrigin": "generated"
+    },
+    {
+      "name": "facebook",
+      "kind": "http",
+      "specOrigin": "generated"
+    },
+    {
+      "name": "fhir",
+      "kind": "http",
+      "specOrigin": "converted"
+    },
+    {
+      "name": "fhir-4",
+      "kind": "http",
+      "specOrigin": "generated"
+    },
+    {
+      "name": "fhir-eswatini",
+      "kind": "http",
+      "specOrigin": "generated"
+    },
+    {
+      "name": "fhir-fr",
+      "kind": "http",
+      "specOrigin": "generated"
+    },
+    {
+      "name": "fhir-ndr-et",
+      "kind": "http",
+      "specOrigin": "generated"
+    },
+    {
+      "name": "fhir-opensrp",
+      "kind": "http"
+    },
+    {
+      "name": "flutterwave",
+      "kind": "http",
+      "specOrigin": "generated"
+    },
+    {
+      "name": "formsg",
+      "kind": "no-remote",
+      "note": "verifies and decrypts FormSG webhooks locally; makes no outbound calls",
+      "specOrigin": "synthesized"
+    },
+    {
+      "name": "gemini",
+      "kind": "http",
+      "specOrigin": "converted"
+    },
+    {
+      "name": "ghana-bdr",
+      "kind": "http",
+      "specOrigin": "converted"
+    },
+    {
+      "name": "ghana-nia",
+      "kind": "http",
+      "specOrigin": "synthesized"
+    },
+    {
+      "name": "gmail",
+      "kind": "http",
+      "specOrigin": "converted"
+    },
+    {
+      "name": "godata",
+      "kind": "http",
+      "specOrigin": "generated"
+    },
+    {
+      "name": "googledrive",
+      "kind": "http",
+      "specOrigin": "converted"
+    },
+    {
+      "name": "googlehealthcare",
+      "kind": "http",
+      "specOrigin": "converted"
+    },
+    {
+      "name": "googlesheets",
+      "kind": "http",
+      "specOrigin": "converted"
+    },
+    {
+      "name": "hive",
+      "kind": "protocol",
+      "note": "Thrift/JDBC SQL client",
+      "specOrigin": "synthesized"
+    },
+    {
+      "name": "http",
+      "kind": "http",
+      "specOrigin": "synthesized"
+    },
+    {
+      "name": "hubtel",
+      "kind": "http",
+      "specOrigin": "generated"
+    },
+    {
+      "name": "ibipimo",
+      "kind": "http",
+      "specOrigin": "generated"
+    },
+    {
+      "name": "ihris",
+      "kind": "http",
+      "specOrigin": "generated"
+    },
+    {
+      "name": "image-utils",
+      "kind": "no-remote",
+      "note": "local image processing; no external system"
+    },
+    {
+      "name": "inform",
+      "kind": "http",
+      "specOrigin": "generated"
+    },
+    {
+      "name": "intuit",
+      "kind": "http",
+      "specOrigin": "generated"
+    },
+    {
+      "name": "khanacademy",
+      "kind": "http",
+      "specOrigin": "generated"
+    },
+    {
+      "name": "kobotoolbox",
+      "kind": "http",
+      "specOrigin": "found-openapi"
+    },
+    {
+      "name": "lamisplus",
+      "kind": "http",
+      "specOrigin": "generated"
+    },
+    {
+      "name": "langfuse",
+      "kind": "http"
+    },
+    {
+      "name": "lemlist",
+      "kind": "http"
+    },
+    {
+      "name": "magpi",
+      "kind": "http",
+      "specOrigin": "generated"
+    },
+    {
+      "name": "mailchimp",
+      "kind": "http",
+      "specOrigin": "converted"
+    },
+    {
+      "name": "mailgun",
+      "kind": "http",
+      "specOrigin": "found-openapi"
+    },
+    {
+      "name": "maximo",
+      "kind": "http",
+      "specOrigin": "generated"
+    },
+    {
+      "name": "medicmobile",
+      "kind": "http",
+      "specOrigin": "generated"
+    },
+    {
+      "name": "memento",
+      "kind": "http",
+      "specOrigin": "generated"
+    },
+    {
+      "name": "minio",
+      "kind": "http",
+      "specOrigin": "synthesized"
+    },
+    {
+      "name": "mogli",
+      "kind": "http",
+      "specOrigin": "generated"
+    },
+    {
+      "name": "mojatax",
+      "kind": "http",
+      "specOrigin": "generated"
+    },
+    {
+      "name": "mongodb",
+      "kind": "protocol",
+      "note": "MongoDB driver protocol",
+      "specOrigin": "synthesized"
+    },
+    {
+      "name": "monnify",
+      "kind": "http",
+      "specOrigin": "generated"
+    },
+    {
+      "name": "motherduck",
+      "kind": "protocol",
+      "note": "DuckDB SQL client",
+      "specOrigin": "synthesized"
+    },
+    {
+      "name": "mpesa",
+      "kind": "http",
+      "specOrigin": "generated"
+    },
+    {
+      "name": "msgraph",
+      "kind": "http",
+      "specOrigin": "found-openapi"
+    },
+    {
+      "name": "mssql",
+      "kind": "protocol",
+      "note": "SQL database wire protocol (TDS)",
+      "specOrigin": "synthesized"
+    },
+    {
+      "name": "msupply",
+      "kind": "http",
+      "specOrigin": "converted"
+    },
+    {
+      "name": "mtn-momo",
+      "kind": "http",
+      "specOrigin": "generated"
+    },
+    {
+      "name": "mysql",
+      "kind": "protocol",
+      "note": "SQL database wire protocol",
+      "specOrigin": "synthesized"
+    },
+    {
+      "name": "nexmo",
+      "kind": "http",
+      "specOrigin": "converted"
+    },
+    {
+      "name": "ocl",
+      "kind": "http",
+      "specOrigin": "converted"
+    },
+    {
+      "name": "odk",
+      "kind": "http",
+      "specOrigin": "found-openapi"
+    },
+    {
+      "name": "odoo",
+      "kind": "http",
+      "specOrigin": "synthesized"
+    },
+    {
+      "name": "openboxes",
+      "kind": "http",
+      "specOrigin": "generated"
+    },
+    {
+      "name": "opencrvs",
+      "kind": "http",
+      "specOrigin": "found-openapi"
+    },
+    {
+      "name": "openelis",
+      "kind": "http",
+      "specOrigin": "generated"
+    },
+    {
+      "name": "openfn",
+      "kind": "http",
+      "specOrigin": "synthesized"
+    },
+    {
+      "name": "openhim",
+      "kind": "http",
+      "specOrigin": "generated"
+    },
+    {
+      "name": "openimis",
+      "kind": "http",
+      "specOrigin": "generated"
+    },
+    {
+      "name": "openlmis",
+      "kind": "http",
+      "specOrigin": "converted"
+    },
+    {
+      "name": "openmrs",
+      "kind": "http",
+      "specOrigin": "converted"
+    },
+    {
+      "name": "openspp",
+      "kind": "http",
+      "specOrigin": "synthesized"
+    },
+    {
+      "name": "openstreetmap",
+      "kind": "http"
+    },
+    {
+      "name": "pdfshift",
+      "kind": "http",
+      "specOrigin": "found-openapi"
+    },
+    {
+      "name": "pesapal",
+      "kind": "http",
+      "specOrigin": "generated"
+    },
+    {
+      "name": "ping",
+      "kind": "no-remote",
+      "note": "connectivity probe; no external system",
+      "specOrigin": "synthesized"
+    },
+    {
+      "name": "postgresql",
+      "kind": "protocol",
+      "note": "SQL database wire protocol",
+      "specOrigin": "synthesized"
+    },
+    {
+      "name": "primero",
+      "kind": "http",
+      "specOrigin": "generated"
+    },
+    {
+      "name": "progres",
+      "kind": "http",
+      "specOrigin": "synthesized"
+    },
+    {
+      "name": "puntosolidario-rd",
+      "kind": "http",
+      "specOrigin": "synthesized"
+    },
+    {
+      "name": "rapidpro",
+      "kind": "http",
+      "specOrigin": "generated"
+    },
+    {
+      "name": "redis",
+      "kind": "protocol",
+      "note": "Redis protocol",
+      "specOrigin": "synthesized"
+    },
+    {
+      "name": "resourcemap",
+      "kind": "http",
+      "specOrigin": "generated"
+    },
+    {
+      "name": "salesforce",
+      "kind": "http",
+      "specOrigin": "generated"
+    },
+    {
+      "name": "santempi",
+      "kind": "http"
+    },
+    {
+      "name": "satusehat",
+      "kind": "http",
+      "specOrigin": "generated"
+    },
+    {
+      "name": "senaite",
+      "kind": "http",
+      "specOrigin": "generated"
+    },
+    {
+      "name": "sftp",
+      "kind": "protocol",
+      "note": "SSH file transfer",
+      "specOrigin": "synthesized"
+    },
+    {
+      "name": "siuben-rd",
+      "kind": "http",
+      "specOrigin": "synthesized"
+    },
+    {
+      "name": "stripe",
+      "kind": "http",
+      "specOrigin": "found-openapi"
+    },
+    {
+      "name": "sunbird-rc",
+      "kind": "http",
+      "specOrigin": "found-openapi"
+    },
+    {
+      "name": "surveycto",
+      "kind": "http",
+      "specOrigin": "found-openapi"
+    },
+    {
+      "name": "telerivet",
+      "kind": "http",
+      "specOrigin": "found-openapi"
+    },
+    {
+      "name": "testing",
+      "kind": "no-remote",
+      "note": "test harness; no external system",
+      "specOrigin": "synthesized"
+    },
+    {
+      "name": "twilio",
+      "kind": "http",
+      "specOrigin": "found-openapi"
+    },
+    {
+      "name": "varo",
+      "kind": "no-remote",
+      "note": "in-process cold-chain data transforms; makes no HTTP calls",
+      "specOrigin": "synthesized"
+    },
+    {
+      "name": "vtiger",
+      "kind": "http",
+      "specOrigin": "generated"
+    },
+    {
+      "name": "whatsapp",
+      "kind": "http",
+      "specOrigin": "generated"
+    },
+    {
+      "name": "wigal-sms",
+      "kind": "http",
+      "specOrigin": "generated"
+    },
+    {
+      "name": "zata",
+      "kind": "http",
+      "specOrigin": "generated"
+    },
+    {
+      "name": "zoho",
+      "kind": "http",
+      "specOrigin": "generated"
+    }
+  ]
+}

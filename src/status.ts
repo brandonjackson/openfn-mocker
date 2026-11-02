@@ -22,6 +22,7 @@ import {
   type RouteState,
 } from './conformance-ledger.js';
 import { FAVICON_B64, FOOTER, STYLES, esc, navbar } from './sandbox.js';
+import { adaptorCatalog, type CatalogEntry, type CatalogKind } from './adaptor-catalog.js';
 
 export type Rating = 'verified' | 'strong' | 'partial' | 'weak' | 'unverified' | 'not-measured';
 
@@ -65,6 +66,8 @@ export interface SystemStatus {
 
 export interface StatusReport {
   systems: SystemStatus[];
+  /** OpenFn adaptors with no mock here, grouped by whether one could exist. */
+  missing: { asOf: string; source: string; total: number; represented: number; byKind: Record<CatalogKind, CatalogEntry[]> };
   totals: {
     systems: number;
     measured: number;
@@ -104,8 +107,20 @@ export function buildStatusReport(): StatusReport {
     deviations += s.ledger!.deviations.length;
     for (const st of ROUTE_STATES) counts[st] += s.summary.counts[st];
   }
+  const mocked = new Set(systems.map((s) => plugins[s.name].adaptorName ?? s.name));
+  const byKind: Record<CatalogKind, CatalogEntry[]> = { http: [], protocol: [], 'no-remote': [] };
+  for (const a of adaptorCatalog.adaptors) if (!mocked.has(a.name)) byKind[a.kind].push(a);
+  const missing = {
+    asOf: adaptorCatalog.asOf,
+    source: adaptorCatalog.source,
+    total: adaptorCatalog.adaptors.length,
+    represented: adaptorCatalog.adaptors.filter((a) => mocked.has(a.name)).length,
+    byKind,
+  };
+
   return {
     systems,
+    missing,
     totals: {
       systems: systems.length,
       measured: systems.filter((s) => s.summary && s.summary.routes > 0).length,
@@ -256,6 +271,7 @@ export function renderStatusPage(report: StatusReport = buildStatusReport()): st
     '<div class="st-stats">' +
     `<div class="st-stat"><span class="st-big">${pct(t.verified, t.routes)}</span><span>of mock routes verified<br><b>${t.verified}</b> of ${t.routes}</span></div>` +
     `<div class="st-stat"><span class="st-big">${t.verifiedSystems}<small>/${t.systems}</small></span><span>systems fully<br>verified</span></div>` +
+    `<div class="st-stat"><span class="st-big">${report.missing.represented}<small>/${report.missing.total}</small></span><span>OpenFn adaptors<br><a href="#missing">have a mock</a></span></div>` +
     `<div class="st-stat"><span class="st-big">${t.counts.failing}</span><span>routes failing<br>the spec</span></div>` +
     `<div class="st-stat"><span class="st-big">${t.counts.unexercised}</span><span>routes no guide<br>example reaches</span></div>` +
     '</div>' +
@@ -272,6 +288,7 @@ export function renderStatusPage(report: StatusReport = buildStatusReport()): st
     '<div class="st-head" aria-hidden="true"><span>System</span><span>Rating</span><span>Verified</span><span>Routes</span><span>Spec</span></div>' +
     `<div id="st-list">${report.systems.map(renderRow).join('')}</div>` +
     '<p id="st-none" class="st-muted" hidden>No systems match.</p>' +
+    renderMissing(report.missing) +
     '<section class="st-about"><h2>How this is measured</h2>' +
     `<ul class="st-scale">${scale}</ul>` +
     '<p>For each system, the mock’s guide examples are fired at it in-process and every request and response is checked against the spec by ' +
@@ -284,6 +301,56 @@ export function renderStatusPage(report: StatusReport = buildStatusReport()): st
     '</section></main>\n' +
     FOOTER +
     `<script>${STATUS_JS}</script>\n</body>\n</html>\n`
+  );
+}
+
+const KIND_COPY: Record<CatalogKind, { title: string; blurb: string }> = {
+  http: {
+    title: 'HTTP APIs with no mock yet',
+    blurb: 'Each of these wraps an HTTP API, so a mock could stand in for it; none has been built. Where openfn-api-specs already has a spec, building one is mostly a matter of following it.',
+  },
+  protocol: {
+    title: 'Non-HTTP protocols',
+    blurb: 'These speak a database, file-transfer or other wire protocol. An HTTP mock cannot impersonate them; they need a real (containerised) server in tests instead.',
+  },
+  'no-remote': {
+    title: 'Nothing to mock',
+    blurb: 'These adaptors call no external system (helpers, local processing, test harnesses), so there is nothing for a mock to stand in for.',
+  },
+};
+
+function renderMissing(m: StatusReport['missing']): string {
+  const missingCount = m.total - m.represented;
+  const groups = (['http', 'protocol', 'no-remote'] as CatalogKind[])
+    .filter((k) => m.byKind[k].length)
+    .map((k) => {
+      const items = m.byKind[k]
+        .map((a) => {
+          const origin = a.specOrigin ? SPEC_ORIGINS[a.specOrigin]?.label ?? a.specOrigin : undefined;
+          const tag =
+            k === 'http'
+              ? origin
+                ? `<span class="st-muted">spec: ${esc(origin)}</span>`
+                : '<span class="st-nospec">no spec yet</span>'
+              : a.note
+                ? `<span class="st-muted">${esc(a.note)}</span>`
+                : '';
+          return `<li><span class="mono">${esc(a.name)}</span>${tag}</li>`;
+        })
+        .join('');
+      return (
+        `<div class="st-missing-group"><h3>${esc(KIND_COPY[k].title)} <span class="st-muted">${m.byKind[k].length}</span></h3>` +
+        `<p class="st-muted">${esc(KIND_COPY[k].blurb)}</p><ul class="st-missing">${items}</ul></div>`
+      );
+    })
+    .join('');
+  return (
+    '<section class="st-about st-wide" id="missing"><h2>Not represented in the mocker</h2>' +
+    `<p>The mocker covers <b>${m.represented}</b> of the <b>${m.total}</b> adaptors in ` +
+    `<a href="${esc(m.source).replace(/"/g, '&quot;')}" target="_blank" rel="noopener">OpenFn/adaptors</a> (as of ${esc(m.asOf)}). ` +
+    `The other ${missingCount} have no mock at all, so nothing on this page says anything about them.</p>` +
+    groups +
+    '</section>'
   );
 }
 
@@ -342,6 +409,13 @@ const STATUS_STYLES = [
   '.st-about{margin-top:34px;font-size:14.5px;color:var(--ink);max-width:80ch}',
   '.st-about h2{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0 0 10px}',
   '.st-scale{list-style:none;padding:0;margin:0 0 14px}.st-scale li{margin:4px 0}',
+  '.st-wide{max-width:none}',
+  '.st-missing-group{margin:18px 0 6px}.st-missing-group h3{font-size:16px;margin:0 0 2px}',
+  '.st-missing-group>p{margin:0 0 10px;font-size:14px;max-width:80ch}',
+  '.st-missing{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:6px 18px}',
+  '.st-missing li{display:flex;flex-direction:column;border:1px solid var(--border-soft);border-radius:6px;padding:6px 10px;font-size:13px;line-height:1.35}',
+  '.st-missing li .mono{font-size:13.5px;font-weight:600;color:var(--ink)}',
+  '.st-nospec{color:#9a4a07}',
   '@media(max-width:760px){.st-head{display:none}',
   '.st-row>summary{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"name rating" "score score" "bar bar" "origin origin";gap:6px 10px}',
   '.st-name{grid-area:name}.st-rating{grid-area:rating}.st-score{grid-area:score}.st-barcell{grid-area:bar}.st-origin{grid-area:origin}',

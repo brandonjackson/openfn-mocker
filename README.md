@@ -1222,6 +1222,16 @@ evidence than one written from HTML docs. API clients get the same data as
 JSON from the same URL. The build copies the ledgers into `dist/`
 (`scripts/copy-ledgers.mjs`), so the page needs no spec at runtime.
 
+The page also says plainly what the mocker does **not** cover. It lists every
+adaptor in [OpenFn/adaptors](https://github.com/OpenFn/adaptors) that has no
+mock here, grouped by whether one could exist: HTTP APIs with no mock yet
+(with the spec openfn-api-specs has for each, if any), non-HTTP protocols an
+HTTP mock cannot impersonate (SQL databases, SFTP, Redis, ...), and adaptors
+that call no external system at all. The list is a committed snapshot,
+`src/adaptor-catalog.json`; refresh it with `pnpm catalog:refresh`, which reads
+the monorepo's `packages/` with a blob-less git clone. A test fails if a mocked
+adaptor is missing from it.
+
 **Start with the systems whose spec is settled.** A violation only tells you
 something if the spec it is measured against is trustworthy, so the systems
 worth driving to zero first are the ones `pnpm specs report` puts in its `ok`

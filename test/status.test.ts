@@ -4,6 +4,7 @@ import { plugins } from '../src/systems/index.js';
 import { readLedger, summarizeLedger } from '../src/conformance-ledger.js';
 import { buildStatusReport, rate, renderStatusPage } from '../src/status.js';
 import type { MockerConfig } from '../src/config.js';
+import { adaptorCatalog } from '../src/adaptor-catalog.js';
 
 // Only one system enabled: the status page must still list every system the mocker ships.
 const config: MockerConfig = { log_level: 'silent', port: 0, systems: { dhis2: { enabled: true, port: 0 } } };
@@ -43,6 +44,15 @@ describe('conformance status page', () => {
     expect(report.totals.routes).toBe(routes);
     expect(report.totals.verified).toBe(verified);
     expect(Object.values(report.totals.byRating).reduce((a, b) => a + b, 0)).toBe(report.totals.systems);
+  });
+
+  it('accounts for every OpenFn adaptor: mocked, or listed as not represented', () => {
+    const { missing } = buildStatusReport();
+    const listed = Object.values(missing.byKind).flat().length;
+    expect(missing.represented + listed).toBe(missing.total);
+    // Every mocked adaptor must be in the catalog; if not, the catalog is stale (pnpm catalog:refresh).
+    const catalog = new Set(adaptorCatalog.adaptors.map((a) => a.name));
+    for (const [name, p] of Object.entries(plugins)) expect(catalog, `${name} not in adaptor catalog`).toContain(p.adaptorName ?? name);
   });
 
   it('serves HTML to browsers, listing every system with a rating', async () => {

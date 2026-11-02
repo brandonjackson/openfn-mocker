@@ -19,7 +19,8 @@
     "test:conformance": "tsx scripts/test-conformance.ts",
     "audit:adaptors": "tsx scripts/audit-adaptor-coverage.ts",
     "readme": "tsx scripts/generate-readme.ts",
-    "readme:check": "tsx scripts/generate-readme.ts --check"
+    "readme:check": "tsx scripts/generate-readme.ts --check",
+    "catalog:refresh": "tsx scripts/refresh-adaptor-catalog.ts"
   },
   "engines": {
     "node": ">=20"
