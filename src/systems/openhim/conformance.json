@@ -21,13 +21,17 @@
     "PATCH /tasks/:id": "unexercised",
     "POST /channels": "unexercised",
     "POST /chw/encounter": "conforming",
-    "POST /clients": "conforming",
+    "POST /clients": "failing",
     "POST /tasks": "unexercised",
     "PUT /channels/:id": "unexercised",
     "PUT /clients/:id": "unexercised",
     "PUT /tasks/:id": "unexercised"
   },
-  "failures": {},
+  "failures": {
+    "POST /clients": [
+      "content-type: response is application/json; spec documents text/plain for status 201"
+    ]
+  },
   "unrouted": [],
   "deviations": []
 }

@@ -10,7 +10,7 @@
     "GET /v1/projects/:projectId/forms/:formSvc/Submissions": "failing",
     "GET /v1/projects/:projectId/forms/:xmlFormId": "unexercised",
     "GET /v1/projects/:projectId/forms/:xmlFormId/submissions/:instanceId/attachments": "conforming",
-    "GET /v1/projects/:projectId/forms/:xmlFormId/submissions/:instanceId/attachments/:filename": "conforming",
+    "GET /v1/projects/:projectId/forms/:xmlFormId/submissions/:instanceId/attachments/:filename": "failing",
     "GET /v1/projects/:projectId/forms/:xmlFormId/submissions/:instanceId/comments": "conforming",
     "POST /v1/projects/:projectId/forms/:xmlFormId/submissions/:instanceId/comments": "conforming",
     "POST /v1/sessions": "conforming"
@@ -19,6 +19,9 @@
     "GET /v1/projects/:projectId/forms/:formSvc/Submissions": [
       "response-schema /value/*: missing required property 'age'",
       "response-schema /value/*: missing required property 'name'"
+    ],
+    "GET /v1/projects/:projectId/forms/:xmlFormId/submissions/:instanceId/attachments/:filename": [
+      "content-type: response is image/png; spec documents {the MIME type of the attachment file itself} for status 200"
     ]
   },
   "unrouted": [],

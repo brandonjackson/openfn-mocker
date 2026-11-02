@@ -28,12 +28,14 @@
 import { writeFileSync } from 'node:fs';
 import type { Exchange, Violation } from 'openfn-api-specs';
 import {
+  UNCHECKING_KINDS,
   emptyLedger,
   isVerified,
   ledgerPath,
   readLedger,
   type ConformanceLedger,
   type Deviation,
+  type RouteAlias,
   type RouteState,
 } from '../../src/conformance-ledger.js';
 
@@ -57,8 +59,40 @@ export interface SystemScore {
   unrouted: { exchange: string; violations: Violation[] }[];
   /** Ledger entries that matched nothing on this run. */
   stale: Deviation[];
+  /** Ledger entries too broad to accept (a whole-body schema deviation with no `message`), with why. */
+  invalid: { deviation: Deviation; reason: string }[];
   /** Every route verified, nothing unrouted, nothing stale. */
   clean: boolean;
+}
+
+/** Route aliases: 'GET /products' -> 'GET /api/products' when the ledger declares '/' as an alias of '/api/'. */
+export function aliasMap(routes: string[], aliases: RouteAlias[] = []): Map<string, string> {
+  const set = new Set(routes);
+  const out = new Map<string, string>();
+  for (const route of routes) {
+    const sp = route.indexOf(' ');
+    const method = route.slice(0, sp);
+    const path = route.slice(sp + 1);
+    for (const a of aliases) {
+      if (!path.startsWith(a.prefix) || path.startsWith(a.canonical)) continue;
+      const canonical = `${method} ${a.canonical}${path.slice(a.prefix.length)}`;
+      if (canonical !== route && set.has(canonical)) {
+        out.set(route, canonical);
+        break;
+      }
+    }
+  }
+  return out;
+}
+
+const isRootPointer = (p: string | undefined): boolean => p === undefined || p === '' || p === '/';
+
+/** Why a deviation is too broad to accept, or undefined if it's fine. */
+export function deviationProblem(d: Deviation): string | undefined {
+  if ((d.kind === 'response-schema' || d.kind === 'request-schema') && isRootPointer(d.pointer) && !d.message) {
+    return 'a whole-body schema deviation must name the violation with `message`, or it would accept any future one';
+  }
+  return undefined;
 }
 
 export const loadLedger = (systemsDir: string, system: string): ConformanceLedger =>
@@ -81,6 +115,8 @@ export const describeViolation = (v: Violation): string =>
 export function saveLedger(systemsDir: string, system: string, ledger: ConformanceLedger): void {
   const body: ConformanceLedger = {
     spec: ledger.spec,
+    ...(ledger.specMounts?.length ? { specMounts: ledger.specMounts } : {}),
+    ...(ledger.routeAliases?.length ? { routeAliases: ledger.routeAliases } : {}),
     routes: ledger.routes,
     failures: ledger.failures,
     unrouted: ledger.unrouted,
@@ -93,7 +129,10 @@ export function saveLedger(systemsDir: string, system: string, ledger: Conforman
 export const normalizePointer = (p: string | undefined): string => (p ?? '').replace(/\/\d+(?=\/|$)/g, '/*');
 
 const covers = (d: Deviation, route: string, v: Violation): boolean =>
-  d.route === route && d.kind === v.kind && (d.pointer === undefined || normalizePointer(d.pointer) === normalizePointer(v.pointer));
+  d.route === route &&
+  d.kind === v.kind &&
+  (d.pointer === undefined || normalizePointer(d.pointer) === normalizePointer(v.pointer)) &&
+  (d.message === undefined || v.message.includes(d.message));
 
 /**
  * Score one system. `violationsOf[i]` are the violations for `exchanges[i]`,
@@ -106,15 +145,25 @@ export function scoreSystem(input: {
   routeOf: (string | undefined)[];
   violationsOf: Violation[][];
   deviations: Deviation[];
+  routeAliases?: RouteAlias[];
 }): SystemScore {
-  const { system, deviations } = input;
+  const { system } = input;
+  const invalid = input.deviations.flatMap((d) => {
+    const reason = deviationProblem(d);
+    return reason ? [{ deviation: d, reason }] : [];
+  });
+  const deviations = input.deviations.filter((d) => !deviationProblem(d));
+  const aliases = aliasMap(input.routes, input.routeAliases);
   const byRoute = new Map<string, RouteResult>();
-  for (const route of input.routes) byRoute.set(route, { route, state: 'unexercised', exchanges: 0, violations: [], accepted: [] });
+  for (const route of input.routes) {
+    if (!aliases.has(route)) byRoute.set(route, { route, state: 'unexercised', exchanges: 0, violations: [], accepted: [] });
+  }
 
   const used = new Set<Deviation>();
   const unrouted: SystemScore['unrouted'] = [];
   input.exchanges.forEach((ex, i) => {
-    const route = input.routeOf[i];
+    const served = input.routeOf[i];
+    const route = served && (aliases.get(served) ?? served);
     const vs = input.violationsOf[i] ?? [];
     if (!route) {
       unrouted.push({ exchange: `${ex.method} ${ex.path.split('?')[0]}`, violations: vs });
@@ -140,10 +189,11 @@ export function scoreSystem(input: {
   for (const r of routes) {
     if (r.exchanges === 0) r.state = 'unexercised';
     else if (r.violations.length) r.state = 'failing';
+    else if (r.accepted.some((v) => UNCHECKING_KINDS.includes(v.kind))) r.state = 'unchecked';
     else if (r.accepted.length) r.state = 'deviating';
     else r.state = 'conforming';
   }
-  const counts = { routes: routes.length, verified: 0, conforming: 0, deviating: 0, failing: 0, unexercised: 0 };
+  const counts = { routes: routes.length, verified: 0, conforming: 0, deviating: 0, unchecked: 0, failing: 0, unexercised: 0 };
   for (const r of routes) counts[r.state]++;
   counts.verified = counts.conforming + counts.deviating;
 
@@ -154,7 +204,8 @@ export function scoreSystem(input: {
     counts,
     unrouted,
     stale,
-    clean: counts.verified === counts.routes && unrouted.length === 0 && stale.length === 0,
+    invalid,
+    clean: counts.verified === counts.routes && unrouted.length === 0 && stale.length === 0 && invalid.length === 0,
   };
 }
 
@@ -174,7 +225,7 @@ export interface BaselineDiff {
 export function diffBaseline(score: SystemScore, ledger: ConformanceLedger, spec: ConformanceLedger['spec']): BaselineDiff {
   const now = new Set(verifiedRoutes(score));
   const before = new Set(Object.entries(ledger.routes).filter(([, st]) => isVerified(st)).map(([r]) => r));
-  const { deviations: _d, ...recorded } = ledger;
+  const { deviations: _d, specMounts: _m, routeAliases: _a, ...recorded } = ledger;
   return {
     system: score.system,
     regressed: [...before].filter((r) => !now.has(r)),

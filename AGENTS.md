@@ -134,9 +134,15 @@ mock serves in one state, and the headline is verified / routes:
 | state | meaning |
 |-------|---------|
 | `conforming` | a guide example hits it; every request and response passes the spec |
-| `deviating` | hit; its only violations are accepted entries in the ledger |
+| `deviating` | hit; its only violations are accepted entries in the ledger, and its response was still schema-checked |
+| `unchecked` | hit; nothing failed, but an accepted `unknown-operation`, `unknown-status` or `content-type` means its response was **never** schema-checked. Not verified. |
 | `failing` | hit; at least one violation not accepted |
 | `unexercised` | no guide example reaches it, so nothing is known |
+
+Only `conforming` and `deviating` count as verified. The engine is strict on
+purpose: a 2xx the spec doesn't list is `unknown-status` (it never falls back to
+the spec's `default` error shape), and a response whose media type the spec
+doesn't document for that status is `content-type`.
 
 **The ledger.** `src/systems/<name>/conformance.json` holds a snapshot of
 that system's states (`routes`, `failures`, `unrouted`, written by
@@ -186,8 +192,23 @@ A deviation entry:
 
 `route` and `kind` must match the report exactly; `pointer` uses `*` for array
 indices and may be omitted to accept every violation of that kind on the
-route. `category` is one of `vendor-spec-wrong`, `spec-gap`, `modelling`
-(mock and spec model the same system through different APIs) or `mock-only`.
+route. `message` is a substring the violation's message must contain; it is
+**required** for a request- or response-schema deviation at the body root (no
+pointer, or `/`), which would otherwise excuse any future violation of the
+whole body, and `--check-baseline` fails on one without it. Use it anywhere a
+pointer alone is broader than the problem. `category` is one of
+`vendor-spec-wrong`, `spec-gap`, `modelling` (mock and spec model the same
+system through different APIs) or `mock-only`.
+
+Two more hand-written ledger fields, for surfaces one spec doesn't cover:
+
+- `specMounts: [{ "prefix": "/ws/fhir2/R4", "adaptor": "fhir" }]` checks
+  traffic under `prefix` against another adaptor's spec, so a FHIR facade is
+  validated as FHIR instead of excused as `unknown-operation`.
+- `routeAliases: [{ "prefix": "/", "canonical": "/api/" }]` declares routes
+  under `prefix` to be the same endpoints as those under `canonical` (a mock that
+  serves both `/products` and `/api/products`). Aliases don't count as separate
+  routes, and their traffic is scored against the canonical route.
 
 ## When `test:usage` fails, classify before fixing
 

@@ -31,8 +31,8 @@
     "PATCH /products/:id": "unexercised",
     "PATCH /stockMovements/:id": "unexercised",
     "POST /api/locations": "unexercised",
-    "POST /api/login": "conforming",
-    "POST /api/products": "conforming",
+    "POST /api/login": "failing",
+    "POST /api/products": "failing",
     "POST /api/stockMovements": "unexercised",
     "POST /locations": "unexercised",
     "POST /login": "unexercised",
@@ -45,7 +45,14 @@
     "PUT /products/:id": "unexercised",
     "PUT /stockMovements/:id": "unexercised"
   },
-  "failures": {},
+  "failures": {
+    "POST /api/login": [
+      "content-type: response is application/json; spec documents text/html for status 200"
+    ],
+    "POST /api/products": [
+      "unknown-status: spec documents no response for status 201 (documented: 200, default)"
+    ]
+  },
   "unrouted": [],
   "deviations": []
 }
