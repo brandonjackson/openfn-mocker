@@ -1182,8 +1182,8 @@ the spec has no such operation, status or media type), `failing`, or
 The engine does not wave through a wrong success code (a 2xx the spec doesn't
 list never falls back to its `default` error shape) or a media type the spec
 doesn't document. The current
-sweep: **211 of 509 mock routes verified (41%); 15 of 62 systems fully
-verified; 75 failing; 223 unexercised.** The running mock shows the whole
+sweep: **301 of 482 mock routes verified (62%; 283 pass the spec outright);
+18 of 62 systems fully verified; 15 unchecked; 57 failing; 109 unexercised.** The running mock shows the whole
 picture, rated per system, at [`/status`](#conformance-status-page).
 
 **The ledgers.** Each system has `src/systems/<name>/conformance.json`: a
@@ -1243,25 +1243,18 @@ worth driving to zero first are the ones `pnpm specs report` puts in its `ok`
 bucket — full coverage, complete, and either a vendor-published OpenAPI or a
 conversion of a vendor machine spec. Fourteen of them have a mock here (asana,
 azure-storage, dhis2, gemini, gmail, googledrive, googlesheets, kobotoolbox,
-mailchimp, mailgun, ocl, odk, stripe, twilio), ten of which are free of
-violations. Every violation left in the other four is a place the *vendor's own
-document* disagrees with the system it describes, each checked against the
-vendor's source and written into that adaptor's `source.json` notes in
-`openfn-api-specs` (they belong in those systems' ledgers as `vendor-spec-wrong`
-deviations next):
+mailchimp, mailgun, ocl, odk, stripe, twilio).
 
-| system | left | what the spec gets wrong |
-|--------|------|--------------------------|
-| kobotoolbox | 35 | KPI's hand-written asset annotations lag its code: `settings.country` is `[{label, value}]`, `permissions` is a list of permission assignments, and `access_types` / `summary.languages` / `summary.default_translation` / `deployed_versions.next`/`previous` really do come back null |
-| dhis2 | 5 | describes 2.43 only (no legacy `POST /api/trackedEntityInstances`), omits the optional `/api/{version}/` segment, and models nested metadata as full objects where DHIS2 returns `{"id": "…"}` |
-| odk | 4 | types an OData submission row with the docs' own demo form and marks its `age`/`name` required, which no other form's rows can satisfy |
-| ocl | 3 | inherits DRF's `{count, next, previous, results}` envelope from drf-yasg, but OCL returns a bare array and paginates in headers |
-
-Telling those apart from the mock's own bugs is the whole job, and the way to do
-it is to go to the system itself: OCL's `ListWithHeadersMixin`, KPI's
-`AssetSerializer`, ODK Central's `Frame.forApi()` (which is how the last pass
-found that a real Central *omits* null fields rather than sending them, a
-genuine mock bug) all settle the question that the two documents alone cannot.
+Where the vendor's own document disagrees with the system it describes, the
+finding now lives in that system's ledger as a deviation, with a permalink to
+the system's source as evidence, rather than in prose here. kobotoolbox, dhis2,
+odk and ocl are the worked examples. Each was settled by going to the system
+itself: OCL's `ListWithHeadersMixin`, KPI's `AssetSerializer`, ODK Central's
+OData frame builder, and dhis2-core's `WebMessage`. Two documents alone cannot
+settle the question. Going to the source also turns up the mock's own bugs
+(Central fills empty fields with `null`; DHIS2 creates return `201` with an
+`ObjectReport`). Re-capturing a stale vendor spec can make deviations
+disappear: kobotoolbox's November re-capture retired 57 of them.
 
 ## Roadmap
 
@@ -1324,18 +1317,26 @@ box:
   returns, so `createReferrals` always throws `Cannot read properties of
   undefined (reading 'body')` — a bug in `@openfn/language-primero` (confirmed
   against 4.1.2), not something the mock's response shape can work around.
-- **Drive the conformance yardstick to 100%.** 211 of 509 mock routes are
+- **Drive the conformance yardstick to 100%.** 301 of 482 mock routes are
   verified today (see [Checking spec conformance](#checking-spec-conformance)
-  and `/status`). The work splits three ways: **unexercised routes** (223) need
-  guide examples; **failing routes** (75) need the mock fixed, or the spec
-  fixed or a deviation recorded where the vendor's document is wrong (the
-  kobotoolbox/dhis2/odk/ocl cases above); and **modelling disagreements**
-  where the mock and spec describe the same system through different APIs
-  (Odoo/OpenSPP XML-RPC vs JSON-RPC/REST; OpenELIS FHIR facade vs REST; Maximo
-  `/oslc` vs `/maxrest`; vTiger `?operation=` vs path operations; the `dagu`
-  spec's paths belong to a different system). Each system is independent work
-  with its own ledger, so it parallelises cleanly; see AGENTS.md "Conformance
-  work order".
+  and `/status`). The work splits four ways:
+  - **Unexercised routes** (109) need guide examples.
+  - **Failing routes** (57) need the mock fixed, or a deviation recorded where
+    the vendor's document is provably wrong. Newly caught by the strict engine:
+    cht's contact export (JSON, should be CSV) and senaite's create (`201`).
+  - **Unchecked routes** (15) wait on spec fixes in `openfn-api-specs`, which
+    are proposed in the PRs that recorded them. Examples: dhis2's legacy tracker
+    API and `/api/{version}/` prefix, OpenMRS `/session`, openboxes' create
+    statuses, and ODK's attachment media type.
+  - **Modelling disagreements**, where the mock and spec describe the same system
+    through different APIs: Odoo/OpenSPP XML-RPC vs JSON-RPC/REST; Maximo
+    `/oslc` vs `/maxrest`; vTiger `?operation=` vs path operations; and the
+    `dagu` spec's paths, which belong to a different system. Where a FHIR facade
+    is the issue, a ledger `specMounts` entry checks it against the FHIR spec
+    (OpenMRS does this).
+
+  Each system is independent work with its own ledger, so it parallelises
+  cleanly. See AGENTS.md "Conformance work order".
 - **Credential value validation (optional).** Auth is presence-checked, never
   value-checked, so negative-path tests (wrong password, expired or refreshed
   token) can't be exercised. An opt-in "strict credential" mode would let
