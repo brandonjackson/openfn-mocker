@@ -112,10 +112,12 @@ const plugin: MockSystemPlugin = {
         const filter = parseFilter((req.query as Record<string, any>).filter);
         return filter ? applyFilter(scoped, filter) : scoped;
       });
+      // By-id reads/updates go through the outbreak's hasMany relation, so a
+      // record belonging to another outbreak is "unknown" here, as in LoopBack.
       app.get(`/outbreaks/:outbreakId/${kind}/:id`, async (req, reply) => {
-        const id = String((req.params as Record<string, any>).id);
+        const { outbreakId, id } = req.params as Record<string, string>;
         const found = store.get(kind, id);
-        if (found === undefined) {
+        if (found === undefined || found.outbreakId !== outbreakId) {
           reply.code(404);
           return { error: { statusCode: 404, message: `Unknown "${kind}" id "${id}".` } };
         }
@@ -128,7 +130,16 @@ const plugin: MockSystemPlugin = {
         reply.code(200);
         return record;
       });
-      app.put(`/outbreaks/:outbreakId/${kind}/:id`, async (req) => replaceRecord(store, kind, req));
+      app.put(`/outbreaks/:outbreakId/${kind}/:id`, async (req, reply) => {
+        const { outbreakId, id } = req.params as Record<string, string>;
+        const existing = store.get(kind, id);
+        if (existing === undefined || existing.outbreakId !== outbreakId) {
+          reply.code(404);
+          return { error: { statusCode: 404, message: `Unknown "${kind}" id "${id}".` } };
+        }
+        // The outbreak in the path owns the record; a body can't move it.
+        return replaceRecord(store, kind, req, { outbreakId });
+      });
     }
 
     // --- Reference data (locations, reference-data) ---
@@ -167,11 +178,16 @@ function makeRecord(body: any, extra: Record<string, any>): Record<string, any> 
 }
 
 /** PUT handler shared by every resource: merge onto the existing record. */
-function replaceRecord(store: DataStore, collection: string, req: FastifyRequest): any {
+function replaceRecord(
+  store: DataStore,
+  collection: string,
+  req: FastifyRequest,
+  extra: Record<string, any> = {}
+): any {
   const id = String((req.params as Record<string, any>).id);
   const existing = store.get(collection, id) ?? {};
   const body = (req.body ?? {}) as Record<string, any>;
-  const merged = { ...existing, ...body, id };
+  const merged = { ...existing, ...body, ...extra, id };
   store.replace(collection, id, merged);
   return merged;
 }

@@ -57,4 +57,24 @@ describe('godata', () => {
     expect(read.json().firstName).toBe('New');
     await app.close();
   });
+
+  it('scopes case/contact by-id reads and updates to the outbreak in the path', async () => {
+    const { app } = await createSystemServer(godata, config, { logLevel: 'silent' });
+    const wrongRead = await app.inject({ method: 'GET', url: '/outbreaks/ob-other/cases/case-0001' });
+    expect(wrongRead.statusCode).toBe(404);
+    const wrongPut = await app.inject({
+      method: 'PUT',
+      url: '/outbreaks/ob-other/contacts/cont-0001',
+      payload: { riskLevel: 'LNG_REFERENCE_DATA_CATEGORY_RISK_LEVEL_LOW' },
+    });
+    expect(wrongPut.statusCode).toBe(404);
+    const put = await app.inject({
+      method: 'PUT',
+      url: '/outbreaks/ob-sl-covid19/contacts/cont-0001',
+      payload: { riskLevel: 'LNG_REFERENCE_DATA_CATEGORY_RISK_LEVEL_LOW', outbreakId: 'ob-other' },
+    });
+    expect(put.statusCode).toBe(200);
+    expect(put.json()).toMatchObject({ id: 'cont-0001', outbreakId: 'ob-sl-covid19', firstName: 'Mohamed' });
+    await app.close();
+  });
 });
