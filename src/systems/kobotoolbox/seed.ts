@@ -100,6 +100,7 @@ export function buildAsset(
   const url = assetUrl(port, uid);
   const apiV2 = url.slice(0, url.indexOf('/assets/')); // http://host:port/api/v2
   const collection = `${apiV2}/assets/`;
+  const kobocat = apiV2.slice(0, -'/api/v2'.length); // stands in for KOBOCAT_URL
   const username = core.owner__username ?? 'apiuser';
   const ownerUrl = `${apiV2}/users/${username}/`;
 
@@ -207,8 +208,17 @@ export function buildAsset(
     deployment__active: active,
     deployment_status: deploymentStatus,
     deployment__links: {},
+    // KPI's openrosa backend builds these on the KoboCAT host from the owner and
+    // the xform id_string (the asset uid); a draft has none ({}). The mock has
+    // no separate KoboCAT host, so they hang off this server's origin.
     deployment__data_download_links: hasDeployment
-      ? { xls: `${url}data.xls`, csv: `${url}data.csv` }
+      ? {
+          xls_legacy: `${kobocat}/${username}/exports/${uid}/xls/`,
+          csv_legacy: `${kobocat}/${username}/exports/${uid}/csv/`,
+          zip_legacy: `${kobocat}/${username}/exports/${uid}/zip/`,
+          xls: `${kobocat}/${username}/reports/${uid}/export.xlsx`,
+          csv: `${kobocat}/${username}/reports/${uid}/export.csv`,
+        }
       : {},
     deployment__submission_count: count,
     deployment__last_submission_time: lastSubmission,
@@ -221,11 +231,14 @@ interface SeedAsset {
   uid: string;
   name: string;
   owner: string;
+  /** Defaults to true; a draft asset has never been deployed. */
+  deployed?: boolean;
   submissions: Array<Record<string, any>>;
 }
 
 /**
- * Seed 3 assets (survey forms) with ~10 submissions distributed across them.
+ * Seed 4 assets (survey forms: 3 deployed, 1 draft) with ~10 submissions
+ * distributed across the deployed ones.
  * Submissions carry a `_xform_id_string` pointing back at their asset uid; the
  * plugin derives `deployment__submission_count` from the live submission count.
  */
@@ -264,6 +277,15 @@ export function seed(store: DataStore, config: SystemConfig): void {
         { point_name: 'Ngelehun Well 1', functional: 'yes', gps: '7.9465 -11.7382' },
         { point_name: 'Ngelehun Borehole 2', functional: 'no', gps: '7.9501 -11.7411' },
       ],
+    },
+    {
+      // A draft: built but never deployed, so it has no deployment (GET
+      // /deployment/ 404s) and no submissions. POST /deployment/ deploys it.
+      uid: 'aMarketPrice04',
+      name: 'Market Price Survey (draft)',
+      owner: 'fieldteam',
+      deployed: false,
+      submissions: [],
     },
   ];
 
@@ -333,8 +355,8 @@ export function seed(store: DataStore, config: SystemConfig): void {
       uid: asset.uid,
       name: asset.name,
       asset_type: 'survey',
-      deployment__active: true,
-      has_deployment: true,
+      deployment__active: asset.deployed !== false,
+      has_deployment: asset.deployed !== false,
       version_id: version,
       deployment__uuid: formhubUuid,
       date_created: new Date(baseTime).toISOString(),

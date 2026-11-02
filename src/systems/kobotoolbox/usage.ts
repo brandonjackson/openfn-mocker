@@ -21,8 +21,8 @@ export const usage: UsageExample[] = [
     code: "http.get('assets/aHousehold01Q1/data/12001/attachments/300001', {\n  parseAs: 'base64'\n});", apiRef: "attachmentDownload" },
   { fn: "http.post", signature: "http.post(path, data, options = {})", description: "Make a POST request to a KoboToolbox endpoint, e.g. duplicating a submission.",
     code: "http.post('assets/aHousehold01Q1/data/12001/duplicate/', {});", apiRef: "ex5" },
-  { fn: "http.put", signature: "http.put(path, data, options = {})", description: "Make a PUT request to a KoboToolbox endpoint, e.g. to redeploy a form.",
-    code: "http.put('assets/aHousehold01Q1/deployment/', {});" },
-  { fn: "http.request", signature: "http.request(method, path, options = {})", description: "Make an HTTP request with any method to a KoboToolbox endpoint.",
-    code: "http.request('PATCH', 'assets/aHousehold01Q1/data/bulk/', {\n  data: { submission_ids: [12001], data: { water_source: 'piped' } }\n});" },
+  { fn: "http.put", signature: "http.put(path, data, options = {})", description: "Make a PUT request to a KoboToolbox endpoint, e.g. a full update of an asset (asset_type is required).",
+    code: "http.put('assets/aMarketPrice04', {\n  name: 'Market Price Survey 2024',\n  asset_type: 'survey'\n});", apiRef: "putAsset" },
+  { fn: "http.request", signature: "http.request(method, path, options = {})", description: "Make an HTTP request with any method to a KoboToolbox endpoint, e.g. bulk-editing submissions.",
+    code: "http.request('PATCH', 'assets/aHousehold01Q1/data/bulk/', {\n  data: {\n    payload: { submission_ids: [12001], data: { water_source: 'piped' } }\n  }\n});", apiRef: "bulkUpdate" },
 ];
