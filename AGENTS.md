@@ -7,6 +7,40 @@ and definition of done for adding or changing one; the README has the depth
 (see "Adding a new system", "Testing usage examples end to end", "Local network
 aliasing", "Roadmap").
 
+## North star
+
+Two numbers, both in the repo-root `coverage.json` (rebuilt from the ledgers by
+`pnpm test:conformance -- --update-baseline`), tell you whether the mocker is
+getting better:
+
+1. **Mock coverage: spec operations exercised ÷ all spec operations.** The
+   share of the adaptor's whole API (its `openapi.json` in openfn-api-specs)
+   that the guide examples reach. This is the headline, and the number the
+   adaptors storybook shows for every adaptor. Today 332 of 16,290 across 62
+   systems (2%), and 0% for the ~40 adaptors with no mock at all.
+2. **The yardstick: verified routes ÷ mock routes.** The quality guard. Raising
+   coverage with routes that then fail the spec is not progress.
+
+So the goal is **more of each spec exercised, with every exercised route
+verified.** Every PR that touches a system states both numbers before and after,
+and neither may go down without a stated reason (a spec that grew counts).
+
+How to move it:
+
+- **Pick work** by what users reach most and is covered least: first a new
+  mock for a widely used adaptor with none (adaptors-storybook lists them as
+  "not mocked", and its snippets for those adaptors can't be measured until a
+  mock exists), then the lowest-coverage resources of existing mocks.
+- **Raise coverage** by adding a route plus a guide example for an operation
+  the adaptor's users really call (via its named functions *or* its generic
+  `get`/`post`/`request`, which reach the whole API). Coverage counts spec
+  operations, not routes, so a catch-all route like `GET /api/*` earns credit
+  only for the operations examples actually hit.
+- **Don't game it.** Guide examples show on the sandbox page, so each must be
+  one a person would want to run; never add an example only to tick an
+  operation, and never point one at a spec operation the mock doesn't really
+  implement.
+
 ## Specs are a dev-time reference, not a runtime input
 
 `openfn-api-specs` is a **dev dependency** of this repo (installed from GitHub
@@ -120,8 +154,10 @@ runtime `fs`), mirrored as real files under `test/fixtures/attachments/`, and
       to end through the real adaptor, *or* each remaining failure is a
       documented Roadmap blocker (see below). **This is the definition of done.**
 - [ ] `pnpm test:conformance -- --system <name>` run and read, worked per the
-      "Conformance work order" below, and the ledger updated with
-      `--update-baseline` (CI's `--check-baseline` fails otherwise).
+      "Conformance work order" below, and the ledger and `coverage.json`
+      updated with `--update-baseline` (CI's `--check-baseline` fails otherwise).
+- [ ] The PR description gives the system's mock coverage (exercised / spec
+      operations) and yardstick (verified / routes), before and after.
 
 ## Conformance work order
 
@@ -239,3 +275,6 @@ Two more hand-written ledger fields, for surfaces one spec doesn't cover:
 `pnpm build`, `pnpm typecheck`, `pnpm test`, and `pnpm readme:check` pass, **and**
 `pnpm test:usage --system <name>` is green — or every remaining usage failure is a
 documented Roadmap blocker. Green unit tests alone are not "done."
+`pnpm test:conformance -- --check-baseline` passes, so the ledger and
+`coverage.json` are current, and the PR reports the north-star numbers (mock
+coverage and yardstick) before and after.
