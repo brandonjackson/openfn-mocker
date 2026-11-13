@@ -25,9 +25,10 @@
  * Both steps require root (binding :443 for a hardcoded-hostname adaptor, and
  * writing /etc/hosts) or, for adaptors with a `host`-role credential field, at
  * least a free ephemeral port and a writable hosts file. Either can fail on a
- * locked-down machine — that's reported as a warning and the caller gets
- * `undefined` back, so the affected system's examples fail exactly as they did
- * before this mechanism existed, not the whole suite.
+ * locked-down machine (typically: not running as root) — the caller then gets
+ * an `AliasUnavailable` back naming the reason, and skips that system's
+ * examples rather than running them against the real public hostnames, where
+ * they would fail for reasons that have nothing to do with the snippets.
  */
 import { spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
@@ -47,6 +48,15 @@ export interface AliasProxyHandle {
   /** Extra env vars the CLI subprocess needs (trusting the local self-signed cert). */
   env: Record<string, string>;
   close(): Promise<void>;
+}
+
+/** The system needs host aliasing but it can't be set up here (usually: not root). */
+export interface AliasUnavailable {
+  unavailable: string;
+}
+
+export function isAliasUnavailable(x: AliasProxyHandle | AliasUnavailable | undefined): x is AliasUnavailable {
+  return !!x && 'unavailable' in x;
 }
 
 /** Resolve a plugin's `hostAliases` templates against the bind host, deduped. */
@@ -130,13 +140,14 @@ function listen(server: https.Server, port: number): Promise<number> {
 
 /**
  * Start the alias proxy for one system, if it declares `hostAliases`. Returns
- * `undefined` (after logging why) when the mechanism can't be set up here —
- * the caller should proceed without it, reproducing the pre-existing failure.
+ * `undefined` when the system declares none (nothing to do), or an
+ * `AliasUnavailable` naming the reason when the mechanism can't be set up
+ * here — the caller should skip that system's examples.
  */
 export async function startAliasProxy(
   plugin: MockSystemPlugin,
   backendPort: number
-): Promise<AliasProxyHandle | undefined> {
+): Promise<AliasProxyHandle | AliasUnavailable | undefined> {
   if (!plugin.hostAliases?.length) return undefined;
 
   const bindHost = '127.0.0.1';
@@ -147,20 +158,15 @@ export async function startAliasProxy(
   try {
     addedLines = addHostsEntries(aliasHosts);
   } catch (err: any) {
-    console.log(
-      `   ⚠ ${plugin.name}: can't write ${HOSTS_FILE} (${err.code ?? err.message}) — needs root locally; ` +
-        `skipping host aliasing, its examples will fail as if this mechanism didn't exist.`
-    );
-    return undefined;
+    return { unavailable: `can't write ${HOSTS_FILE} (${err.code ?? err.message}); needs root` };
   }
 
   let cert: { cert: string; key: string };
   try {
     cert = ensureCert();
   } catch (err: any) {
-    console.log(`   ⚠ ${plugin.name}: ${err.message} — skipping host aliasing.`);
     removeHostsEntries(addedLines);
-    return undefined;
+    return { unavailable: err.message };
   }
 
   const server = https.createServer({ cert: cert.cert, key: cert.key }, (req, res) =>
@@ -172,13 +178,12 @@ export async function startAliasProxy(
   try {
     actualPort = await listen(server, listenPort);
   } catch (err: any) {
-    console.log(
-      `   ⚠ ${plugin.name}: can't bind TLS proxy on ${listenPort === 443 ? ':443' : 'an ephemeral port'} ` +
-        `(${err.code ?? err.message})${listenPort === 443 ? ' — needs root locally' : ''}; ` +
-        `skipping host aliasing, its examples will fail as if this mechanism didn't exist.`
-    );
     removeHostsEntries(addedLines);
-    return undefined;
+    return {
+      unavailable:
+        `can't bind TLS proxy on ${listenPort === 443 ? ':443' : 'an ephemeral port'} ` +
+        `(${err.code ?? err.message})${listenPort === 443 ? '; needs root' : ''}`,
+    };
   }
 
   return {
