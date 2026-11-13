@@ -2,17 +2,17 @@
   "$comment": "Generated from src/systems/*/conformance.json by `pnpm test:conformance -- --update-baseline`; do not edit by hand. Mock coverage = spec operations the guide examples exercised / every operation in the adaptor's openapi.json.",
   "totals": {
     "systems": 62,
-    "specOperations": 16290,
-    "exercised": 332,
+    "specOperations": 16921,
+    "exercised": 339,
     "percent": 2
   },
   "systems": [
     {
       "system": "asana",
       "adaptor": "asana",
-      "specOperations": 249,
+      "specOperations": 271,
       "exercised": 6,
-      "percent": 2.4,
+      "percent": 2.2,
       "routes": 7,
       "verified": 6,
       "counts": {
@@ -42,9 +42,9 @@
     {
       "system": "beyonic",
       "adaptor": "beyonic",
-      "specOperations": 3,
-      "exercised": 3,
-      "percent": 100,
+      "specOperations": 27,
+      "exercised": 4,
+      "percent": 14.8,
       "routes": 5,
       "verified": 0,
       "counts": {
@@ -74,9 +74,9 @@
     {
       "system": "collections",
       "adaptor": "collections",
-      "specOperations": 7,
+      "specOperations": 6,
       "exercised": 4,
-      "percent": 57.1,
+      "percent": 66.7,
       "routes": 5,
       "verified": 4,
       "counts": {
@@ -106,7 +106,7 @@
     {
       "system": "dagu",
       "adaptor": "dagu",
-      "specOperations": 4,
+      "specOperations": 5,
       "exercised": 0,
       "percent": 0,
       "routes": 4,
@@ -202,16 +202,16 @@
     {
       "system": "flutterwave",
       "adaptor": "flutterwave",
-      "specOperations": 10,
+      "specOperations": 57,
       "exercised": 4,
-      "percent": 40,
+      "percent": 7,
       "routes": 5,
-      "verified": 1,
+      "verified": 4,
       "counts": {
-        "conforming": 1,
-        "deviating": 0,
+        "conforming": 3,
+        "deviating": 1,
         "unchecked": 0,
-        "failing": 3,
+        "failing": 0,
         "unexercised": 1
       }
     },
@@ -330,7 +330,7 @@
     {
       "system": "http-generic",
       "adaptor": "http",
-      "specOperations": 6,
+      "specOperations": 10,
       "exercised": 0,
       "percent": 0,
       "routes": 5,
@@ -350,12 +350,12 @@
       "exercised": 4,
       "percent": 100,
       "routes": 4,
-      "verified": 1,
+      "verified": 2,
       "counts": {
-        "conforming": 1,
+        "conforming": 2,
         "deviating": 0,
         "unchecked": 0,
-        "failing": 3,
+        "failing": 2,
         "unexercised": 0
       }
     },
@@ -378,7 +378,7 @@
     {
       "system": "inform",
       "adaptor": "inform",
-      "specOperations": 6,
+      "specOperations": 194,
       "exercised": 0,
       "percent": 0,
       "routes": 8,
@@ -442,7 +442,7 @@
     {
       "system": "mailgun",
       "adaptor": "mailgun",
-      "specOperations": 265,
+      "specOperations": 267,
       "exercised": 3,
       "percent": 1.1,
       "routes": 3,
@@ -458,7 +458,7 @@
     {
       "system": "maximo",
       "adaptor": "maximo",
-      "specOperations": 13,
+      "specOperations": 60,
       "exercised": 0,
       "percent": 0,
       "routes": 5,
@@ -474,9 +474,9 @@
     {
       "system": "memento",
       "adaptor": "memento",
-      "specOperations": 6,
+      "specOperations": 9,
       "exercised": 5,
-      "percent": 83.3,
+      "percent": 55.6,
       "routes": 6,
       "verified": 4,
       "counts": {
@@ -490,25 +490,25 @@
     {
       "system": "monnify",
       "adaptor": "monnify",
-      "specOperations": 7,
-      "exercised": 2,
-      "percent": 28.6,
+      "specOperations": 77,
+      "exercised": 5,
+      "percent": 6.5,
       "routes": 5,
-      "verified": 2,
+      "verified": 5,
       "counts": {
-        "conforming": 2,
-        "deviating": 0,
+        "conforming": 4,
+        "deviating": 1,
         "unchecked": 0,
-        "failing": 3,
+        "failing": 0,
         "unexercised": 0
       }
     },
     {
       "system": "mpesa",
       "adaptor": "mpesa",
-      "specOperations": 6,
+      "specOperations": 52,
       "exercised": 6,
-      "percent": 100,
+      "percent": 11.5,
       "routes": 6,
       "verified": 1,
       "counts": {
@@ -554,9 +554,9 @@
     {
       "system": "mtn-momo",
       "adaptor": "mtn-momo",
-      "specOperations": 13,
+      "specOperations": 56,
       "exercised": 5,
-      "percent": 38.5,
+      "percent": 8.9,
       "routes": 6,
       "verified": 5,
       "counts": {
@@ -666,17 +666,17 @@
     {
       "system": "openfn",
       "adaptor": "openfn",
-      "specOperations": 22,
-      "exercised": 4,
-      "percent": 18.2,
+      "specOperations": 40,
+      "exercised": 5,
+      "percent": 12.5,
       "routes": 5,
-      "verified": 4,
+      "verified": 5,
       "counts": {
-        "conforming": 4,
+        "conforming": 5,
         "deviating": 0,
         "unchecked": 0,
         "failing": 0,
-        "unexercised": 1
+        "unexercised": 0
       }
     },
     {
@@ -762,16 +762,16 @@
     {
       "system": "pesapal",
       "adaptor": "pesapal",
-      "specOperations": 7,
-      "exercised": 0,
-      "percent": 0,
+      "specOperations": 15,
+      "exercised": 4,
+      "percent": 26.7,
       "routes": 4,
-      "verified": 0,
+      "verified": 3,
       "counts": {
-        "conforming": 0,
+        "conforming": 3,
         "deviating": 0,
         "unchecked": 0,
-        "failing": 4,
+        "failing": 1,
         "unexercised": 0
       }
     },
@@ -890,7 +890,7 @@
     {
       "system": "stripe",
       "adaptor": "stripe",
-      "specOperations": 587,
+      "specOperations": 612,
       "exercised": 6,
       "percent": 1,
       "routes": 6,
@@ -970,9 +970,9 @@
     {
       "system": "wigal-sms",
       "adaptor": "wigal-sms",
-      "specOperations": 5,
+      "specOperations": 9,
       "exercised": 1,
-      "percent": 20,
+      "percent": 11.1,
       "routes": 1,
       "verified": 1,
       "counts": {
@@ -986,9 +986,9 @@
     {
       "system": "zata",
       "adaptor": "zata",
-      "specOperations": 26,
-      "exercised": 2,
-      "percent": 7.7,
+      "specOperations": 106,
+      "exercised": 0,
+      "percent": 0,
       "routes": 3,
       "verified": 0,
       "counts": {

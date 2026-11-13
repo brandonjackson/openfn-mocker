@@ -4,15 +4,15 @@
     "origin": "synthesized"
   },
   "coverage": {
-    "operations": 22,
-    "exercised": 4
+    "operations": 40,
+    "exercised": 5
   },
   "routes": {
     "GET /api/jobs": "conforming",
     "GET /api/jobs/:id": "conforming",
     "GET /api/projects": "conforming",
-    "GET /api/projects/:id": "unexercised",
-    "POST /api/jobs": "conforming"
+    "GET /api/projects/:id": "conforming",
+    "POST /api/credentials": "conforming"
   },
   "failures": {},
   "unrouted": [],

@@ -4,8 +4,8 @@
     "origin": "generated"
   },
   "coverage": {
-    "operations": 3,
-    "exercised": 3
+    "operations": 27,
+    "exercised": 4
   },
   "routes": {
     "GET /contacts": "unexercised",
@@ -16,17 +16,15 @@
   },
   "failures": {
     "GET /payments": [
-      "unknown-operation: no operation in the spec matches GET /payments"
+      "response-schema /results/*/amount: must be string"
     ],
     "POST /collectionrequests": [
-      "request-schema /amount: must be string",
       "response-schema /amount: must be string"
     ],
     "POST /contacts": [
       "request-schema: missing required property 'phone_number'"
     ],
     "POST /payments": [
-      "request-schema /amount: must be string",
       "response-schema /amount: must be string"
     ]
   },

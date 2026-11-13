@@ -4,27 +4,52 @@
     "origin": "generated"
   },
   "coverage": {
-    "operations": 10,
+    "operations": 57,
     "exercised": 4
   },
   "routes": {
-    "GET /customers": "failing",
+    "GET /customers": "conforming",
     "GET /payment-methods": "unexercised",
-    "POST /charges": "failing",
-    "POST /customers": "failing",
-    "POST /payment-methods": "conforming"
+    "POST /charges": "conforming",
+    "POST /customers": "conforming",
+    "POST /payment-methods": "deviating"
   },
-  "failures": {
-    "GET /customers": [
-      "response-schema /data/*/name/middle: must be string"
-    ],
-    "POST /charges": [
-      "unknown-status: spec documents no response for status 200 (documented: 201)"
-    ],
-    "POST /customers": [
-      "response-schema /data/address: must be object"
-    ]
-  },
+  "failures": {},
   "unrouted": [],
-  "deviations": []
+  "deviations": [
+    {
+      "route": "POST /payment-methods",
+      "kind": "request-schema",
+      "message": "must be string",
+      "category": "spec-gap",
+      "reason": "The generated v4 spec lost the property names of PaymentMethod and CreatePaymentMethodRequest: each oneOf variant is allOf[string, string, object, ...], which no JSON value can satisfy, so every payment-method body fails. Remove once openfn-api-specs rebuilds these schemas from the v4 reference.",
+      "evidence": "Provable from the spec itself: allOf of {type: string} and {type: object} is unsatisfiable. Recorded in openfn-api-specs specs/adaptors/flutterwave/source.json notes (6) and maintenance-log.jsonl (2026-11-13, event error)."
+    },
+    {
+      "route": "POST /payment-methods",
+      "kind": "request-schema",
+      "message": "must match exactly one schema in oneOf",
+      "category": "spec-gap",
+      "reason": "The generated v4 spec lost the property names of PaymentMethod and CreatePaymentMethodRequest: each oneOf variant is allOf[string, string, object, ...], which no JSON value can satisfy, so every payment-method body fails. Remove once openfn-api-specs rebuilds these schemas from the v4 reference.",
+      "evidence": "Provable from the spec itself: allOf of {type: string} and {type: object} is unsatisfiable. Recorded in openfn-api-specs specs/adaptors/flutterwave/source.json notes (6) and maintenance-log.jsonl (2026-11-13, event error)."
+    },
+    {
+      "route": "POST /payment-methods",
+      "kind": "response-schema",
+      "message": "must be string",
+      "category": "spec-gap",
+      "reason": "The generated v4 spec lost the property names of PaymentMethod and CreatePaymentMethodRequest: each oneOf variant is allOf[string, string, object, ...], which no JSON value can satisfy, so every payment-method body fails. Remove once openfn-api-specs rebuilds these schemas from the v4 reference.",
+      "evidence": "Provable from the spec itself: allOf of {type: string} and {type: object} is unsatisfiable. Recorded in openfn-api-specs specs/adaptors/flutterwave/source.json notes (6) and maintenance-log.jsonl (2026-11-13, event error).",
+      "pointer": "/data"
+    },
+    {
+      "route": "POST /payment-methods",
+      "kind": "response-schema",
+      "message": "must match exactly one schema in oneOf",
+      "category": "spec-gap",
+      "reason": "The generated v4 spec lost the property names of PaymentMethod and CreatePaymentMethodRequest: each oneOf variant is allOf[string, string, object, ...], which no JSON value can satisfy, so every payment-method body fails. Remove once openfn-api-specs rebuilds these schemas from the v4 reference.",
+      "evidence": "Provable from the spec itself: allOf of {type: string} and {type: object} is unsatisfiable. Recorded in openfn-api-specs specs/adaptors/flutterwave/source.json notes (6) and maintenance-log.jsonl (2026-11-13, event error).",
+      "pointer": "/data"
+    }
+  ]
 }

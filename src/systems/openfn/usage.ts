@@ -16,9 +16,9 @@ export const usage: UsageExample[] = [
   {
     fn: 'post',
     signature: 'post(path, data, options?, callback?)',
-    description: 'POST to a Lightning resource to create a record.',
-    code: "post('jobs', { name: 'Nightly sync', adaptor: '@openfn/language-http' });",
-    apiRef: 'createJob',
+    description: 'POST to a Lightning resource to create a record (jobs are read-only, so this creates a credential).',
+    code: "post('credentials', { name: 'DHIS2 production', schema: 'dhis2' });",
+    apiRef: 'createCredential',
   },
   {
     fn: 'request',

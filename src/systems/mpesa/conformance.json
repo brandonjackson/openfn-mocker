@@ -4,7 +4,7 @@
     "origin": "generated"
   },
   "coverage": {
-    "operations": 6,
+    "operations": 52,
     "exercised": 6
   },
   "routes": {
@@ -17,16 +17,19 @@
   },
   "failures": {
     "POST /mpesa/b2b/v1/paymentrequest": [
+      "request-schema /Amount: must be string",
       "request-schema /PartyA: must be string",
       "request-schema /PartyB: must be string"
     ],
     "POST /mpesa/b2b/v1/remittax": [
+      "request-schema /Amount: must be string",
       "request-schema /PartyA: must be string"
     ],
     "POST /mpesa/c2b/v1/registerurl": [
       "request-schema /ShortCode: must be string"
     ],
     "POST /mpesa/stkpush/v1/processrequest": [
+      "request-schema /Amount: must be string",
       "request-schema /PartyA: must be string",
       "request-schema /PartyB: must be string",
       "request-schema /PhoneNumber: must be string"

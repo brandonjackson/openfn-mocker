@@ -98,7 +98,13 @@ const plugin: MockSystemPlugin = {
           responseCode: '99',
         };
       }
-      return envelope(found, 'success');
+      // v2 transaction status sends money fields as decimal strings ("100.00"),
+      // unlike init-transaction's numbers; see the vendor spec's example.
+      const money = (v: unknown) => (typeof v === 'number' ? v.toFixed(2) : v);
+      return envelope(
+        { ...found, amountPaid: money(found.amountPaid), totalPayable: money(found.totalPayable) },
+        'success',
+      );
     });
 
     // --- Search disbursement transactions (list; paginated content) ---

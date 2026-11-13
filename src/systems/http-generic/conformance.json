@@ -4,7 +4,7 @@
     "origin": "synthesized"
   },
   "coverage": {
-    "operations": 6,
+    "operations": 10,
     "exercised": 0
   },
   "routes": {
