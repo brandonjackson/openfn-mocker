@@ -17,7 +17,7 @@ export function seed(store: DataStore, _config: SystemConfig): void {
     {
       id: 'cus_00000000000001',
       type: 'customer',
-      name: { first: 'Ada', middle: null, last: 'Lovelace' },
+      name: { first: 'Ada', last: 'Lovelace' },
       email: 'ada@example.com',
       phone: { country_code: '234', number: '8012345678' },
       created_datetime: nowIso(),
@@ -25,7 +25,7 @@ export function seed(store: DataStore, _config: SystemConfig): void {
     {
       id: 'cus_00000000000002',
       type: 'customer',
-      name: { first: 'Grace', middle: null, last: 'Hopper' },
+      name: { first: 'Grace', last: 'Hopper' },
       email: 'grace@example.com',
       phone: { country_code: '234', number: '8087654321' },
       created_datetime: nowIso(),

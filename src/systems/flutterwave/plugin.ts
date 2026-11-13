@@ -49,7 +49,7 @@ const plugin: MockSystemPlugin = {
         name: body.name ?? null,
         email: body.email ?? null,
         phone: body.phone ?? null,
-        address: body.address ?? null,
+        ...(body.address ? { address: body.address } : {}),
         meta: body.meta ?? {},
         created_datetime: nowIso(),
       };
@@ -59,7 +59,7 @@ const plugin: MockSystemPlugin = {
     });
 
     // --- Charges (initiatePayment) ---
-    // Flutterwave returns 200 with the pending charge; settlement happens async.
+    // Flutterwave returns 201 with the pending charge; settlement happens async.
     app.post('/charges', async (req, reply) => {
       const body = (req.body ?? {}) as Record<string, any>;
       const id = makeId('chg');
@@ -76,7 +76,7 @@ const plugin: MockSystemPlugin = {
         created_datetime: nowIso(),
       };
       store.create('charges', id, charge);
-      reply.code(200);
+      reply.code(201);
       return ok(charge, 'Charge initiated');
     });
 

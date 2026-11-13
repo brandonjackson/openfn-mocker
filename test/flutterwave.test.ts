@@ -20,14 +20,14 @@ describe('flutterwave', () => {
     await app.close();
   });
 
-  it('initiates a charge (200)', async () => {
+  it('initiates a charge (201)', async () => {
     const { app } = await createSystemServer(flutterwave, config, { logLevel: 'silent' });
     const res = await app.inject({
       method: 'POST',
       url: '/charges',
       payload: { amount: 1000, currency: 'NGN', customer_id: 'cus_00000000000001' },
     });
-    expect(res.statusCode).toBe(200);
+    expect(res.statusCode).toBe(201);
     const body = res.json();
     expect(body.data.status).toBe('pending');
     expect(body.data.amount).toBe(1000);

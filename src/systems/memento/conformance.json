@@ -1,10 +1,10 @@
 {
   "spec": {
     "adaptor": "memento",
-    "origin": "generated"
+    "origin": "converted"
   },
   "coverage": {
-    "operations": 6,
+    "operations": 9,
     "exercised": 5
   },
   "routes": {
@@ -17,7 +17,7 @@
   },
   "failures": {
     "POST /v1/libraries/:id/entries": [
-      "unknown-status: spec documents no response for status 200 (documented: 201)"
+      "unknown-status: spec documents no response for status 200 (documented: 201, default)"
     ],
     "PUT /v1/libraries/:id/entries/:entryId": [
       "unknown-operation: no operation in the spec matches PUT /v1/libraries/lib_seed01/entries/entry_seed01"

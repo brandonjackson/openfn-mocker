@@ -11,6 +11,12 @@ export function nowIso(): string {
   return new Date().toISOString();
 }
 
+/** Fixed seed project id, referenced by the guide's credential example. */
+export const SEED_PROJECT_ID = '33333333-3333-4333-8333-333333333333';
+
+/** The user the mock's access token belongs to (owner of created credentials). */
+export const SEED_USER_ID = '44444444-4444-4444-8444-444444444444';
+
 /** Fixed seed job id, referenced by the guide's getJob example. */
 export const SEED_JOB_ID = '11111111-1111-4111-8111-111111111111';
 
@@ -21,6 +27,7 @@ export function seed(store: DataStore, _config: SystemConfig): void {
       name: 'Fetch patients',
       adaptor: '@openfn/language-http',
       enabled: true,
+      project_id: SEED_PROJECT_ID,
       inserted_at: nowIso(),
     },
     {
@@ -28,6 +35,7 @@ export function seed(store: DataStore, _config: SystemConfig): void {
       name: 'Sync to DHIS2',
       adaptor: '@openfn/language-dhis2',
       enabled: false,
+      project_id: SEED_PROJECT_ID,
       inserted_at: nowIso(),
     },
   ];
@@ -35,7 +43,7 @@ export function seed(store: DataStore, _config: SystemConfig): void {
 
   const projects = [
     {
-      id: '33333333-3333-4333-8333-333333333333',
+      id: SEED_PROJECT_ID,
       name: 'Health data pipeline',
       description: 'Nightly sync of facility data into the national HMIS.',
       inserted_at: nowIso(),

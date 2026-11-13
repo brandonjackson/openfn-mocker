@@ -1,11 +1,11 @@
 {
   "spec": {
     "adaptor": "zata",
-    "origin": "generated"
+    "origin": "found-openapi"
   },
   "coverage": {
-    "operations": 26,
-    "exercised": 2
+    "operations": 106,
+    "exercised": 0
   },
   "routes": {
     "GET /v1/transaction/:id": "failing",
@@ -14,14 +14,13 @@
   },
   "failures": {
     "GET /v1/transaction/:id": [
-      "response-schema /status: must be boolean"
+      "unknown-operation: no operation in the spec matches GET /v1/transaction/TXN-0001"
     ],
     "GET /v1/transactions": [
       "unknown-operation: no operation in the spec matches GET /v1/transactions"
     ],
     "POST /v1/transaction/sale": [
-      "request-schema: missing required property 'items'",
-      "unknown-status: spec documents no response for status 201 (documented: 200, 404)"
+      "unknown-operation: no operation in the spec matches POST /v1/transaction/sale"
     ]
   },
   "unrouted": [],

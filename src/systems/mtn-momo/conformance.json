@@ -1,10 +1,10 @@
 {
   "spec": {
     "adaptor": "mtn-momo",
-    "origin": "generated"
+    "origin": "converted"
   },
   "coverage": {
-    "operations": 13,
+    "operations": 56,
     "exercised": 5
   },
   "routes": {

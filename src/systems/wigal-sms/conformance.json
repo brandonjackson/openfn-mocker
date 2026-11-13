@@ -4,7 +4,7 @@
     "origin": "generated"
   },
   "coverage": {
-    "operations": 5,
+    "operations": 9,
     "exercised": 1
   },
   "routes": {

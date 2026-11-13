@@ -1,30 +1,30 @@
 {
   "spec": {
     "adaptor": "monnify",
-    "origin": "generated"
+    "origin": "found-openapi"
   },
   "coverage": {
-    "operations": 7,
-    "exercised": 2
+    "operations": 77,
+    "exercised": 5
   },
   "routes": {
-    "GET /api/v1/banks": "failing",
+    "GET /api/v1/banks": "conforming",
     "GET /api/v2/disbursements/search-transactions": "conforming",
-    "GET /api/v2/transactions/:reference": "failing",
-    "POST /api/v1/auth/login": "conforming",
-    "POST /api/v1/merchant/transactions/init-transaction": "failing"
+    "GET /api/v2/transactions/:reference": "conforming",
+    "POST /api/v1/auth/login": "deviating",
+    "POST /api/v1/merchant/transactions/init-transaction": "conforming"
   },
-  "failures": {
-    "GET /api/v1/banks": [
-      "unknown-operation: no operation in the spec matches GET /api/v1/banks"
-    ],
-    "GET /api/v2/transactions/:reference": [
-      "unknown-operation: no operation in the spec matches GET /api/v2/transactions/MNFY-TXN-0000000001"
-    ],
-    "POST /api/v1/merchant/transactions/init-transaction": [
-      "unknown-operation: no operation in the spec matches POST /api/v1/merchant/transactions/init-transaction"
-    ]
-  },
+  "failures": {},
   "unrouted": [],
-  "deviations": []
+  "deviations": [
+    {
+      "route": "POST /api/v1/auth/login",
+      "kind": "response-schema",
+      "pointer": "/responseCode",
+      "message": "must be integer",
+      "category": "vendor-spec-wrong",
+      "reason": "Monnify sends responseCode as a string (\"0\"). The vendor OpenAPI types AuthResponseSuccess.responseCode as integer, but that same schema's example is \"0\" and the other 73 envelopes in the spec type it as string.",
+      "evidence": "https://github.com/Monnify/monnify-dotnet-lib/blob/704055828055306b45adac2188194d75785a1a77/src/Monnify/Http/MonnifyResponseEnvelope.cs#L22-L23 (System.Text.Json string? ResponseCode, which throws on a JSON number) ; https://github.com/Monnify/Monnify-java-sdk/blob/9a949d062d4dff1b3f1d2225c6b809967ff31737/src/main/java/com/monnify/models/MonnifyBaseResponse.java#L9"
+    }
+  ]
 }
