@@ -1010,7 +1010,9 @@ pnpm test:usage -- --no-warmup        # skip the adaptor-cache warm-up (see belo
 Before the timed loop the script **warms the adaptor cache** (one `openfn repo
 install` of the CLI and every target adaptor). Otherwise the one-time npm
 download would eat the first example's per-run timeout and fail a healthy job.
-It's a no-op once warm; `--no-warmup` skips it.
+It's a no-op once warm; `--no-warmup` skips it. If the warm-up fails, the script
+prints the tail of the `openfn repo install` output so you can see why (a bad npm
+registry/auth config, a VPN, a corrupt cache, …).
 
 For each example the script boots a single-system mock **mounted at the server
 root** on an ephemeral port, resolves the credential the sandbox would generate
@@ -1066,9 +1068,10 @@ project runs, and none of it involves touching adaptor code:
    back to the mock — all scoped to the one CLI subprocess it spawns per
    example (`NODE_TLS_REJECT_UNAUTHORIZED`, `NO_PROXY`), never touching the
    rest of your system. This needs root (binding `:443` for a hardcoded-host
-   adaptor, and writing `/etc/hosts`); when it can't get that, it warns and
-   skips, and that system's examples fail exactly as they did before this
-   mechanism existed — never the whole suite. It is **not** wired into
+   adaptor, and writing `/etc/hosts`); when it can't get that, it **skips** that
+   system's examples (shown as `– SKIP` with the reason, and counted as skipped,
+   not failed, in the summary) rather than letting them hit the real public API.
+   Run `sudo -E pnpm test:usage` to include them. It is **not** wired into
    `pnpm start` or the multi-system server itself, only the usage-test runner.
 2. **Docker-compose (e.g. Lightning + mocker as sibling containers) —
    not yet built.** This can't be solved from inside the mocker container at

@@ -34,6 +34,8 @@
  * the empirical check behind that Roadmap. A few (Mailgun, OpenCRVS) call
  * hostnames the mock isn't otherwise reachable at; see
  * `scripts/lib/host-alias-proxy.ts` and the README's "Local network aliasing".
+ * That aliasing needs root; without it those systems are skipped (reported as
+ * skipped, not failed) — use `sudo -E pnpm test:usage` to include them.
  *
  * Run with `pnpm test:usage` (see package.json). Requires network access (to
  * install the CLI's adaptors from npm) and the `openfn` CLI on PATH, or set
@@ -67,7 +69,7 @@ import { loadConfig } from '../src/config.js';
 import { plugins } from '../src/systems/index.js';
 import { resolveCredentialValues, systemVars } from '../src/credentials.js';
 import type { MockSystemPlugin, SystemConfig, UsageExample } from '../src/systems/types.js';
-import { startAliasProxy } from './lib/host-alias-proxy.js';
+import { isAliasUnavailable, startAliasProxy } from './lib/host-alias-proxy.js';
 import { attachExchangeCapture, type Exchange } from './lib/conformance.js';
 
 /* The CLI expands a short name like `openspp` to `@openfn/language-openspp`
@@ -189,11 +191,15 @@ function resolveCli(explicit?: string): CliCmd {
 
 /** Per-example hard cap: fail a hung run fast instead of waiting ~80s (see below). */
 const EXAMPLE_TIMEOUT_MS = 20_000;
+/** How much of a failed warm-up's output to print. */
+const WARMUP_LOG_TAIL_LINES = 30;
 
 interface RunResult {
   system: string;
   fn: string;
   ok: boolean;
+  /** Not run: the system needs host aliasing this machine can't provide (see startAliasProxy). */
+  skipped?: boolean;
   ms: number;
   detail: string;
 }
@@ -342,6 +348,7 @@ async function warmUp(cli: CliCmd, adaptors: string[], repoDir: string): Promise
   // every adaptor; scales with the count and is never the tight per-example cap.
   const timeoutMs = Math.max(120_000, adaptors.length * 15_000);
   const started = Date.now();
+  const output: string[] = [];
   process.stdout.write(`Warming adaptor cache (${adaptors.length}: ${adaptors.join(', ')}) … `);
 
   const ok = await new Promise<boolean>((resolve) => {
@@ -350,8 +357,11 @@ async function warmUp(cli: CliCmd, adaptors: string[], repoDir: string): Promise
     const child = spawn(
       cli.command,
       [...cli.baseArgs, 'repo', 'install', ...packages, '--repo-dir', repoDir],
-      { detached: true, stdio: 'ignore', env: { ...process.env, OPENFN_REPO_DIR: repoDir } }
+      { detached: true, stdio: ['ignore', 'pipe', 'pipe'], env: { ...process.env, OPENFN_REPO_DIR: repoDir } }
     );
+    // Keep the output so a failed install can say why (it's discarded on success).
+    child.stdout?.on('data', (d) => output.push(String(d)));
+    child.stderr?.on('data', (d) => output.push(String(d)));
     const timer = setTimeout(() => {
       try {
         if (child.pid) process.kill(-child.pid, 'SIGKILL');
@@ -376,6 +386,15 @@ async function warmUp(cli: CliCmd, adaptors: string[], repoDir: string): Promise
       ? `done in ${secs}s`
       : `WARN: failed after ${secs}s — examples will install on demand (the first may hit the ${EXAMPLE_TIMEOUT_MS / 1000}s cap).`
   );
+  if (!ok) {
+    const tail = output.join('').trimEnd().split('\n').slice(-WARMUP_LOG_TAIL_LINES);
+    if (tail.length && tail[0] !== '') {
+      console.log(`  Last ${tail.length} line(s) of \`openfn repo install\` output:`);
+      for (const line of tail) console.log(`    ${line}`);
+    } else {
+      console.log('  (`openfn repo install` produced no output — it was likely killed by the timeout.)');
+    }
+  }
 }
 
 async function main(): Promise<void> {
@@ -439,8 +458,20 @@ async function main(): Promise<void> {
     // Some adaptors (Mailgun, OpenCRVS) call hostnames the mock isn't otherwise
     // reachable at; see scripts/lib/host-alias-proxy.ts and the README's "Local
     // network aliasing". Systems without `hostAliases` get `undefined` here and
-    // behave exactly as before.
-    const alias = await startAliasProxy(plugin, port);
+    // behave exactly as before. When aliasing can't be set up (usually: not
+    // root), skip the system: its snippets would otherwise hit the real public
+    // API and fail for reasons that say nothing about the snippets.
+    const aliasResult = await startAliasProxy(plugin, port);
+    if (isAliasUnavailable(aliasResult)) {
+      await app.close();
+      console.log(`── ${system}  (adaptor: ${adaptor}, ${usage.length} example(s))`);
+      console.log(`   – SKIP  host aliasing unavailable: ${aliasResult.unavailable}`);
+      for (const ex of usage) {
+        results.push({ system, fn: ex.fn, ok: false, skipped: true, ms: 0, detail: aliasResult.unavailable });
+      }
+      continue;
+    }
+    const alias = aliasResult;
     const configuration = resolveConfiguration(plugin, origin, config, alias?.hostValue);
     console.log(`── ${system} @ ${origin}  (adaptor: ${adaptor}, ${usage.length} example(s))`);
 
@@ -465,15 +496,26 @@ async function main(): Promise<void> {
     }
   }
 
-  const passed = results.filter((r) => r.ok).length;
-  const failed = results.length - passed;
+  const ran = results.filter((r) => !r.skipped);
+  const passed = ran.filter((r) => r.ok).length;
+  const failed = ran.length - passed;
+  const skippedSystems = [...new Set(results.filter((r) => r.skipped).map((r) => r.system))];
+  const skippedCount = results.length - ran.length;
   console.log(`\n${'═'.repeat(60)}`);
-  console.log(`  ${passed}/${results.length} passed` + (failed ? `, ${failed} FAILED` : ''));
+  console.log(
+    `  ${passed}/${ran.length} passed` +
+      (failed ? `, ${failed} FAILED` : '') +
+      (skippedCount ? `, ${skippedCount} skipped` : '')
+  );
   if (failed) {
     console.log('  Failures:');
-    for (const r of results.filter((x) => !x.ok)) {
+    for (const r of ran.filter((x) => !x.ok)) {
       console.log(`    ✗ ${r.system}/${r.fn}: ${r.detail}`);
     }
+  }
+  if (skippedSystems.length) {
+    console.log(`  Skipped (need host aliasing, i.e. root): ${skippedSystems.join(', ')}`);
+    console.log('  To run them too:  sudo -E pnpm test:usage');
   }
   console.log('═'.repeat(60));
 
