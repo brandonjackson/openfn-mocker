@@ -69,6 +69,14 @@ export function seed(store: DataStore, _config: SystemConfig): void {
       grade: '6',
       createdAt: nowIso(),
     },
+    // Target of the guide's update / delete examples, so stu-0001 stays readable.
+    {
+      id: 'stu-0002',
+      osid: 'stu-0002',
+      name: 'Meera Nair',
+      grade: '7',
+      createdAt: nowIso(),
+    },
   ];
   for (const s of students) store.create('Student', s.osid, s);
 

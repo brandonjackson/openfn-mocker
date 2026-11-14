@@ -1,30 +1,40 @@
 import type { UsageExample } from '../types.js';
+import { SEEDED_PRESCRIPTION_GUID } from './seed.js';
 
 /**
- * Usage examples for the dagu sandbox "Usage" tab. The adaptor exposes generic
- * verbs; get/post take a relative path (the adaptor prepends the base URL) and
- * request takes an explicit method + path.
+ * Usage examples for the dagu sandbox "Usage" tab, one per call the adaptor's
+ * own JSDoc shows. Signatures are from @openfn/language-dagu's ast.json:
+ * get(path, options), post(path, body, options) and
+ * request(method, path, body, options). Paths are relative; the adaptor logs in
+ * first (POST /account/login) and joins them onto configuration.baseUrl.
  */
 export const usage: UsageExample[] = [
   {
     fn: 'get',
-    signature: 'get(path, options?, callback?)',
-    description: 'List the DAGs registered in Dagu.',
-    code: "get('/api/v1/dags');",
-    apiRef: 'listDags',
+    signature: 'get(path, options?)',
+    description: "Fetch the dispensing unit's stock-out report.",
+    code: "get('DispensingUnit/Dashboard/StockOutReport');",
+    apiRef: 'stockOutReport',
   },
   {
     fn: 'post',
-    signature: 'post(path, data, options?, callback?)',
-    description: 'Trigger an action (e.g. start) on a DAG.',
-    code: "post('/api/v1/dags/nightly', { action: 'start' });",
-    apiRef: 'startDag',
+    signature: 'post(path, body, options?)',
+    description: 'Check a prescription row before dispensing it.',
+    code: `post('Patient/CheckPrescription', { prescriptionRowGuid: '${SEEDED_PRESCRIPTION_GUID}' });`,
+    apiRef: 'checkPrescription',
+  },
+  {
+    fn: 'post',
+    signature: 'post(path, body, options?)',
+    description: "Page through patient prescription history, sent as a form body ({ contentType: 'form' }).",
+    code: "post(\n  'Patient/Prescription/History',\n  { start: 0, length: 10, draw: 1, additionalParameters: { filter: [] } },\n  { contentType: 'form' }\n);",
+    apiRef: 'prescriptionHistory',
   },
   {
     fn: 'request',
-    signature: 'request(method, path, options?, callback?)',
-    description: 'Make an arbitrary request against the Dagu API.',
-    code: "request('GET', '/api/v1/dags/nightly');",
-    apiRef: 'getDag',
+    signature: 'request(method, path, body, options?)',
+    description: "Search the dispensing unit's requisition history.",
+    code: "request('POST', 'DispensingUnit/Request/History', { search: {} });",
+    apiRef: 'requestHistory',
   },
 ];

@@ -706,7 +706,7 @@ Create (or edit) the credential for each adaptor and point its URL field at the 
 { "baseUrl": "http://localhost:4000/asana", "token": "<generated>", "workspaceGid": "12345" }
 
 // UNICEF InForm  (API key)
-{ "baseUrl": "http://localhost:4000/inform", "access_token": "<generated>", "apiVersion": "v2" }
+{ "baseUrl": "http://localhost:4000/inform", "access_token": "<generated>", "apiVersion": "v1" }
 
 // Sunbird RC  (API key)
 { "baseUrl": "http://localhost:4000/sunbird-rc", "token": "<generated>" }
@@ -732,7 +732,7 @@ Create (or edit) the credential for each adaptor and point its URL field at the 
 // Beyonic  (API key)
 { "apiUrl": "http://localhost:4000/beyonic", "apiToken": "<generated>" }
 
-// Dagu  (username & password)
+// DAGU  (username & password)
 { "baseUrl": "http://localhost:4000/dagu", "username": "admin", "password": "<generated>" }
 
 // Gemini  (API key)
@@ -1334,17 +1334,22 @@ box:
   - **Unexercised routes** (109) need guide examples.
   - **Failing routes** (57) need the mock fixed, or a deviation recorded where
     the vendor's document is provably wrong. Newly caught by the strict engine:
-    cht's contact export (JSON, should be CSV) and senaite's create (`201`).
+    cht's contact export (JSON, should be CSV); senaite's create now answers
+    `200` as senaite.jsonapi does.
   - **Unchecked routes** (15) wait on spec fixes in `openfn-api-specs`, which
     are proposed in the PRs that recorded them. Examples: dhis2's legacy tracker
     API and `/api/{version}/` prefix, OpenMRS `/session`, openboxes' create
     statuses, and ODK's attachment media type.
   - **Modelling disagreements**, where the mock and spec describe the same system
-    through different APIs: Odoo/OpenSPP XML-RPC vs JSON-RPC/REST; Maximo
-    `/oslc` vs `/maxrest`; vTiger `?operation=` vs path operations; and the
-    `dagu` spec's paths, which belong to a different system. Where a FHIR facade
-    is the issue, a ledger `specMounts` entry checks it against the FHIR spec
-    (OpenMRS does this).
+    through different APIs: OpenSPP XML-RPC vs REST. (Odoo's spec now models
+    XML-RPC, vTiger's keys operations as `/webservice.php#operation=<op>`,
+    Maximo's mock serves both `/maximo/oslc` and `/maxrest`, and the dagu mock
+    now impersonates the DAGU dispensing tool its adaptor calls.) Where a facade
+    is the issue, a ledger `specMounts` entry checks that part against another
+    spec: OpenMRS's FHIR facade against `fhir`, and CHT's `/medic` CouchDB
+    passthrough against `medicmobile` (`keepPrefix`, since the database name is
+    part of CouchDB's paths). A ledger `pathPrefix` covers a base URL that already
+    carries part of the spec's paths (zata's `https://ebm.zata.rw/api`).
 
   Each system is independent work with its own ledger, so it parallelises
   cleanly. See AGENTS.md "Conformance work order".

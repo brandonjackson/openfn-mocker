@@ -2,9 +2,9 @@
   "$comment": "Generated from src/systems/*/conformance.json by `pnpm test:conformance -- --update-baseline`; do not edit by hand. Mock coverage = spec operations the guide examples exercised / every operation in the adaptor's openapi.json.",
   "totals": {
     "systems": 62,
-    "specOperations": 16921,
-    "exercised": 339,
-    "percent": 2
+    "specOperations": 16988,
+    "exercised": 375,
+    "percent": 2.2
   },
   "systems": [
     {
@@ -62,12 +62,12 @@
       "exercised": 2,
       "percent": 2.3,
       "routes": 10,
-      "verified": 1,
+      "verified": 4,
       "counts": {
-        "conforming": 1,
+        "conforming": 4,
         "deviating": 0,
         "unchecked": 0,
-        "failing": 4,
+        "failing": 1,
         "unexercised": 5
       }
     },
@@ -107,16 +107,16 @@
       "system": "dagu",
       "adaptor": "dagu",
       "specOperations": 5,
-      "exercised": 0,
-      "percent": 0,
-      "routes": 4,
-      "verified": 0,
+      "exercised": 5,
+      "percent": 100,
+      "routes": 5,
+      "verified": 5,
       "counts": {
-        "conforming": 0,
+        "conforming": 5,
         "deviating": 0,
         "unchecked": 0,
-        "failing": 3,
-        "unexercised": 1
+        "failing": 0,
+        "unexercised": 0
       }
     },
     {
@@ -379,16 +379,16 @@
       "system": "inform",
       "adaptor": "inform",
       "specOperations": 194,
-      "exercised": 0,
-      "percent": 0,
+      "exercised": 7,
+      "percent": 3.6,
       "routes": 8,
-      "verified": 0,
+      "verified": 7,
       "counts": {
-        "conforming": 0,
+        "conforming": 7,
         "deviating": 0,
         "unchecked": 0,
-        "failing": 6,
-        "unexercised": 2
+        "failing": 0,
+        "unexercised": 1
       }
     },
     {
@@ -459,15 +459,15 @@
       "system": "maximo",
       "adaptor": "maximo",
       "specOperations": 60,
-      "exercised": 0,
-      "percent": 0,
-      "routes": 5,
-      "verified": 0,
+      "exercised": 8,
+      "percent": 13.3,
+      "routes": 9,
+      "verified": 8,
       "counts": {
-        "conforming": 0,
+        "conforming": 8,
         "deviating": 0,
         "unchecked": 0,
-        "failing": 4,
+        "failing": 0,
         "unexercised": 1
       }
     },
@@ -478,12 +478,12 @@
       "exercised": 5,
       "percent": 55.6,
       "routes": 6,
-      "verified": 4,
+      "verified": 5,
       "counts": {
-        "conforming": 4,
+        "conforming": 5,
         "deviating": 0,
         "unchecked": 0,
-        "failing": 2,
+        "failing": 1,
         "unexercised": 0
       }
     },
@@ -602,16 +602,16 @@
     {
       "system": "odoo",
       "adaptor": "odoo",
-      "specOperations": 2,
-      "exercised": 0,
-      "percent": 0,
+      "specOperations": 5,
+      "exercised": 2,
+      "percent": 40,
       "routes": 2,
-      "verified": 0,
+      "verified": 2,
       "counts": {
-        "conforming": 0,
+        "conforming": 2,
         "deviating": 0,
         "unchecked": 0,
-        "failing": 2,
+        "failing": 0,
         "unexercised": 0
       }
     },
@@ -878,12 +878,12 @@
       "exercised": 6,
       "percent": 17.1,
       "routes": 9,
-      "verified": 5,
+      "verified": 6,
       "counts": {
-        "conforming": 5,
+        "conforming": 6,
         "deviating": 0,
         "unchecked": 0,
-        "failing": 1,
+        "failing": 0,
         "unexercised": 3
       }
     },
@@ -906,17 +906,17 @@
     {
       "system": "sunbird-rc",
       "adaptor": "sunbird-rc",
-      "specOperations": 6,
-      "exercised": 2,
-      "percent": 33.3,
+      "specOperations": 70,
+      "exercised": 6,
+      "percent": 8.6,
       "routes": 6,
-      "verified": 0,
+      "verified": 5,
       "counts": {
-        "conforming": 0,
-        "deviating": 0,
-        "unchecked": 0,
-        "failing": 4,
-        "unexercised": 2
+        "conforming": 4,
+        "deviating": 1,
+        "unchecked": 1,
+        "failing": 0,
+        "unexercised": 0
       }
     },
     {
@@ -955,15 +955,15 @@
       "system": "vtiger",
       "adaptor": "vtiger",
       "specOperations": 13,
-      "exercised": 0,
-      "percent": 0,
+      "exercised": 6,
+      "percent": 46.2,
       "routes": 2,
-      "verified": 0,
+      "verified": 2,
       "counts": {
-        "conforming": 0,
+        "conforming": 2,
         "deviating": 0,
         "unchecked": 0,
-        "failing": 2,
+        "failing": 0,
         "unexercised": 0
       }
     },
@@ -987,15 +987,15 @@
       "system": "zata",
       "adaptor": "zata",
       "specOperations": 106,
-      "exercised": 0,
-      "percent": 0,
-      "routes": 3,
-      "verified": 0,
+      "exercised": 4,
+      "percent": 3.8,
+      "routes": 4,
+      "verified": 4,
       "counts": {
-        "conforming": 0,
+        "conforming": 4,
         "deviating": 0,
         "unchecked": 0,
-        "failing": 3,
+        "failing": 0,
         "unexercised": 0
       }
     }

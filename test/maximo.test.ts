@@ -7,7 +7,7 @@ const config = { port: 0 };
 describe('maximo (OSLC REST)', () => {
   it('fetches a lean member collection of assets', async () => {
     const { app } = await createSystemServer(maximo, config, { logLevel: 'silent' });
-    const res = await app.inject({ method: 'GET', url: '/oslc/os/mxasset' });
+    const res = await app.inject({ method: 'GET', url: '/maximo/oslc/os/mxasset' });
     expect(res.statusCode).toBe(200);
     const body = res.json();
     expect(Array.isArray(body.member)).toBe(true);
@@ -18,7 +18,7 @@ describe('maximo (OSLC REST)', () => {
 
   it('projects oslc.select attributes', async () => {
     const { app } = await createSystemServer(maximo, config, { logLevel: 'silent' });
-    const res = await app.inject({ method: 'GET', url: '/oslc/os/mxasset?oslc.select=assetnum,status' });
+    const res = await app.inject({ method: 'GET', url: '/maximo/oslc/os/mxasset?oslc.select=assetnum,status' });
     expect(res.statusCode).toBe(200);
     const first = res.json().member[0];
     expect(first).toHaveProperty('assetnum');
@@ -29,7 +29,7 @@ describe('maximo (OSLC REST)', () => {
 
   it('reads one asset by its business key', async () => {
     const { app } = await createSystemServer(maximo, config, { logLevel: 'silent' });
-    const res = await app.inject({ method: 'GET', url: '/oslc/os/mxasset/11430' });
+    const res = await app.inject({ method: 'GET', url: '/maximo/oslc/os/mxasset/11430' });
     expect(res.statusCode).toBe(200);
     expect(res.json().description).toBe('Centrifugal Pump 100 GPM');
     await app.close();
@@ -39,7 +39,7 @@ describe('maximo (OSLC REST)', () => {
     const { app } = await createSystemServer(maximo, config, { logLevel: 'silent' });
     const res = await app.inject({
       method: 'POST',
-      url: '/oslc/os/mxwo',
+      url: '/maximo/oslc/os/mxwo',
       payload: { wonum: '1050', description: 'Replace intake filter', status: 'WAPPR' },
     });
     expect(res.statusCode).toBe(201);
@@ -52,7 +52,7 @@ describe('maximo (OSLC REST)', () => {
     const { app, store } = await createSystemServer(maximo, config, { logLevel: 'silent' });
     const res = await app.inject({
       method: 'POST',
-      url: '/oslc/os/mxwo/1001',
+      url: '/maximo/oslc/os/mxwo/1001',
       headers: { 'x-methodoverride': 'PATCH', patchtype: 'MERGE' },
       payload: { status: 'INPROG' },
     });
@@ -66,12 +66,26 @@ describe('maximo (OSLC REST)', () => {
     const { app, store } = await createSystemServer(maximo, config, { logLevel: 'silent' });
     const res = await app.inject({
       method: 'POST',
-      url: '/oslc/os/mxwo/1002',
+      url: '/maximo/oslc/os/mxwo/1002',
       headers: { 'content-type': 'application/x-www-form-urlencoded', 'x-methodoverride': 'PATCH' },
       payload: 'status=COMP',
     });
     expect(res.statusCode).toBe(200);
     expect(store.get('mxwo', '1002').status).toBe('COMP');
+    await app.close();
+  });
+
+  it('serves the legacy /maxrest MBO API in its MboSet envelope', async () => {
+    const { app } = await createSystemServer(maximo, config, { logLevel: 'silent' });
+    const res = await app.inject({ method: 'GET', url: '/maxrest/rest/mbo/workorder?STATUS=APPR&_compact=1' });
+    expect(res.statusCode).toBe(200);
+    const set = res.json().WORKORDERMboSet;
+    expect(set.rsTotal).toBe(1);
+    expect(set.WORKORDER[0].Attributes.WONUM).toBe('1002');
+    const upd = await app.inject({ method: 'POST', url: '/maxrest/rest/mbo/workorder/1002', payload: { STATUS: 'INPROG' } });
+    expect(upd.json().WORKORDER.Attributes.STATUS).toBe('INPROG');
+    const inv = await app.inject({ method: 'GET', url: '/maxrest/rest/os/mxinventory?ITEMNUM=01226' });
+    expect(inv.json().QueryMXINVENTORYResponse.MXINVENTORYSet.INVENTORY[0].Attributes.CURBAL.content).toBe(14);
     await app.close();
   });
 });

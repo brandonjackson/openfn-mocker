@@ -8,8 +8,8 @@ import { guide } from './guide.js';
 /**
  * UNICEF InForm — a KoboToolbox/KPI-based form deployment. Token auth
  * ("Authorization: Token <access_token>"). The adaptor builds every request as
- * `<baseUrl>/api/<apiVersion>/<path>` (apiVersion pinned to `v2`), so routes
- * live under `/api/v2/...` (forms, forms/:id, data/:id, data/:id/:subId,
+ * `<baseUrl>/api/<apiVersion>/<path>` (apiVersion pinned to `v1`, the adaptor's default), so routes
+ * live under `/api/v1/...` (forms, forms/:id, data/:id, data/:id/:subId,
  * media/:id); list endpoints return a { count, results } envelope.
  */
 
@@ -26,7 +26,7 @@ const plugin: MockSystemPlugin = {
     fields: [
       { name: 'baseUrl', role: 'url' },
       { name: 'access_token', role: 'secret', secret: { charset: 'hex', length: 40 } },
-      { name: 'apiVersion', role: 'static', value: 'v2' },
+      { name: 'apiVersion', role: 'static', value: 'v1' },
     ],
   },
 
@@ -36,14 +36,12 @@ const plugin: MockSystemPlugin = {
   async overrides(app: FastifyInstance, store: DataStore, _config: SystemConfig) {
     // --- Forms -------------------------------------------------------------
     // getForms — list deployed forms.
-    app.get('/api/v2/forms', async () => ({
-      count: store.count('forms'),
-      results: store.list('forms'),
-    }));
+    // Ona answers list endpoints with a plain JSON array.
+    app.get('/api/v1/forms', async () => store.list('forms'));
 
     // getAttachmentMetadata — media metadata by id.
     // (registered before /forms/:id so the routes stay unambiguous)
-    app.get('/api/v2/media/:id', async (req, reply) => {
+    app.get('/api/v1/media/:id', async (req, reply) => {
       const id = String((req.params as Record<string, any>).id);
       const found = store.get('media', id);
       if (!found) {
@@ -56,7 +54,7 @@ const plugin: MockSystemPlugin = {
     // downloadAttachment — GET files/:id resolves the attachment to a storage
     // URL returned in the `location` header; the adaptor then fetches those bytes
     // separately (unauthenticated) from the exempt /storage route below.
-    app.get('/api/v2/files/:id', async (req, reply) => {
+    app.get('/api/v1/files/:id', async (req, reply) => {
       const id = String((req.params as Record<string, any>).id);
       const file = store.get('files', id);
       if (!file) {
@@ -66,11 +64,13 @@ const plugin: MockSystemPlugin = {
       // Build a mount-prefix-aware absolute URL to the bytes (the adaptor does a
       // bare global fetch on it, so it must be absolute and reachable directly).
       const path = req.url.split('?')[0];
-      const prefix = path.slice(0, path.indexOf('/api/v2/files/'));
+      const prefix = path.slice(0, path.indexOf('/api/v1/files/'));
       const origin = `${req.protocol}://${req.headers.host}`;
+      // Ona redirects (302) to the stored file; the adaptor doesn't follow it
+      // but reads the Location header and fetches the bytes itself.
       reply.header('location', `${origin}${prefix}/storage/${id}`);
-      reply.code(200);
-      return { id: file.id, filename: file.filename, mimetype: file.mimetype, size: file.size };
+      reply.code(302);
+      return reply.send();
     });
 
     // /storage/:id — the attachment bytes (stands in for a pre-signed storage
@@ -88,7 +88,7 @@ const plugin: MockSystemPlugin = {
     });
 
     // getForm — form structure (JSON schema of fields).
-    app.get('/api/v2/forms/:id/form.json', async (req, reply) => {
+    app.get('/api/v1/forms/:id/form.json', async (req, reply) => {
       const id = String((req.params as Record<string, any>).id);
       const form = store.get('forms', id);
       if (!form) {
@@ -105,7 +105,7 @@ const plugin: MockSystemPlugin = {
     });
 
     // getForm — single form by id.
-    app.get('/api/v2/forms/:id', async (req, reply) => {
+    app.get('/api/v1/forms/:id', async (req, reply) => {
       const id = String((req.params as Record<string, any>).id);
       const found = store.get('forms', id);
       if (!found) {
@@ -117,7 +117,7 @@ const plugin: MockSystemPlugin = {
 
     // --- Data (submissions) ------------------------------------------------
     // getSubmission — single submission by id (static-count route wins).
-    app.get('/api/v2/data/:id/:subId', async (req, reply) => {
+    app.get('/api/v1/data/:id/:subId', async (req, reply) => {
       const { subId } = req.params as Record<string, any>;
       const found = store.get('submissions', String(subId));
       if (!found) {
@@ -128,10 +128,7 @@ const plugin: MockSystemPlugin = {
     });
 
     // getSubmissions — submissions for a form.
-    app.get('/api/v2/data/:id', async () => ({
-      count: store.count('submissions'),
-      results: store.list('submissions'),
-    }));
+    app.get('/api/v1/data/:id', async () => store.list('submissions'));
   },
 
   seed,

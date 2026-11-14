@@ -16,7 +16,7 @@ getting better:
 1. **Mock coverage: spec operations exercised ÷ all spec operations.** The
    share of the adaptor's whole API (its `openapi.json` in openfn-api-specs)
    that the guide examples reach. This is the headline, and the number the
-   adaptors storybook shows for every adaptor. Today 332 of 16,290 across 62
+   adaptors storybook shows for every adaptor. Today 375 of 16,988 across 62
    systems (2%), and 0% for the ~40 adaptors with no mock at all.
 2. **The yardstick: verified routes ÷ mock routes.** The quality guard. Raising
    coverage with routes that then fail the spec is not progress.
@@ -245,11 +245,18 @@ pointer alone is broader than the problem. `category` is one of
 `vendor-spec-wrong`, `spec-gap`, `modelling` (mock and spec model the same
 system through different APIs) or `mock-only`.
 
-Two more hand-written ledger fields, for surfaces one spec doesn't cover:
+Three more hand-written ledger fields, for surfaces one spec doesn't cover:
 
 - `specMounts: [{ "prefix": "/ws/fhir2/R4", "adaptor": "fhir" }]` checks
   traffic under `prefix` against another adaptor's spec, so a FHIR facade is
-  validated as FHIR instead of excused as `unknown-operation`.
+  validated as FHIR instead of excused as `unknown-operation`. Add
+  `"keepPrefix": true` when the prefix is part of that spec's own paths rather
+  than its server URL (cht's `/medic` is the CouchDB database `medicmobile`
+  writes as `/{db}`).
+- `pathPrefix: "/api"` is prepended to every exchange path before checking,
+  for an adaptor whose baseUrl already carries part of the spec's paths (zata's
+  default `https://ebm.zata.rw/api`, against spec paths `/api/v1/...`): the
+  mock's mount stands for that baseUrl, so its routes omit the prefix.
 - `routeAliases: [{ "prefix": "/", "canonical": "/api/" }]` declares routes
   under `prefix` to be the same endpoints as those under `canonical` (a mock that
   serves both `/products` and `/api/products`). Aliases don't count as separate

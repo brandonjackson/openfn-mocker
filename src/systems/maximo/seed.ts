@@ -30,4 +30,12 @@ export function seed(store: DataStore, _config: SystemConfig): void {
   for (const w of workorders) {
     store.create('mxwo', w.wonum, { ...w, href: href('mxwo', w.wonum) });
   }
+
+  // Inventory (legacy MIF object structure mxinventory / MBO inventory), read by
+  // the adaptor README's fetch({ endpoint: 'maxrest/rest/os/mxinventory' }) example.
+  const inventory = [
+    { itemnum: '01226', description: 'Mechanical seal, 1.5 in', location: 'CENTRAL', siteid: 'BEDFORD', curbal: 14, issueunit: 'EACH' },
+    { itemnum: '0-0031', description: 'Vaccine carrier, 1.7 L', location: 'CLINIC-A', siteid: 'NAIROBI', curbal: 6, issueunit: 'EACH' },
+  ];
+  for (const i of inventory) store.create('mxinventory', i.itemnum, i);
 }

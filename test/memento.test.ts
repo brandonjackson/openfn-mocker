@@ -32,7 +32,7 @@ describe('memento', () => {
       url: '/v1/libraries/lib_seed01/entries',
       payload: { fields: [{ id: 1, value: 'Grace' }] },
     });
-    expect(res.statusCode).toBe(200);
+    expect(res.statusCode).toBe(201);
     const body = res.json();
     expect(typeof body.id).toBe('string');
     expect(body.author).toBe('mock');

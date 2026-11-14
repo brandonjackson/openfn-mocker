@@ -263,13 +263,18 @@ async function main(): Promise<void> {
     // Spec mounts: parts of the surface measured against another adaptor's spec
     // (an OpenMRS FHIR facade against `fhir`), declared in the system's ledger.
     const ledger = loadLedger(SYSTEMS_DIR, system);
+    // A base-URL path the mock's mount stands for (see ConformanceLedger.pathPrefix).
+    if (ledger.pathPrefix) {
+      const prefix = ledger.pathPrefix.replace(/\/+$/, '');
+      exchanges = exchanges.map((ex) => ({ ...ex, path: prefix + (ex.path.startsWith('/') ? ex.path : `/${ex.path}`) }));
+    }
     const mounts: { prefix: string; conformer: ReturnType<typeof createConformer> }[] = [];
     for (const m of ledger.specMounts ?? []) {
       const mountSpec = await loadSpec(m.adaptor, args.latest);
       if (!mountSpec) throw new Error(`${system}: specMounts names '${m.adaptor}', which has no openapi.json in openfn-api-specs`);
       mounts.push({
         prefix: m.prefix,
-        conformer: createConformer(mountSpec, { strictAdditional: args.strictAdditional, checkRequests: args.checkRequests, serverPrefixes: [m.prefix] }),
+        conformer: createConformer(mountSpec, { strictAdditional: args.strictAdditional, checkRequests: args.checkRequests, serverPrefixes: m.keepPrefix ? [] : [m.prefix] }),
       });
     }
     const conformerFor = (ex: Exchange) =>
@@ -290,6 +295,7 @@ async function main(): Promise<void> {
           ...snapshotOf(score, specRef, specCoverage),
           specMounts: ledger.specMounts,
           routeAliases: ledger.routeAliases,
+          pathPrefix: ledger.pathPrefix,
           deviations: ledger.deviations,
         });
       }

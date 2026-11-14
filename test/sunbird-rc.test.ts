@@ -15,8 +15,13 @@ describe('sunbird-rc', () => {
     });
     expect(res.statusCode).toBe(200);
     const body = res.json();
-    expect(typeof body.osid).toBe('string');
-    expect(body.name).toBe('Asha');
+    expect(body.id).toBe('sunbird-rc.registry.create');
+    expect(body.responseCode).toBe('OK');
+    expect(body.params.status).toBe('SUCCESSFUL');
+    const osid = body.result.Student.osid;
+    expect(typeof osid).toBe('string');
+    const read = await app.inject({ method: 'GET', url: `/api/v1/Student/${osid}` });
+    expect(read.json().name).toBe('Asha');
     await app.close();
   });
 
@@ -81,7 +86,8 @@ describe('sunbird-rc', () => {
     const { app } = await createSystemServer(sunbirdRc, config, { logLevel: 'silent' });
     const res = await app.inject({ method: 'GET', url: '/api/v1/Student/nope' });
     expect(res.statusCode).toBe(404);
-    expect(res.json().error).toBe('not_found');
+    expect(res.json().responseCode).toBe('ERROR');
+    expect(res.json().params.status).toBe('UNSUCCESSFUL');
     await app.close();
   });
 });

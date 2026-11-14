@@ -16,8 +16,11 @@ import { guide } from './guide.js';
  *   POST /maximo/oslc/os/<os>/<id>  with header `x-methodoverride: PATCH` +
  *        `patchtype: MERGE`                -> update (Maximo 7.6, JSON body) /
  *                                             update75 (Maximo 7.5, form body)
- * Since the mock mounts at /maximo, routes are registered relative to that mount
- * (so /oslc/os/... lines up with the real /maximo/oslc/os/... path). The adaptor's
+ * The mock's own /maximo mount is the system namespace, standing for the Maximo
+ * host (the adaptor's baseUrl, e.g. https://maximo-demo76.mro.com), so routes keep
+ * Maximo's /maximo context root: a job's endpoint is 'maximo/oslc/os/mxasset', as
+ * against a real server, and the requests match the spec's /maximo/{apiRoot}/os/...
+ * paths. The adaptor's
  * fetch() then POSTs the body it read to an arbitrary `postUrl`; a small /collector
  * sink is provided so that round-trip has somewhere to land. Note: Maximo's PATCH
  * override returns 200 (not 204), which the adaptor treats as success.
@@ -48,7 +51,32 @@ function applyWhere(records: any[], where: unknown): any[] {
 function keyField(os: string): string {
   if (os === 'mxasset') return 'assetnum';
   if (os === 'mxwo') return 'wonum';
+  if (os === 'mxinventory') return 'itemnum';
   return 'id';
+}
+
+/**
+ * Legacy MIF REST (/maxrest/rest, Maximo 7.5/7.6) names records by MBO
+ * (`workorder`, `asset`) or by object structure (`mxwo`, `mxasset`); both
+ * resolve to the same seeded collections as the OSLC routes.
+ */
+const MBO_COLLECTION: Record<string, string> = { asset: 'mxasset', workorder: 'mxwo', inventory: 'mxinventory', invbalances: 'mxinvbal' };
+const OS_MBO: Record<string, string> = Object.fromEntries(Object.entries(MBO_COLLECTION).map(([mbo, os]) => [os, mbo]));
+
+/** A record as the legacy JSON serializer writes it: upper-case attributes, `{ content }` unless _compact=1. */
+function legacyRecord(m: Record<string, any>, compact: boolean): Record<string, any> {
+  const attrs: Record<string, any> = {};
+  for (const [k, v] of Object.entries(m)) {
+    if (k === 'href') continue;
+    attrs[k.toUpperCase()] = compact ? v : { content: v };
+  }
+  return { rowstamp: '1000', Attributes: attrs };
+}
+
+/** Legacy query filters: any upper-case query parameter is an attribute equality match (STATUS=APPR). */
+function legacyFilter(members: Record<string, any>[], q: Record<string, any>): Record<string, any>[] {
+  const filters = Object.entries(q).filter(([k]) => !k.startsWith('_') && k === k.toUpperCase());
+  return members.filter((m) => filters.every(([k, v]) => String(m[k.toLowerCase()] ?? '') === String(v).replace(/^[=~]+/, '')));
 }
 
 const plugin: MockSystemPlugin = {
@@ -66,8 +94,8 @@ const plugin: MockSystemPlugin = {
   guide,
 
   async overrides(app: FastifyInstance, store: DataStore, _config: SystemConfig) {
-    // GET /oslc/os/<os> — lean collection (fetch). Honours oslc.select / oslc.where / oslc.pageSize.
-    app.get('/oslc/os/:os', async (req) => {
+    // GET /maximo/oslc/os/<os> — lean collection (fetch). Honours oslc.select / oslc.where / oslc.pageSize.
+    app.get('/maximo/oslc/os/:os', async (req) => {
       const { os } = req.params as { os: string };
       const q = (req.query ?? {}) as Record<string, any>;
       let members = applyWhere(store.list(os), q['oslc.where']);
@@ -77,8 +105,8 @@ const plugin: MockSystemPlugin = {
       return { member: projected, responseInfo: { totalCount: members.length } };
     });
 
-    // GET /oslc/os/<os>/<id> — a single lean member.
-    app.get('/oslc/os/:os/:id', async (req, reply) => {
+    // GET /maximo/oslc/os/<os>/<id> — a single lean member.
+    app.get('/maximo/oslc/os/:os/:id', async (req, reply) => {
       const { os, id } = req.params as { os: string; id: string };
       const member = store.get(os, id);
       if (!member) {
@@ -88,8 +116,8 @@ const plugin: MockSystemPlugin = {
       return member;
     });
 
-    // POST /oslc/os/<os> — create a new object (201, Location header).
-    app.post('/oslc/os/:os', async (req, reply) => {
+    // POST /maximo/oslc/os/<os> — create a new object (201, Location header).
+    app.post('/maximo/oslc/os/:os', async (req, reply) => {
       const { os } = req.params as { os: string };
       const body = (req.body ?? {}) as Record<string, any>;
       const kf = keyField(os);
@@ -102,9 +130,9 @@ const plugin: MockSystemPlugin = {
       return member;
     });
 
-    // POST /oslc/os/<os>/<id> — update via method override (update / update75).
+    // POST /maximo/oslc/os/<os>/<id> — update via method override (update / update75).
     // Maximo tunnels PATCH through POST with `x-methodoverride: PATCH`.
-    app.post('/oslc/os/:os/:id', async (req, reply) => {
+    app.post('/maximo/oslc/os/:os/:id', async (req, reply) => {
       const { os, id } = req.params as { os: string; id: string };
       const existing = store.get(os, id);
       if (!existing) {
@@ -115,6 +143,57 @@ const plugin: MockSystemPlugin = {
       reply.code(200);
       return merged;
     });
+
+    // --- Legacy MIF REST (/maxrest/rest), the API the adaptor's README examples use ---
+    // GET /maxrest/rest/mbo/<mbo> and /maxrest/rest/os/<os>: a filtered set in the
+    // <MBO>MboSet / Query<OS>Response envelope, paged by _rsStart / _maxItems.
+    const legacyQuery = (kind: 'mbo' | 'os') => async (req: any, reply: any) => {
+      const name = String(req.params.name).toLowerCase();
+      const mbo = kind === 'mbo' ? name : OS_MBO[name] ?? name.replace(/^mx/, '');
+      const collection = MBO_COLLECTION[mbo] ?? (kind === 'os' ? name : mbo);
+      const q = (req.query ?? {}) as Record<string, any>;
+      const all = legacyFilter(store.list(collection), q);
+      const start = Number(q._rsStart) || 0;
+      const max = Number(q._maxItems) || all.length;
+      const page = all.slice(start, start + max).map((m) => legacyRecord(m, String(q._compact) === '1'));
+      const set = { rsStart: start, rsCount: page.length, rsTotal: all.length };
+      const MBO = mbo.toUpperCase();
+      reply.code(200);
+      return kind === 'mbo'
+        ? { [`${MBO}MboSet`]: { ...set, [MBO]: page } }
+        : { [`Query${name.toUpperCase()}Response`]: { ...set, [`${name.toUpperCase()}Set`]: { [MBO]: page } } };
+    };
+    // GET /maxrest/rest/mbo/<mbo>/<id>: one record by its key.
+    const legacyGet = async (req: any, reply: any) => {
+      const name = String(req.params.name).toLowerCase();
+      const found = store.get(MBO_COLLECTION[name] ?? name, String(req.params.id));
+      if (!found) {
+        reply.code(404);
+        return { Error: { reasonCode: 'BMXAA0024E', message: `${name} ${req.params.id} not found`, statusCode: '404' } };
+      }
+      return { [name.toUpperCase()]: legacyRecord(found, String((req.query ?? {})._compact) === '1') };
+    };
+    // POST /maxrest/rest/mbo/<mbo>/<id>: update (update / update75 send JSON or a
+    // form body, with x-method-override: PATCH); answers with the updated record.
+    const legacyUpdate = async (req: any, reply: any) => {
+      const mbo = String(req.params.name).toLowerCase();
+      const collection = MBO_COLLECTION[mbo] ?? mbo;
+      const id = String(req.params.id);
+      if (!store.get(collection, id)) {
+        reply.code(404);
+        return { Error: { reasonCode: 'BMXAA0024E', message: `${mbo} ${id} not found`, statusCode: '404' } };
+      }
+      const body = Object.fromEntries(Object.entries((req.body ?? {}) as Record<string, any>).map(([k, v]) => [k.toLowerCase(), v]));
+      const record = store.update(collection, id, body) as Record<string, any>;
+      reply.code(200);
+      return { [mbo.toUpperCase()]: legacyRecord(record, true) };
+    };
+    // Only what the adaptor's documented calls reach: fetch() on an MBO or object
+    // structure, a record read, and update()/update75() on an MBO record.
+    app.get('/maxrest/rest/mbo/:name', legacyQuery('mbo'));
+    app.get('/maxrest/rest/mbo/:name/:id', legacyGet);
+    app.post('/maxrest/rest/mbo/:name/:id', legacyUpdate);
+    app.get('/maxrest/rest/os/:name', legacyQuery('os'));
 
     // Sink for fetch()'s `postUrl` — the adaptor re-POSTs the body it fetched here.
     app.post('/collector', async () => ({ status: 'received' }));

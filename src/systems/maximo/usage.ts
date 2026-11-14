@@ -11,9 +11,9 @@ import type { UsageExample } from '../types.js';
  */
 export const usage: UsageExample[] = [
   { fn: "fetch", signature: "fetch(params)", description: "GET a Maximo collection and re-POST the response body to another URL.",
-    code: "fetch({\n  endpoint: 'oslc/os/mxasset',\n  query: { 'oslc.select': 'assetnum,description,status', 'oslc.pageSize': 5 },\n  postUrl: (state) => `${state.configuration.baseUrl}/collector`\n});", apiRef: "fetch-assets" },
+    code: "fetch({\n  endpoint: 'maximo/oslc/os/mxasset',\n  query: { 'oslc.select': 'assetnum,description,status', 'oslc.pageSize': 5 },\n  postUrl: (state) => `${state.configuration.baseUrl}/collector`\n});", apiRef: "fetch-assets" },
   { fn: "update", signature: "update(params)", description: "Update a record in Maximo 7.6+ (JSON body, PATCH tunnelled through POST).",
-    code: "update({\n  endpoint: 'oslc/os/mxwo/1001',\n  body: { status: 'INPROG' }\n});", apiRef: "update-wo" },
+    code: "update({\n  endpoint: 'maximo/oslc/os/mxwo/1001',\n  body: { status: 'INPROG' }\n});", apiRef: "update-wo" },
   { fn: "update75", signature: "update75(params)", description: "Update a record in Maximo 7.5 (form-encoded body).",
-    code: "update75({\n  endpoint: 'oslc/os/mxwo/1001',\n  body: { status: 'INPROG' }\n});", apiRef: "update-wo" },
+    code: "update75({\n  endpoint: 'maxrest/rest/mbo/workorder/1002',\n  body: { STATUS: 'INPROG' }\n});", apiRef: "legacy-wo-update" },
 ];
