@@ -5,25 +5,16 @@
   },
   "coverage": {
     "operations": 5,
-    "exercised": 0
+    "exercised": 5
   },
   "routes": {
-    "GET /api/v1/dags": "failing",
-    "GET /api/v1/dags/:name": "failing",
-    "POST /account/login": "unexercised",
-    "POST /api/v1/dags/:name": "failing"
+    "GET /DispensingUnit/Dashboard/StockOutReport": "conforming",
+    "POST /account/login": "conforming",
+    "POST /DispensingUnit/Request/History": "conforming",
+    "POST /Patient/CheckPrescription": "conforming",
+    "POST /Patient/Prescription/History": "conforming"
   },
-  "failures": {
-    "GET /api/v1/dags": [
-      "unknown-operation: no operation in the spec matches GET /api/v1/dags"
-    ],
-    "GET /api/v1/dags/:name": [
-      "unknown-operation: no operation in the spec matches GET /api/v1/dags/nightly"
-    ],
-    "POST /api/v1/dags/:name": [
-      "unknown-operation: no operation in the spec matches POST /api/v1/dags/nightly"
-    ]
-  },
+  "failures": {},
   "unrouted": [],
   "deviations": []
 }

@@ -7,30 +7,28 @@
     "operations": 86,
     "exercised": 2
   },
+  "specMounts": [
+    {
+      "prefix": "/medic",
+      "adaptor": "medicmobile",
+      "keepPrefix": true
+    }
+  ],
   "routes": {
     "GET /api/v1/settings": "unexercised",
     "GET /api/v2/export/contacts": "failing",
     "GET /api/v2/export/reports": "unexercised",
-    "GET /medic/_changes": "failing",
-    "GET /medic/:docId": "failing",
+    "GET /medic/_changes": "conforming",
+    "GET /medic/:docId": "conforming",
     "POST /api/v1/people": "conforming",
     "POST /api/v1/places": "unexercised",
-    "POST /medic/_bulk_docs": "failing",
+    "POST /medic/_bulk_docs": "conforming",
     "PUT /api/v1/settings": "unexercised",
     "PUT /medic/:docId": "unexercised"
   },
   "failures": {
     "GET /api/v2/export/contacts": [
       "content-type: response is application/json; spec documents text/csv for status 200"
-    ],
-    "GET /medic/_changes": [
-      "unknown-operation: no operation in the spec matches GET /medic/_changes"
-    ],
-    "GET /medic/:docId": [
-      "unknown-operation: no operation in the spec matches GET /medic/person-patient-0001"
-    ],
-    "POST /medic/_bulk_docs": [
-      "unknown-operation: no operation in the spec matches POST /medic/_bulk_docs"
     ]
   },
   "unrouted": [],

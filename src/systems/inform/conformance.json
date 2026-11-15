@@ -5,38 +5,19 @@
   },
   "coverage": {
     "operations": 194,
-    "exercised": 0
+    "exercised": 7
   },
   "routes": {
-    "GET /api/v2/data/:id": "failing",
-    "GET /api/v2/data/:id/:subId": "failing",
-    "GET /api/v2/files/:id": "failing",
-    "GET /api/v2/forms": "failing",
-    "GET /api/v2/forms/:id": "failing",
-    "GET /api/v2/forms/:id/form.json": "unexercised",
-    "GET /api/v2/media/:id": "failing",
+    "GET /api/v1/data/:id": "conforming",
+    "GET /api/v1/data/:id/:subId": "conforming",
+    "GET /api/v1/files/:id": "conforming",
+    "GET /api/v1/forms": "conforming",
+    "GET /api/v1/forms/:id": "conforming",
+    "GET /api/v1/forms/:id/form.json": "conforming",
+    "GET /api/v1/media/:id": "conforming",
     "GET /storage/:id": "unexercised"
   },
-  "failures": {
-    "GET /api/v2/data/:id": [
-      "unknown-operation: no operation in the spec matches GET /api/v2/data/6225"
-    ],
-    "GET /api/v2/data/:id/:subId": [
-      "unknown-operation: no operation in the spec matches GET /api/v2/data/6225/7783155"
-    ],
-    "GET /api/v2/files/:id": [
-      "unknown-operation: no operation in the spec matches GET /api/v2/files/621985"
-    ],
-    "GET /api/v2/forms": [
-      "unknown-operation: no operation in the spec matches GET /api/v2/forms"
-    ],
-    "GET /api/v2/forms/:id": [
-      "unknown-operation: no operation in the spec matches GET /api/v2/forms/6225"
-    ],
-    "GET /api/v2/media/:id": [
-      "unknown-operation: no operation in the spec matches GET /api/v2/media/621985"
-    ]
-  },
+  "failures": {},
   "unrouted": [],
   "deviations": []
 }

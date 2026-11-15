@@ -5,20 +5,13 @@
   },
   "coverage": {
     "operations": 13,
-    "exercised": 0
+    "exercised": 6
   },
   "routes": {
-    "GET /webservice.php": "failing",
-    "POST /webservice.php": "failing"
+    "GET /webservice.php": "conforming",
+    "POST /webservice.php": "conforming"
   },
-  "failures": {
-    "GET /webservice.php": [
-      "unknown-operation: no operation in the spec matches GET /webservice.php"
-    ],
-    "POST /webservice.php": [
-      "unknown-operation: no operation in the spec matches POST /webservice.php"
-    ]
-  },
+  "failures": {},
   "unrouted": [],
   "deviations": []
 }

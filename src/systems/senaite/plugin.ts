@@ -100,7 +100,8 @@ const plugin: MockSystemPlugin = {
         ...body,
       };
       store.create('objects', u, record);
-      reply.code(201);
+      // senaite.jsonapi answers a create with 200 and the usual { count, items } envelope.
+      reply.code(200);
       return envelope([record]);
     });
 

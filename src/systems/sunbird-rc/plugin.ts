@@ -11,10 +11,28 @@ import { examplePdf } from '../shared/attachments.js';
  * Sunbird RC (Registry & Credentialing). The sunbird-rc adaptor exposes generic
  * REST verbs (get / post / put / del) plus credentialing helpers
  * (issueCredential / getCredential / downloadCredential). Registry records live
- * under /api/v1/<entity> and carry an `osid`; verifiable credentials are issued
+ * under /api/v1/<entity> and carry an `osid` (writes answer with the registry's
+ * { id, params, responseCode, result } envelope, reads with the record); verifiable credentials are issued
  * at /credentials/issue and identified by a `did:rcw:` id. Auth is optional in
  * the real schema, so the mock accepts unauthenticated requests.
  */
+
+/**
+ * The registry's standard response envelope (dev.sunbirdrc.pojos.Response), as
+ * returned by create / update / delete and by every error: the payload sits in
+ * `result`, and `params.status` says whether the call succeeded.
+ */
+function envelope(action: 'create' | 'update' | 'delete' | 'read', result: unknown, errmsg = '') {
+  const failed = errmsg !== '';
+  return {
+    id: `sunbird-rc.registry.${action}`,
+    ver: '1.0',
+    ets: Date.now(),
+    params: { resmsgid: '', msgid: randomUUID(), err: '', status: failed ? 'UNSUCCESSFUL' : 'SUCCESSFUL', errmsg },
+    responseCode: failed ? 'ERROR' : 'OK',
+    result,
+  };
+}
 
 const plugin: MockSystemPlugin = {
   name: 'sunbird-rc',
@@ -43,7 +61,7 @@ const plugin: MockSystemPlugin = {
       };
       store.create(entity, osid, record);
       reply.code(200);
-      return record;
+      return envelope('create', { [entity]: { osid } });
     });
 
     // --- Registry: read a record by osid ---
@@ -52,7 +70,7 @@ const plugin: MockSystemPlugin = {
       const found = store.get(String(params.entity), String(params.id));
       if (!found) {
         reply.code(404);
-        return { error: 'not_found' };
+        return envelope('read', '', `${params.entity} ${params.id} not found`);
       }
       return found;
     });
@@ -65,12 +83,12 @@ const plugin: MockSystemPlugin = {
       const existing = store.get(entity, id);
       if (!existing) {
         reply.code(404);
-        return { error: 'not_found' };
+        return envelope('update', '', `${entity} ${id} not found`);
       }
       const body = (req.body ?? {}) as Record<string, any>;
       const record = { ...body, id: existing.id, osid: id };
       store.replace(entity, id, record);
-      return record;
+      return envelope('update', record);
     });
 
     // --- Registry: delete a record ---
@@ -80,9 +98,9 @@ const plugin: MockSystemPlugin = {
       const deleted = store.destroy(String(params.entity), id);
       if (!deleted) {
         reply.code(404);
-        return { error: 'not_found' };
+        return envelope('delete', '', `${params.entity} ${id} not found`);
       }
-      return { deleted: [id] };
+      return envelope('delete', '');
     });
 
     // --- Credentialing: issue a verifiable credential ---

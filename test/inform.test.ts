@@ -6,45 +6,45 @@ import { exampleJpg } from '../src/systems/shared/attachments.js';
 const config = { port: 0 };
 
 describe('inform', () => {
-  it('lists forms in a { count, results } envelope', async () => {
+  it('lists forms as a plain array (Ona has no envelope)', async () => {
     const { app } = await createSystemServer(inform, config, { logLevel: 'silent' });
-    const res = await app.inject({ method: 'GET', url: '/api/v2/forms' });
+    const res = await app.inject({ method: 'GET', url: '/api/v1/forms' });
     expect(res.statusCode).toBe(200);
     const body = res.json();
-    expect(Array.isArray(body.results)).toBe(true);
-    expect(body.count).toBe(body.results.length);
-    expect(body.results.length).toBeGreaterThan(0);
+    expect(Array.isArray(body)).toBe(true);
+    expect(body.length).toBeGreaterThan(0);
+    expect(body[0].formid).toBe(6225);
     await app.close();
   });
 
   it('lists submissions for a form', async () => {
     const { app } = await createSystemServer(inform, config, { logLevel: 'silent' });
-    const res = await app.inject({ method: 'GET', url: '/api/v2/data/6225' });
+    const res = await app.inject({ method: 'GET', url: '/api/v1/data/6225' });
     expect(res.statusCode).toBe(200);
     const body = res.json();
-    expect(Array.isArray(body.results)).toBe(true);
-    expect(body.results.length).toBeGreaterThan(0);
+    expect(Array.isArray(body)).toBe(true);
+    expect(body.length).toBeGreaterThan(0);
     await app.close();
   });
 
   it('fetches a single submission by id', async () => {
     const { app } = await createSystemServer(inform, config, { logLevel: 'silent' });
-    const res = await app.inject({ method: 'GET', url: '/api/v2/data/6225/7783155' });
+    const res = await app.inject({ method: 'GET', url: '/api/v1/data/6225/7783155' });
     expect(res.statusCode).toBe(200);
-    expect(res.json()._id).toBe('7783155');
+    expect(res.json()._id).toBe(7783155);
     await app.close();
   });
 
   it('404s for an unknown attachment', async () => {
     const { app } = await createSystemServer(inform, config, { logLevel: 'silent' });
-    const res = await app.inject({ method: 'GET', url: '/api/v2/media/does-not-exist' });
+    const res = await app.inject({ method: 'GET', url: '/api/v1/media/does-not-exist' });
     expect(res.statusCode).toBe(404);
     await app.close();
   });
 
   it('fetches attachment metadata', async () => {
     const { app } = await createSystemServer(inform, config, { logLevel: 'silent' });
-    const res = await app.inject({ method: 'GET', url: '/api/v2/media/621985' });
+    const res = await app.inject({ method: 'GET', url: '/api/v1/media/621985' });
     expect(res.statusCode).toBe(200);
     expect(res.json().filename).toBe('photo.jpg');
     await app.close();
@@ -53,9 +53,9 @@ describe('inform', () => {
   it('downloadAttachment: files/:id redirects to storage bytes', async () => {
     const { app } = await createSystemServer(inform, config, { logLevel: 'silent' });
 
-    // GET files/:id returns a location header pointing at the bytes.
-    const meta = await app.inject({ method: 'GET', url: '/api/v2/files/621985?filename=photo.jpg' });
-    expect(meta.statusCode).toBe(200);
+    // GET files/:id redirects (302) with a location header pointing at the bytes.
+    const meta = await app.inject({ method: 'GET', url: '/api/v1/files/621985?filename=photo.jpg' });
+    expect(meta.statusCode).toBe(302);
     const location = meta.headers['location'] as string;
     expect(location).toBeTruthy();
     expect(location).toContain('/storage/621985');
@@ -76,7 +76,7 @@ describe('inform', () => {
       autoAuth: false,
     });
     // A normal API path still 401s without credentials...
-    const gated = await app.inject({ method: 'GET', url: '/api/v2/forms' });
+    const gated = await app.inject({ method: 'GET', url: '/api/v1/forms' });
     expect(gated.statusCode).toBe(401);
     // ...but the storage bytes are reachable unauthenticated.
     const open = await app.inject({ method: 'GET', url: '/storage/621985' });

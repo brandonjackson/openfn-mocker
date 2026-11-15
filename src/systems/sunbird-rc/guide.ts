@@ -27,6 +27,19 @@ export const guide: SystemGuide = {
       label: 'Fetch a Student by osid',
     },
     {
+      id: 'updateStudent',
+      method: 'PUT',
+      path: '/api/v1/Student/stu-0002',
+      label: 'Replace a Student record',
+      body: JSON.stringify({ name: 'Meera Nair', grade: '8' }, null, 2),
+    },
+    {
+      id: 'deleteStudent',
+      method: 'DELETE',
+      path: '/api/v1/Student/stu-0002',
+      label: 'Delete a Student record',
+    },
+    {
       id: 'issue',
       method: 'POST',
       path: '/credentials/issue',

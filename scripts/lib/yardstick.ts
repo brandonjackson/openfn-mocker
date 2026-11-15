@@ -129,6 +129,7 @@ export function saveLedger(systemsDir: string, system: string, ledger: Conforman
     ...(ledger.coverage ? { coverage: ledger.coverage } : {}),
     ...(ledger.specMounts?.length ? { specMounts: ledger.specMounts } : {}),
     ...(ledger.routeAliases?.length ? { routeAliases: ledger.routeAliases } : {}),
+    ...(ledger.pathPrefix ? { pathPrefix: ledger.pathPrefix } : {}),
     routes: ledger.routes,
     failures: ledger.failures,
     unrouted: ledger.unrouted,
@@ -242,7 +243,7 @@ export function diffBaseline(
 ): BaselineDiff {
   const now = new Set(verifiedRoutes(score));
   const before = new Set(Object.entries(ledger.routes).filter(([, st]) => isVerified(st)).map(([r]) => r));
-  const { deviations: _d, specMounts: _m, routeAliases: _a, ...recorded } = ledger;
+  const { deviations: _d, specMounts: _m, routeAliases: _a, pathPrefix: _p, ...recorded } = ledger;
   return {
     system: score.system,
     regressed: [...before].filter((r) => !now.has(r)),

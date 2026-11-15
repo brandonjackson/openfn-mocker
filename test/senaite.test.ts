@@ -33,14 +33,14 @@ describe('senaite (Plone JSON API)', () => {
     await app.close();
   });
 
-  it('creates a Client (201) with a generated UID', async () => {
+  it('creates a Client (200) with a generated UID', async () => {
     const { app } = await createSystemServer(senaite, config, { logLevel: 'silent' });
     const res = await app.inject({
       method: 'POST',
       url: `${API}/create/Client`,
       payload: { title: 'Freetown Clinic', ClientID: 'C-0003' },
     });
-    expect(res.statusCode).toBe(201);
+    expect(res.statusCode).toBe(200);
     const obj = res.json().items[0];
     expect(obj.portal_type).toBe('Client');
     expect(obj.title).toBe('Freetown Clinic');

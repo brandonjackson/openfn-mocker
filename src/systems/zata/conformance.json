@@ -5,24 +5,16 @@
   },
   "coverage": {
     "operations": 106,
-    "exercised": 0
+    "exercised": 4
   },
+  "pathPrefix": "/api",
   "routes": {
-    "GET /v1/transaction/:id": "failing",
-    "GET /v1/transactions": "failing",
-    "POST /v1/transaction/sale": "failing"
+    "GET /v1/data/product-type": "conforming",
+    "GET /v1/transaction": "conforming",
+    "GET /v1/transaction/:transactionId": "conforming",
+    "POST /v1/transaction/sale": "conforming"
   },
-  "failures": {
-    "GET /v1/transaction/:id": [
-      "unknown-operation: no operation in the spec matches GET /v1/transaction/TXN-0001"
-    ],
-    "GET /v1/transactions": [
-      "unknown-operation: no operation in the spec matches GET /v1/transactions"
-    ],
-    "POST /v1/transaction/sale": [
-      "unknown-operation: no operation in the spec matches POST /v1/transaction/sale"
-    ]
-  },
+  "failures": {},
   "unrouted": [],
   "deviations": []
 }

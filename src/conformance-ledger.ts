@@ -70,6 +70,12 @@ export interface Deviation {
 export interface SpecMount {
   prefix: string;
   adaptor: string;
+  /**
+   * The prefix is part of the mounted spec's own paths, not its server URL
+   * (cht's /medic is the CouchDB database the `medicmobile` spec writes as
+   * /{db}), so it is not stripped before matching.
+   */
+  keepPrefix?: boolean;
 }
 
 /**
@@ -96,6 +102,14 @@ export interface ConformanceLedger {
   specMounts?: SpecMount[];
   /** Hand-written: route prefixes that duplicate others. */
   routeAliases?: RouteAlias[];
+  /**
+   * Hand-written: a path the system's base URL already carries, prepended to
+   * every exchange path before it is checked. The mock's mount stands for the
+   * adaptor's baseUrl, so when that URL ends in a path the spec writes into its
+   * paths (zata's default https://ebm.zata.rw/api vs the spec's /api/v1/...),
+   * the recorded /v1/... would otherwise match nothing.
+   */
+  pathPrefix?: string;
   /** Snapshot: every route the mock serves, and its yardstick state. */
   routes: Record<string, RouteState>;
   /** Snapshot: for each failing route, its unaccepted violations ('kind /pointer: message'), deduplicated. */

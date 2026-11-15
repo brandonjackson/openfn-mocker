@@ -12,13 +12,10 @@
     "GET /v1/libraries/:id": "conforming",
     "GET /v1/libraries/:id/entries": "conforming",
     "GET /v1/libraries/:id/entries/:entryId": "conforming",
-    "POST /v1/libraries/:id/entries": "failing",
+    "POST /v1/libraries/:id/entries": "conforming",
     "PUT /v1/libraries/:id/entries/:entryId": "failing"
   },
   "failures": {
-    "POST /v1/libraries/:id/entries": [
-      "unknown-status: spec documents no response for status 200 (documented: 201, default)"
-    ],
     "PUT /v1/libraries/:id/entries/:entryId": [
       "unknown-operation: no operation in the spec matches PUT /v1/libraries/lib_seed01/entries/entry_seed01"
     ]

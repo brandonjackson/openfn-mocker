@@ -1,24 +1,17 @@
 {
   "spec": {
     "adaptor": "odoo",
-    "origin": "synthesized"
+    "origin": "generated"
   },
   "coverage": {
-    "operations": 2,
-    "exercised": 0
+    "operations": 5,
+    "exercised": 2
   },
   "routes": {
-    "POST /xmlrpc/2/common": "failing",
-    "POST /xmlrpc/2/object": "failing"
+    "POST /xmlrpc/2/common": "conforming",
+    "POST /xmlrpc/2/object": "conforming"
   },
-  "failures": {
-    "POST /xmlrpc/2/common": [
-      "unknown-operation: no operation in the spec matches POST /xmlrpc/2/common"
-    ],
-    "POST /xmlrpc/2/object": [
-      "unknown-operation: no operation in the spec matches POST /xmlrpc/2/object"
-    ]
-  },
+  "failures": {},
   "unrouted": [],
   "deviations": []
 }

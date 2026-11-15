@@ -61,8 +61,8 @@ const plugin: MockSystemPlugin = {
       return entry;
     });
 
-    // POST /v1/libraries/:id/entries — create an entry.
-    app.post('/v1/libraries/:id/entries', async (req) => {
+    // POST /v1/libraries/:id/entries — create an entry (201, as the API Blueprint documents).
+    app.post('/v1/libraries/:id/entries', async (req, reply) => {
       const body = (req.body ?? {}) as Record<string, any>;
       const id = randomUUID();
       const entry = {
@@ -73,6 +73,7 @@ const plugin: MockSystemPlugin = {
         ...body,
       };
       store.create('entries', id, entry);
+      reply.code(201);
       return entry;
     });
 
