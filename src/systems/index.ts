@@ -58,6 +58,7 @@ import msgraph from './msgraph/plugin.js';
 import stripe from './stripe/plugin.js';
 import googledrive from './googledrive/plugin.js';
 import zata from './zata/plugin.js';
+import whatsapp from './whatsapp/plugin.js';
 import azureStorage from './azure-storage/plugin.js';
 import beyonic from './beyonic/plugin.js';
 import dagu from './dagu/plugin.js';
@@ -127,6 +128,7 @@ export const plugins: Record<string, MockSystemPlugin> = {
   stripe,
   googledrive,
   zata,
+  whatsapp,
   'azure-storage': azureStorage,
   beyonic,
   dagu,

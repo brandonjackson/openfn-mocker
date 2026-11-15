@@ -1,10 +1,10 @@
 {
   "$comment": "Generated from src/systems/*/conformance.json by `pnpm test:conformance -- --update-baseline`; do not edit by hand. Mock coverage = spec operations the guide examples exercised / every operation in the adaptor's openapi.json.",
   "totals": {
-    "systems": 62,
-    "specOperations": 16921,
-    "exercised": 339,
-    "percent": 2
+    "systems": 63,
+    "specOperations": 17034,
+    "exercised": 356,
+    "percent": 2.1
   },
   "systems": [
     {
@@ -964,6 +964,22 @@
         "deviating": 0,
         "unchecked": 0,
         "failing": 2,
+        "unexercised": 0
+      }
+    },
+    {
+      "system": "whatsapp",
+      "adaptor": "whatsapp",
+      "specOperations": 113,
+      "exercised": 17,
+      "percent": 15,
+      "routes": 17,
+      "verified": 17,
+      "counts": {
+        "conforming": 17,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 0,
         "unexercised": 0
       }
     },

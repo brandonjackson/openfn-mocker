@@ -1,0 +1,32 @@
+{
+  "spec": {
+    "adaptor": "whatsapp",
+    "origin": "found-openapi"
+  },
+  "coverage": {
+    "operations": 113,
+    "exercised": 17
+  },
+  "routes": {
+    "DELETE /:version/:phoneId/block_users": "conforming",
+    "DELETE /:version/:phoneId/message_qrdls/:code": "conforming",
+    "GET /:version/:phoneId": "conforming",
+    "GET /:version/:phoneId/block_users": "conforming",
+    "GET /:version/:phoneId/message_qrdls": "conforming",
+    "GET /:version/:phoneId/message_qrdls/:code": "conforming",
+    "GET /:version/:phoneId/whatsapp_business_profile": "conforming",
+    "GET /:version/:phoneId/whatsapp_commerce_settings": "conforming",
+    "POST /:version/:phoneId/block_users": "conforming",
+    "POST /:version/:phoneId/deregister": "conforming",
+    "POST /:version/:phoneId/message_qrdls": "conforming",
+    "POST /:version/:phoneId/messages": "conforming",
+    "POST /:version/:phoneId/register": "conforming",
+    "POST /:version/:phoneId/request_code": "conforming",
+    "POST /:version/:phoneId/verify_code": "conforming",
+    "POST /:version/:phoneId/whatsapp_business_profile": "conforming",
+    "POST /:version/:phoneId/whatsapp_commerce_settings": "conforming"
+  },
+  "failures": {},
+  "unrouted": [],
+  "deviations": []
+}

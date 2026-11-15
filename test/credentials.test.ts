@@ -68,6 +68,7 @@ describe('per-plugin credential spec', () => {
         'stripe',
         'surveycto',
         'twilio',
+        'whatsapp',
         'zata',
       ].sort()
     );
