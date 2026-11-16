@@ -2,8 +2,8 @@
   "$comment": "Generated from src/systems/*/conformance.json by `pnpm test:conformance -- --update-baseline`; do not edit by hand. Mock coverage = spec operations the guide examples exercised / every operation in the adaptor's openapi.json.",
   "totals": {
     "systems": 63,
-    "specOperations": 17101,
-    "exercised": 392,
+    "specOperations": 16920,
+    "exercised": 394,
     "percent": 2.3
   },
   "systems": [
@@ -30,11 +30,11 @@
       "exercised": 2,
       "percent": 2.9,
       "routes": 2,
-      "verified": 1,
+      "verified": 2,
       "counts": {
-        "conforming": 1,
+        "conforming": 2,
         "deviating": 0,
-        "unchecked": 1,
+        "unchecked": 0,
         "failing": 0,
         "unexercised": 0
       }
@@ -122,7 +122,7 @@
     {
       "system": "dhis2",
       "adaptor": "dhis2",
-      "specOperations": 2574,
+      "specOperations": 2575,
       "exercised": 21,
       "percent": 0.8,
       "routes": 25,
@@ -208,8 +208,8 @@
       "routes": 5,
       "verified": 4,
       "counts": {
-        "conforming": 3,
-        "deviating": 1,
+        "conforming": 4,
+        "deviating": 0,
         "unchecked": 0,
         "failing": 0,
         "unexercised": 1
@@ -218,9 +218,9 @@
     {
       "system": "gemini",
       "adaptor": "gemini",
-      "specOperations": 85,
+      "specOperations": 92,
       "exercised": 2,
-      "percent": 2.4,
+      "percent": 2.2,
       "routes": 1,
       "verified": 1,
       "counts": {
@@ -266,9 +266,9 @@
     {
       "system": "gmail",
       "adaptor": "gmail",
-      "specOperations": 79,
+      "specOperations": 91,
       "exercised": 4,
-      "percent": 5.1,
+      "percent": 4.4,
       "routes": 4,
       "verified": 4,
       "counts": {
@@ -298,17 +298,17 @@
     {
       "system": "googledrive",
       "adaptor": "googledrive",
-      "specOperations": 64,
-      "exercised": 4,
-      "percent": 6.3,
+      "specOperations": 68,
+      "exercised": 6,
+      "percent": 8.8,
       "routes": 6,
-      "verified": 4,
+      "verified": 6,
       "counts": {
-        "conforming": 4,
+        "conforming": 6,
         "deviating": 0,
         "unchecked": 0,
         "failing": 0,
-        "unexercised": 2
+        "unexercised": 0
       }
     },
     {
@@ -426,9 +426,9 @@
     {
       "system": "mailchimp",
       "adaptor": "mailchimp",
-      "specOperations": 298,
+      "specOperations": 308,
       "exercised": 10,
-      "percent": 3.4,
+      "percent": 3.2,
       "routes": 14,
       "verified": 10,
       "counts": {
@@ -442,9 +442,9 @@
     {
       "system": "mailgun",
       "adaptor": "mailgun",
-      "specOperations": 267,
+      "specOperations": 411,
       "exercised": 3,
-      "percent": 1.1,
+      "percent": 0.7,
       "routes": 3,
       "verified": 3,
       "counts": {
@@ -510,19 +510,19 @@
       "exercised": 6,
       "percent": 11.5,
       "routes": 6,
-      "verified": 1,
+      "verified": 6,
       "counts": {
-        "conforming": 1,
+        "conforming": 6,
         "deviating": 0,
         "unchecked": 0,
-        "failing": 5,
+        "failing": 0,
         "unexercised": 0
       }
     },
     {
       "system": "msgraph",
       "adaptor": "msgraph",
-      "specOperations": 2605,
+      "specOperations": 2668,
       "exercised": 7,
       "percent": 0.3,
       "routes": 10,
@@ -538,7 +538,7 @@
     {
       "system": "msupply",
       "adaptor": "msupply",
-      "specOperations": 309,
+      "specOperations": 331,
       "exercised": 1,
       "percent": 0.3,
       "routes": 1,
@@ -570,14 +570,14 @@
     {
       "system": "ocl",
       "adaptor": "ocl",
-      "specOperations": 1966,
+      "specOperations": 1519,
       "exercised": 7,
-      "percent": 0.4,
+      "percent": 0.5,
       "routes": 7,
       "verified": 7,
       "counts": {
-        "conforming": 2,
-        "deviating": 5,
+        "conforming": 7,
+        "deviating": 0,
         "unchecked": 0,
         "failing": 0,
         "unexercised": 0
@@ -622,11 +622,11 @@
       "exercised": 18,
       "percent": 6.1,
       "routes": 18,
-      "verified": 16,
+      "verified": 18,
       "counts": {
-        "conforming": 16,
+        "conforming": 18,
         "deviating": 0,
-        "unchecked": 2,
+        "unchecked": 0,
         "failing": 0,
         "unexercised": 0
       }
@@ -922,9 +922,9 @@
     {
       "system": "surveycto",
       "adaptor": "surveycto",
-      "specOperations": 50,
+      "specOperations": 53,
       "exercised": 4,
-      "percent": 8,
+      "percent": 7.5,
       "routes": 8,
       "verified": 3,
       "counts": {

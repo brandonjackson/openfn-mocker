@@ -37,5 +37,21 @@ export const guide: SystemGuide = {
       label: 'Update file metadata',
       body: JSON.stringify({ name: 'Renamed.pdf' }, null, 2),
     },
+    {
+      id: 'uploadFile',
+      method: 'POST',
+      path: '/upload/drive/v3/files?uploadType=media',
+      label: 'Upload file content',
+      contentType: 'text/plain',
+      body: 'facility,indicator,value\nKabale HC IV,malaria_cases,42\n',
+    },
+    {
+      id: 'replaceFileContent',
+      method: 'PATCH',
+      path: '/upload/drive/v3/files/file_seed01?uploadType=media',
+      label: 'Replace a file\'s content',
+      contentType: 'text/plain',
+      body: 'facility,indicator,value\nKabale HC IV,malaria_cases,57\n',
+    },
   ],
 };

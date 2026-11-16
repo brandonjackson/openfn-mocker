@@ -8,19 +8,10 @@
     "exercised": 2
   },
   "routes": {
-    "GET /:container/*": "unchecked",
+    "GET /:container/*": "conforming",
     "PUT /:container/*": "conforming"
   },
   "failures": {},
   "unrouted": [],
-  "deviations": [
-    {
-      "route": "GET /:container/*",
-      "kind": "content-type",
-      "message": "spec documents application/xml for status 200",
-      "category": "vendor-spec-wrong",
-      "reason": "Get Blob returns the blob's own bytes under the blob's own Content-Type (here text/plain, the type the blob was uploaded with). Microsoft's blob.json declares no `produces` on Blob_Download, so its 200 file response ({type: object, format: file}, autorest's stream idiom) inherits the document-wide `produces: [application/xml]`, and the converted openapi.json lists application/xml as the only 200 media type.",
-      "evidence": "https://learn.microsoft.com/en-us/rest/api/storageservices/get-blob#response-headers (Content-Type: \"The content type that's specified for the blob. The default content type is application/octet-stream.\"; the page's sample response is Content-Type: text/plain; charset=UTF-8)"
-    }
-  ]
+  "deviations": []
 }
