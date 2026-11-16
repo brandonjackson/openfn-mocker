@@ -16,7 +16,7 @@
   ],
   "routes": {
     "GET /api/v1/settings": "unexercised",
-    "GET /api/v2/export/contacts": "failing",
+    "GET /api/v2/export/contacts": "conforming",
     "GET /api/v2/export/reports": "unexercised",
     "GET /medic/_changes": "conforming",
     "GET /medic/:docId": "conforming",
@@ -26,11 +26,7 @@
     "PUT /api/v1/settings": "unexercised",
     "PUT /medic/:docId": "unexercised"
   },
-  "failures": {
-    "GET /api/v2/export/contacts": [
-      "content-type: response is application/json; spec documents text/csv for status 200"
-    ]
-  },
+  "failures": {},
   "unrouted": [],
   "deviations": []
 }

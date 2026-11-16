@@ -34,8 +34,8 @@
       "counts": {
         "conforming": 1,
         "deviating": 0,
-        "unchecked": 0,
-        "failing": 1,
+        "unchecked": 1,
+        "failing": 0,
         "unexercised": 0
       }
     },
@@ -46,12 +46,12 @@
       "exercised": 4,
       "percent": 14.8,
       "routes": 5,
-      "verified": 0,
+      "verified": 4,
       "counts": {
-        "conforming": 0,
+        "conforming": 4,
         "deviating": 0,
         "unchecked": 0,
-        "failing": 4,
+        "failing": 0,
         "unexercised": 1
       }
     },
@@ -62,12 +62,12 @@
       "exercised": 2,
       "percent": 2.3,
       "routes": 10,
-      "verified": 4,
+      "verified": 5,
       "counts": {
-        "conforming": 4,
+        "conforming": 5,
         "deviating": 0,
         "unchecked": 0,
-        "failing": 1,
+        "failing": 0,
         "unexercised": 5
       }
     },
@@ -350,12 +350,12 @@
       "exercised": 4,
       "percent": 100,
       "routes": 4,
-      "verified": 2,
+      "verified": 4,
       "counts": {
-        "conforming": 2,
+        "conforming": 4,
         "deviating": 0,
         "unchecked": 0,
-        "failing": 2,
+        "failing": 0,
         "unexercised": 0
       }
     },
@@ -766,12 +766,12 @@
       "exercised": 4,
       "percent": 26.7,
       "routes": 4,
-      "verified": 3,
+      "verified": 4,
       "counts": {
-        "conforming": 3,
+        "conforming": 4,
         "deviating": 0,
         "unchecked": 0,
-        "failing": 1,
+        "failing": 0,
         "unexercised": 0
       }
     },

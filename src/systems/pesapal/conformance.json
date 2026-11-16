@@ -10,15 +10,10 @@
   "routes": {
     "GET /v3/api/Transactions/GetTransactionStatus": "conforming",
     "POST /v3/api/Auth/RequestToken": "conforming",
-    "POST /v3/api/Transactions/SubmitOrderRequest": "failing",
+    "POST /v3/api/Transactions/SubmitOrderRequest": "conforming",
     "POST /v3/api/URLSetup/RegisterIPN": "conforming"
   },
-  "failures": {
-    "POST /v3/api/Transactions/SubmitOrderRequest": [
-      "request-schema: missing required property 'callback_url'",
-      "request-schema: missing required property 'notification_id'"
-    ]
-  },
+  "failures": {},
   "unrouted": [],
   "deviations": []
 }
