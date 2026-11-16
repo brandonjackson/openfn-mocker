@@ -5,14 +5,17 @@ import type { UsageExample } from '../types.js';
  * generic verbs; get/post take a path relative to the `<baseUrl>/<apiVersion>/api`
  * base the adaptor builds (so no `/api` prefix here) and pass params in an
  * options object. The token request reads the consumer key/secret straight off
- * the configuration.
+ * the configuration. callback_url is written as a relative path (the mock
+ * ignores it) so no external absolute URL appears in job code; against live
+ * Pesapal it must be a full URL, and notification_id the ipn_id RegisterIPN
+ * returned.
  */
 export const usage: UsageExample[] = [
   {
     fn: 'post',
     signature: 'post(path, data, options?, callback?)',
     description: 'Submit an order request to Pesapal.',
-    code: "post('/Transactions/SubmitOrderRequest', { id: 'order-1001', amount: 1000, currency: 'KES', description: 'Test order' });",
+    code: "post('/Transactions/SubmitOrderRequest', {\n  id: 'order-1001',\n  currency: 'KES',\n  amount: 1000,\n  description: 'Test order',\n  callback_url: '/callbacks/pesapal/payment-complete',\n  notification_id: '5b3f0c1e-7d2a-4f6b-9c81-2e4a6d8f0b13',\n  billing_address: { email_address: 'customer@example.com', country_code: 'KE' }\n});",
     apiRef: 'submitOrder',
   },
   {

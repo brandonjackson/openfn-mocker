@@ -4,7 +4,9 @@ import type { SystemGuide } from '../types.js';
  * Sandbox guide for the pesapal system (API v3). Paths match the Pesapal REST
  * API (under /api): a Bearer token is minted first via RequestToken, then orders
  * are submitted and polled. The status example targets the seeded order's
- * tracking id.
+ * tracking id. The order example carries every field Pesapal's SubmitOrderRequest
+ * requires (id, currency, amount, description, callback_url, notification_id,
+ * billing_address); notification_id stands for the ipn_id RegisterIPN returns.
  */
 export const guide: SystemGuide = {
   title: 'Pesapal (v3)',
@@ -30,7 +32,15 @@ export const guide: SystemGuide = {
       path: '/v3/api/Transactions/SubmitOrderRequest',
       label: 'Submit an order request',
       body: JSON.stringify(
-        { id: 'order-1001', amount: 1000, currency: 'KES', description: 'Test order' },
+        {
+          id: 'order-1001',
+          currency: 'KES',
+          amount: 1000,
+          description: 'Test order',
+          callback_url: 'https://example.com/payment-complete',
+          notification_id: '5b3f0c1e-7d2a-4f6b-9c81-2e4a6d8f0b13',
+          billing_address: { email_address: 'customer@example.com', country_code: 'KE' },
+        },
         null,
         2
       ),

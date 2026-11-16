@@ -24,7 +24,15 @@ describe('pesapal', () => {
     const res = await app.inject({
       method: 'POST',
       url: '/v3/api/Transactions/SubmitOrderRequest',
-      payload: { id: 'order-1001', amount: 1000, currency: 'KES', description: 'Test order' },
+      payload: {
+        id: 'order-1001',
+        amount: 1000,
+        currency: 'KES',
+        description: 'Test order',
+        callback_url: 'https://example.com/payment-complete',
+        notification_id: '5b3f0c1e-7d2a-4f6b-9c81-2e4a6d8f0b13',
+        billing_address: { email_address: 'customer@example.com' },
+      },
     });
     expect(res.statusCode).toBe(200);
     const body = res.json();
