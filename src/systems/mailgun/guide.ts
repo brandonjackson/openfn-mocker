@@ -27,5 +27,27 @@ export const guide: SystemGuide = {
     },
     { method: 'GET', path: '/v3/{{domain}}/events', label: 'Events feed (delivered/opened/bounced)' },
     { method: 'GET', path: '/v3/{{domain}}/stats/total', label: 'Aggregate stats (last 7 days)' },
+    {
+      method: 'GET',
+      path: '/v4/address/validate?address=jane.doe@gmial.com',
+      label: 'Validate one address (a typo domain gets did_you_mean)',
+    },
+    {
+      method: 'POST',
+      path: '/v4/address/validate/bulk/new-signups',
+      label: 'Start a bulk validation job from a CSV with an email column',
+      contentType: 'multipart/form-data; boundary=mockerboundary',
+      body:
+        '--mockerboundary\r\n' +
+        'Content-Disposition: form-data; name="file"; filename="emails.csv"\r\n' +
+        'Content-Type: text/csv\r\n\r\n' +
+        'email\r\njane.doe@example.org\r\ninfo@example.org\r\ntemp@mailinator.com\r\n' +
+        '--mockerboundary--\r\n',
+    },
+    {
+      method: 'GET',
+      path: '/v4/address/validate/bulk/volunteer-emails-2026',
+      label: 'Bulk validation job status, summary and result downloads',
+    },
   ],
 };

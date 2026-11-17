@@ -2,7 +2,16 @@ import type { FastifyInstance } from 'fastify';
 import type { MockSystemPlugin, SystemConfig } from '../types.js';
 import type { DataStore } from '../../store.js';
 import { selfUrlBase } from '../shared/self-url.js';
-import { seed, buildStats, makeEvent, makeMessageId, DEFAULT_DOMAIN } from './seed.js';
+import {
+  seed,
+  buildStats,
+  makeEvent,
+  makeMessageId,
+  validateAddress,
+  makeBulkJob,
+  emailsFromCsv,
+  DEFAULT_DOMAIN,
+} from './seed.js';
 import { usage } from './usage.js';
 import { guide } from './guide.js';
 
@@ -104,6 +113,38 @@ const plugin: MockSystemPlugin = {
 
     // GET /v3/:domain/stats/total — aggregate stats.
     app.get('/v3/:domain/stats/total', async () => store.get('stats', 'total') ?? buildStats());
+
+    // --- Validations API (mailgun.js `client.validate`) ----------------------
+    // GET /v4/address/validate?address= — validate one address.
+    app.get('/v4/address/validate', async (req, reply) => {
+      const address = String((req.query as Record<string, any>).address ?? '').trim();
+      if (!address) {
+        reply.code(400);
+        return { message: 'address parameter is required' };
+      }
+      return validateAddress(address);
+    });
+
+    // POST /v4/address/validate/bulk/:list_id — upload a CSV (multipart, `file`).
+    app.post('/v4/address/validate/bulk/:list_id', async (req, reply) => {
+      const id = (req.params as Record<string, any>).list_id as string;
+      const body = typeof req.body === 'string' ? req.body : JSON.stringify(req.body ?? '');
+      const base = selfUrlBase(req, config.port).replace(/\/v4\/address\/validate\/bulk\/.*$/, '');
+      store.upsert('validations', id, makeBulkJob(id, emailsFromCsv(body), base));
+      reply.code(202);
+      return { id, message: 'The validation job was submitted.' };
+    });
+
+    // GET /v4/address/validate/bulk/:list_id — job status, summary and result links.
+    app.get('/v4/address/validate/bulk/:list_id', async (req, reply) => {
+      const id = (req.params as Record<string, any>).list_id as string;
+      const job = store.get('validations', id);
+      if (!job) {
+        reply.code(404);
+        return { message: 'List not found' };
+      }
+      return job;
+    });
   },
 
   seed,

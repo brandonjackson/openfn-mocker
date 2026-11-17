@@ -37,5 +37,35 @@ export const guide: SystemGuide = {
       label: 'Update file metadata',
       body: JSON.stringify({ name: 'Renamed.pdf' }, null, 2),
     },
+    {
+      id: 'uploadFile',
+      method: 'POST',
+      path: '/upload/drive/v3/files?uploadType=multipart',
+      label: 'Upload a file with content (multipart: metadata + bytes)',
+      contentType: 'multipart/related; boundary=mockerboundary',
+      body:
+        '--mockerboundary\r\n' +
+        'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
+        '{"name":"visit-notes.txt","mimeType":"text/plain"}\r\n' +
+        '--mockerboundary\r\n' +
+        'Content-Type: text/plain\r\n\r\n' +
+        'Visit notes for 2026-11-17\r\n' +
+        '--mockerboundary--\r\n',
+    },
+    {
+      id: 'replaceFileContent',
+      method: 'PATCH',
+      path: '/upload/drive/v3/files/file_seed01?uploadType=multipart',
+      label: 'Replace a file\'s content',
+      contentType: 'multipart/related; boundary=mockerboundary',
+      body:
+        '--mockerboundary\r\n' +
+        'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
+        '{}\r\n' +
+        '--mockerboundary\r\n' +
+        'Content-Type: text/plain\r\n\r\n' +
+        'Updated content\r\n' +
+        '--mockerboundary--\r\n',
+    },
   ],
 };

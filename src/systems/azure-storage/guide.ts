@@ -27,5 +27,19 @@ export const guide: SystemGuide = {
       path: '/mock-container/hello.txt',
       label: 'Download a blob',
     },
+    {
+      id: 'uploadNested',
+      method: 'PUT',
+      path: '/mock-container/exports/2026/indicators.csv',
+      label: 'Upload into a virtual folder (blob names may contain slashes)',
+      body: 'orgUnit,period,value\nOU_1,202611,42\n',
+      contentType: 'text/csv',
+    },
+    {
+      id: 'downloadNested',
+      method: 'GET',
+      path: '/mock-container/exports/2026/indicators.csv',
+      label: 'Download a blob from a virtual folder',
+    },
   ],
 };

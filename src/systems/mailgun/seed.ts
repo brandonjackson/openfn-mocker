@@ -246,4 +246,113 @@ export function seed(store: DataStore, config: SystemConfig): void {
   });
 
   store.create('stats', 'total', buildStats());
+  seedValidations(store);
+}
+
+const ROLE_LOCALS = new Set(['admin', 'info', 'support', 'sales', 'noreply', 'no-reply', 'postmaster', 'office', 'contact']);
+const DISPOSABLE_DOMAINS = new Set(['mailinator.com', 'guerrillamail.com', '10minutemail.com', 'trashmail.com']);
+const TYPO_DOMAINS: Record<string, string> = {
+  'gmial.com': 'gmail.com',
+  'gmai.com': 'gmail.com',
+  'yaho.com': 'yahoo.com',
+  'hotmial.com': 'hotmail.com',
+};
+
+/**
+ * A Validations API v4 single-address result (`ValidationResponse`). Mailgun
+ * scores mailbox existence with SMTP probes; the mock is deterministic instead:
+ * a malformed address or `.invalid` domain is undeliverable, a disposable or
+ * role address is risky, a known typo domain carries `did_you_mean`.
+ */
+export function validateAddress(address: string) {
+  const at = address.lastIndexOf('@');
+  const local = at > 0 ? address.slice(0, at).toLowerCase() : '';
+  const domain = at > 0 ? address.slice(at + 1).toLowerCase() : '';
+  const wellFormed = at > 0 && /^[^\s@]+$/.test(local) && /^[a-z0-9-]+(\.[a-z0-9-]+)+$/.test(domain);
+  const isDisposable = DISPOSABLE_DOMAINS.has(domain);
+  const isRole = ROLE_LOCALS.has(local);
+  const reason: string[] = [];
+  let result = 'deliverable';
+  let risk = 'low';
+  if (!wellFormed) {
+    reason.push('malformed address; failed parse');
+    result = 'do_not_send';
+    risk = 'high';
+  } else if (domain.endsWith('.invalid')) {
+    reason.push('no_mx');
+    result = 'undeliverable';
+    risk = 'high';
+  } else if (isDisposable) {
+    reason.push('disposable_address');
+    result = 'do_not_send';
+    risk = 'high';
+  } else if (isRole) {
+    reason.push('role_address');
+    risk = 'medium';
+  }
+  const suggestion = TYPO_DOMAINS[domain];
+  return {
+    address,
+    ...(suggestion ? { did_you_mean: `${local}@${suggestion}` } : {}),
+    is_disposable_address: isDisposable,
+    is_role_address: isRole,
+    reason,
+    result,
+    risk,
+    ...(wellFormed ? { root_address: `${local.split('+')[0]}@${domain}` } : {}),
+  };
+}
+
+/** A bulk validation job (`GetResponse` of GET /v4/address/validate/bulk/{list_id}). */
+export function makeBulkJob(id: string, emails: string[], baseUrl: string, createdAt = Math.floor(Date.now() / 1000)) {
+  const result = { deliverable: 0, undeliverable: 0, do_not_send: 0, catch_all: 0, unknown: 0, accept_all: 0 };
+  const risk = { low: 0, medium: 0, high: 0, unknown: 0 };
+  for (const e of emails) {
+    const r = validateAddress(e);
+    result[r.result as keyof typeof result]++;
+    risk[r.risk as keyof typeof risk]++;
+  }
+  return {
+    id,
+    created_at: createdAt,
+    quantity: emails.length,
+    records_processed: emails.length,
+    status: 'uploaded',
+    is_preview: false,
+    download_url: {
+      csv: `${baseUrl}/v4/address/validate/bulk/${encodeURIComponent(id)}/results.csv`,
+      json: `${baseUrl}/v4/address/validate/bulk/${encodeURIComponent(id)}/results.json`,
+    },
+    summary: {
+      result,
+      risk,
+      engagement: { highly_engaged: 0, engaged: 0, disengaged: 0, bot: 0, complainer: 0, no_data: emails.length },
+    },
+  };
+}
+
+/** The email column of an uploaded bulk-validation CSV (header row required). */
+export function emailsFromCsv(body: string): string[] {
+  const lines = body.split(/\r?\n/).map((l) => l.trim());
+  const header = lines.findIndex((l) => /(^|,)"?email"?(,|$)/i.test(l));
+  if (header < 0) return [];
+  const col = lines[header].split(',').findIndex((c) => /^"?email"?$/i.test(c));
+  const out: string[] = [];
+  for (const line of lines.slice(header + 1)) {
+    if (!line || line.startsWith('--')) break; // end of the multipart part
+    const v = line.split(',')[col]?.replace(/^"|"$/g, '');
+    if (v) out.push(v);
+  }
+  return out;
+}
+
+/** Seed one finished bulk validation job so GET /v4/address/validate/bulk/{list_id} has something to show. */
+export function seedValidations(store: DataStore): void {
+  const job = makeBulkJob(
+    'volunteer-emails-2026',
+    ['jane.doe@example.org', 'john.smith@example.org', 'info@example.org', 'temp@mailinator.com', 'ghost@nowhere.invalid'],
+    'https://api.mailgun.net',
+    1_767_225_600
+  );
+  store.create('validations', job.id, job);
 }
