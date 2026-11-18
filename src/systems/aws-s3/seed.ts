@@ -36,7 +36,8 @@ export function objectRecord(bucket: string, key: string, bytes: Buffer, content
 
 /**
  * Amazon S3 seed: one bucket of the kind an OpenFn workflow drops data into —
- * JSON payloads from a form system under `submissions/`, a CSV export under
+ * JSON payloads from a form system under `submissions/`, a partner's CSV drop
+ * under `incoming/`, a mapping file under `config/`, a CSV export under
  * `exports/` and a plain-text readme at the top level. `get()` JSON-parses an
  * object when it can, so the JSON ones come back as data and the CSV as base64.
  */
@@ -62,6 +63,18 @@ export function seed(store: DataStore, _config: SystemConfig): void {
     JSON.stringify({ visitId: 'visit-0003', facility: 'Mathare North Clinic', patientId: 'P-10301', date: '2026-11-02', vitals: { temperature: 36.8, weight: 72.0 } }),
     'application/json',
     '2026-11-02T07:45:31Z'
+  );
+  put(
+    'config/facility-mappings.json',
+    JSON.stringify({ KHC: { dhis2OrgUnit: 'ImspTQPwCqd', name: 'Kibera Health Centre' }, MNC: { dhis2OrgUnit: 'O6uvpzGd5pu', name: 'Mathare North Clinic' } }),
+    'application/json',
+    '2026-08-20T12:00:00Z'
+  );
+  put(
+    'incoming/2026-11/enrolment.csv',
+    'beneficiary_id,name,district\nB-0001,Achieng Otieno,Kibra\nB-0002,Wanjiru Kamau,Mathare\n',
+    'text/csv',
+    '2026-11-03T06:30:00Z'
   );
   put('exports/facilities.csv', 'facility_id,name,district\nKHC,Kibera Health Centre,Kibra\nMNC,Mathare North Clinic,Mathare\n', 'text/csv', '2026-10-15T16:20:00Z');
 }

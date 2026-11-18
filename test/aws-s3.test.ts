@@ -26,7 +26,7 @@ describe('aws-s3', () => {
     const token = /<NextContinuationToken>([^<]+)</.exec(first.body)![1];
     const second = await app.inject({ method: 'GET', url: `/?list-type=2&max-keys=10&continuation-token=${token}` });
     expect(second.body).toContain('<IsTruncated>false</IsTruncated>');
-    expect(second.body).toContain('<KeyCount>3</KeyCount>');
+    expect(second.body).toContain('<KeyCount>5</KeyCount>');
     await app.close();
   });
 
