@@ -76,6 +76,11 @@ import { attachExchangeCapture, type Exchange } from './lib/conformance.js';
  * and auto-installs it. The mapping lives on each plugin (`adaptorName`,
  * defaulting to the system key), so scripts never carry their own copy. */
 const adaptorFor = (system: string): string => plugins[system]?.adaptorName ?? system;
+/** The adaptor as the CLI's `-a` takes it: `name`, or `name@version` when the plugin pins one. */
+const adaptorSpecFor = (system: string): string => {
+  const v = plugins[system]?.adaptorVersion;
+  return v ? `${adaptorFor(system)}@${v}` : adaptorFor(system);
+};
 
 /**
  * A system's usage examples, read from its plugin (`MockSystemPlugin.usage`) —
@@ -441,7 +446,7 @@ async function main(): Promise<void> {
   // Install the CLI + adaptors up front so the per-example timeout below only
   // measures execution, never a one-time cold npm install (see warmUp).
   if (args.warmup) {
-    await warmUp(cli, [...new Set(targets.map(adaptorFor))], repoDir);
+    await warmUp(cli, [...new Set(targets.map(adaptorSpecFor))], repoDir);
     console.log('');
   }
 
@@ -473,12 +478,12 @@ async function main(): Promise<void> {
     }
     const alias = aliasResult;
     const configuration = resolveConfiguration(plugin, origin, config, alias?.hostValue);
-    console.log(`── ${system} @ ${origin}  (adaptor: ${adaptor}, ${usage.length} example(s))`);
+    console.log(`── ${system} @ ${origin}  (adaptor: ${adaptorSpecFor(system)}, ${usage.length} example(s))`);
 
     try {
       for (const ex of usage) {
         await resetMock(origin);
-        const r = await runExample(cli, adaptor, ex, configuration, dir, repoDir, alias?.env);
+        const r = await runExample(cli, adaptorSpecFor(system), ex, configuration, dir, repoDir, alias?.env);
         r.system = system;
         results.push(r);
         const mark = r.ok ? '✓ PASS' : '✗ FAIL';

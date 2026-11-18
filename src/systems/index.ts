@@ -60,6 +60,7 @@ import googledrive from './googledrive/plugin.js';
 import zata from './zata/plugin.js';
 import whatsapp from './whatsapp/plugin.js';
 import azureStorage from './azure-storage/plugin.js';
+import awsS3 from './aws-s3/plugin.js';
 import beyonic from './beyonic/plugin.js';
 import dagu from './dagu/plugin.js';
 import gemini from './gemini/plugin.js';
@@ -130,6 +131,7 @@ export const plugins: Record<string, MockSystemPlugin> = {
   zata,
   whatsapp,
   'azure-storage': azureStorage,
+  'aws-s3': awsS3,
   beyonic,
   dagu,
   gemini,
