@@ -246,4 +246,38 @@ export function seed(store: DataStore, config: SystemConfig): void {
   });
 
   store.create('stats', 'total', buildStats());
+
+  // Mailing lists (GET /v3/lists/pages, POST /v3/lists/:address/members).
+  const created = new Date(now - 30 * 86_400_000).toUTCString();
+  for (const list of [
+    { address: 'volunteers@mg.example.org', name: 'Volunteers', description: 'Community health volunteers' },
+    { address: `newsletter@${domain}`, name: 'Newsletter', description: 'Monthly programme update' },
+  ]) {
+    store.create('lists', list.address, {
+      ...list,
+      access_level: 'readonly',
+      reply_preference: 'list',
+      created_at: created,
+      members_count: 0,
+    });
+  }
+
+  // A finished bulk validation job (GET /v4/address/validate/bulk/:listId).
+  store.create('validationJobs', 'facility-contacts-2026', {
+    id: 'facility-contacts-2026',
+    created_at: Math.floor((now - 86_400_000) / 1000),
+    quantity: 3,
+    records_processed: 3,
+    status: 'uploaded',
+    is_preview: false,
+    download_url: {
+      csv: 'https://storage.mailgun.net/validate/facility-contacts-2026.csv.zip',
+      json: 'https://storage.mailgun.net/validate/facility-contacts-2026.json.zip',
+    },
+    summary: {
+      result: { deliverable: 2, undeliverable: 1, do_not_send: 0, catch_all: 0, unknown: 0, accept_all: 0 },
+      risk: { low: 2, medium: 0, high: 1, unknown: 0 },
+      engagement: { highly_engaged: 0, engaged: 0, disengaged: 0, bot: 0, complainer: 0, no_data: 3 },
+    },
+  });
 }
