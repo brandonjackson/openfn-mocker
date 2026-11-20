@@ -4,16 +4,16 @@
     "origin": "converted"
   },
   "coverage": {
-    "operations": 64,
-    "exercised": 4
+    "operations": 68,
+    "exercised": 6
   },
   "routes": {
     "GET /drive/v3/files": "conforming",
     "GET /drive/v3/files/:id": "conforming",
     "PATCH /drive/v3/files/:id": "conforming",
-    "PATCH /upload/drive/v3/files/:id": "unexercised",
+    "PATCH /upload/drive/v3/files/:id": "conforming",
     "POST /drive/v3/files": "conforming",
-    "POST /upload/drive/v3/files": "unexercised"
+    "POST /upload/drive/v3/files": "conforming"
   },
   "failures": {},
   "unrouted": [],

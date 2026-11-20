@@ -2,8 +2,8 @@
   "$comment": "Generated from src/systems/*/conformance.json by `pnpm test:conformance -- --update-baseline`; do not edit by hand. Mock coverage = spec operations the guide examples exercised / every operation in the adaptor's openapi.json.",
   "totals": {
     "systems": 64,
-    "specOperations": 17213,
-    "exercised": 395,
+    "specOperations": 17373,
+    "exercised": 400,
     "percent": 2.3
   },
   "systems": [
@@ -282,9 +282,9 @@
     {
       "system": "gmail",
       "adaptor": "gmail",
-      "specOperations": 79,
+      "specOperations": 91,
       "exercised": 4,
-      "percent": 5.1,
+      "percent": 4.4,
       "routes": 4,
       "verified": 4,
       "counts": {
@@ -314,17 +314,17 @@
     {
       "system": "googledrive",
       "adaptor": "googledrive",
-      "specOperations": 64,
-      "exercised": 4,
-      "percent": 6.3,
+      "specOperations": 68,
+      "exercised": 6,
+      "percent": 8.8,
       "routes": 6,
-      "verified": 4,
+      "verified": 6,
       "counts": {
-        "conforming": 4,
+        "conforming": 6,
         "deviating": 0,
         "unchecked": 0,
         "failing": 0,
-        "unexercised": 2
+        "unexercised": 0
       }
     },
     {
@@ -458,13 +458,13 @@
     {
       "system": "mailgun",
       "adaptor": "mailgun",
-      "specOperations": 267,
-      "exercised": 3,
-      "percent": 1.1,
-      "routes": 3,
-      "verified": 3,
+      "specOperations": 411,
+      "exercised": 6,
+      "percent": 1.5,
+      "routes": 6,
+      "verified": 6,
       "counts": {
-        "conforming": 3,
+        "conforming": 6,
         "deviating": 0,
         "unchecked": 0,
         "failing": 0,
