@@ -3,7 +3,7 @@
   "totals": {
     "systems": 64,
     "specOperations": 17373,
-    "exercised": 400,
+    "exercised": 404,
     "percent": 2.3
   },
   "systems": [
@@ -43,12 +43,12 @@
       "system": "azure-storage",
       "adaptor": "azure-storage",
       "specOperations": 69,
-      "exercised": 2,
-      "percent": 2.9,
-      "routes": 2,
-      "verified": 1,
+      "exercised": 3,
+      "percent": 4.3,
+      "routes": 3,
+      "verified": 2,
       "counts": {
-        "conforming": 1,
+        "conforming": 2,
         "deviating": 0,
         "unchecked": 0,
         "failing": 1,
@@ -779,15 +779,15 @@
       "system": "pesapal",
       "adaptor": "pesapal",
       "specOperations": 15,
-      "exercised": 4,
-      "percent": 26.7,
-      "routes": 4,
-      "verified": 3,
+      "exercised": 7,
+      "percent": 46.7,
+      "routes": 7,
+      "verified": 7,
       "counts": {
-        "conforming": 3,
+        "conforming": 7,
         "deviating": 0,
         "unchecked": 0,
-        "failing": 1,
+        "failing": 0,
         "unexercised": 0
       }
     },

@@ -1201,7 +1201,7 @@ picture, rated per system, at [`/status`](#conformance-status-page).
 whole `openapi.json`, how many the guide examples exercise. It is recorded in
 each ledger and collected in the repo-root [`coverage.json`](./coverage.json)
 (rebuilt by `--update-baseline`, checked in CI), which the adaptors storybook
-shows next to spec and snippet coverage. Today: **400 of 17,373 spec
+shows next to spec and snippet coverage. Today: **404 of 17,373 spec
 operations (2%)** across 64 systems. Mocks cover what adaptors commonly call,
 so a low share of a large vendor API is expected.
 

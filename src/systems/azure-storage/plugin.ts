@@ -45,6 +45,21 @@ const plugin: MockSystemPlugin = {
       return `${params.container}/${params['*'] ?? ''}`;
     };
 
+    // PUT /:container?restype=container — create a container. Azure answers
+    // 201 with an empty body, or 409 ContainerAlreadyExists (which the SDK's
+    // createIfNotExists treats as success).
+    app.put('/:container', async (req, reply) => {
+      const name = String((req.params as Record<string, any>).container);
+      const exists = store.get('containers', name);
+      if (exists) {
+        reply.code(409).header('x-ms-error-code', 'ContainerAlreadyExists');
+        return null;
+      }
+      store.create('containers', name, { name, lastModified: nowIso() });
+      reply.code(201).header('etag', '"0x8MOCKC"').header('last-modified', nowIso());
+      return null;
+    });
+
     // PUT /:container/<blob> — upload (create/overwrite) a block blob.
     app.put('/:container/*', async (req, reply) => {
       const key = blobKey(req);
