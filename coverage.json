@@ -2,7 +2,7 @@
   "$comment": "Generated from src/systems/*/conformance.json by `pnpm test:conformance -- --update-baseline`; do not edit by hand. Mock coverage = spec operations the guide examples exercised / every operation in the adaptor's openapi.json.",
   "totals": {
     "systems": 64,
-    "specOperations": 17213,
+    "specOperations": 17302,
     "exercised": 395,
     "percent": 2.3
   },
@@ -234,9 +234,9 @@
     {
       "system": "gemini",
       "adaptor": "gemini",
-      "specOperations": 85,
+      "specOperations": 88,
       "exercised": 2,
-      "percent": 2.4,
+      "percent": 2.3,
       "routes": 1,
       "verified": 1,
       "counts": {
@@ -442,9 +442,9 @@
     {
       "system": "mailchimp",
       "adaptor": "mailchimp",
-      "specOperations": 298,
+      "specOperations": 309,
       "exercised": 10,
-      "percent": 3.4,
+      "percent": 3.2,
       "routes": 14,
       "verified": 10,
       "counts": {
@@ -538,7 +538,7 @@
     {
       "system": "msgraph",
       "adaptor": "msgraph",
-      "specOperations": 2605,
+      "specOperations": 2677,
       "exercised": 7,
       "percent": 0.3,
       "routes": 10,
@@ -938,9 +938,9 @@
     {
       "system": "surveycto",
       "adaptor": "surveycto",
-      "specOperations": 50,
+      "specOperations": 53,
       "exercised": 4,
-      "percent": 8,
+      "percent": 7.5,
       "routes": 8,
       "verified": 3,
       "counts": {
