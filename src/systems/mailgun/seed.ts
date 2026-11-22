@@ -246,4 +246,77 @@ export function seed(store: DataStore, config: SystemConfig): void {
   });
 
   store.create('stats', 'total', buildStats());
+
+  // One finished bulk validation job, so GET /v4/address/validate/bulk/{list}
+  // has something real to return before anything is uploaded.
+  store.create('validationJobs', 'volunteer-emails-2026', makeValidationJob('volunteer-emails-2026', 120, now / 1000 - 86_400));
+}
+
+const DISPOSABLE_DOMAINS = new Set(['mailinator.com', 'guerrillamail.com', '10minutemail.com', 'tempmail.com', 'yopmail.com']);
+const ROLE_LOCAL_PARTS = new Set(['admin', 'info', 'support', 'sales', 'contact', 'help', 'noreply', 'no-reply', 'postmaster', 'webmaster']);
+
+/**
+ * Deterministic single-address validation in the shape of Mailgun's
+ * GET /v4/address/validate: syntax, disposable domain, role address. There is
+ * no mailbox to probe, so a well-formed, non-disposable address is deliverable.
+ */
+export function validateAddress(address: string): Record<string, any> {
+  const trimmed = address.trim();
+  const m = /^([^@\s]+)@([^@\s]+\.[^@\s]+)$/.exec(trimmed);
+  const local = m?.[1]?.toLowerCase() ?? '';
+  const domain = m?.[2]?.toLowerCase() ?? '';
+  const isDisposable = DISPOSABLE_DOMAINS.has(domain);
+  const isRole = ROLE_LOCAL_PARTS.has(local);
+  const reason: string[] = [];
+  let result = 'deliverable';
+  let risk = 'low';
+  if (!m) {
+    reason.push('failed_syntax_check');
+    result = 'undeliverable';
+    risk = 'high';
+  } else if (isDisposable) {
+    reason.push('disposable_address');
+    result = 'do_not_send';
+    risk = 'high';
+  } else if (isRole) {
+    reason.push('role_address');
+    risk = 'medium';
+  }
+  const out: Record<string, any> = {
+    address: trimmed,
+    is_disposable_address: isDisposable,
+    is_role_address: isRole,
+    reason,
+    result,
+    risk,
+    engagement: null,
+  };
+  // Mailgun reports the base address when a +tag was used.
+  if (m && local.includes('+')) out.root_address = `${local.split('+')[0]}@${domain}`;
+  return out;
+}
+
+/** A completed bulk validation job (GET /v4/address/validate/bulk/{list_id}). */
+export function makeValidationJob(id: string, quantity: number, createdAt: number): Record<string, any> {
+  const deliverable = Math.round(quantity * 0.8);
+  const undeliverable = Math.round(quantity * 0.1);
+  const doNotSend = Math.round(quantity * 0.05);
+  const unknown = quantity - deliverable - undeliverable - doNotSend;
+  return {
+    id,
+    created_at: Math.floor(createdAt),
+    quantity,
+    records_processed: quantity,
+    status: 'uploaded',
+    is_preview: false,
+    download_url: {
+      csv: `https://storage.mailgun.net/v4/address/validate/bulk/${id}.csv.zip`,
+      json: `https://storage.mailgun.net/v4/address/validate/bulk/${id}.json.zip`,
+    },
+    summary: {
+      result: { deliverable, undeliverable, do_not_send: doNotSend, catch_all: 0, unknown, accept_all: 0 },
+      risk: { low: deliverable, medium: unknown, high: undeliverable + doNotSend, unknown: 0 },
+      engagement: { highly_engaged: 0, engaged: 0, disengaged: 0, bot: 0, complainer: 0, no_data: quantity },
+    },
+  };
 }

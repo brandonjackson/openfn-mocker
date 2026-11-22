@@ -154,4 +154,36 @@ describe('mailgun (loads its reference spec at runtime)', () => {
     expect(stored.hasAttachment).toBe(true);
     await app.close();
   });
+
+  it('validates a single address: deliverable, role, disposable, bad syntax', async () => {
+    const { app } = await createSystemServer(mailgun, config, { logLevel: 'silent' });
+    const v = async (address: string) =>
+      (await app.inject({ method: 'GET', url: `/v4/address/validate?address=${encodeURIComponent(address)}` })).json();
+    expect(await v('jane.doe@example.org')).toMatchObject({ result: 'deliverable', risk: 'low', reason: [] });
+    expect(await v('info@example.org')).toMatchObject({ is_role_address: true, risk: 'medium' });
+    expect(await v('x@mailinator.com')).toMatchObject({ is_disposable_address: true, result: 'do_not_send' });
+    expect(await v('not-an-address')).toMatchObject({ result: 'undeliverable', reason: ['failed_syntax_check'] });
+    expect(await v('jane+news@example.org')).toMatchObject({ root_address: 'jane@example.org' });
+    const missing = await app.inject({ method: 'GET', url: '/v4/address/validate' });
+    expect(missing.statusCode).toBe(400);
+    await app.close();
+  });
+
+  it('bulk validation: upload returns 202, then the job is readable; the seeded job exists', async () => {
+    const { app } = await createSystemServer(mailgun, config, { logLevel: 'silent' });
+    const up = await app.inject({
+      method: 'POST',
+      url: '/v4/address/validate/bulk/my-list',
+      headers: { 'content-type': 'text/csv' },
+      payload: 'email\na@example.org\nb@example.org',
+    });
+    expect(up.statusCode).toBe(202);
+    expect(up.json()).toEqual({ id: 'my-list', message: 'The validation job was submitted.' });
+    const job = (await app.inject({ method: 'GET', url: '/v4/address/validate/bulk/my-list' })).json();
+    expect(job).toMatchObject({ id: 'my-list', quantity: 2, records_processed: 2, status: 'uploaded' });
+    const seeded = await app.inject({ method: 'GET', url: '/v4/address/validate/bulk/volunteer-emails-2026' });
+    expect(seeded.statusCode).toBe(200);
+    expect((await app.inject({ method: 'GET', url: '/v4/address/validate/bulk/nope' })).statusCode).toBe(404);
+    await app.close();
+  });
 });
