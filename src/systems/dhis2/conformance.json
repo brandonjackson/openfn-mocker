@@ -4,7 +4,7 @@
     "origin": "found-openapi"
   },
   "coverage": {
-    "operations": 2574,
+    "operations": 2575,
     "exercised": 21
   },
   "routes": {
