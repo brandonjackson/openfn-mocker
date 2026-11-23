@@ -27,5 +27,32 @@ export const guide: SystemGuide = {
     },
     { method: 'GET', path: '/v3/{{domain}}/events', label: 'Events feed (delivered/opened/bounced)' },
     { method: 'GET', path: '/v3/{{domain}}/stats/total', label: 'Aggregate stats (last 7 days)' },
+    {
+      method: 'GET',
+      path: '/v4/address/validate?address=jane.doe@example.org',
+      label: 'Validate one email address (Validate API)',
+    },
+    {
+      method: 'POST',
+      path: '/v4/address/validate/bulk/new-signups',
+      label: 'Start a bulk validation job (CSV upload)',
+      contentType: 'multipart/form-data; boundary=openfn',
+      body: [
+        '--openfn',
+        'Content-Disposition: form-data; name="file"; filename="emails.csv"',
+        'Content-Type: text/csv',
+        '',
+        'email',
+        'jane.doe@example.org',
+        'info@example.org',
+        'someone@mailinator.com',
+        '--openfn--',
+      ].join('\r\n'),
+    },
+    {
+      method: 'GET',
+      path: '/v4/address/validate/bulk/volunteers-2026',
+      label: 'Bulk validation job status and summary',
+    },
   ],
 };

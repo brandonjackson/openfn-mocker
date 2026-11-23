@@ -4,13 +4,16 @@
     "origin": "found-openapi"
   },
   "coverage": {
-    "operations": 267,
-    "exercised": 3
+    "operations": 411,
+    "exercised": 6
   },
   "routes": {
     "GET /v3/:domain/events": "conforming",
     "GET /v3/:domain/stats/total": "conforming",
-    "POST /v3/:domain/messages": "conforming"
+    "GET /v4/address/validate": "conforming",
+    "GET /v4/address/validate/bulk/:list_id": "conforming",
+    "POST /v3/:domain/messages": "conforming",
+    "POST /v4/address/validate/bulk/:list_id": "conforming"
   },
   "failures": {},
   "unrouted": [],

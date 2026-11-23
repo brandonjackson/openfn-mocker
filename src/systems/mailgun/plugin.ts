@@ -2,7 +2,16 @@ import type { FastifyInstance } from 'fastify';
 import type { MockSystemPlugin, SystemConfig } from '../types.js';
 import type { DataStore } from '../../store.js';
 import { selfUrlBase } from '../shared/self-url.js';
-import { seed, buildStats, makeEvent, makeMessageId, DEFAULT_DOMAIN } from './seed.js';
+import {
+  seed,
+  buildStats,
+  makeEvent,
+  makeMessageId,
+  DEFAULT_DOMAIN,
+  validateAddress,
+  buildValidationJob,
+  countCsvAddresses,
+} from './seed.js';
 import { usage } from './usage.js';
 import { guide } from './guide.js';
 
@@ -104,6 +113,45 @@ const plugin: MockSystemPlugin = {
 
     // GET /v3/:domain/stats/total — aggregate stats.
     app.get('/v3/:domain/stats/total', async () => store.get('stats', 'total') ?? buildStats());
+
+    // --- Email validation (Mailgun's Validate API, v4) ---------------------
+    // The adaptor only exposes send(), but jobs reach these through the
+    // mailgun.js client it puts on state.client (client.validate.get,
+    // client.validate.multipleValidation.create/get). Shapes follow the
+    // Validations Service document merged into the openfn-api-specs spec.
+
+    // Bulk uploads arrive as multipart/form-data (a CSV `file` part); the
+    // server's catch-all parser hands them over as a raw string.
+
+    // GET /v4/address/validate?address= — validate one address.
+    app.get('/v4/address/validate', async (req, reply) => {
+      const address = String((req.query as Record<string, any>).address ?? '').trim();
+      if (!address) {
+        reply.code(400);
+        return { message: 'address parameter is required' };
+      }
+      return validateAddress(address);
+    });
+
+    // POST /v4/address/validate/bulk/:list_id — upload a CSV, start a job.
+    app.post('/v4/address/validate/bulk/:list_id', async (req, reply) => {
+      const listId = String((req.params as Record<string, any>).list_id);
+      const quantity = countCsvAddresses(req.body);
+      store.create('validationJobs', listId, buildValidationJob(listId, quantity));
+      reply.code(202);
+      return { id: listId, message: 'The validation job was submitted.' };
+    });
+
+    // GET /v4/address/validate/bulk/:list_id — job status and summary.
+    app.get('/v4/address/validate/bulk/:list_id', async (req, reply) => {
+      const listId = String((req.params as Record<string, any>).list_id);
+      const job = store.get('validationJobs', listId);
+      if (!job) {
+        reply.code(404);
+        return { message: 'list not found' };
+      }
+      return job;
+    });
   },
 
   seed,
