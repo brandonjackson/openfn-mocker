@@ -213,6 +213,57 @@ export function buildStats(): Record<string, any> {
   };
 }
 
+/** Mailgun Validate result for one address (ValidationResponse in the spec). */
+export function validateAddress(address: string) {
+  const [local = '', domain = ''] = address.toLowerCase().split('@');
+  const role = ['admin', 'info', 'support', 'postmaster', 'noreply', 'no-reply', 'sales'].includes(local);
+  const disposable = ['mailinator.com', 'guerrillamail.com', '10minutemail.com'].includes(domain);
+  const wellFormed = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(address);
+  const typo = domain === 'gmial.com' ? `${local}@gmail.com` : undefined;
+  const result = !wellFormed ? 'undeliverable' : disposable ? 'do_not_send' : 'deliverable';
+  const reason = !wellFormed ? ['malformed address'] : disposable ? ['disposable address'] : [];
+  const risk = !wellFormed ? 'high' : disposable ? 'high' : role ? 'medium' : 'low';
+  return {
+    address,
+    ...(typo ? { did_you_mean: typo } : {}),
+    is_disposable_address: disposable,
+    is_role_address: role,
+    reason,
+    result,
+    risk,
+    root_address: address,
+    engagement: { engaging: result === 'deliverable' && !role, is_bot: false, behavior: 'engager' },
+  };
+}
+
+/** Rows in an uploaded CSV body (multipart raw text or a plain string), less a header row. */
+export function countCsvAddresses(body: unknown): number {
+  const raw = typeof body === 'string' ? body : '';
+  const emails = raw.match(/[^\s,;"<>@]+@[^\s,;"<>@]+\.[a-z]{2,}/gi) ?? [];
+  return emails.length;
+}
+
+/** A finished bulk validation job (GetResponse in the spec). */
+export function buildValidationJob(listId: string, quantity: number) {
+  const undeliverable = Math.floor(quantity / 10);
+  const deliverable = quantity - undeliverable;
+  const base = 'https://mailgun-validations.example.com/results';
+  return {
+    id: listId,
+    created_at: Math.floor(Date.now() / 1000),
+    status: 'uploaded',
+    quantity,
+    records_processed: quantity,
+    is_preview: false,
+    download_url: { csv: `${base}/${listId}.csv.zip`, json: `${base}/${listId}.json.zip` },
+    summary: {
+      result: { deliverable, undeliverable, do_not_send: 0, catch_all: 0, unknown: 0, accept_all: 0 },
+      risk: { low: deliverable, medium: 0, high: undeliverable, unknown: 0 },
+      engagement: { engaged: deliverable, highly_engaged: 0, disengaged: 0, bot: 0, complainer: 0, no_data: undeliverable },
+    },
+  };
+}
+
 /**
  * Seed ~10 events (accepted/delivered/opened/clicked/failed/complained) plus
  * baseline stats. Uses config.domain (default 'sandbox-test.mailgun.org').
@@ -246,4 +297,7 @@ export function seed(store: DataStore, config: SystemConfig): void {
   });
 
   store.create('stats', 'total', buildStats());
+
+  // A finished bulk validation job, so status lookups work before any upload.
+  store.create('validationJobs', 'volunteers-2026', buildValidationJob('volunteers-2026', 40));
 }
