@@ -18,7 +18,7 @@ export const usage: UsageExample[] = [
     signature: 'create(content, fileName, options?)',
     description: 'Create a Drive file from base64-encoded content.',
     code: "create('SGVsbG8sIHdvcmxkIQ==', 'New File.txt');",
-    apiRef: 'uploadFile',
+    apiRef: 'createFile',
   },
   {
     fn: 'get',
@@ -32,6 +32,6 @@ export const usage: UsageExample[] = [
     signature: 'update(fileId, content)',
     description: 'Replace a Drive file’s content with base64-encoded bytes.',
     code: "update('file_seed01', 'SGVsbG8sIHdvcmxkIQ==');",
-    apiRef: 'replaceContent',
+    apiRef: 'updateFile',
   },
 ];

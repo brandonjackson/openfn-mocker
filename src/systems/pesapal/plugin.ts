@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 import type { FastifyInstance } from 'fastify';
 import type { MockSystemPlugin, SystemConfig } from '../types.js';
 import type { DataStore } from '../../store.js';
-import { seed, nowIso } from './seed.js';
+import { seed, nowIso, buildIpn } from './seed.js';
 import { usage } from './usage.js';
 import { guide } from './guide.js';
 
@@ -89,12 +89,42 @@ const plugin: MockSystemPlugin = {
     // --- Register an IPN URL ---
     app.post('/v3/api/URLSetup/RegisterIPN', async (req) => {
       const body = (req.body ?? {}) as Record<string, any>;
-      return {
-        ipn_id: randomUUID(),
-        url: body.url ?? null,
-        error: null,
-        status: '200',
-      };
+      const ipn = buildIpn(randomUUID(), body.url ?? null, body.ipn_notification_type);
+      store.create('ipns', ipn.ipn_id, ipn);
+      return { ipn_id: ipn.ipn_id, url: ipn.url, created_date: ipn.created_date, error: null, status: '200' };
+    });
+
+    // --- List registered IPN URLs (a bare array, one entry per IPN) ---
+    app.get('/v3/api/URLSetup/GetIpnList', async () => store.list('ipns'));
+
+    // --- Cancel a pending order ---
+    // Pesapal reports business errors in the body (status '500', an error
+    // object) on an HTTP 200, as it does for every v3 call.
+    app.post('/v3/api/Transactions/CancelOrder', async (req) => {
+      const id = String(((req.body ?? {}) as Record<string, any>).order_tracking_id ?? '');
+      const order = store.get('orders', id);
+      if (!order || order.status_code === 1) {
+        return {
+          status: '500',
+          message: order ? 'Order cannot be cancelled: it is already paid' : 'Order not found',
+          error: { error_type: 'api_error', code: 'invalid_order', message: 'Order cannot be cancelled' },
+        };
+      }
+      store.update('orders', id, { payment_status_description: 'Invalid', status_code: 0 });
+      return { status: '200', message: 'Order successfully cancelled', error: null };
+    });
+
+    // --- Refund a completed payment ---
+    app.post('/v3/api/Transactions/RefundRequest', async (req) => {
+      const body = (req.body ?? {}) as Record<string, any>;
+      store.create('refunds', randomUUID(), {
+        confirmation_code: body.confirmation_code ?? null,
+        amount: body.amount ?? null,
+        username: body.username ?? null,
+        remarks: body.remarks ?? null,
+        created_date: nowIso(),
+      });
+      return { status: '200', message: 'Refund request successfully', error: null };
     });
   },
 

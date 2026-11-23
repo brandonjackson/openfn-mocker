@@ -2,8 +2,8 @@
   "$comment": "Generated from src/systems/*/conformance.json by `pnpm test:conformance -- --update-baseline`; do not edit by hand. Mock coverage = spec operations the guide examples exercised / every operation in the adaptor's openapi.json.",
   "totals": {
     "systems": 64,
-    "specOperations": 17377,
-    "exercised": 402,
+    "specOperations": 17462,
+    "exercised": 406,
     "percent": 2.3
   },
   "systems": [
@@ -43,12 +43,12 @@
       "system": "azure-storage",
       "adaptor": "azure-storage",
       "specOperations": 69,
-      "exercised": 2,
-      "percent": 2.9,
-      "routes": 2,
-      "verified": 2,
+      "exercised": 3,
+      "percent": 4.3,
+      "routes": 3,
+      "verified": 3,
       "counts": {
-        "conforming": 2,
+        "conforming": 3,
         "deviating": 0,
         "unchecked": 0,
         "failing": 0,
@@ -234,9 +234,9 @@
     {
       "system": "gemini",
       "adaptor": "gemini",
-      "specOperations": 89,
+      "specOperations": 88,
       "exercised": 2,
-      "percent": 2.2,
+      "percent": 2.3,
       "routes": 1,
       "verified": 1,
       "counts": {
@@ -442,9 +442,9 @@
     {
       "system": "mailchimp",
       "adaptor": "mailchimp",
-      "specOperations": 298,
+      "specOperations": 309,
       "exercised": 10,
-      "percent": 3.4,
+      "percent": 3.2,
       "routes": 14,
       "verified": 10,
       "counts": {
@@ -538,7 +538,7 @@
     {
       "system": "msgraph",
       "adaptor": "msgraph",
-      "specOperations": 2605,
+      "specOperations": 2677,
       "exercised": 7,
       "percent": 0.3,
       "routes": 10,
@@ -779,15 +779,15 @@
       "system": "pesapal",
       "adaptor": "pesapal",
       "specOperations": 15,
-      "exercised": 4,
-      "percent": 26.7,
-      "routes": 4,
-      "verified": 3,
+      "exercised": 7,
+      "percent": 46.7,
+      "routes": 7,
+      "verified": 7,
       "counts": {
-        "conforming": 3,
+        "conforming": 7,
         "deviating": 0,
         "unchecked": 0,
-        "failing": 1,
+        "failing": 0,
         "unexercised": 0
       }
     },
@@ -938,9 +938,9 @@
     {
       "system": "surveycto",
       "adaptor": "surveycto",
-      "specOperations": 50,
+      "specOperations": 53,
       "exercised": 4,
-      "percent": 8,
+      "percent": 7.5,
       "routes": 8,
       "verified": 3,
       "counts": {

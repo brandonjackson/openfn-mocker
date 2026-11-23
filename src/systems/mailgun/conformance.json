@@ -12,10 +12,10 @@
     "GET /v3/:domain/stats/total": "conforming",
     "GET /v3/lists/pages": "conforming",
     "GET /v4/address/validate": "conforming",
-    "GET /v4/address/validate/bulk/:listId": "conforming",
+    "GET /v4/address/validate/bulk/:list_id": "conforming",
     "POST /v3/:domain/messages": "conforming",
     "POST /v3/lists/:address/members": "conforming",
-    "POST /v4/address/validate/bulk/:listId": "conforming"
+    "POST /v4/address/validate/bulk/:list_id": "conforming"
   },
   "failures": {},
   "unrouted": [],

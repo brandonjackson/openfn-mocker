@@ -30,7 +30,15 @@ export const guide: SystemGuide = {
       path: '/v3/api/Transactions/SubmitOrderRequest',
       label: 'Submit an order request',
       body: JSON.stringify(
-        { id: 'order-1001', amount: 1000, currency: 'KES', description: 'Test order' },
+        {
+          id: 'order-1001',
+          amount: 1000,
+          currency: 'KES',
+          description: 'Test order',
+          callback_url: 'https://example.com/pesapal/callback',
+          notification_id: 'e3a7c2f0-5b1d-4c8e-9f2a-7d6b1c0e4a11',
+          billing_address: { email_address: 'jane.doe@example.org', phone_number: '0700000000' },
+        },
         null,
         2
       ),
@@ -48,6 +56,25 @@ export const guide: SystemGuide = {
       label: 'Register an IPN URL',
       body: JSON.stringify(
         { url: 'https://example.com/ipn', ipn_notification_type: 'GET' },
+        null,
+        2
+      ),
+    },
+    { id: 'ipnList', method: 'GET', path: '/v3/api/URLSetup/GetIpnList', label: 'List registered IPN URLs' },
+    {
+      id: 'cancelOrder',
+      method: 'POST',
+      path: '/v3/api/Transactions/CancelOrder',
+      label: 'Cancel a pending order',
+      body: JSON.stringify({ order_tracking_id: '6f1c9d2e-3a4b-4c5d-8e7f-90a1b2c3d4e5' }, null, 2),
+    },
+    {
+      id: 'refund',
+      method: 'POST',
+      path: '/v3/api/Transactions/RefundRequest',
+      label: 'Request a refund for a completed payment',
+      body: JSON.stringify(
+        { confirmation_code: 'AA11BB22CC', amount: 1000, username: 'finance.officer', remarks: 'Duplicate payment' },
         null,
         2
       ),

@@ -2,7 +2,16 @@ import type { FastifyInstance } from 'fastify';
 import type { MockSystemPlugin, SystemConfig } from '../types.js';
 import type { DataStore } from '../../store.js';
 import { selfUrlBase } from '../shared/self-url.js';
-import { seed, buildStats, makeEvent, makeMessageId, DEFAULT_DOMAIN } from './seed.js';
+import {
+  seed,
+  buildStats,
+  makeEvent,
+  makeMessageId,
+  DEFAULT_DOMAIN,
+  validateAddress,
+  buildValidationJob,
+  countCsvAddresses,
+} from './seed.js';
 import { usage } from './usage.js';
 import { guide } from './guide.js';
 
@@ -15,17 +24,9 @@ import { guide } from './guide.js';
  * accept-all (handled by createSystemServer).
  */
 
-/** From a Mailgun `to` param (string, csv, or array) get the first recipient. */
-function firstRecipient(to: any): string | undefined {
-  if (Array.isArray(to)) return to[0] != null ? String(to[0]) : undefined;
-  if (typeof to === 'string') return to.split(',')[0].trim();
-  return to == null ? undefined : String(to);
-}
-
 /**
  * Read one field from a form body: an already-parsed object (urlencoded or
- * JSON), or the raw multipart/form-data string mailgun.js sends for list
- * members and bulk validation uploads.
+ * JSON), or the raw multipart/form-data string mailgun.js sends.
  */
 function formField(body: unknown, name: string): string | undefined {
   if (body && typeof body === 'object') {
@@ -33,26 +34,15 @@ function formField(body: unknown, name: string): string | undefined {
     return v == null ? undefined : String(v);
   }
   if (typeof body !== 'string') return undefined;
-  const m = body.match(new RegExp(`name="${name}"(?:; filename="[^"]*")?\\r?\\n(?:[^\\r\\n]+\\r?\\n)*\\r?\\n([\\s\\S]*?)\\r?\\n--`));
+  const m = body.match(new RegExp(`name="${name}"\\r?\\n(?:[^\\r\\n]+\\r?\\n)*\\r?\\n([\\s\\S]*?)\\r?\\n--`));
   return m?.[1];
 }
 
-/** A rough, deterministic verdict for a single address (no network, no randomness). */
-function validateAddress(address: string): Record<string, unknown> {
-  const [local = '', host = ''] = address.toLowerCase().split('@');
-  const wellFormed = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(address);
-  const disposable = /(mailinator|guerrillamail|10minutemail|tempmail)\./.test(host);
-  const role = ['admin', 'info', 'support', 'noreply', 'no-reply', 'postmaster', 'sales'].includes(local);
-  const result = !wellFormed ? 'undeliverable' : disposable ? 'do_not_send' : 'deliverable';
-  return {
-    address,
-    is_disposable_address: disposable,
-    is_role_address: role,
-    reason: wellFormed ? [] : ['failed custom grammar check'],
-    result,
-    risk: result === 'deliverable' ? (role ? 'medium' : 'low') : 'high',
-    engagement: null,
-  };
+/** From a Mailgun `to` param (string, csv, or array) get the first recipient. */
+function firstRecipient(to: any): string | undefined {
+  if (Array.isArray(to)) return to[0] != null ? String(to[0]) : undefined;
+  if (typeof to === 'string') return to.split(',')[0].trim();
+  return to == null ? undefined : String(to);
 }
 
 const plugin: MockSystemPlugin = {
@@ -138,9 +128,48 @@ const plugin: MockSystemPlugin = {
     // GET /v3/:domain/stats/total — aggregate stats.
     app.get('/v3/:domain/stats/total', async () => store.get('stats', 'total') ?? buildStats());
 
-    // --- Mailing lists (mailgun.js client.lists.*, which the adaptor exposes on state.client) ---
+    // --- Email validation (Mailgun's Validate API, v4) ---------------------
+    // The adaptor only exposes send(), but jobs reach these through the
+    // mailgun.js client it puts on state.client (client.validate.get,
+    // client.validate.multipleValidation.create/get). Shapes follow the
+    // Validations Service document merged into the openfn-api-specs spec.
 
-    // GET /v3/lists/pages — client.lists.list(): the paginated list of mailing lists.
+    // Bulk uploads arrive as multipart/form-data (a CSV `file` part); the
+    // server's catch-all parser hands them over as a raw string.
+
+    // GET /v4/address/validate?address= — validate one address.
+    app.get('/v4/address/validate', async (req, reply) => {
+      const address = String((req.query as Record<string, any>).address ?? '').trim();
+      if (!address) {
+        reply.code(400);
+        return { message: 'address parameter is required' };
+      }
+      return validateAddress(address);
+    });
+
+    // POST /v4/address/validate/bulk/:list_id — upload a CSV, start a job.
+    app.post('/v4/address/validate/bulk/:list_id', async (req, reply) => {
+      const listId = String((req.params as Record<string, any>).list_id);
+      const quantity = countCsvAddresses(req.body);
+      store.create('validationJobs', listId, buildValidationJob(listId, quantity));
+      reply.code(202);
+      return { id: listId, message: 'The validation job was submitted.' };
+    });
+
+    // GET /v4/address/validate/bulk/:list_id — job status and summary.
+    app.get('/v4/address/validate/bulk/:list_id', async (req, reply) => {
+      const listId = String((req.params as Record<string, any>).list_id);
+      const job = store.get('validationJobs', listId);
+      if (!job) {
+        reply.code(404);
+        return { message: 'list not found' };
+      }
+      return job;
+    });
+
+    // --- Mailing lists (mailgun.js client.lists.*, via state.client) -------
+
+    // GET /v3/lists/pages — client.lists.list(): paginated mailing lists.
     app.get('/v3/lists/pages', async (req) => {
       const base = selfUrlBase(req, config.port);
       return {
@@ -186,65 +215,6 @@ const plugin: MockSystemPlugin = {
         store.update('lists', listAddress, { members_count: Number(list.members_count ?? 0) + 1 });
       }
       return { member, message: 'Mailing list member has been created' };
-    });
-
-    // --- Email validation (Mailgun Validate API, v4) ---
-
-    // GET /v4/address/validate?address= — client.validate.get(address).
-    app.get('/v4/address/validate', async (req, reply) => {
-      const address = (req.query as Record<string, string>).address;
-      if (!address) {
-        reply.code(400);
-        return { message: "Missing mandatory parameter: 'address'" };
-      }
-      return validateAddress(String(address));
-    });
-
-    // POST /v4/address/validate/bulk/:listId — client.validate.multipleValidation.create():
-    // upload a CSV (multipart `file`) and start a job, answered 202.
-    app.post('/v4/address/validate/bulk/:listId', async (req, reply) => {
-      const listId = String((req.params as Record<string, string>).listId);
-      const csv = formField(req.body, 'file') ?? '';
-      const rows = csv.split(/\r?\n/).map((r) => r.trim()).filter(Boolean);
-      const addresses = rows.filter((r) => r.includes('@'));
-      const verdicts = addresses.map((a) => validateAddress(a.split(',')[0]));
-      const count = (k: string, v: string) => verdicts.filter((x) => x[k] === v).length;
-      store.create('validationJobs', listId, {
-        id: listId,
-        created_at: Math.floor(Date.now() / 1000),
-        quantity: addresses.length,
-        records_processed: addresses.length,
-        status: 'uploaded',
-        is_preview: false,
-        download_url: {
-          csv: `https://storage.mailgun.net/validate/${listId}.csv.zip`,
-          json: `https://storage.mailgun.net/validate/${listId}.json.zip`,
-        },
-        summary: {
-          result: {
-            deliverable: count('result', 'deliverable'),
-            undeliverable: count('result', 'undeliverable'),
-            do_not_send: count('result', 'do_not_send'),
-            catch_all: 0,
-            unknown: 0,
-            accept_all: 0,
-          },
-          risk: { low: count('risk', 'low'), medium: count('risk', 'medium'), high: count('risk', 'high'), unknown: 0 },
-          engagement: { highly_engaged: 0, engaged: 0, disengaged: 0, bot: 0, complainer: 0, no_data: addresses.length },
-        },
-      });
-      reply.code(202);
-      return { id: listId, message: 'The validation job was submitted.' };
-    });
-
-    // GET /v4/address/validate/bulk/:listId — client.validate.multipleValidation.get().
-    app.get('/v4/address/validate/bulk/:listId', async (req, reply) => {
-      const job = store.get('validationJobs', String((req.params as Record<string, string>).listId));
-      if (!job) {
-        reply.code(404);
-        return { message: 'List not found' };
-      }
-      return job;
     });
   },
 

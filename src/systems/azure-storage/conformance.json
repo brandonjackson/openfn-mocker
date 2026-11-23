@@ -5,10 +5,11 @@
   },
   "coverage": {
     "operations": 69,
-    "exercised": 2
+    "exercised": 3
   },
   "routes": {
     "GET /:container/*": "conforming",
+    "PUT /:container": "conforming",
     "PUT /:container/*": "conforming"
   },
   "failures": {},
