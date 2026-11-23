@@ -1,9 +1,9 @@
 {
   "$comment": "Generated from src/systems/*/conformance.json by `pnpm test:conformance -- --update-baseline`; do not edit by hand. Mock coverage = spec operations the guide examples exercised / every operation in the adaptor's openapi.json.",
   "totals": {
-    "systems": 63,
-    "specOperations": 17137,
-    "exercised": 397,
+    "systems": 64,
+    "specOperations": 17249,
+    "exercised": 400,
     "percent": 2.3
   },
   "systems": [
@@ -21,6 +21,22 @@
         "unchecked": 0,
         "failing": 0,
         "unexercised": 1
+      }
+    },
+    {
+      "system": "aws-s3",
+      "adaptor": "aws-s3",
+      "specOperations": 112,
+      "exercised": 3,
+      "percent": 2.7,
+      "routes": 3,
+      "verified": 3,
+      "counts": {
+        "conforming": 3,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 0,
+        "unexercised": 0
       }
     },
     {

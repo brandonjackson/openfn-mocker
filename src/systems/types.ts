@@ -137,6 +137,13 @@ export interface MockSystemPlugin {
    */
   hostAliases?: string[];
   /**
+   * Pin the published adaptor version `pnpm test:usage` runs (`-a name@version`)
+   * instead of the latest. Only for a latest release that cannot run at all
+   * (aws-s3 1.1.3+ fail to import); say why next to the pin, and drop it once a
+   * fixed release ships.
+   */
+  adaptorVersion?: string;
+  /**
    * Per-adaptor-function usage examples for the sandbox "Usage" tab: the OpenFn
    * job code for each function this adaptor exposes and a link to the API
    * request it calls. Authored in a co-located `usage.ts` (like `seed`) and
