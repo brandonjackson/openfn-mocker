@@ -2,7 +2,7 @@
   "$comment": "Generated from src/systems/*/conformance.json by `pnpm test:conformance -- --update-baseline`; do not edit by hand. Mock coverage = spec operations the guide examples exercised / every operation in the adaptor's openapi.json.",
   "totals": {
     "systems": 64,
-    "specOperations": 17462,
+    "specOperations": 17463,
     "exercised": 406,
     "percent": 2.3
   },
@@ -138,7 +138,7 @@
     {
       "system": "dhis2",
       "adaptor": "dhis2",
-      "specOperations": 2574,
+      "specOperations": 2575,
       "exercised": 21,
       "percent": 0.8,
       "routes": 25,
