@@ -9,4 +9,7 @@ import type { UsageExample } from '../types.js';
 export const usage: UsageExample[] = [
   { fn: "send", signature: "send(params)", description: "Send an email through Mailgun, optionally attaching a file from a URL or base64.",
     code: "send({\n  from: 'admin@openfn.org', to: 'jane.doe@example.org', subject: 'Welcome', text: 'Hello there!'\n});", apiRef: "ex0" },
+  { fn: "fn (state.client.lists.members.createMember)", signature: "fn(state => state.client.lists.members.createMember(list, member))",
+    description: "Add or update a mailing list member through the mailgun.js client the adaptor sets up on state.client.",
+    code: "fn(async state => {\n  const member = await state.client.lists.members.createMember('volunteers@mg.example.org', {\n    address: 'amina.yusuf@example.org', name: 'Amina Yusuf', subscribed: 'yes', upsert: 'yes',\n  });\n  return { ...state, data: member };\n});", apiRef: "addListMember" },
 ];

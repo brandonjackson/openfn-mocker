@@ -300,4 +300,13 @@ export function seed(store: DataStore, config: SystemConfig): void {
 
   // A finished bulk validation job, so status lookups work before any upload.
   store.create('validationJobs', 'volunteers-2026', buildValidationJob('volunteers-2026', 40));
+
+  // Mailing lists (GET /v3/lists/pages, POST /v3/lists/:address/members).
+  const created = new Date(now - 30 * 86_400_000).toUTCString();
+  for (const list of [
+    { address: 'volunteers@mg.example.org', name: 'Volunteers', description: 'Community health volunteers' },
+    { address: `newsletter@${domain}`, name: 'Newsletter', description: 'Monthly programme update' },
+  ]) {
+    store.create('lists', list.address, { ...list, access_level: 'readonly', reply_preference: 'list', created_at: created, members_count: 0 });
+  }
 }

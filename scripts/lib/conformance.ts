@@ -60,6 +60,8 @@ export function attachExchangeCapture(app: FastifyInstance): {
     // for a GET/DELETE is noise, so only keep bodies on methods that carry one.
     if (request.body !== undefined && !['GET', 'HEAD', 'DELETE', 'OPTIONS'].includes(request.method)) {
       ex.requestBody = request.body;
+      const reqCt = request.headers['content-type'];
+      if (reqCt) ex.requestContentType = String(reqCt);
     }
 
     const text =

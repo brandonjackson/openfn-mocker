@@ -8,16 +8,11 @@
     "exercised": 3
   },
   "routes": {
-    "GET /:container/*": "failing",
+    "GET /:container/*": "conforming",
     "PUT /:container": "conforming",
     "PUT /:container/*": "conforming"
   },
-  "failures": {
-    "GET /:container/*": [
-      "content-type: response is application/json; spec documents application/xml for status 200",
-      "content-type: response is text/plain; spec documents application/xml for status 200"
-    ]
-  },
+  "failures": {},
   "unrouted": [],
   "deviations": []
 }

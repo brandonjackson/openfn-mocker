@@ -54,5 +54,14 @@ export const guide: SystemGuide = {
       path: '/v4/address/validate/bulk/volunteers-2026',
       label: 'Bulk validation job status and summary',
     },
+    { id: 'listLists', method: 'GET', path: '/v3/lists/pages?limit=100', label: 'List mailing lists' },
+    {
+      id: 'addListMember',
+      method: 'POST',
+      path: '/v3/lists/volunteers@mg.example.org/members',
+      label: 'Add (or update) a mailing list member',
+      contentType: FORM,
+      body: 'address=amina.yusuf@example.org&name=Amina+Yusuf&subscribed=yes&upsert=yes',
+    },
   ],
 };

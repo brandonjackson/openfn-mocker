@@ -24,6 +24,20 @@ import { guide } from './guide.js';
  * accept-all (handled by createSystemServer).
  */
 
+/**
+ * Read one field from a form body: an already-parsed object (urlencoded or
+ * JSON), or the raw multipart/form-data string mailgun.js sends.
+ */
+function formField(body: unknown, name: string): string | undefined {
+  if (body && typeof body === 'object') {
+    const v = (body as Record<string, unknown>)[name];
+    return v == null ? undefined : String(v);
+  }
+  if (typeof body !== 'string') return undefined;
+  const m = body.match(new RegExp(`name="${name}"\\r?\\n(?:[^\\r\\n]+\\r?\\n)*\\r?\\n([\\s\\S]*?)\\r?\\n--`));
+  return m?.[1];
+}
+
 /** From a Mailgun `to` param (string, csv, or array) get the first recipient. */
 function firstRecipient(to: any): string | undefined {
   if (Array.isArray(to)) return to[0] != null ? String(to[0]) : undefined;
@@ -151,6 +165,56 @@ const plugin: MockSystemPlugin = {
         return { message: 'list not found' };
       }
       return job;
+    });
+
+    // --- Mailing lists (mailgun.js client.lists.*, via state.client) -------
+
+    // GET /v3/lists/pages — client.lists.list(): paginated mailing lists.
+    app.get('/v3/lists/pages', async (req) => {
+      const base = selfUrlBase(req, config.port);
+      return {
+        items: store.list('lists'),
+        paging: {
+          first: `${base}?page=first`,
+          last: `${base}?page=last`,
+          next: `${base}?page=next`,
+          previous: `${base}?page=previous`,
+        },
+      };
+    });
+
+    // POST /v3/lists/:address/members — client.lists.members.createMember().
+    app.post('/v3/lists/:address/members', async (req, reply) => {
+      const listAddress = String((req.params as Record<string, string>).address);
+      const list = store.get('lists', listAddress);
+      if (!list) {
+        reply.code(404);
+        return { message: 'Mailing list not found' };
+      }
+      const address = formField(req.body, 'address');
+      if (!address) {
+        reply.code(400);
+        return { message: "Missing mandatory parameter: 'address'" };
+      }
+      const member = {
+        address,
+        name: formField(req.body, 'name') ?? '',
+        vars: {},
+        subscribed: !['no', 'false'].includes(String(formField(req.body, 'subscribed') ?? 'yes').toLowerCase()),
+      };
+      const id = `${listAddress}|${address.toLowerCase()}`;
+      const exists = store.get('listMembers', id);
+      const upsert = ['yes', 'true'].includes(String(formField(req.body, 'upsert') ?? '').toLowerCase());
+      if (exists && !upsert) {
+        reply.code(400);
+        return { message: `Address already exists '${address}'` };
+      }
+      if (exists) store.update('listMembers', id, member);
+      else {
+        store.create('listMembers', id, member);
+        store.update('lists', listAddress, { members_count: Number(list.members_count ?? 0) + 1 });
+      }
+      return { member, message: 'Mailing list member has been created' };
     });
   },
 

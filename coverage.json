@@ -3,7 +3,7 @@
   "totals": {
     "systems": 64,
     "specOperations": 17462,
-    "exercised": 404,
+    "exercised": 406,
     "percent": 2.3
   },
   "systems": [
@@ -46,12 +46,12 @@
       "exercised": 3,
       "percent": 4.3,
       "routes": 3,
-      "verified": 2,
+      "verified": 3,
       "counts": {
-        "conforming": 2,
+        "conforming": 3,
         "deviating": 0,
         "unchecked": 0,
-        "failing": 1,
+        "failing": 0,
         "unexercised": 0
       }
     },
@@ -459,12 +459,12 @@
       "system": "mailgun",
       "adaptor": "mailgun",
       "specOperations": 411,
-      "exercised": 6,
-      "percent": 1.5,
-      "routes": 6,
-      "verified": 6,
+      "exercised": 8,
+      "percent": 1.9,
+      "routes": 8,
+      "verified": 8,
       "counts": {
-        "conforming": 6,
+        "conforming": 8,
         "deviating": 0,
         "unchecked": 0,
         "failing": 0,
