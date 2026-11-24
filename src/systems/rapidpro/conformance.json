@@ -4,19 +4,28 @@
     "origin": "generated"
   },
   "coverage": {
-    "operations": 8,
-    "exercised": 5
+    "operations": 49,
+    "exercised": 18
   },
   "routes": {
-    "GET /api/v2/broadcasts.json": "unexercised",
+    "GET /api/v2/broadcasts.json": "conforming",
+    "GET /api/v2/campaigns.json": "conforming",
     "GET /api/v2/contacts.json": "conforming",
-    "GET /api/v2/fields.json": "unexercised",
-    "GET /api/v2/flow_starts.json": "unexercised",
+    "GET /api/v2/fields.json": "conforming",
+    "GET /api/v2/flow_starts.json": "conforming",
     "GET /api/v2/flows.json": "conforming",
-    "GET /api/v2/groups.json": "unexercised",
+    "GET /api/v2/globals.json": "conforming",
+    "GET /api/v2/groups.json": "conforming",
+    "GET /api/v2/labels.json": "conforming",
+    "GET /api/v2/messages.json": "conforming",
+    "GET /api/v2/runs.json": "conforming",
+    "GET /api/v2/workspace.json": "conforming",
     "POST /api/v2/broadcasts.json": "conforming",
+    "POST /api/v2/contact_actions.json": "conforming",
     "POST /api/v2/contacts.json": "conforming",
-    "POST /api/v2/flow_starts.json": "conforming"
+    "POST /api/v2/flow_starts.json": "conforming",
+    "POST /api/v2/groups.json": "conforming",
+    "POST /api/v2/messages.json": "conforming"
   },
   "failures": {},
   "unrouted": [],

@@ -2,9 +2,9 @@
   "$comment": "Generated from src/systems/*/conformance.json by `pnpm test:conformance -- --update-baseline`; do not edit by hand. Mock coverage = spec operations the guide examples exercised / every operation in the adaptor's openapi.json.",
   "totals": {
     "systems": 64,
-    "specOperations": 17463,
-    "exercised": 406,
-    "percent": 2.3
+    "specOperations": 17504,
+    "exercised": 419,
+    "percent": 2.4
   },
   "systems": [
     {
@@ -826,17 +826,17 @@
     {
       "system": "rapidpro",
       "adaptor": "rapidpro",
-      "specOperations": 8,
-      "exercised": 5,
-      "percent": 62.5,
-      "routes": 9,
-      "verified": 5,
+      "specOperations": 49,
+      "exercised": 18,
+      "percent": 36.7,
+      "routes": 18,
+      "verified": 18,
       "counts": {
-        "conforming": 5,
+        "conforming": 18,
         "deviating": 0,
         "unchecked": 0,
         "failing": 0,
-        "unexercised": 4
+        "unexercised": 0
       }
     },
     {
