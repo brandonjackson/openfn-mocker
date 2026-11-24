@@ -24,33 +24,16 @@
     "GET /api/stockMovements": "conforming",
     "GET /api/stockMovements/:id": "conforming",
     "GET /api/stockMovements/:id/stockMovementItems": "conforming",
-    "POST /api/locations": "unchecked",
+    "POST /api/locations": "conforming",
     "POST /api/locations/:id": "conforming",
     "POST /api/login": "conforming",
     "POST /api/products": "conforming",
     "POST /api/products/:id": "conforming",
-    "POST /api/stockMovements": "unchecked",
+    "POST /api/stockMovements": "conforming",
     "PUT /api/locations/:id": "conforming",
     "PUT /api/products/:id": "conforming"
   },
   "failures": {},
   "unrouted": [],
-  "deviations": [
-    {
-      "route": "POST /api/locations",
-      "kind": "unknown-status",
-      "message": "status 200",
-      "category": "vendor-spec-wrong",
-      "reason": "LocationApiController.create renders [data: location] without setting a status, so OpenBoxes answers 200; the hand-written spec says 201",
-      "evidence": "https://github.com/openboxes/openboxes/blob/0493fec99606cae1971bc55124daabebddabbe69/grails-app/controllers/org/pih/warehouse/api/LocationApiController.groovy#L149-L160"
-    },
-    {
-      "route": "POST /api/stockMovements",
-      "kind": "unknown-status",
-      "message": "status 201",
-      "category": "vendor-spec-wrong",
-      "reason": "StockMovementApiController.create sets response.status = 201 before rendering [data: newStockMovement]; the hand-written spec says 200",
-      "evidence": "https://github.com/openboxes/openboxes/blob/0493fec99606cae1971bc55124daabebddabbe69/grails-app/controllers/org/pih/warehouse/api/StockMovementApiController.groovy#L125-L131"
-    }
-  ]
+  "deviations": []
 }
