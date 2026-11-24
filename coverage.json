@@ -224,8 +224,8 @@
       "routes": 5,
       "verified": 4,
       "counts": {
-        "conforming": 3,
-        "deviating": 1,
+        "conforming": 4,
+        "deviating": 0,
         "unchecked": 0,
         "failing": 0,
         "unexercised": 1
@@ -526,12 +526,12 @@
       "exercised": 6,
       "percent": 11.5,
       "routes": 6,
-      "verified": 1,
+      "verified": 6,
       "counts": {
-        "conforming": 1,
+        "conforming": 6,
         "deviating": 0,
         "unchecked": 0,
-        "failing": 5,
+        "failing": 0,
         "unexercised": 0
       }
     },
@@ -638,11 +638,11 @@
       "exercised": 18,
       "percent": 6.1,
       "routes": 18,
-      "verified": 16,
+      "verified": 18,
       "counts": {
-        "conforming": 16,
+        "conforming": 18,
         "deviating": 0,
-        "unchecked": 2,
+        "unchecked": 0,
         "failing": 0,
         "unexercised": 0
       }
