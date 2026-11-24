@@ -66,4 +66,26 @@ describe('cht (Community Health Toolkit)', () => {
     expect(after.json().locale).toBe('fr');
     await app.close();
   });
+
+  it('exports contacts and reports as CSV downloads, as cht-core does', async () => {
+    const { app } = await createSystemServer(cht, config, { logLevel: 'silent' });
+    const contacts = await app.inject({ method: 'GET', url: '/api/v2/export/contacts' });
+    expect(contacts.statusCode).toBe(200);
+    expect(contacts.headers['content-type']).toMatch(/^text\/csv/);
+    expect(contacts.headers['content-disposition']).toMatch(/^attachment; filename=contacts-\d{12}\.csv$/);
+    const lines = contacts.body.trimEnd().split('\n');
+    expect(lines[0]).toBe('id,rev,name,patient_id,type,contact_type,place_id');
+    expect(lines.find((l) => l.startsWith('"person-chw-0001"'))).toMatch(
+      /^"person-chw-0001","1-[0-9a-f]+","Aminata Kamara",,"person",,$/
+    );
+
+    const reports = await app.inject({ method: 'GET', url: '/api/v2/export/reports' });
+    expect(reports.headers['content-type']).toMatch(/^text\/csv/);
+    const [header, row] = reports.body.trimEnd().split('\n');
+    expect(header).toBe(
+      '_id,form,patient_id,reported_date,from,contact.name,contact.parent.name,contact.parent.parent.name,contact.parent.parent.parent.name,edd,lmp_date,patient_id'
+    );
+    expect(row).toBe('"report-anc-0001","pregnancy",,1710000000000,,,,,,"2024-10-08","2024-01-01","person-patient-0001"');
+    await app.close();
+  });
 });

@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import type { FastifyInstance, FastifyRequest } from 'fastify';
+import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import type { MockSystemPlugin, SystemConfig } from '../types.js';
 import type { DataStore } from '../../store.js';
 import { seed, rev } from './seed.js';
@@ -14,9 +14,43 @@ import { guide } from './guide.js';
  *    CouchDB `{ id, rev }` write ack.
  *  - GET /medic/:id / PUT /medic/:id read+write raw docs; POST /medic/_bulk_docs
  *    writes many; GET /medic/_changes is the changes feed.
- *  - GET /api/v2/export/:type returns the seeded contacts/reports.
+ *  - GET /api/v2/export/contacts and /reports download the seeded contacts and
+ *    reports as CSV, as cht-core does (only dhis and user-devices export JSON).
  *  - GET/PUT /api/v1/settings reads+writes app settings. Auth is Basic.
  */
+
+/** One CSV line as cht-core writes it: strings and arrays quoted, quotes backslash-escaped. */
+function csvLine(cells: unknown[]): string {
+  return (
+    cells
+      .map((cell) => {
+        if (typeof cell === 'string') return `"${cell.replace(/"/g, '\\"')}"`;
+        if (Array.isArray(cell)) return `"${JSON.stringify(cell).replace(/"/g, '\\"')}"`;
+        return cell ?? '';
+      })
+      .join(',') + '\n'
+  );
+}
+
+/** Dot-notation paths of a report's `fields` (arrays stay one cell), as report-mapper does. */
+function flatten(fields: Record<string, any>, prepend: string[] = []): Record<string, any> {
+  const acc: Record<string, any> = {};
+  for (const [k, v] of Object.entries(fields)) {
+    const path = [...prepend, k];
+    if (typeof v === 'object' && v && !Array.isArray(v)) Object.assign(acc, flatten(v, path));
+    else acc[path.join('.')] = v;
+  }
+  return acc;
+}
+
+/** A CSV export download: unquoted header line, then one line per row. */
+function sendCsvExport(reply: FastifyReply, type: string, header: string[], rows: unknown[][]): string {
+  const stamp = new Date().toISOString().replace(/[-:T]/g, '').slice(0, 12);
+  reply
+    .header('content-type', 'text/csv')
+    .header('content-disposition', `attachment; filename=${type}-${stamp}.csv`);
+  return header.join(',') + '\n' + rows.map(csvLine).join('');
+}
 
 /** CouchDB write ack. */
 function ack(id: string, revNo = 1): Record<string, any> {
@@ -95,10 +129,44 @@ const plugin: MockSystemPlugin = {
     });
 
     // --- Data exports (getData / http.get over /api/v2/export) ---
-    app.get('/api/v2/export/reports', async () => store.list('docs', (d) => d.type === 'data_record'));
-    app.get('/api/v2/export/contacts', async () =>
-      store.list('docs', (d) => d.type !== 'data_record')
-    );
+    // cht-core streams every export except dhis and user-devices as a CSV
+    // download (api/src/services/export-data.js: `format`), with the header and
+    // row shape each mapper defines (api/src/services/export/*-mapper.js).
+    app.get('/api/v2/export/reports', async (_req, reply) => {
+      const reports = store.list('docs', (d) => d.type === 'data_record');
+      const fieldColumns = [...new Set(reports.flatMap((r) => Object.keys(flatten(r.fields ?? {}))))].sort();
+      const header = [
+        '_id',
+        'form',
+        'patient_id',
+        'reported_date',
+        'from',
+        'contact.name',
+        'contact.parent.name',
+        'contact.parent.parent.name',
+        'contact.parent.parent.parent.name',
+        ...fieldColumns,
+      ];
+      const rows = reports.map((r) => [
+        r._id,
+        r.form,
+        r.patient_id,
+        r.reported_date,
+        r.from,
+        r.contact?.name,
+        r.contact?.parent?.name,
+        r.contact?.parent?.parent?.name,
+        r.contact?.parent?.parent?.parent?.name,
+        ...fieldColumns.map((c) => flatten(r.fields ?? {})[c]),
+      ]);
+      return sendCsvExport(reply, 'reports', header, rows);
+    });
+    app.get('/api/v2/export/contacts', async (_req, reply) => {
+      const contacts = store.list('docs', (d) => d.type !== 'data_record');
+      const header = ['id', 'rev', 'name', 'patient_id', 'type', 'contact_type', 'place_id'];
+      const rows = contacts.map((c) => [c._id, c._rev, c.name, c.patient_id, c.type, c.contact_type, c.place_id]);
+      return sendCsvExport(reply, 'contacts', header, rows);
+    });
 
     // --- CouchDB changes feed ---
     app.get('/medic/_changes', async (req) => {

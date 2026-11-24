@@ -16,7 +16,7 @@ describe('beyonic', () => {
     const body = res.json();
     expect(typeof body.id).toBe('number');
     expect(body.state).toBe('scheduled');
-    expect(body.amount).toBe(5000);
+    expect(body.amount).toBe('5000.0000');
     await app.close();
   });
 
@@ -35,7 +35,7 @@ describe('beyonic', () => {
     const res = await app.inject({
       method: 'POST',
       url: '/contacts',
-      payload: { first_name: 'Grace', last_name: 'Hopper', phonenumber: '+256777000222' },
+      payload: { first_name: 'Grace', last_name: 'Hopper', phone_number: '+256777000222' },
     });
     expect(res.statusCode).toBe(201);
     const body = res.json();

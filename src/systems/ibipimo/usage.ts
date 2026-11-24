@@ -8,15 +8,15 @@ export const usage: UsageExample[] = [
   {
     fn: 'postViralLoadRequest',
     signature: 'postViralLoadRequest(data, options?)',
-    description: 'Queue a viral-load request for a sample.',
-    code: "postViralLoadRequest({\n  sampleId: 'SMP-1001',\n  patientId: 'PT-001',\n  siteCode: 'ST-01'\n});",
+    description: 'Post viral-load test requests (a siteid and its samples).',
+    code: "postViralLoadRequest({\n  siteid: '77889900',\n  samples: [\n    {\n      sidainfo_uid: '147461',\n      p_code: '000011',\n      p_name: 'Example',\n      p_prename: 'Patient',\n      p_sex: 'F',\n      p_dob: '1985-03-12',\n      reason_vl: 'suspicion_echec',\n      on_arv: '1',\n      sample_type: 'DBS',\n      date_blood_taken: '2024-04-15 11:49:00',\n      dateprelevement: '2024-04-15',\n      site: '77889900',\n      sidainfo_siteid: '77889900'\n    }\n  ]\n});",
     apiRef: 'postVl',
   },
   {
     fn: 'getViralLoadResults',
     signature: 'getViralLoadResults(data, options?)',
-    description: 'Ask for available viral-load results for a site.',
-    code: "getViralLoadResults({ siteCode: 'ST-01' });",
+    description: 'Ask for viral-load results and statuses by sample UID.',
+    code: "getViralLoadResults({\n  siteid: '77889900',\n  sample_uids: ['IBI-2024-000001']\n});",
     apiRef: 'getVl',
   },
   {

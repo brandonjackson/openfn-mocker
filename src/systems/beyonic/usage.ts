@@ -16,7 +16,7 @@ export const usage: UsageExample[] = [
     fn: 'createContact',
     signature: 'createContact(data, callback?)',
     description: 'Create a contact in Beyonic.',
-    code: "createContact({\n  first_name: 'Ada',\n  last_name: 'Lovelace',\n  phonenumber: '+256777000111'\n});",
+    code: "createContact({\n  first_name: 'Ada',\n  last_name: 'Lovelace',\n  phone_number: '+256777000111'\n});",
     apiRef: 'createContact',
   },
   {

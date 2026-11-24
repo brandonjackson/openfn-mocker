@@ -10,19 +10,10 @@
   "routes": {
     "GET /api/v1/samples/status": "conforming",
     "GET /api/v1/sites": "conforming",
-    "POST /api/v1/ask-for-vl-results": "failing",
-    "POST /api/v1/post-viral-load-requests": "failing"
+    "POST /api/v1/ask-for-vl-results": "conforming",
+    "POST /api/v1/post-viral-load-requests": "conforming"
   },
-  "failures": {
-    "POST /api/v1/ask-for-vl-results": [
-      "request-schema: missing required property 'sample_uids'",
-      "request-schema: missing required property 'siteid'"
-    ],
-    "POST /api/v1/post-viral-load-requests": [
-      "request-schema: missing required property 'samples'",
-      "request-schema: missing required property 'siteid'"
-    ]
-  },
+  "failures": {},
   "unrouted": [],
   "deviations": []
 }

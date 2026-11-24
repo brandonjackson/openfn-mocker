@@ -9,25 +9,12 @@
   },
   "routes": {
     "GET /contacts": "unexercised",
-    "GET /payments": "failing",
-    "POST /collectionrequests": "failing",
-    "POST /contacts": "failing",
-    "POST /payments": "failing"
+    "GET /payments": "conforming",
+    "POST /collectionrequests": "conforming",
+    "POST /contacts": "conforming",
+    "POST /payments": "conforming"
   },
-  "failures": {
-    "GET /payments": [
-      "response-schema /results/*/amount: must be string"
-    ],
-    "POST /collectionrequests": [
-      "response-schema /amount: must be string"
-    ],
-    "POST /contacts": [
-      "request-schema: missing required property 'phone_number'"
-    ],
-    "POST /payments": [
-      "response-schema /amount: must be string"
-    ]
-  },
+  "failures": {},
   "unrouted": [],
   "deviations": []
 }

@@ -30,7 +30,7 @@ export const guide: SystemGuide = {
       path: '/contacts',
       label: 'Create a contact',
       body: JSON.stringify(
-        { first_name: 'Ada', last_name: 'Lovelace', phonenumber: '+256777000111' },
+        { first_name: 'Ada', last_name: 'Lovelace', phone_number: '+256777000111' },
         null,
         2
       ),

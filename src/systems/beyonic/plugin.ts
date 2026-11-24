@@ -1,7 +1,7 @@
 import type { FastifyInstance } from 'fastify';
 import type { MockSystemPlugin, SystemConfig } from '../types.js';
 import type { DataStore } from '../../store.js';
-import { seed, nowIso, genId } from './seed.js';
+import { seed, nowIso, genId, decimalString } from './seed.js';
 import { usage } from './usage.js';
 import { guide } from './guide.js';
 
@@ -36,7 +36,7 @@ const plugin: MockSystemPlugin = {
     app.post('/payments', async (req, reply) => {
       const body = (req.body ?? {}) as Record<string, any>;
       const id = genId();
-      const payment = { ...body, id, state: 'scheduled', created: nowIso() };
+      const payment = { ...body, amount: decimalString(body.amount), id, state: 'scheduled', created: nowIso() };
       store.create('payments', String(id), payment);
       reply.code(201);
       return payment;
@@ -58,7 +58,7 @@ const plugin: MockSystemPlugin = {
     app.post('/collectionrequests', async (req, reply) => {
       const body = (req.body ?? {}) as Record<string, any>;
       const id = genId();
-      const request = { ...body, id, status: 'pending', created: nowIso() };
+      const request = { ...body, amount: decimalString(body.amount), id, status: 'pending', created: nowIso() };
       store.create('collectionrequests', String(id), request);
       reply.code(201);
       return request;
