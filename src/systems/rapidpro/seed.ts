@@ -29,6 +29,10 @@ export function seed(store: DataStore, _config: SystemConfig): void {
   const flows = [
     { uuid: 'flow-0001-anc-reminder', name: 'ANC Appointment Reminder', type: 'message', archived: false, expires: 10080 },
     { uuid: 'flow-0002-registration', name: 'Patient Registration', type: 'message', archived: false, expires: 10080 },
+    // UUID-keyed flows, for the usage snippets (the first is RapidPro's own docs example).
+    { uuid: 'f5901b62-ba76-4003-9c62-72fdacc1b7b7', name: 'ANC Visit Reminders', type: 'message', archived: false, expires: 10080 },
+    { uuid: '3c3f2b1a-9a43-4c8e-8e0c-5b1f0a6d2e71', name: 'Payment Confirmation Survey', type: 'survey', archived: false, expires: 4320 },
+    { uuid: '7d2e9c4b-1f6a-4b3d-a8e5-2c9f0b7e6d14', name: 'CHW Monthly Check-in', type: 'message', archived: false, expires: 10080 },
   ];
   for (const f of flows) store.create('flows', f.uuid, f);
 

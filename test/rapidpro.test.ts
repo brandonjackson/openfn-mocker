@@ -107,4 +107,16 @@ describe('rapidpro', () => {
     expect(ws.json().date_style).toBe('day_first');
     await app.close();
   });
+
+  it('rejects an unknown flow or group with a 400 like RapidPro', async () => {
+    const { app } = await createSystemServer(rapidpro, config, { logLevel: 'silent' });
+    const fs = await app.inject({ method: 'POST', url: '/api/v2/flow_starts.json', payload: { flow: 'nope', urns: ['tel:+1'] } });
+    expect(fs.statusCode).toBe(400);
+    expect(fs.json().flow[0]).toMatch(/No such object/);
+    const c = await app.inject({ method: 'POST', url: '/api/v2/contacts.json', payload: { name: 'X', groups: ['nope'] } });
+    expect(c.statusCode).toBe(400);
+    const ok = await app.inject({ method: 'POST', url: '/api/v2/contacts.json', payload: { name: 'Y', groups: ['ANC Mothers'] } });
+    expect(ok.json().groups).toEqual([{ uuid: 'grp-0001-anc', name: 'ANC Mothers' }]);
+    await app.close();
+  });
 });

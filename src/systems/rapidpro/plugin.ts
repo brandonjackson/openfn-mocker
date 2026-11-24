@@ -73,6 +73,14 @@ const plugin: MockSystemPlugin = {
     app.post(`${API}/contacts.json`, async (req, reply) => {
       const body = (req.body ?? {}) as Record<string, any>;
       const q = (req.query ?? {}) as Record<string, any>;
+      if (body.groups !== undefined) {
+        const resolved = resolveRefs(store, 'groups', body.groups);
+        if (resolved.missing.length) {
+          reply.code(400);
+          return { groups: resolved.missing.map((m) => `No such object: ${m}`) };
+        }
+        body.groups = resolved.refs;
+      }
       const urnFromBody = Array.isArray(body.urns) && body.urns.length ? String(body.urns[0]) : undefined;
       const existing = findContact(store, {
         uuid: typeof q.uuid === 'string' ? q.uuid : undefined,
@@ -114,10 +122,16 @@ const plugin: MockSystemPlugin = {
     app.get(`${API}/flow_starts.json`, async () => drf(store.list('flow_starts')));
     app.post(`${API}/flow_starts.json`, async (req, reply) => {
       const body = (req.body ?? {}) as Record<string, any>;
+      // RapidPro's FlowField rejects a missing or unknown flow with a 400 keyed by field.
+      const flow = typeof body.flow === 'string' ? store.get('flows', body.flow) : undefined;
+      if (!flow) {
+        reply.code(400);
+        return { flow: [body.flow === undefined ? 'This field is required.' : `No such object: ${String(body.flow)}`] };
+      }
       const uuid = randomUUID();
       const record = {
         uuid,
-        flow: { uuid: body.flow ?? null, name: flowName(store, body.flow) },
+        flow: { uuid: flow.uuid, name: flow.name },
         status: 'pending',
         groups: toRefList(body.groups),
         contacts: toRefList(body.contacts),
@@ -330,11 +344,19 @@ const plugin: MockSystemPlugin = {
   seed,
 };
 
-/** Resolve a flow uuid to its seeded name (null when unknown). */
-function flowName(store: DataStore, uuid: unknown): string | null {
-  if (typeof uuid !== 'string') return null;
-  const flow = store.get('flows', uuid);
-  return flow?.name ?? null;
+/** Resolve uuids (or names) to `{ uuid, name }` refs; unknown ones come back in `missing`. */
+function resolveRefs(store: DataStore, collection: string, value: unknown): { refs: Array<{ uuid: string; name: string }>; missing: string[] } {
+  const refs: Array<{ uuid: string; name: string }> = [];
+  const missing: string[] = [];
+  for (const v of Array.isArray(value) ? value : []) {
+    const key = typeof v === 'string' ? v : v && typeof v === 'object' ? (v as any).uuid : undefined;
+    const hit = typeof key === 'string'
+      ? store.get(collection, key) ?? store.list(collection, (r) => r.name === key).at(0)
+      : undefined;
+    if (hit) refs.push({ uuid: hit.uuid, name: hit.name });
+    else missing.push(String(key));
+  }
+  return { refs, missing };
 }
 
 /** Normalize a list of uuids/refs into `[{ uuid }]` reference objects. */
