@@ -1,10 +1,10 @@
 {
   "$comment": "Generated from src/systems/*/conformance.json by `pnpm test:conformance -- --update-baseline`; do not edit by hand. Mock coverage = spec operations the guide examples exercised / every operation in the adaptor's openapi.json.",
   "totals": {
-    "systems": 63,
-    "specOperations": 16920,
-    "exercised": 394,
-    "percent": 2.3
+    "systems": 64,
+    "specOperations": 17504,
+    "exercised": 419,
+    "percent": 2.4
   },
   "systems": [
     {
@@ -24,15 +24,31 @@
       }
     },
     {
+      "system": "aws-s3",
+      "adaptor": "aws-s3",
+      "specOperations": 112,
+      "exercised": 3,
+      "percent": 2.7,
+      "routes": 3,
+      "verified": 3,
+      "counts": {
+        "conforming": 3,
+        "deviating": 0,
+        "unchecked": 0,
+        "failing": 0,
+        "unexercised": 0
+      }
+    },
+    {
       "system": "azure-storage",
       "adaptor": "azure-storage",
       "specOperations": 69,
-      "exercised": 2,
-      "percent": 2.9,
-      "routes": 2,
-      "verified": 2,
+      "exercised": 3,
+      "percent": 4.3,
+      "routes": 3,
+      "verified": 3,
       "counts": {
-        "conforming": 2,
+        "conforming": 3,
         "deviating": 0,
         "unchecked": 0,
         "failing": 0,
@@ -208,8 +224,8 @@
       "routes": 5,
       "verified": 4,
       "counts": {
-        "conforming": 4,
-        "deviating": 0,
+        "conforming": 3,
+        "deviating": 1,
         "unchecked": 0,
         "failing": 0,
         "unexercised": 1
@@ -218,9 +234,9 @@
     {
       "system": "gemini",
       "adaptor": "gemini",
-      "specOperations": 92,
+      "specOperations": 88,
       "exercised": 2,
-      "percent": 2.2,
+      "percent": 2.3,
       "routes": 1,
       "verified": 1,
       "counts": {
@@ -426,7 +442,7 @@
     {
       "system": "mailchimp",
       "adaptor": "mailchimp",
-      "specOperations": 308,
+      "specOperations": 309,
       "exercised": 10,
       "percent": 3.2,
       "routes": 14,
@@ -443,12 +459,12 @@
       "system": "mailgun",
       "adaptor": "mailgun",
       "specOperations": 411,
-      "exercised": 3,
-      "percent": 0.7,
-      "routes": 3,
-      "verified": 3,
+      "exercised": 8,
+      "percent": 1.9,
+      "routes": 8,
+      "verified": 8,
       "counts": {
-        "conforming": 3,
+        "conforming": 8,
         "deviating": 0,
         "unchecked": 0,
         "failing": 0,
@@ -510,19 +526,19 @@
       "exercised": 6,
       "percent": 11.5,
       "routes": 6,
-      "verified": 6,
+      "verified": 1,
       "counts": {
-        "conforming": 6,
+        "conforming": 1,
         "deviating": 0,
         "unchecked": 0,
-        "failing": 0,
+        "failing": 5,
         "unexercised": 0
       }
     },
     {
       "system": "msgraph",
       "adaptor": "msgraph",
-      "specOperations": 2668,
+      "specOperations": 2677,
       "exercised": 7,
       "percent": 0.3,
       "routes": 10,
@@ -538,7 +554,7 @@
     {
       "system": "msupply",
       "adaptor": "msupply",
-      "specOperations": 331,
+      "specOperations": 309,
       "exercised": 1,
       "percent": 0.3,
       "routes": 1,
@@ -570,14 +586,14 @@
     {
       "system": "ocl",
       "adaptor": "ocl",
-      "specOperations": 1519,
+      "specOperations": 1966,
       "exercised": 7,
-      "percent": 0.5,
+      "percent": 0.4,
       "routes": 7,
       "verified": 7,
       "counts": {
-        "conforming": 7,
-        "deviating": 0,
+        "conforming": 2,
+        "deviating": 5,
         "unchecked": 0,
         "failing": 0,
         "unexercised": 0
@@ -622,11 +638,11 @@
       "exercised": 18,
       "percent": 6.1,
       "routes": 18,
-      "verified": 18,
+      "verified": 16,
       "counts": {
-        "conforming": 18,
+        "conforming": 16,
         "deviating": 0,
-        "unchecked": 0,
+        "unchecked": 2,
         "failing": 0,
         "unexercised": 0
       }
@@ -763,12 +779,12 @@
       "system": "pesapal",
       "adaptor": "pesapal",
       "specOperations": 15,
-      "exercised": 4,
-      "percent": 26.7,
-      "routes": 4,
-      "verified": 4,
+      "exercised": 7,
+      "percent": 46.7,
+      "routes": 7,
+      "verified": 7,
       "counts": {
-        "conforming": 4,
+        "conforming": 7,
         "deviating": 0,
         "unchecked": 0,
         "failing": 0,
@@ -810,17 +826,17 @@
     {
       "system": "rapidpro",
       "adaptor": "rapidpro",
-      "specOperations": 8,
-      "exercised": 5,
-      "percent": 62.5,
-      "routes": 9,
-      "verified": 5,
+      "specOperations": 49,
+      "exercised": 18,
+      "percent": 36.7,
+      "routes": 18,
+      "verified": 18,
       "counts": {
-        "conforming": 5,
+        "conforming": 18,
         "deviating": 0,
         "unchecked": 0,
         "failing": 0,
-        "unexercised": 4
+        "unexercised": 0
       }
     },
     {

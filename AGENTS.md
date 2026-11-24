@@ -16,7 +16,7 @@ getting better:
 1. **Mock coverage: spec operations exercised ÷ all spec operations.** The
    share of the adaptor's whole API (its `openapi.json` in openfn-api-specs)
    that the guide examples reach. This is the headline, and the number the
-   adaptors storybook shows for every adaptor. Today 394 of 16,920 across 63
+   adaptors storybook shows for every adaptor. Today 419 of 17,504 across 64
    systems (2%), and 0% for the ~40 adaptors with no mock at all.
 2. **The yardstick: verified routes ÷ mock routes.** The quality guard. Raising
    coverage with routes that then fail the spec is not progress.

@@ -2,7 +2,16 @@ import type { FastifyInstance } from 'fastify';
 import type { MockSystemPlugin, SystemConfig } from '../types.js';
 import type { DataStore } from '../../store.js';
 import { selfUrlBase } from '../shared/self-url.js';
-import { seed, buildStats, makeEvent, makeMessageId, DEFAULT_DOMAIN } from './seed.js';
+import {
+  seed,
+  buildStats,
+  makeEvent,
+  makeMessageId,
+  DEFAULT_DOMAIN,
+  validateAddress,
+  buildValidationJob,
+  countCsvAddresses,
+} from './seed.js';
 import { usage } from './usage.js';
 import { guide } from './guide.js';
 
@@ -14,6 +23,20 @@ import { guide } from './guide.js';
  * dev-time concern, not a runtime one — nothing here fetches a spec. Auth is
  * accept-all (handled by createSystemServer).
  */
+
+/**
+ * Read one field from a form body: an already-parsed object (urlencoded or
+ * JSON), or the raw multipart/form-data string mailgun.js sends.
+ */
+function formField(body: unknown, name: string): string | undefined {
+  if (body && typeof body === 'object') {
+    const v = (body as Record<string, unknown>)[name];
+    return v == null ? undefined : String(v);
+  }
+  if (typeof body !== 'string') return undefined;
+  const m = body.match(new RegExp(`name="${name}"\\r?\\n(?:[^\\r\\n]+\\r?\\n)*\\r?\\n([\\s\\S]*?)\\r?\\n--`));
+  return m?.[1];
+}
 
 /** From a Mailgun `to` param (string, csv, or array) get the first recipient. */
 function firstRecipient(to: any): string | undefined {
@@ -104,6 +127,95 @@ const plugin: MockSystemPlugin = {
 
     // GET /v3/:domain/stats/total — aggregate stats.
     app.get('/v3/:domain/stats/total', async () => store.get('stats', 'total') ?? buildStats());
+
+    // --- Email validation (Mailgun's Validate API, v4) ---------------------
+    // The adaptor only exposes send(), but jobs reach these through the
+    // mailgun.js client it puts on state.client (client.validate.get,
+    // client.validate.multipleValidation.create/get). Shapes follow the
+    // Validations Service document merged into the openfn-api-specs spec.
+
+    // Bulk uploads arrive as multipart/form-data (a CSV `file` part); the
+    // server's catch-all parser hands them over as a raw string.
+
+    // GET /v4/address/validate?address= — validate one address.
+    app.get('/v4/address/validate', async (req, reply) => {
+      const address = String((req.query as Record<string, any>).address ?? '').trim();
+      if (!address) {
+        reply.code(400);
+        return { message: 'address parameter is required' };
+      }
+      return validateAddress(address);
+    });
+
+    // POST /v4/address/validate/bulk/:list_id — upload a CSV, start a job.
+    app.post('/v4/address/validate/bulk/:list_id', async (req, reply) => {
+      const listId = String((req.params as Record<string, any>).list_id);
+      const quantity = countCsvAddresses(req.body);
+      store.create('validationJobs', listId, buildValidationJob(listId, quantity));
+      reply.code(202);
+      return { id: listId, message: 'The validation job was submitted.' };
+    });
+
+    // GET /v4/address/validate/bulk/:list_id — job status and summary.
+    app.get('/v4/address/validate/bulk/:list_id', async (req, reply) => {
+      const listId = String((req.params as Record<string, any>).list_id);
+      const job = store.get('validationJobs', listId);
+      if (!job) {
+        reply.code(404);
+        return { message: 'list not found' };
+      }
+      return job;
+    });
+
+    // --- Mailing lists (mailgun.js client.lists.*, via state.client) -------
+
+    // GET /v3/lists/pages — client.lists.list(): paginated mailing lists.
+    app.get('/v3/lists/pages', async (req) => {
+      const base = selfUrlBase(req, config.port);
+      return {
+        items: store.list('lists'),
+        paging: {
+          first: `${base}?page=first`,
+          last: `${base}?page=last`,
+          next: `${base}?page=next`,
+          previous: `${base}?page=previous`,
+        },
+      };
+    });
+
+    // POST /v3/lists/:address/members — client.lists.members.createMember().
+    app.post('/v3/lists/:address/members', async (req, reply) => {
+      const listAddress = String((req.params as Record<string, string>).address);
+      const list = store.get('lists', listAddress);
+      if (!list) {
+        reply.code(404);
+        return { message: 'Mailing list not found' };
+      }
+      const address = formField(req.body, 'address');
+      if (!address) {
+        reply.code(400);
+        return { message: "Missing mandatory parameter: 'address'" };
+      }
+      const member = {
+        address,
+        name: formField(req.body, 'name') ?? '',
+        vars: {},
+        subscribed: !['no', 'false'].includes(String(formField(req.body, 'subscribed') ?? 'yes').toLowerCase()),
+      };
+      const id = `${listAddress}|${address.toLowerCase()}`;
+      const exists = store.get('listMembers', id);
+      const upsert = ['yes', 'true'].includes(String(formField(req.body, 'upsert') ?? '').toLowerCase());
+      if (exists && !upsert) {
+        reply.code(400);
+        return { message: `Address already exists '${address}'` };
+      }
+      if (exists) store.update('listMembers', id, member);
+      else {
+        store.create('listMembers', id, member);
+        store.update('lists', listAddress, { members_count: Number(list.members_count ?? 0) + 1 });
+      }
+      return { member, message: 'Mailing list member has been created' };
+    });
   },
 
   seed,

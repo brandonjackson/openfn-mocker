@@ -527,6 +527,7 @@ Every system is mounted at `/<name>` on the shared port. The credential URL fiel
 | zata | `/zata` | `baseUrl` | API key | stable |
 | whatsapp | `/whatsapp` | `baseUrl` | API key | stable |
 | azure-storage | `/azure-storage` | `baseUrl` | API key | stable |
+| aws-s3 | `/aws-s3` | `endpoint` | API key | stable |
 | beyonic | `/beyonic` | `apiUrl` | API key | stable |
 | dagu | `/dagu` | `baseUrl` | username & password | stable |
 | gemini | `/gemini` | `baseUrl` | API key | stable |
@@ -732,6 +733,9 @@ Create (or edit) the credential for each adaptor and point its URL field at the 
 
 // Azure Blob Storage  (API key)
 { "baseUrl": "http://localhost:4000/azure-storage", "accountName": "mockaccount", "accountKey": "<generated>", "containerName": "mock-container" }
+
+// Amazon S3  (API key)
+{ "accessKeyId": "AKIAMOCKMOCKMOCKMOCK", "secretAccessKey": "<generated>", "region": "us-east-1", "bucket": "mock-bucket", "endpoint": "http://localhost:4000/aws-s3" }
 
 // Beyonic  (API key)
 { "apiUrl": "http://localhost:4000/beyonic", "apiToken": "<generated>" }
@@ -1197,8 +1201,8 @@ picture, rated per system, at [`/status`](#conformance-status-page).
 whole `openapi.json`, how many the guide examples exercise. It is recorded in
 each ledger and collected in the repo-root [`coverage.json`](./coverage.json)
 (rebuilt by `--update-baseline`, checked in CI), which the adaptors storybook
-shows next to spec and snippet coverage. Today: **356 of 17,034 spec
-operations (2%)** across 63 systems. Mocks cover what adaptors commonly call,
+shows next to spec and snippet coverage. Today: **404 of 17,373 spec
+operations (2%)** across 64 systems. Mocks cover what adaptors commonly call,
 so a low share of a large vendor API is expected.
 
 **The ledgers.** Each system has `src/systems/<name>/conformance.json`: a

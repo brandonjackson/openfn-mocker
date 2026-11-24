@@ -1,0 +1,19 @@
+{
+  "spec": {
+    "adaptor": "aws-s3",
+    "origin": "converted"
+  },
+  "coverage": {
+    "operations": 112,
+    "exercised": 3
+  },
+  "pathPrefix": "/mock-bucket",
+  "routes": {
+    "GET /": "conforming",
+    "GET /*": "conforming",
+    "PUT /*": "conforming"
+  },
+  "failures": {},
+  "unrouted": [],
+  "deviations": []
+}

@@ -5,11 +5,14 @@
   },
   "coverage": {
     "operations": 15,
-    "exercised": 4
+    "exercised": 7
   },
   "routes": {
     "GET /v3/api/Transactions/GetTransactionStatus": "conforming",
+    "GET /v3/api/URLSetup/GetIpnList": "conforming",
     "POST /v3/api/Auth/RequestToken": "conforming",
+    "POST /v3/api/Transactions/CancelOrder": "conforming",
+    "POST /v3/api/Transactions/RefundRequest": "conforming",
     "POST /v3/api/Transactions/SubmitOrderRequest": "conforming",
     "POST /v3/api/URLSetup/RegisterIPN": "conforming"
   },
