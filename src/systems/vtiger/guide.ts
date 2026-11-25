@@ -19,7 +19,7 @@ export const guide: SystemGuide = {
   title: 'Vtiger CRM',
   docs: 'https://docs.openfn.org/adaptors/packages/vtiger-docs',
   blurb:
-    'Open-source CRM with a single REST entry point at /webservice.php. Every job first calls getchallenge (GET) then login (POST, an md5 of the challenge token + access key) to obtain a sessionName, then runs operations like listTypes and create/update/delete via postElement. Records carry a "<moduleId>x<n>" webservice id and responses use the { success, result } envelope. Auth is accept-all here.',
+    'Open-source CRM with a single REST entry point at /webservice.php. Every job first calls getchallenge (GET) then login (POST, an md5 of the challenge token + access key) to obtain a sessionName, then runs operations like listTypes and create/update/revise/delete/convertlead via postElement. Records carry a "<moduleId>x<n>" webservice id and responses use the { success, result } envelope. Auth is accept-all here.',
   auth: 'Challenge + session (getchallenge/login)',
   examples: [
     {
@@ -58,6 +58,37 @@ export const guide: SystemGuide = {
       }),
     },
     {
+      id: 'revise',
+      method: 'POST',
+      path: '/webservice.php',
+      label: 'Change only some fields of a record (postElement, operation=revise)',
+      contentType: FORM,
+      body: form({
+        sessionName: 'mock-session',
+        operation: 'revise',
+        elementType: 'Contacts',
+        element: JSON.stringify({ id: '12x1', mobile: '+254712000099' }),
+      }),
+    },
+    {
+      id: 'convert-lead',
+      method: 'POST',
+      path: '/webservice.php',
+      label: 'Convert a lead into an account and a contact (postElement, operation=convertlead)',
+      contentType: FORM,
+      body: form({
+        sessionName: 'mock-session',
+        operation: 'convertlead',
+        element: JSON.stringify({
+          leadId: '10x1',
+          entities: {
+            Accounts: { create: true, name: 'Accounts', accountname: 'Gamma Distributors' },
+            Contacts: { create: true, name: 'Contacts', firstname: 'Grace', lastname: 'Mensah' },
+          },
+        }),
+      }),
+    },
+    {
       id: 'retrieve',
       method: 'GET',
       path: '/webservice.php?operation=retrieve&id=12x1',
@@ -68,6 +99,14 @@ export const guide: SystemGuide = {
       method: 'GET',
       path: '/webservice.php?operation=query&query=select%20*%20from%20Contacts;',
       label: 'Query records with Vtiger SQL (query)',
+    },
+    {
+      id: 'logout',
+      method: 'POST',
+      path: '/webservice.php',
+      label: 'End the session (logout; Vtiger only accepts it as a POST)',
+      contentType: FORM,
+      body: form({ operation: 'logout', sessionName: 'mock-session' }),
     },
   ],
 };

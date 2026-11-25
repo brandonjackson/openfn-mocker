@@ -2,8 +2,8 @@
   "$comment": "Generated from src/systems/*/conformance.json by `pnpm test:conformance -- --update-baseline`; do not edit by hand. Mock coverage = spec operations the guide examples exercised / every operation in the adaptor's openapi.json.",
   "totals": {
     "systems": 64,
-    "specOperations": 17504,
-    "exercised": 419,
+    "specOperations": 17526,
+    "exercised": 422,
     "percent": 2.4
   },
   "systems": [
@@ -970,9 +970,9 @@
     {
       "system": "vtiger",
       "adaptor": "vtiger",
-      "specOperations": 13,
-      "exercised": 6,
-      "percent": 46.2,
+      "specOperations": 35,
+      "exercised": 9,
+      "percent": 25.7,
       "routes": 2,
       "verified": 2,
       "counts": {
