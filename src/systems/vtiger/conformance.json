@@ -4,8 +4,8 @@
     "origin": "generated"
   },
   "coverage": {
-    "operations": 13,
-    "exercised": 6
+    "operations": 35,
+    "exercised": 9
   },
   "routes": {
     "GET /webservice.php": "conforming",

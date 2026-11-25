@@ -82,4 +82,56 @@ describe('vtiger (webservice.php)', () => {
     expect(res.json().result.length).toBe(2);
     await app.close();
   });
+
+  it('revises only the supplied fields (revise)', async () => {
+    const { app, store } = await createSystemServer(vtiger, config, { logLevel: 'silent' });
+    const res = await app.inject({
+      method: 'POST',
+      url: '/webservice.php',
+      payload: {
+        sessionName: 'mock-session',
+        operation: 'revise',
+        element: JSON.stringify({ id: '12x1', mobile: '+254712000099' }),
+      },
+    });
+    expect(res.json().result.mobile).toBe('+254712000099');
+    expect(store.get('Contacts', '12x1').lastname).toBe('Yusuf');
+    await app.close();
+  });
+
+  it('converts a lead once, returning the new ids by module (convertlead)', async () => {
+    const { app, store } = await createSystemServer(vtiger, config, { logLevel: 'silent' });
+    const payload = {
+      sessionName: 'mock-session',
+      operation: 'convertlead',
+      element: JSON.stringify({
+        leadId: '10x1',
+        entities: {
+          Accounts: { create: true, name: 'Accounts', accountname: 'Gamma Distributors' },
+          Contacts: { create: true, name: 'Contacts', firstname: 'Grace', lastname: 'Mensah' },
+        },
+      }),
+    };
+    const first = await app.inject({ method: 'POST', url: '/webservice.php', payload });
+    const ids = first.json().result;
+    expect(ids.Accounts).toMatch(/^11x\d+$/);
+    expect(ids.Contacts).toMatch(/^12x\d+$/);
+    expect(store.get('Accounts', ids.Accounts).accountname).toBe('Gamma Distributors');
+    const again = await app.inject({ method: 'POST', url: '/webservice.php', payload });
+    expect(again.json()).toMatchObject({ success: false, error: { code: 'LEAD_ALREADY_CONVERTED' } });
+    await app.close();
+  });
+
+  it('accepts logout only as a POST (logout)', async () => {
+    const { app } = await createSystemServer(vtiger, config, { logLevel: 'silent' });
+    const post = await app.inject({
+      method: 'POST',
+      url: '/webservice.php',
+      payload: { operation: 'logout', sessionName: 'mock-session' },
+    });
+    expect(post.json()).toEqual({ success: true, result: { message: 'successfull' } });
+    const get = await app.inject({ method: 'GET', url: '/webservice.php?operation=logout&sessionName=mock-session' });
+    expect(get.json().error.code).toBe('OPERATION_NOT_SUPPORTED');
+    await app.close();
+  });
 });

@@ -11,8 +11,8 @@ import { guide } from './guide.js';
  *   GET  /webservice.php?operation=getchallenge&username=<u>  -> { result: { token } }
  *   POST /webservice.php  form { operation: 'login', username, accessKey }
  *        -> { result: { sessionName, sessionId, userId } }
- * then listTypes / postElement (create|update|delete) as form POSTs carrying the
- * sessionName. Reads (retrieve, query, describe, listtypes) also accept GET. Every
+ * then listTypes / postElement (create|update|revise|delete|convertlead|logout) as
+ * form POSTs carrying the sessionName. Reads (retrieve, query, describe, listtypes) also accept GET. Every
  * response uses Vtiger's `{ success, result }` envelope. Records are keyed by their
  * `<moduleId>x<n>` webservice id. Auth (accessToken via a getchallenge/md5 login)
  * is accept-all here — any challenge/session values are handed back.
@@ -59,7 +59,11 @@ function parseElement(raw: unknown): Record<string, any> {
  * form body; `operation` is matched case-insensitively so both the adaptor's
  * `listTypes` and Vtiger's `listtypes` spelling resolve.
  */
-function dispatch(store: DataStore, params: Record<string, any>): { code: number; body: any } {
+function dispatch(
+  store: DataStore,
+  params: Record<string, any>,
+  method: 'GET' | 'POST'
+): { code: number; body: any } {
   const operation = String(params.operation ?? '').toLowerCase();
   switch (operation) {
     case 'getchallenge':
@@ -136,7 +140,39 @@ function dispatch(store: DataStore, params: Record<string, any>): { code: number
       store.create(module, id, record);
       return { code: 200, body: ok(record) };
     }
-    case 'update': {
+    case 'logout':
+      // Vtiger registers logout as POST and rejects any other method.
+      if (method !== 'POST') {
+        return { code: 200, body: err('OPERATION_NOT_SUPPORTED', 'Permission to perform the operation is denied') };
+      }
+      return { code: 200, body: ok({ message: 'successfull' }) };
+    case 'convertlead': {
+      // element: { leadId, assignedTo?, entities: { Accounts|Contacts|Potentials: { create, name, ...fields } } }
+      const element = parseElement(params.element);
+      const leadId = String(element.leadId ?? '');
+      const lead = store.get('Leads', leadId);
+      if (!lead) return { code: 200, body: err('RECORD_NOT_FOUND', `Record ${leadId} not found`) };
+      if (lead.converted) return { code: 200, body: err('LEAD_ALREADY_CONVERTED', 'Lead is already converted') };
+      const ids: Record<string, string> = {};
+      const entities = (element.entities ?? {}) as Record<string, Record<string, any>>;
+      for (const [module, values] of Object.entries(entities)) {
+        if (!values?.create || !(module in MODULE_IDS)) continue;
+        const { create: _c, name: _n, ...fields } = values;
+        const id = nextId(store, module);
+        store.create(module, id, {
+          ...fields,
+          id,
+          assigned_user_id: element.assignedTo ?? lead.assigned_user_id ?? '19x1',
+        });
+        ids[module] = id;
+      }
+      store.update('Leads', leadId, { converted: '1' });
+      return { code: 200, body: ok(ids) };
+    }
+    case 'update':
+    case 'revise': {
+      // update replaces the record, revise merges only the supplied fields; the
+      // mock store merges for both, which is revise's contract and a superset of update's.
       const element = parseElement(params.element);
       const id = String(element.id ?? params.id ?? '');
       const module =
@@ -176,16 +212,16 @@ const plugin: MockSystemPlugin = {
   async overrides(app: FastifyInstance, store: DataStore, _config: SystemConfig) {
     // Reads (getchallenge, retrieve, query, describe, listtypes) come in as GET.
     app.get(WS, async (req: FastifyRequest, reply: FastifyReply) => {
-      const { code, body } = dispatch(store, (req.query ?? {}) as Record<string, any>);
+      const { code, body } = dispatch(store, (req.query ?? {}) as Record<string, any>, 'GET');
       reply.code(code);
       return body;
     });
 
-    // Writes (login, create, update, delete) come in as form-encoded POSTs; merge
+    // Writes (login, logout, create, update, revise, delete, convertlead) come in as form-encoded POSTs; merge
     // the form body with any query params so either transport works.
     app.post(WS, async (req: FastifyRequest, reply: FastifyReply) => {
       const params = { ...(req.query as object), ...(req.body as object) } as Record<string, any>;
-      const { code, body } = dispatch(store, params);
+      const { code, body } = dispatch(store, params, 'POST');
       reply.code(code);
       return body;
     });
