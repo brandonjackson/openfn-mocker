@@ -5,6 +5,7 @@ import { registerFhirRoutes } from '../shared/fhir.js';
 import { seed } from './seed.js';
 import { usage } from './usage.js';
 import { guide } from './guide.js';
+import { registerRestRoutes } from './rest.js';
 
 /**
  * OpenELIS Global (laboratory-information Digital Public Good). OpenELIS Global
@@ -19,6 +20,12 @@ import { guide } from './guide.js';
  * `/api/OpenELIS-Global/rest/fhir/ServiceRequest`. We register the FHIR surface
  * under that real base as well as the plain `/fhir` base used by the sandbox
  * guide and unit tests.
+ *
+ * Next to FHIR, the webapp's own REST routes under
+ * `/api/OpenELIS-Global/rest/**` (rest.ts) take the lab-order, patient and
+ * result entry calls jobs make with http.post/http.get: SamplePatientEntry,
+ * PatientManagement, LogbookResults, AccessionValidation, accession-results,
+ * patient-search-results, order/search, patientByLabNumer and TestCatalog.
  */
 const API_SEG = '/fhir';
 const ADAPTOR_API_SEG = '/api/OpenELIS-Global/rest/fhir';
@@ -42,6 +49,7 @@ const plugin: MockSystemPlugin = {
     const softwareName = 'OpenELIS Global FHIR R4';
     registerFhirRoutes(app, store, { apiSeg: API_SEG, resourceTypes, softwareName, port: config.port });
     registerFhirRoutes(app, store, { apiSeg: ADAPTOR_API_SEG, resourceTypes, softwareName, port: config.port });
+    registerRestRoutes(app, store);
   },
 
   seed,

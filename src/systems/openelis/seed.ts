@@ -1,5 +1,6 @@
 import type { DataStore } from '../../store.js';
 import type { SystemConfig } from '../types.js';
+import { seedRest } from './rest.js';
 
 /**
  * OpenELIS Global seed (laboratory-information Digital Public Good). OpenELIS
@@ -60,4 +61,9 @@ export function seed(store: DataStore, _config: SystemConfig): void {
     result: [{ reference: 'Observation/obs-0001' }],
     issued: '2024-03-15T11:05:00.000Z',
   });
+
+  // The webapp's REST side (rest.ts): test catalog, patient 1001 (Jane Doe,
+  // NID12345) and order 0000000123 with one result awaiting validation, one
+  // awaiting entry and one finalized.
+  seedRest(store);
 }
