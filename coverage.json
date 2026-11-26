@@ -2,8 +2,8 @@
   "$comment": "Generated from src/systems/*/conformance.json by `pnpm test:conformance -- --update-baseline`; do not edit by hand. Mock coverage = spec operations the guide examples exercised / every operation in the adaptor's openapi.json.",
   "totals": {
     "systems": 64,
-    "specOperations": 17526,
-    "exercised": 422,
+    "specOperations": 17895,
+    "exercised": 432,
     "percent": 2.4
   },
   "systems": [
@@ -666,13 +666,13 @@
     {
       "system": "openelis",
       "adaptor": "openelis",
-      "specOperations": 1057,
-      "exercised": 3,
-      "percent": 0.3,
-      "routes": 16,
-      "verified": 3,
+      "specOperations": 1426,
+      "exercised": 13,
+      "percent": 0.9,
+      "routes": 26,
+      "verified": 13,
       "counts": {
-        "conforming": 3,
+        "conforming": 13,
         "deviating": 0,
         "unchecked": 0,
         "failing": 0,

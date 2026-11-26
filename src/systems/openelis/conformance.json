@@ -4,21 +4,31 @@
     "origin": "generated"
   },
   "coverage": {
-    "operations": 1057,
-    "exercised": 3
+    "operations": 1426,
+    "exercised": 13
   },
   "routes": {
     "DELETE /api/OpenELIS-Global/rest/fhir/:resourceType/:id": "unexercised",
     "DELETE /fhir/:resourceType/:id": "unexercised",
+    "GET /api/OpenELIS-Global/rest/accession-results": "conforming",
+    "GET /api/OpenELIS-Global/rest/AccessionValidation": "conforming",
     "GET /api/OpenELIS-Global/rest/fhir/:resourceType": "unexercised",
     "GET /api/OpenELIS-Global/rest/fhir/:resourceType/:id": "unexercised",
     "GET /api/OpenELIS-Global/rest/fhir/metadata": "unexercised",
+    "GET /api/OpenELIS-Global/rest/LogbookResults": "conforming",
+    "GET /api/OpenELIS-Global/rest/order/search": "conforming",
+    "GET /api/OpenELIS-Global/rest/patient-search-results": "conforming",
+    "GET /api/OpenELIS-Global/rest/patientByLabNumer": "conforming",
+    "GET /api/OpenELIS-Global/rest/TestCatalog": "conforming",
     "GET /fhir/:resourceType": "conforming",
     "GET /fhir/:resourceType/:id": "conforming",
     "GET /fhir/metadata": "unexercised",
     "POST /api/OpenELIS-Global/rest/fhir": "unexercised",
     "POST /api/OpenELIS-Global/rest/fhir/:resourceType": "unexercised",
     "POST /api/OpenELIS-Global/rest/fhir/:resourceType/_search": "unexercised",
+    "POST /api/OpenELIS-Global/rest/LogbookResults": "conforming",
+    "POST /api/OpenELIS-Global/rest/PatientManagement": "conforming",
+    "POST /api/OpenELIS-Global/rest/SamplePatientEntry": "conforming",
     "POST /fhir": "unexercised",
     "POST /fhir/:resourceType": "conforming",
     "POST /fhir/:resourceType/_search": "unexercised",
