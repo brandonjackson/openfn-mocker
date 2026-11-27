@@ -2,9 +2,9 @@
   "$comment": "Generated from src/systems/*/conformance.json by `pnpm test:conformance -- --update-baseline`; do not edit by hand. Mock coverage = spec operations the guide examples exercised / every operation in the adaptor's openapi.json.",
   "totals": {
     "systems": 64,
-    "specOperations": 17895,
-    "exercised": 432,
-    "percent": 2.4
+    "specOperations": 17974,
+    "exercised": 451,
+    "percent": 2.5
   },
   "systems": [
     {
@@ -762,13 +762,13 @@
     {
       "system": "openspp",
       "adaptor": "openspp",
-      "specOperations": 33,
-      "exercised": 2,
-      "percent": 6.1,
-      "routes": 2,
-      "verified": 2,
+      "specOperations": 112,
+      "exercised": 21,
+      "percent": 18.8,
+      "routes": 21,
+      "verified": 21,
       "counts": {
-        "conforming": 2,
+        "conforming": 21,
         "deviating": 0,
         "unchecked": 0,
         "failing": 0,

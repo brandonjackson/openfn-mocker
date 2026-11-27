@@ -485,7 +485,7 @@ Every system is mounted at `/<name>` on the shared port. The credential URL fiel
 | odk | `/odk` | `baseUrl` | email & password | stable |
 | openlmis | `/openlmis` | `baseUrl` | username & password | stable |
 | openimis | `/openimis` | `baseUrl` | username & password | stable |
-| openspp | `/openspp` | `baseUrl` | username & password | stable |
+| openspp | `/openspp` | `baseUrl` | OAuth client credentials | stable |
 | opencrvs | `/opencrvs` | `domain` | OAuth client credentials | stable |
 | openelis | `/openelis` | `baseUrl` | username & password | stable |
 | cht | `/cht` | `baseUrl` | username & password | stable |
@@ -608,8 +608,8 @@ Create (or edit) the credential for each adaptor and point its URL field at the 
 // openIMIS  (username & password)
 { "baseUrl": "http://localhost:4000/openimis", "username": "Admin", "password": "<generated>" }
 
-// OpenSPP  (username & password)
-{ "baseUrl": "http://localhost:4000/openspp", "database": "openspp", "username": "admin", "password": "<generated>" }
+// OpenSPP  (OAuth client credentials)
+{ "baseUrl": "http://localhost:4000/openspp", "clientId": "<generated>", "clientSecret": "<generated>" }
 
 // OpenCRVS  (OAuth client credentials)
 { "domain": "localhost:4000", "clientId": "<generated>", "clientSecret": "<generated>" }
@@ -773,7 +773,7 @@ Each system implements the API surface its OpenFn adaptor actually calls (see [`
 - **odk** — ODK Central: session token (`POST /v1/sessions`), `getForms` (`/v1/projects/:id/forms`), and `getSubmissions` via the OData endpoint (`…/forms/{id}.svc/Submissions` → `{ value: [...] }`) with ODK `__id`/`__system` metadata.
 - **openlmis** — OpenLMIS v3: OAuth2 token (`POST /api/oauth/token`) and the Spring Data `{ content, totalElements, totalPages, number, size }` page envelope for facilities, orderables, programs and requisitions (including `POST /api/requisitions/initiate`).
 - **openimis** — the `api_fhir_r4` FHIR server: token login (`POST /api/api_fhir_r4/login/`) then FHIR reads/writes where insurees are Patients, policies are Contracts and benefits are Coverages/Claims.
-- **openspp** — the Odoo XML-RPC external API the `odoo-await`-based adaptor calls: `authenticate`/`version` on `/xmlrpc/2/common` and `execute_kw` (`search_read`/`search`/`read`/`create`/`write`/`unlink`) on `/xmlrpc/2/object`, over `res.partner`, `g2p.program`, `spp.area`, `spp.service.point` and the membership models. Payloads are XML `methodCall`/`methodResponse` documents, records carry integer ids, and many2one fields are `[id, label]` pairs.
+- **openspp** — two APIs. The REST API v2 that adaptor 4.x calls, under `/api/v2/spp`: an OAuth client-credentials token from `/oauth/token` (every other v2 route requires a Bearer header), then `Individual`, `Group` (with `$add-member`/`$remove-member`), `Program` (cursor-paged by `_lastId`), `ProgramMembership` and `ServicePoint`, addressed by URL-encoded `system|value` identifiers. Searches return `{ data, meta, links }` (ServicePoint: a searchset Bundle), PATCH is JSON Merge Patch, errors are `{ detail }`. And the Odoo XML-RPC external API that the `odoo-await`-based adaptor 3.x called, kept for jobs pinned to 3.x: `authenticate`/`version` on `/xmlrpc/2/common` and `execute_kw` (`search_read`/`search`/`read`/`create`/`write`/`unlink`) on `/xmlrpc/2/object`, over `res.partner`, `g2p.program`, `spp.area`, `spp.service.point` and the membership models, with XML payloads, integer ids and `[id, label]` many2one pairs.
 - **opencrvs** — the GraphQL search API (`POST /graphql` → `{ data: { searchEvents } }`) alongside the events REST API (`POST /api/events/events`, `…/:id/notify`, `GET /api/events/locations`) and the `/notification` country-config hook; an event advances through `create` → `notify`.
 - **openelis** — OpenELIS Global's FHIR R4 lab API under `/fhir`: ServiceRequests (orders), Specimens, Observations (results) and DiagnosticReports tied to a Patient.
 - **cht** — the Medic REST API (`POST /api/v1/people`, `/api/v1/places`, `GET`/`PUT /api/v1/settings`, `/api/v2/export/*`) and the underlying CouchDB (`/medic/:id`, `POST /medic/_bulk_docs`, `GET /medic/_changes`), which returns write acks (`{ ok, id, rev }`) and filters `_changes` by `?since=`.
@@ -1028,8 +1028,8 @@ root** on an ephemeral port, resolves the credential the sandbox would generate
 pointed at that origin, runs `openfn <job> -a <adaptor> -s <state>`, and resets
 the mock to pristine seed between examples. Mounting at the root (rather than
 `/<system>`) matters for adaptors that build their client from host + port and
-ignore the URL path — openspp's `odoo-await`, for one, hardcodes `/xmlrpc/2/...`
-and would otherwise never reach a `/openspp`-prefixed mount. A run fails if the
+ignore the URL path — the odoo adaptor's `odoo-await`, for one, hardcodes `/xmlrpc/2/...`
+and would otherwise never reach an `/odoo`-prefixed mount. A run fails if the
 CLI exits non-zero or reports an error (its `✗` marker).
 
 The mock's **fault-injection knobs are neutralized** for the run: any

@@ -3,13 +3,21 @@ import type { MockSystemPlugin, SystemConfig } from '../types.js';
 import type { DataStore } from '../../store.js';
 import { parseMethodCall, serializeResponse, serializeFault } from '../shared/xmlrpc.js';
 import { seed, UID } from './seed.js';
+import { registerRest } from './rest.js';
 import { usage } from './usage.js';
 import { guide } from './guide.js';
 
 /**
- * OpenSPP (social-protection Digital Public Good, built on Odoo). The openspp
- * adaptor uses `odoo-await`, which speaks Odoo's XML-RPC external API over two
- * endpoints:
+ * OpenSPP (social-protection Digital Public Good, built on Odoo). Two APIs:
+ *
+ * - **REST API v2** (`/api/v2/spp`, see ./rest.ts): what @openfn/language-openspp
+ *   4.x calls — OAuth client credentials at /oauth/token, then Individual,
+ *   Group (+ $add-member / $remove-member), Program, ProgramMembership and
+ *   ServicePoint by external identifier. The usage snippets run against this.
+ *
+ * - **Odoo XML-RPC** (below): what adaptor 3.x used through `odoo-await`, kept
+ *   for workflows still pinned to it. It speaks Odoo's external API over two
+ *   endpoints:
  *   POST /xmlrpc/2/common — `version` and `authenticate` (returns a uid int).
  *   POST /xmlrpc/2/object — `execute_kw(db, uid, pw, model, method, args, kwargs)`
  *     with method in { search_read, search, search_count, read, create, write,
@@ -181,13 +189,21 @@ function executeKw(store: DataStore, params: any[]): any {
 
 const plugin: MockSystemPlugin = {
   name: 'openspp',
+  // Adaptor 4.x credential (configuration-schema.json: baseUrl, clientId, clientSecret).
+  // The REST routes need a Bearer token (any value); the token endpoint and the
+  // Odoo RPC endpoints (which authenticate inside the body) are exempt.
+  auth: {
+    required: true,
+    schemes: ['bearer'],
+    exemptPaths: ['/api/v2/spp/oauth/token', '/api/v2/spp/metadata', '/xmlrpc/', '/jsonrpc', '/web/session/'],
+  },
   credential: {
-    type: 'userpass',
+    type: 'oauth',
+    authHeader: { scheme: 'bearer', value: 'mock-access-token' },
     fields: [
       { name: 'baseUrl', role: 'url' },
-      { name: 'database', role: 'static', value: 'openspp' },
-      { name: 'username', role: 'username', value: 'admin' },
-      { name: 'password', role: 'secret', secret: { charset: 'alnum', length: 16 } },
+      { name: 'clientId', role: 'secret', secret: { charset: 'alnum', length: 24 } },
+      { name: 'clientSecret', role: 'secret', secret: { charset: 'alnum', length: 32 } },
     ],
   },
 
@@ -195,6 +211,8 @@ const plugin: MockSystemPlugin = {
   guide,
 
   async overrides(app: FastifyInstance, store: DataStore, _config: SystemConfig) {
+    registerRest(app, store);
+
     const xml = (reply: FastifyReply) => reply.type('text/xml; charset=utf-8');
 
     // POST /xmlrpc/2/common — version / authenticate.
