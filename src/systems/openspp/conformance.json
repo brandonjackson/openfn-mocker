@@ -1,15 +1,34 @@
 {
   "spec": {
     "adaptor": "openspp",
-    "origin": "synthesized"
+    "origin": "generated"
   },
   "coverage": {
-    "operations": 33,
-    "exercised": 2
+    "operations": 112,
+    "exercised": 21
   },
   "routes": {
+    "GET /api/v2/spp/Group": "conforming",
+    "GET /api/v2/spp/Group/:identifier": "conforming",
+    "GET /api/v2/spp/Individual": "conforming",
+    "GET /api/v2/spp/Individual/:identifier": "conforming",
+    "GET /api/v2/spp/Individual/:identifier/groups": "conforming",
+    "GET /api/v2/spp/Program": "conforming",
+    "GET /api/v2/spp/Program/:identifier": "conforming",
+    "GET /api/v2/spp/ProgramMembership": "conforming",
+    "GET /api/v2/spp/ServicePoint": "conforming",
+    "GET /api/v2/spp/ServicePoint/:identifier": "conforming",
+    "PATCH /api/v2/spp/Group/:identifier": "conforming",
+    "PATCH /api/v2/spp/Individual/:identifier": "conforming",
+    "POST /api/v2/spp/Group": "conforming",
+    "POST /api/v2/spp/Group/:identifier/$add-member": "conforming",
+    "POST /api/v2/spp/Group/:identifier/$remove-member": "conforming",
+    "POST /api/v2/spp/Individual": "conforming",
+    "POST /api/v2/spp/oauth/token": "conforming",
+    "POST /api/v2/spp/ProgramMembership": "conforming",
     "POST /xmlrpc/2/common": "conforming",
-    "POST /xmlrpc/2/object": "conforming"
+    "POST /xmlrpc/2/object": "conforming",
+    "PUT /api/v2/spp/ProgramMembership/:identifier": "conforming"
   },
   "failures": {},
   "unrouted": [],

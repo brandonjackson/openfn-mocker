@@ -63,6 +63,7 @@ describe('per-plugin credential spec', () => {
         'msgraph',
         'openfn',
         'openmrs',
+        'openspp',
         'pesapal',
         'primero',
         'stripe',
@@ -100,7 +101,7 @@ describe('per-plugin credential spec', () => {
     expect(names('rapidpro')).toEqual(['host', 'token', 'apiVersion']);
     expect(names('odk')).toEqual(['baseUrl', 'email', 'password']);
     expect(names('openhim')).toEqual(['apiUrl', 'username', 'password']);
-    expect(names('openspp')).toEqual(['baseUrl', 'database', 'username', 'password']);
+    expect(names('openspp')).toEqual(['baseUrl', 'clientId', 'clientSecret']);
     expect(names('opencrvs')).toEqual(['domain', 'clientId', 'clientSecret']);
     expect(names('openlmis')).toEqual([
       'baseUrl',

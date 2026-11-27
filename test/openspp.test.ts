@@ -202,3 +202,77 @@ describe('openspp (Odoo XML-RPC)', () => {
     await app.close();
   });
 });
+
+describe('openspp (REST API v2, adaptor 4.x)', () => {
+  const NAT = 'urn:openspp:vocab:id-type#national_id';
+  const HH = 'urn:openspp:vocab:id-type#household_id';
+  const auth = { authorization: 'Bearer t' };
+  const enc = encodeURIComponent;
+
+  it('issues a client-credentials token without a bearer', async () => {
+    const { app } = await createSystemServer(openspp, config, { logLevel: 'silent', autoAuth: false });
+    const res = await app.inject({ method: 'POST', url: '/api/v2/spp/oauth/token', payload: { grant_type: 'client_credentials', client_id: 'a', client_secret: 'b' } });
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toMatchObject({ token_type: 'Bearer', expires_in: 3600 });
+    await app.close();
+  });
+
+  it('rejects resource requests without a bearer token', async () => {
+    const { app } = await createSystemServer(openspp, config, { logLevel: 'silent', autoAuth: false });
+    const res = await app.inject({ method: 'GET', url: '/api/v2/spp/Individual' });
+    expect(res.statusCode).toBe(401);
+    await app.close();
+  });
+
+  it('reads an individual by system|value and searches with the SearchResult envelope', async () => {
+    const { app } = await createSystemServer(openspp, config, { logLevel: 'silent' });
+    const one = await app.inject({ method: 'GET', url: `/api/v2/spp/Individual/${enc(`${NAT}|SL-1001`)}`, headers: auth });
+    expect(one.statusCode).toBe(200);
+    expect(one.json().name.given).toBe('Amina');
+    expect(one.json().groupMembership[0].group.reference).toBe(`Group/${HH}|HH-KAM-01`);
+    const search = await app.inject({ method: 'GET', url: `/api/v2/spp/Individual?group=${enc(`${HH}|HH-KAM-01`)}&membership-role=head`, headers: auth });
+    expect(search.json().meta).toEqual({ total: 1, count: 1, offset: 0 });
+    expect(search.json().data[0].identifier[0].value).toBe('SL-1001');
+    await app.close();
+  });
+
+  it('adds a member (409 on repeat) and ends a membership', async () => {
+    const { app } = await createSystemServer(openspp, config, { logLevel: 'silent' });
+    const url = `/api/v2/spp/Group/${enc(`${HH}|HH-SES-01`)}/$add-member`;
+    const payload = { entity: { reference: `Individual/${NAT}|SL-1004` } };
+    expect((await app.inject({ method: 'POST', url, payload, headers: auth })).statusCode).toBe(201);
+    expect((await app.inject({ method: 'POST', url, payload, headers: auth })).statusCode).toBe(409);
+    const rm = await app.inject({ method: 'POST', url: url.replace('$add-member', '$remove-member'), payload, headers: auth });
+    expect(rm.json()).toMatchObject({ status: 'inactive' });
+    expect(rm.json().endedDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    await app.close();
+  });
+
+  it('merge-patches with null clearing a field', async () => {
+    const { app } = await createSystemServer(openspp, config, { logLevel: 'silent' });
+    const url = `/api/v2/spp/Individual/${enc(`${NAT}|SL-1002`)}`;
+    const res = await app.inject({ method: 'PATCH', url, payload: { telecom: null, birthDate: '1982-05-15' }, headers: auth });
+    expect(res.json().birthDate).toBe('1982-05-15');
+    expect(res.json().telecom).toBeUndefined();
+    expect(res.json().meta.versionId).toBe('2');
+    await app.close();
+  });
+
+  it('enrolls, then exits a membership via PUT by beneficiary identifier', async () => {
+    const { app } = await createSystemServer(openspp, config, { logLevel: 'silent' });
+    const program = { reference: 'Program/urn:openspp:program|school-feeding' };
+    const beneficiary = { reference: `Individual/${NAT}|SL-1004` };
+    const created = await app.inject({ method: 'POST', url: '/api/v2/spp/ProgramMembership', payload: { program, beneficiary, status: 'enrolled' }, headers: auth });
+    expect(created.statusCode).toBe(201);
+    const put = await app.inject({ method: 'PUT', url: `/api/v2/spp/ProgramMembership/${enc(`${NAT}|SL-1004`)}`, payload: { program, beneficiary, status: 'exited' }, headers: auth });
+    expect(put.json()).toMatchObject({ status: 'exited' });
+    await app.close();
+  });
+
+  it('searches service points as a searchset Bundle', async () => {
+    const { app } = await createSystemServer(openspp, config, { logLevel: 'silent' });
+    const res = await app.inject({ method: 'GET', url: '/api/v2/spp/ServicePoint?country=SL', headers: auth });
+    expect(res.json()).toMatchObject({ resourceType: 'Bundle', type: 'searchset', total: 2 });
+    await app.close();
+  });
+});
