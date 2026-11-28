@@ -2,8 +2,8 @@
   "$comment": "Generated from src/systems/*/conformance.json by `pnpm test:conformance -- --update-baseline`; do not edit by hand. Mock coverage = spec operations the guide examples exercised / every operation in the adaptor's openapi.json.",
   "totals": {
     "systems": 64,
-    "specOperations": 17974,
-    "exercised": 451,
+    "specOperations": 17986,
+    "exercised": 458,
     "percent": 2.5
   },
   "systems": [
@@ -890,17 +890,17 @@
     {
       "system": "senaite",
       "adaptor": "senaite",
-      "specOperations": 35,
-      "exercised": 6,
-      "percent": 17.1,
-      "routes": 9,
-      "verified": 6,
+      "specOperations": 47,
+      "exercised": 13,
+      "percent": 27.7,
+      "routes": 17,
+      "verified": 13,
       "counts": {
-        "conforming": 6,
+        "conforming": 13,
         "deviating": 0,
         "unchecked": 0,
         "failing": 0,
-        "unexercised": 3
+        "unexercised": 4
       }
     },
     {

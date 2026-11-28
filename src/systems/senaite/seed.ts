@@ -28,10 +28,112 @@ interface SenaiteObject {
 }
 
 /** Seeded objects use stable UIDs so guide/usage examples can link to them. */
-const CLIENT_BO = 'clt000000000000000000000000000001';
-const CLIENT_KENEMA = 'clt000000000000000000000000000002';
-const SAMPLE_WATER = 'ar0000000000000000000000000000001';
-const SERVICE_PH = 'svc000000000000000000000000000001';
+const CLIENT_BO = 'c1000000000000000000000000000001';
+const CLIENT_KENEMA = 'c1000000000000000000000000000002';
+const SAMPLE_WATER = 'a5000000000000000000000000000001';
+const SERVICE_PH = '5e000000000000000000000000000001';
+
+/** A registered portal type, as senaite.jsonapi's /types and /schema describe it. */
+export interface PortalType {
+  portal_type: string;
+  title: string;
+  description: string;
+  meta_type: string | null;
+  global_allow: boolean;
+  add_permission: string | null;
+  catalogs: string[];
+  fields: { name: string; type: string; required: boolean; readonly: boolean; allowed_types?: string[]; multi_valued?: boolean }[];
+}
+
+const f = (name: string, type: string, required = false, extra: Record<string, any> = {}) => ({
+  name,
+  type,
+  required,
+  readonly: false,
+  ...extra,
+});
+
+/** The handful of portal types the seeded objects use. */
+export const PORTAL_TYPES: PortalType[] = [
+  {
+    portal_type: 'Client',
+    title: 'Client',
+    description: 'A customer of the laboratory that submits samples.',
+    meta_type: 'Client',
+    global_allow: false,
+    add_permission: 'senaite.core: Add Client',
+    catalogs: ['senaite_catalog_client'],
+    fields: [
+      f('title', 'string', true),
+      f('ClientID', 'string', true),
+      f('Phone', 'string'),
+      f('EmailAddress', 'string'),
+      f('MemberDiscountApplies', 'boolean'),
+    ],
+  },
+  {
+    portal_type: 'Contact',
+    title: 'Contact',
+    description: 'A person at a client who receives results.',
+    meta_type: 'Contact',
+    global_allow: false,
+    add_permission: 'senaite.core: Add Contact',
+    catalogs: ['portal_catalog'],
+    fields: [f('Firstname', 'string', true), f('Surname', 'string', true), f('EmailAddress', 'string')],
+  },
+  {
+    portal_type: 'AnalysisRequest',
+    title: 'Sample',
+    description: 'A sample registered for analysis.',
+    meta_type: 'AnalysisRequest',
+    global_allow: false,
+    add_permission: 'senaite.core: Add AnalysisRequest',
+    catalogs: ['senaite_catalog_sample'],
+    fields: [
+      f('Client', 'reference', true, { allowed_types: ['Client'], multi_valued: false }),
+      f('Contact', 'reference', true, { allowed_types: ['Contact'], multi_valued: false }),
+      f('SampleType', 'reference', true, { allowed_types: ['SampleType'], multi_valued: false }),
+      f('DateSampled', 'datetime', true),
+      f('Analyses', 'analyses', true, { multi_valued: true }),
+      f('ParentAnalysisRequest', 'reference', false, { allowed_types: ['AnalysisRequest'], multi_valued: false }),
+    ],
+  },
+  {
+    portal_type: 'AnalysisService',
+    title: 'Analysis Service',
+    description: 'A test the laboratory offers.',
+    meta_type: 'AnalysisService',
+    global_allow: false,
+    add_permission: 'senaite.core: Add AnalysisService',
+    catalogs: ['senaite_catalog_setup'],
+    fields: [f('title', 'string', true), f('Keyword', 'string', true), f('Unit', 'string')],
+  },
+];
+
+/** Which types each container allows (`/types?parent_uid=`). */
+export const ALLOWED_IN: Record<string, string[]> = {
+  Client: ['AnalysisRequest', 'Contact'],
+};
+
+/** Transitions available per review_state (`/workflow/<uid>`). */
+export const TRANSITIONS: Record<string, { id: string; title: string }[]> = {
+  active: [{ id: 'deactivate', title: 'Deactivate' }],
+  inactive: [{ id: 'activate', title: 'Activate' }],
+  sample_received: [
+    { id: 'create_partitions', title: 'Create partitions' },
+    { id: 'invalidate', title: 'Invalidate' },
+  ],
+};
+
+export function typeInfo(t: PortalType) {
+  return {
+    portal_type: t.portal_type,
+    title: t.title,
+    description: t.description,
+    meta_type: t.meta_type,
+    global_allow: t.global_allow,
+  };
+}
 
 export function seed(store: DataStore, config: SystemConfig): void {
   const origin = `http://localhost:${config.port}`;
