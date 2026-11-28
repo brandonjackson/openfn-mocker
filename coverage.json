@@ -3,8 +3,8 @@
   "totals": {
     "systems": 64,
     "specOperations": 17986,
-    "exercised": 458,
-    "percent": 2.5
+    "exercised": 461,
+    "percent": 2.6
   },
   "systems": [
     {
@@ -891,16 +891,16 @@
       "system": "senaite",
       "adaptor": "senaite",
       "specOperations": 47,
-      "exercised": 13,
-      "percent": 27.7,
-      "routes": 17,
-      "verified": 13,
+      "exercised": 16,
+      "percent": 34,
+      "routes": 22,
+      "verified": 16,
       "counts": {
-        "conforming": 13,
+        "conforming": 16,
         "deviating": 0,
         "unchecked": 0,
         "failing": 0,
-        "unexercised": 4
+        "unexercised": 6
       }
     },
     {

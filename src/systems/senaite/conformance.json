@@ -5,12 +5,13 @@
   },
   "coverage": {
     "operations": 47,
-    "exercised": 13
+    "exercised": 16
   },
   "routes": {
     "DELETE /@@API/senaite/v1/:resource/:uid": "conforming",
+    "GET /@@API/senaite/v1/:resource": "conforming",
+    "GET /@@API/senaite/v1/:resource/:uid": "conforming",
     "GET /@@API/senaite/v1/auth": "unexercised",
-    "GET /@@API/senaite/v1/get/:uid": "conforming",
     "GET /@@API/senaite/v1/login": "unexercised",
     "GET /@@API/senaite/v1/schema/:portalType": "conforming",
     "GET /@@API/senaite/v1/search": "conforming",
@@ -20,6 +21,10 @@
     "GET /@@API/senaite/v1/workflow/:uid": "conforming",
     "GET /login": "conforming",
     "PATCH /@@API/senaite/v1/:resource/:uid": "conforming",
+    "POST /@@API/senaite/v1/:resource/create": "unexercised",
+    "POST /@@API/senaite/v1/:resource/create/:uid": "conforming",
+    "POST /@@API/senaite/v1/:resource/delete/:uid": "unexercised",
+    "POST /@@API/senaite/v1/:resource/update/:uid": "conforming",
     "POST /@@API/senaite/v1/create/:portalType": "conforming",
     "POST /@@API/senaite/v1/delete/:uid": "unexercised",
     "POST /@@API/senaite/v1/partition": "conforming",

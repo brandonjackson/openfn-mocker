@@ -47,6 +47,30 @@ export const guide: SystemGuide = {
       body: JSON.stringify({ title: 'Bo Government Hospital (renamed)' }, null, 2),
     },
     {
+      method: 'GET',
+      path: '/@@API/senaite/v1/AnalysisRequest?getClientTitle=Bo%20Government%20Hospital&complete=yes',
+      label: "List one portal type's objects, filtered by a catalog index",
+      id: 'list-type',
+    },
+    {
+      method: 'POST',
+      path: '/@@API/senaite/v1/AnalysisRequest/create/c1000000000000000000000000000001',
+      label: 'Register a sample inside a Client (container UID in the path)',
+      id: 'create-in',
+      body: JSON.stringify(
+        { SampleType: 'Water', DateSampled: '2024-03-04', ClientSampleID: 'ORD-1042', Analyses: ['5e000000000000000000000000000001'] },
+        null,
+        2,
+      ),
+    },
+    {
+      method: 'POST',
+      path: '/@@API/senaite/v1/AnalysisRequest/update/a5000000000000000000000000000001',
+      label: 'Update a sample and run a workflow transition',
+      id: 'transition',
+      body: JSON.stringify({ transition: 'verify', Remarks: 'Results checked' }, null, 2),
+    },
+    {
       method: 'PATCH',
       path: '/@@API/senaite/v1/Client/c1000000000000000000000000000002',
       label: 'Update an object with the REST verb (2.7.0+)',

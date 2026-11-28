@@ -109,4 +109,30 @@ describe('senaite (Plone JSON API)', () => {
     expect((await app.inject({ method: 'POST', url: `${API}/partition`, payload: {} })).statusCode).toBe(400);
     await app.close();
   });
+
+  it('serves the portal-type-scoped content routes the adaptor reaches with request()', async () => {
+    const { app } = await createSystemServer(senaite, config, { logLevel: 'silent' });
+    const list = await app.inject({ method: 'GET', url: `${API}/client?complete=yes` });
+    expect(list.json().count).toBe(2);
+    const bare = await app.inject({ method: 'GET', url: `${API}/c1000000000000000000000000000001` });
+    expect(bare.json().title).toBe('Bo Government Hospital');
+    const created = await app.inject({
+      method: 'POST',
+      url: `${API}/AnalysisRequest/create/c1000000000000000000000000000001`,
+      payload: { ClientSampleID: 'ORD-1' },
+    });
+    const sample = created.json().items[0];
+    expect(sample.getClientTitle).toBe('Bo Government Hospital');
+    expect(sample.review_state).toBe('sample_due');
+    const received = await app.inject({
+      method: 'POST',
+      url: `${API}/AnalysisRequest/update/${sample.uid}`,
+      payload: { transition: 'receive' },
+    });
+    expect(received.json().items[0].review_state).toBe('sample_received');
+    expect(received.json().items[0].transition).toBeUndefined();
+    const off = await app.inject({ method: 'POST', url: `${API}/Client/delete/c1000000000000000000000000000002` });
+    expect(off.json().items[0].review_state).toBe('inactive');
+    await app.close();
+  });
 });

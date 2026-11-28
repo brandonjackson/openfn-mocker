@@ -18,6 +18,26 @@ import { guide } from './guide.js';
  */
 const API = '/@@API/senaite/v1';
 
+/** senaite.jsonapi tells a UID segment from a portal type by its 32-char length. */
+const UID_RE = /^[0-9a-f]{32}$/;
+
+/** Query parameters that steer the catalog query rather than filter on an index. */
+const CONTROL_PARAMS = new Set([
+  'q', 'path', 'depth', 'catalog', 'limit', 'sort_on', 'sort_order', 'sort_limit', 'complete',
+  'children', 'workflow', 'filedata', 'recent_created', 'recent_modified', 'created_since',
+  'modified_since', 'b_start',
+]);
+
+/** review_state a workflow transition (sent as `transition` in an update) lands in. */
+const TRANSITION_TARGET: Record<string, string> = {
+  receive: 'sample_received',
+  verify: 'verified',
+  publish: 'published',
+  invalidate: 'invalid',
+  deactivate: 'inactive',
+  activate: 'active',
+};
+
 /** SENAITE's list/read envelope. */
 function envelope(items: any[], extra: Record<string, any> = {}): Record<string, any> {
   return {
@@ -77,8 +97,9 @@ const plugin: MockSystemPlugin = {
       return envelope(items);
     });
 
-    // --- Get by UID ---
-    app.get(`${API}/get/:uid`, async (req, reply) => {
+    // --- Read: GET /<portal_type>/<uid> (the guide's `get/<uid>` is this
+    // route too: senaite.jsonapi resolves the object by UID alone). ---
+    app.get(`${API}/:resource/:uid`, async (req, reply) => {
       const { uid: u } = req.params as Record<string, any>;
       const found = store.get('objects', u);
       if (found === undefined) {
@@ -86,6 +107,89 @@ const plugin: MockSystemPlugin = {
         return { message: `No object found for UID ${u}`, count: 0, items: [] };
       }
       return envelope([found]);
+    });
+
+    // --- List one portal type: GET /<portal_type>?<catalog index>=... A bare
+    // 32-char UID in place of the portal type returns that one record. ---
+    app.get(`${API}/:resource`, async (req, reply) => {
+      const { resource } = req.params as Record<string, any>;
+      if (UID_RE.test(resource)) {
+        const found = store.get('objects', resource);
+        if (found === undefined) {
+          reply.code(404);
+          return { message: `No object found for UID ${resource}`, count: 0, items: [] };
+        }
+        return found;
+      }
+      const q = (req.query ?? {}) as Record<string, any>;
+      const wanted = String(resource).toLowerCase();
+      let items = store.list('objects').filter((o) => String(o.portal_type).toLowerCase() === wanted);
+      for (const [k, v] of Object.entries(q)) {
+        if (CONTROL_PARAMS.has(k) || typeof v !== 'string') continue;
+        items = items.filter((o) => o[k] === undefined || String(o[k]) === v);
+      }
+      const limit = Number(q.limit);
+      return envelope(Number.isFinite(limit) && limit > 0 ? items.slice(0, limit) : items);
+    });
+
+    // --- Portal-type-scoped create/update/delete:
+    // POST /<portal_type>/create[/<container uid>], POST /<portal_type>/{update,delete}/<uid> ---
+    const createIn = (portalType: string, body: Record<string, any>, parent?: Record<string, any>) => {
+      const u = uid();
+      const record: Record<string, any> = {
+        uid: u,
+        id: body.id ?? `${String(portalType).toLowerCase()}-${u.slice(0, 6)}`,
+        portal_type: portalType,
+        title: body.title ?? '',
+        review_state: portalType === 'AnalysisRequest' ? 'sample_due' : 'active',
+        created: nowIso(),
+        ...body,
+      };
+      if (parent) {
+        record.parent_uid = parent.uid;
+        if (parent.portal_type === 'Client') record.getClientTitle = parent.title;
+      }
+      store.create('objects', u, record);
+      return record;
+    };
+    app.post(`${API}/:resource/create`, async (req) => {
+      const { resource } = req.params as Record<string, any>;
+      const record = createIn(resource, (req.body ?? {}) as Record<string, any>);
+      return { count: 1, items: [record], url: `${API}/${resource}/create` };
+    });
+    app.post(`${API}/:resource/create/:uid`, async (req, reply) => {
+      const { resource, uid: parentUid } = req.params as Record<string, any>;
+      const parent = store.get('objects', parentUid);
+      if (parent === undefined) {
+        reply.code(404);
+        return { message: `No container found for UID ${parentUid}`, count: 0, items: [] };
+      }
+      const record = createIn(resource, (req.body ?? {}) as Record<string, any>, parent);
+      return { count: 1, items: [record], url: `${API}/${resource}/create/${parentUid}` };
+    });
+    app.post(`${API}/:resource/update/:uid`, async (req, reply) => {
+      const { resource, uid: u } = req.params as Record<string, any>;
+      const existing = store.get('objects', u);
+      if (existing === undefined) {
+        reply.code(404);
+        return { message: `No object found for UID ${u}`, count: 0, items: [] };
+      }
+      const { transition, ...fields } = (req.body ?? {}) as Record<string, any>;
+      const updated = { ...existing, ...fields, uid: u, modified: nowIso() };
+      if (typeof transition === 'string' && TRANSITION_TARGET[transition]) updated.review_state = TRANSITION_TARGET[transition];
+      store.replace('objects', u, updated);
+      return { count: 1, items: [updated], url: `${API}/${resource}/update/${u}` };
+    });
+    app.post(`${API}/:resource/delete/:uid`, async (req, reply) => {
+      const { resource, uid: u } = req.params as Record<string, any>;
+      const existing = store.get('objects', u);
+      if (existing === undefined) {
+        reply.code(404);
+        return { message: `No object found for UID ${u}`, count: 0, items: [] };
+      }
+      const deactivated = { ...existing, review_state: 'inactive', modified: nowIso() };
+      store.replace('objects', u, deactivated);
+      return { count: 1, items: [deactivated], url: `${API}/${resource}/delete/${u}` };
     });
 
     // --- Create by portal_type ---
